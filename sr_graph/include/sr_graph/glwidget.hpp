@@ -45,6 +45,11 @@
 #include <sr_graph/data_collector.hpp>
 #include <boost/smart_ptr.hpp>
 
+struct Vertex3f
+{
+  GLfloat x,y,z;
+};
+
 class GLWidget : public QGLWidget
 {
 public:
@@ -57,7 +62,7 @@ public:
   void mousePressEvent(QMouseEvent *) { killTimer(timerId); }
   void mouseReleaseEvent(QMouseEvent *) { timerId = startTimer(20); }
 
-  void drawCube(int i, GLfloat z, GLfloat ri, GLfloat jmp, GLfloat amp);
+  void plot_data();
 
 private:
   GLfloat rot[3], xOffs[3], yOffs[3], xInc[3];
@@ -65,7 +70,7 @@ private:
   GLuint cubeTexture;
   int timerId;
 
-        boost::shared_ptr<QGLFramebufferObject> fbo;
+  boost::shared_ptr<QGLFramebufferObject> fbo;
 
   boost::shared_ptr<data::DataCollector> data_collector;
 };

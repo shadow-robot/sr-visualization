@@ -38,13 +38,43 @@
 **
 ****************************************************************************/
 
-#include "sr_graph/glwidget.h"
+#include "sr_graph/glwidget.hpp"
 #include <QtGui/QImage>
 
 #include "sr_graph/data_collector.hpp"
 #include <ros/ros.h>
 
 #include <math.h>
+
+static GLint cubeArray[][3] = {
+    {0, 0, 0}, {0, 1, 0}, {1, 1, 0}, {1, 0, 0},
+    {0, 0, 1}, {1, 0, 1}, {1, 1, 1}, {0, 1, 1},
+    {0, 0, 0}, {1, 0, 0}, {1, 0, 1}, {0, 0, 1},
+    {0, 1, 0}, {0, 1, 1}, {1, 1, 1}, {1, 1, 0},
+    {0, 1, 0}, {0, 0, 0}, {0, 0, 1}, {0, 1, 1},
+    {1, 0, 0}, {1, 1, 0}, {1, 1, 1}, {1, 0, 1}
+};
+
+static GLint cubeTextureArray[][2] = {
+    {0, 0}, {1, 0}, {1, 1}, {0, 1},
+    {0, 0}, {0, 1}, {1, 1}, {1, 0},
+    {0, 0}, {1, 0}, {1, 1}, {0, 1},
+    {1, 0}, {0, 0}, {0, 1}, {1, 1},
+    {0, 0}, {1, 0}, {1, 1}, {0, 1},
+    {1, 0}, {0, 0}, {0, 1}, {1, 1}
+};
+
+static GLint faceArray[][2] = {
+    {1, -1}, {1, 1}, {-1, 1}, {-1, -1}
+};
+
+static GLubyte colorArray[][4] = {
+    {102, 176, 54, 255},
+    {81, 141, 41, 255},
+    {62, 108, 32, 255},
+    {45, 79, 23, 255}
+};
+
 
 GLWidget::GLWidget(QWidget *parent)
   : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
@@ -127,99 +157,74 @@ void GLWidget::initializeGL()
 
 void GLWidget::resizeGL(int w, int h)
 {
-    glViewport(0, 0, w, h);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    float aspect = w/(float)(h ? h : 1);
-    glFrustum(-aspect, aspect, -1, 1, 10, 100);
-    glTranslatef(-0.5f, -0.5f, -0.5f);
-    glTranslatef(0.0f, 0.0f, -15.0f);
+  glViewport(0, 0, w, h);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  float aspect = w/(float)(h ? h : 1);
+  glFrustum(-aspect, aspect, -1, 1, 10, 100);
+  glTranslatef(-0.5f, -0.5f, -0.5f);
+  glTranslatef(0.0f, 0.0f, -15.0f);
 }
 
 void GLWidget::paintGL()
 {
-    glPopMatrix(); // pop the matrix pushed in the pbuffer list
+  glPopMatrix(); // pop the matrix pushed in the pbuffer list
 
-    // push the projection matrix and the entire GL state before
-    // doing any rendering into our framebuffer object
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
+  // push the projection matrix and the entire GL state before
+  // doing any rendering into our framebuffer object
+  glPushAttrib(GL_ALL_ATTRIB_BITS);
+  glMatrixMode(GL_PROJECTION);
+  glPushMatrix();
 
-    glViewport(0, 0, fbo->size().width(), fbo->size().height());
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(-1, 1, -1, 1, -99, 99);
-    glTranslatef(-0.5f, -0.5f, 0.0f);
-    glMatrixMode(GL_MODELVIEW);
+  glViewport(0, 0, fbo->size().width(), fbo->size().height());
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(-1, 1, -1, 1, -99, 99);
+  glTranslatef(-0.5f, -0.5f, 0.0f);
+  glMatrixMode(GL_MODELVIEW);
 
-    // render to the framebuffer object
-    fbo->bind();
-    glBindTexture(GL_TEXTURE_2D, cubeTexture);
-    glCallList(pbufferList);
-    fbo->release();
+  // render to the framebuffer object
+  fbo->bind();
+  glCallList(pbufferList);
+  fbo->release();
 
-    // pop the projection matrix and GL state back for rendering
-    // to the actual widget
-    glPopAttrib();
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
+  // pop the projection matrix and GL state back for rendering
+  // to the actual widget
+  glPopAttrib();
+  glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glBindTexture(GL_TEXTURE_2D, fbo->texture());
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  // draw the background
+  glMatrixMode(GL_PROJECTION);
+  glPushMatrix();
+  glLoadIdentity();
 
-    // draw the background
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
+  glPopMatrix();
+  glMatrixMode(GL_MODELVIEW);
 
-    glVertexPointer(2, GL_INT, 0, faceArray);
-    glTranslatef(-1.2f, -0.8f, 0.0f);
-    glScalef(0.2f, 0.2f, 0.2f);
-    for (int y = 0; y < 5; ++y) {
-        for (int x = 0; x < 5; ++x) {
-            glTranslatef(2.0f, 0, 0);
-            glColor4f(0.8f, 0.8f, 0.8f, 1.0f);
-            glDrawArrays(GL_QUADS, 0, 4);
-        }
-        glTranslatef(-10.0f, 2.0f, 0);
-    }
-    glVertexPointer(3, GL_INT, 0, cubeArray);
-
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-
-    // draw the bouncing cubes
-    drawCube(0, 0.0f, 1.5f, 2.5f, 1.5f);
-    drawCube(1, 1.0f, 2.0f, 2.5f, 2.0f);
-    drawCube(2, 2.0f, 3.5f, 2.5f, 2.5f);
-    glPopMatrix();
+  // plot the received data
+  glPopMatrix();
 }
 
-void GLWidget::drawCube(int i, GLfloat z, GLfloat rotation, GLfloat jmp, GLfloat amp)
+void GLWidget::plot_data()
 {
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glTranslatef(xOffs[i], yOffs[i], z);
-    glTranslatef(0.5f, 0.5f, 0.5f);
-    GLfloat scale = 0.75 + i*(0.25f/2);
-    glScalef(scale, scale, scale);
-    glRotatef(rot[i], 1.0f, 1.0f, 1.0f);
-    glTranslatef(-0.5f, -0.5f, -0.5f);
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_COLOR_ARRAY);
 
-    glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
-    glDrawArrays(GL_QUADS, 0, 24);
+  Vertex3f display_points[500];
+  Vertex3f point;
+  for(unsigned int i=999500; i < 1e6; ++i)
+  {
+    point.x = static_cast<double>(i - 999500);
+    point.y = data_collector->get_data(i);
+    point.z = 0.0;
+    display_points[i] = point;
+  }
 
-    if (xOffs[i] > 1.0f || xOffs[i] < -1.0f) {
-        xInc[i] = -xInc[i];
-        xOffs[i] = xOffs[i] > 1.0f ? 1.0f : -1.0f;
-    }
-    xOffs[i] += xInc[i];
-    yOffs[i] = qAbs(cos((-3.141592f * jmp) * xOffs[i]) * amp) - 1;
-    rot[i] += rotation;
+  glVertexPointer(3, GL_FLOAT, 500, display_points);
+  glClear(GL_COLOR_BUFFER_BIT);
+  glDrawArrays(GL_POINTS, 0, 500);
 }
 
 /* For the emacs weenies in the crowd.

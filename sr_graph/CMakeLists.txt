@@ -25,7 +25,7 @@ FIND_PACKAGE(Qt4 REQUIRED)
 SET(QT_USE_QTOPENGL TRUE)
 SET(sr_graph_SOURCES src/main.cpp src/glwidget.cpp src/data_collector.cpp)
 
-SET(sr_graph_HEADERS include/sr_graph/glwidget.h)
+SET(sr_graph_HEADERS include/sr_graph/glwidget.hpp)
 QT4_WRAP_CPP(sr_graph_HEADERS_MOC ${sr_graph_HEADERS})
 
 #SET(sr_graph_FORMS ui/srvisualizer.ui)

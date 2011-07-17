@@ -48,9 +48,9 @@ namespace data
   DataCollector::DataCollector()
     : node_tilde_("~")
   {
-    subscriber_ = node_tilde_.subscribe("/test", 100, &data::DataCollector::msg_callback, this);
+    subscriber_ = node_tilde_.subscribe( "/sh_lfj0_position_controller/command", 100, &data::DataCollector::msg_callback, this);
     
-    data_deque_ = boost::shared_ptr<boost::interprocess::deque<boost::shared_ptr<double> > >( new boost::interprocess::deque<boost::shared_ptr<double> >(nb_points_to_store_) );
+    data_deque_ = boost::shared_ptr<std::deque<boost::shared_ptr<double> > >( new std::deque<boost::shared_ptr<double> >(nb_points_to_store_) );
   }
 
   DataCollector::~DataCollector()
@@ -63,10 +63,14 @@ namespace data
     data_deque_->pop_front();
   }
 
-  boost::shared_ptr<double> DataCollector::get_data(int index)
+  double DataCollector::get_data(int index)
   {
     boost::mutex::scoped_lock(mutex);
-    return data_deque_->at(index);
+
+    if( data_deque_->at(index) != 0)
+      return *( data_deque_->at(index) );
+    else
+      return 0;
   }
 };
 

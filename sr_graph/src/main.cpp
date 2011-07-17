@@ -40,14 +40,14 @@
 
 #include <QtGui/QApplication>
 #include <QtGui/QMessageBox>
-#include "sr_graph/glwidget.h"
+#include "sr_graph/glwidget.hpp"
 
 #include <ros/ros.h>
 
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "sr_graph");
-  ros::AsyncSpinner spinner(4); // Use 4 threads
+  ros::AsyncSpinner spinner(2); // Use 2 threads
   spinner.start();
 
   QApplication a(argc, argv);

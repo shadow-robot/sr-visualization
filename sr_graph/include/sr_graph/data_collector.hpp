@@ -45,7 +45,7 @@
 #include <ros/ros.h>
 #include <std_msgs/Float64.h>
 
-#include <boost/interprocess/containers/deque.hpp>
+#include <deque>
 #include <boost/smart_ptr.hpp>
 #include <boost/thread.hpp>
 
@@ -59,10 +59,10 @@ namespace data
 
     void msg_callback(const std_msgs::Float64ConstPtr& msg);
 
-    boost::shared_ptr<double> get_data(int index);
+    double get_data(int index);
   protected:
     ros::NodeHandle node_tilde_;
-    boost::shared_ptr<boost::interprocess::deque<boost::shared_ptr<double> > > data_deque_;
+    boost::shared_ptr<std::deque<boost::shared_ptr<double> > > data_deque_;
 
     ros::Subscriber subscriber_;
 
