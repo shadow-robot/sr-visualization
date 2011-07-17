@@ -38,28 +38,42 @@
 **
 ****************************************************************************/
 
+#ifndef _GL_WIDGET_HPP_
+#define _GL_WIDGET_HPP_
+
 #include <QtOpenGL>
+#include <sr_graph/data_collector.hpp>
+#include <boost/smart_ptr.hpp>
 
 class GLWidget : public QGLWidget
 {
 public:
-    GLWidget(QWidget *parent);
-    ~GLWidget();
-    void initializeGL();
-    void resizeGL(int w, int h);
-    void paintGL();
-    void timerEvent(QTimerEvent *) { update(); }
-    void mousePressEvent(QMouseEvent *) { killTimer(timerId); }
-    void mouseReleaseEvent(QMouseEvent *) { timerId = startTimer(20); }
+  GLWidget(QWidget *parent);
+  ~GLWidget();
+  void initializeGL();
+  void resizeGL(int w, int h);
+  void paintGL();
+  void timerEvent(QTimerEvent *) { update(); }
+  void mousePressEvent(QMouseEvent *) { killTimer(timerId); }
+  void mouseReleaseEvent(QMouseEvent *) { timerId = startTimer(20); }
 
-    void drawCube(int i, GLfloat z, GLfloat ri, GLfloat jmp, GLfloat amp);
+  void drawCube(int i, GLfloat z, GLfloat ri, GLfloat jmp, GLfloat amp);
 
 private:
-    GLfloat rot[3], xOffs[3], yOffs[3], xInc[3];
-    GLuint pbufferList;
-    GLuint cubeTexture;
-    int timerId;
+  GLfloat rot[3], xOffs[3], yOffs[3], xInc[3];
+  GLuint pbufferList;
+  GLuint cubeTexture;
+  int timerId;
 
-    QGLFramebufferObject *fbo;
+        boost::shared_ptr<QGLFramebufferObject> fbo;
+
+  boost::shared_ptr<data::DataCollector> data_collector;
 };
 
+/* For the emacs weenies in the crowd.
+Local Variables:
+   c-basic-offset: 2
+End:
+*/
+
+#endif

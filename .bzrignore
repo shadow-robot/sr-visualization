@@ -1,0 +1,5 @@
+CMakeCache.txt
+CMakeFiles
+cmake_install.cmake
+bin/sr_graph
+include/sr_graph/moc_glwidget.cxx

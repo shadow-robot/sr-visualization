@@ -42,30 +42,41 @@
 #include <QtGui/QMessageBox>
 #include "sr_graph/glwidget.h"
 
+#include <ros/ros.h>
+
 int main(int argc, char **argv)
 {
-    QApplication a(argc, argv);
+  ros::init(argc, argv, "sr_graph");
+  ros::AsyncSpinner spinner(4); // Use 4 threads
+  spinner.start();
 
-    QGLFormat f = QGLFormat::defaultFormat();
-    f.setSampleBuffers(true);
-    QGLFormat::setDefaultFormat(f);
-    if (!QGLFormat::hasOpenGL()) {
-	QMessageBox::information(0, "OpenGL samplebuffers",
-				 "This system does not support OpenGL.");
-        return 0;
-    }
+  QApplication a(argc, argv);
 
-    GLWidget widget(0);
+  QGLFormat f = QGLFormat::defaultFormat();
+  f.setSampleBuffers(true);
+  QGLFormat::setDefaultFormat(f);
+  if (!QGLFormat::hasOpenGL()) {
+    QMessageBox::information(0, "OpenGL samplebuffers",
+                             "This system does not support OpenGL.");
+    return 0;
+  }
 
-    if (!widget.format().sampleBuffers()) {
-	QMessageBox::information(0, "OpenGL samplebuffers",
-				 "This system does not have sample buffer support.");
-        return 0;
-    }
+  GLWidget widget(0);
 
-    widget.resize(640, 480);
-    widget.show();
+  if (!widget.format().sampleBuffers()) {
+    QMessageBox::information(0, "OpenGL samplebuffers",
+                             "This system does not have sample buffer support.");
+    return 0;
+  }
 
-    return a.exec();
+  widget.resize(640, 480);
+  widget.show();
+
+  return a.exec();
 }
 
+/* For the emacs weenies in the crowd.
+Local Variables:
+   c-basic-offset: 2
+End:
+*/

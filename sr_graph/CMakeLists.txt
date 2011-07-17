@@ -23,7 +23,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 FIND_PACKAGE(Qt4 REQUIRED)
 SET(QT_USE_QTOPENGL TRUE)
-SET(sr_graph_SOURCES src/main.cpp src/glwidget.cpp)
+SET(sr_graph_SOURCES src/main.cpp src/glwidget.cpp src/data_collector.cpp)
 
 SET(sr_graph_HEADERS include/sr_graph/glwidget.h)
 QT4_WRAP_CPP(sr_graph_HEADERS_MOC ${sr_graph_HEADERS})
@@ -41,10 +41,3 @@ rosbuild_add_executable(sr_graph ${sr_graph_SOURCES}
 #                                 ${sr_graph_FORMS_HEADERS})
 TARGET_LINK_LIBRARIES(sr_graph ${QT_LIBRARIES})
 
-#common commands for building c++ executables and libraries
-#rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
-#target_link_libraries(${PROJECT_NAME} another_library)
-#rosbuild_add_boost_directories()
-#rosbuild_link_boost(${PROJECT_NAME} thread)
-#rosbuild_add_executable(example examples/example.cpp)
-#target_link_libraries(example ${PROJECT_NAME})

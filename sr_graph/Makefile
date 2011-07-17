@@ -322,6 +322,21 @@ include/sr_graph/moc_glwidget.s:
 .PHONY : include/sr_graph/moc_glwidget.s
 
 # target to build an object file
+src/data_collector.o:
+	$(MAKE) -f CMakeFiles/sr_graph.dir/build.make CMakeFiles/sr_graph.dir/src/data_collector.o
+.PHONY : src/data_collector.o
+
+# target to preprocess a source file
+src/data_collector.i:
+	$(MAKE) -f CMakeFiles/sr_graph.dir/build.make CMakeFiles/sr_graph.dir/src/data_collector.i
+.PHONY : src/data_collector.i
+
+# target to generate assembly for a file
+src/data_collector.s:
+	$(MAKE) -f CMakeFiles/sr_graph.dir/build.make CMakeFiles/sr_graph.dir/src/data_collector.s
+.PHONY : src/data_collector.s
+
+# target to build an object file
 src/glwidget.o:
 	$(MAKE) -f CMakeFiles/sr_graph.dir/build.make CMakeFiles/sr_graph.dir/src/glwidget.o
 .PHONY : src/glwidget.o
@@ -378,6 +393,9 @@ help:
 	@echo "... include/sr_graph/moc_glwidget.o"
 	@echo "... include/sr_graph/moc_glwidget.i"
 	@echo "... include/sr_graph/moc_glwidget.s"
+	@echo "... src/data_collector.o"
+	@echo "... src/data_collector.i"
+	@echo "... src/data_collector.s"
 	@echo "... src/glwidget.o"
 	@echo "... src/glwidget.i"
 	@echo "... src/glwidget.s"
