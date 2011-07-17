@@ -1,0 +1,9 @@
+<stack>
+  <description brief="sr_visualization">sr_visualization</description>
+  <author>Maintained by Genevieve & Ugo</author>
+  <license>BSD</license>  
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/sr_visualization</url>
+  <depend stack="ros" />
+
+</stack>
