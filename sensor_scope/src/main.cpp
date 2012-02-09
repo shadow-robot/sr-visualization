@@ -1,7 +1,8 @@
 /**
- * @file   sensor_scope.cpp
+ * @file   main.cpp
  * @author Ugo Cupcic <ugo@shadowrobot.com>
- * @date   Thu Feb  9 10:59:55 2012
+ * @date   Thu Feb  9 11:47:24 2012
+ *
 *
 * Copyright 2011 Shadow Robot Company Ltd.
 *
@@ -18,36 +19,23 @@
 * You should have received a copy of the GNU General Public License along
 * with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
- *
  * @brief
  *
  *
  */
+#include <QtGui>
+#include <QApplication>
+#include "../include/sensor_scope/main_window.hpp"
 
-#include <sr_graph/sensor_scope.hpp>
-#include <QtUiTools>
-
-namespace sensor_scope
+int main(int argc, char **argv)
 {
-  SensorScope::SensorScope()
-  {
-    QUiLoader loader;
-    QFile file(":/ui/test.ui");
-    file.open(QFile::ReadOnly);
+  QApplication app(argc, argv);
+  sensor_scope::MainWindow w(argc,argv);
+  w.show();
+  app.connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
+  int result = app.exec();
 
-    QWidget* test = loader.load(&file);
-    file.close();
-
-    test->resize(800, 600);
-    test->show();
-
-    // window = boost::shared_ptr<GLWidget>( new GLWidget() );
-    // window->resize(800,600);
-    // window->show();
-  }
-
-  SensorScope::~SensorScope()
-  {}
+  return result;
 }
 
 /* For the emacs weenies in the crowd.
