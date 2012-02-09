@@ -21,9 +21,9 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #uncomment if you have defined services
 #rosbuild_gensrv()
 
-FIND_PACKAGE(Qt4 REQUIRED)
+FIND_PACKAGE(Qt4 COMPONENTS QtUiTools REQUIRED)
 SET(QT_USE_QTOPENGL TRUE)
-SET(sr_graph_SOURCES src/main.cpp src/glwidget.cpp src/data_collector.cpp)
+SET(sr_graph_SOURCES src/main.cpp src/sensor_scope.cpp src/glwidget.cpp src/data_collector.cpp)
 
 SET(sr_graph_HEADERS include/sr_graph/glwidget.hpp)
 QT4_WRAP_CPP(sr_graph_HEADERS_MOC ${sr_graph_HEADERS})
@@ -36,7 +36,7 @@ ADD_DEFINITIONS(${QT_DEFINITIONS})
 
 #EXECUTE_PROCESS(COMMAND "${PROJECT_SOURCE_DIR}/scripts/move_ui_headers.sh")
 
-rosbuild_add_executable(sr_graph ${sr_graph_SOURCES} 
+rosbuild_add_executable(sr_graph ${sr_graph_SOURCES}
                                  ${sr_graph_HEADERS_MOC} )
 #                                 ${sr_graph_FORMS_HEADERS})
 TARGET_LINK_LIBRARIES(sr_graph ${QT_LIBRARIES})

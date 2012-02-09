@@ -39,9 +39,9 @@
 ****************************************************************************/
 
 #include <QtGui/QApplication>
-#include <QtGui/QMessageBox>
-#include "sr_graph/glwidget.hpp"
 
+#include <boost/smart_ptr.hpp>
+#include <sr_graph/sensor_scope.hpp>
 #include <ros/ros.h>
 
 int main(int argc, char **argv)
@@ -50,29 +50,11 @@ int main(int argc, char **argv)
   ros::AsyncSpinner spinner(2); // Use 2 threads
   spinner.start();
 
-  QApplication a(argc, argv);
+  QApplication app(argc, argv);
 
-  QGLFormat f = QGLFormat::defaultFormat();
-  f.setSampleBuffers(true);
-  QGLFormat::setDefaultFormat(f);
-  if (!QGLFormat::hasOpenGL()) {
-    QMessageBox::information(0, "OpenGL samplebuffers",
-                             "This system does not support OpenGL.");
-    return 0;
-  }
+  boost::shared_ptr<sensor_scope::SensorScope> sensor_scope = boost::shared_ptr<sensor_scope::SensorScope>( new sensor_scope::SensorScope() );
 
-  GLWidget widget(0);
-
-  if (!widget.format().sampleBuffers()) {
-    QMessageBox::information(0, "OpenGL samplebuffers",
-                             "This system does not have sample buffer support.");
-    return 0;
-  }
-
-  widget.resize(640, 480);
-  widget.show();
-
-  return a.exec();
+  return app.exec();
 }
 
 /* For the emacs weenies in the crowd.

@@ -1,8 +1,8 @@
 /**
- * @file   data_collector.hpp
- * @author Ugo Cupcic <ugo@shadowrobot.com>, Contact <contact@shadowrobot.com>
- * @date   Sun Jul 17 14:23:46 2011
- *
+ * @file   sensor_scope.hpp
+ * @author Ugo Cupcic <ugo@shadowrobot.com>
+ * @date   Thu Feb  9 10:59:55 2012
+*
 * Copyright 2011 Shadow Robot Company Ltd.
 *
 * This program is free software: you can redistribute it and/or modify it
@@ -18,41 +18,28 @@
 * You should have received a copy of the GNU General Public License along
 * with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
- * @brief Collects the data to be plotted
+ *
+ * @brief
  *
  *
  */
 
-#ifndef _DATA_COLLECTOR_HPP_
-#define _DATA_COLLECTOR_HPP_
+#ifndef _SENSOR_SCOPE_HPP_
+#define _SENSOR_SCOPE_HPP_
 
-#include <ros/ros.h>
-#include <std_msgs/Float64.h>
-
-#include <deque>
 #include <boost/smart_ptr.hpp>
-#include <boost/thread.hpp>
+#include "sr_graph/glwidget.hpp"
 
 namespace sensor_scope
 {
-  class DataCollector
+  class SensorScope
   {
   public:
-    DataCollector();
-    virtual ~DataCollector();
+    SensorScope();
+    virtual ~SensorScope();
 
-    void msg_callback(const std_msgs::Float64ConstPtr& msg);
-
-    double get_data(int index);
   protected:
-    ros::NodeHandle node_tilde_;
-    boost::shared_ptr<std::deque<boost::shared_ptr<double> > > data_deque_;
-
-    ros::Subscriber subscriber_;
-
-    boost::mutex mutex;
-
-    static const unsigned int nb_points_to_store_;
+    boost::shared_ptr<GLWidget> window;
   };
 }
 

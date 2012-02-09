@@ -1,79 +1,54 @@
-/****************************************************************************
-**
-** Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
-** All rights reserved.
-** Contact: Nokia Corporation (qt-info@nokia.com)
-**
-** This file is part of the examples of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:BSD$
-** You may use this file under the terms of the BSD license as follows:
-**
-** "Redistribution and use in source and binary forms, with or without
-** modification, are permitted provided that the following conditions are
-** met:
-**   * Redistributions of source code must retain the above copyright
-**     notice, this list of conditions and the following disclaimer.
-**   * Redistributions in binary form must reproduce the above copyright
-**     notice, this list of conditions and the following disclaimer in
-**     the documentation and/or other materials provided with the
-**     distribution.
-**   * Neither the name of Nokia Corporation and its Subsidiary(-ies) nor
-**     the names of its contributors may be used to endorse or promote
-**     products derived from this software without specific prior written
-**     permission.
-**
-** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
-** $QT_END_LICENSE$
-**
-****************************************************************************/
+/**
+ * @file   glwidget.hpp
+ * @author Ugo Cupcic <ugo@shadowrobot.com>
+ * @date   Thu Feb  9 11:15:24 2012
+*
+* Copyright 2011 Shadow Robot Company Ltd.
+*
+* This program is free software: you can redistribute it and/or modify it
+* under the terms of the GNU General Public License as published by the Free
+* Software Foundation, either version 2 of the License, or (at your option)
+* any later version.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along
+* with this program.  If not, see <http://www.gnu.org/licenses/>.
+*
+ *
+ * @brief
+ *
+ *
+ */
 
 #ifndef _GL_WIDGET_HPP_
 #define _GL_WIDGET_HPP_
 
-#include <QtOpenGL>
-#include <sr_graph/data_collector.hpp>
-#include <boost/smart_ptr.hpp>
+#include <QtOpenGL/QGLWidget>
+#include "sr_graph/data_collector.hpp"
 
-struct Vertex3f
+namespace sensor_scope
 {
-  GLfloat x,y,z;
-};
+  class GLWidget : public QGLWidget {
+    Q_OBJECT // must include this if you use Qt signals/slots
 
-class GLWidget : public QGLWidget
-{
-public:
-  GLWidget(QWidget *parent);
-  ~GLWidget();
-  void initializeGL();
-  void resizeGL(int w, int h);
-  void paintGL();
-  void timerEvent(QTimerEvent *) { update(); }
-  void mousePressEvent(QMouseEvent *) { killTimer(timerId); }
-  void mouseReleaseEvent(QMouseEvent *) { timerId = startTimer(20); }
+  public:
+    GLWidget(QWidget *parent = NULL);
 
-  void plot_data();
+  protected:
+    void initializeGL();
+    void resizeGL(int w, int h);
+    void paintGL();
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void keyPressEvent(QKeyEvent *event);
 
-private:
-  GLfloat rot[3], xOffs[3], yOffs[3], xInc[3];
-  GLuint pbufferList;
-  GLuint cubeTexture;
-  int timerId;
-
-  boost::shared_ptr<QGLFramebufferObject> fbo;
-
-  boost::shared_ptr<data::DataCollector> data_collector;
-};
+    boost::shared_ptr<DataCollector> data_collector;
+  };
+}
 
 /* For the emacs weenies in the crowd.
 Local Variables:

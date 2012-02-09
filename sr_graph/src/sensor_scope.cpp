@@ -1,8 +1,8 @@
 /**
- * @file   data_collector.hpp
- * @author Ugo Cupcic <ugo@shadowrobot.com>, Contact <contact@shadowrobot.com>
- * @date   Sun Jul 17 14:23:46 2011
- *
+ * @file   sensor_scope.cpp
+ * @author Ugo Cupcic <ugo@shadowrobot.com>
+ * @date   Thu Feb  9 10:59:55 2012
+*
 * Copyright 2011 Shadow Robot Company Ltd.
 *
 * This program is free software: you can redistribute it and/or modify it
@@ -18,42 +18,36 @@
 * You should have received a copy of the GNU General Public License along
 * with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
- * @brief Collects the data to be plotted
+ *
+ * @brief
  *
  *
  */
 
-#ifndef _DATA_COLLECTOR_HPP_
-#define _DATA_COLLECTOR_HPP_
-
-#include <ros/ros.h>
-#include <std_msgs/Float64.h>
-
-#include <deque>
-#include <boost/smart_ptr.hpp>
-#include <boost/thread.hpp>
+#include <sr_graph/sensor_scope.hpp>
+#include <QtUiTools>
 
 namespace sensor_scope
 {
-  class DataCollector
+  SensorScope::SensorScope()
   {
-  public:
-    DataCollector();
-    virtual ~DataCollector();
+    // QUiLoader loader;
+    // QFile file(":/ui/test.ui");
+    // file.open(QFile::ReadOnly);
 
-    void msg_callback(const std_msgs::Float64ConstPtr& msg);
+    // QWidget* test = loader.load(&file);
+    // file.close();
 
-    double get_data(int index);
-  protected:
-    ros::NodeHandle node_tilde_;
-    boost::shared_ptr<std::deque<boost::shared_ptr<double> > > data_deque_;
+    // test->resize(800, 600);
+    // test->show();
 
-    ros::Subscriber subscriber_;
+    window = boost::shared_ptr<GLWidget>( new GLWidget() );
+    window->resize(800,600);
+    window->show();
+  }
 
-    boost::mutex mutex;
-
-    static const unsigned int nb_points_to_store_;
-  };
+  SensorScope::~SensorScope()
+  {}
 }
 
 /* For the emacs weenies in the crowd.
@@ -61,5 +55,3 @@ Local Variables:
    c-basic-offset: 2
 End:
 */
-
-#endif
