@@ -29,9 +29,19 @@
 
 namespace sensor_scope
 {
-  GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent)
+  const unsigned int GLWidget::nb_buffers_const = 2;
+
+  GLWidget::GLWidget(QWidget *parent) :
+    QGLWidget(parent), current_index(0)
   {
     setMouseTracking(true);
+
+    index_display_list = glGenLists(nb_buffers_const);
+
+    refresh_timer = boost::shared_ptr<QTimer>(new QTimer());
+    refresh_timer->setInterval(33);
+    connect(refresh_timer.get(), SIGNAL(timeout()), this, SLOT(slot_refresh()));
+    refresh_timer->start();
   }
 
   void GLWidget::initializeGL()
@@ -41,6 +51,7 @@ namespace sensor_scope
     glDisable(GL_COLOR_MATERIAL);
     glEnable(GL_BLEND);
     glEnable(GL_POLYGON_SMOOTH);
+    glEnable(GL_POINT_SMOOTH);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glClearColor(0, 0, 0, 0);
   }
@@ -57,18 +68,44 @@ namespace sensor_scope
 
   void GLWidget::paintGL()
   {
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
     glColor3f(1,0,0);
-    glBegin(GL_POLYGON);
-    glVertex2f(0,0);
-    glVertex2f(100,500);
-    glVertex2f(500,100);
+
+    glListBase(index_display_list);
+    glCallList( current_index );
+
+    prepare_data();
+  }
+
+  void GLWidget::prepare_data()
+  {
+    glNewList(index_display_list + current_index, GL_COMPILE);
+
+    glBegin(GL_POINTS);
+    for( unsigned int i=0; i < 500; ++i)
+    {
+      if( current_index == 0)
+        glVertex2f(i,i);
+      else
+        glVertex2f(i,i + 200);
+    }
     glEnd();
+    glEndList();
+
+    current_index += 1;
+
+    if( current_index == nb_buffers_const)
+      current_index = 0;
+  }
+
+  void GLWidget::slot_refresh()
+  {
+    update();
   }
 
   void GLWidget::mousePressEvent(QMouseEvent *event)
   {
-
   }
 
   void GLWidget::mouseMoveEvent(QMouseEvent *event)

@@ -27,16 +27,21 @@
 #ifndef _GL_WIDGET_HPP_
 #define _GL_WIDGET_HPP_
 
+#include <QTimer>
 #include <QtOpenGL/QGLWidget>
 #include "data_collector.hpp"
 
 namespace sensor_scope
 {
-  class GLWidget : public QGLWidget {
+  class GLWidget : public QGLWidget
+  {
     Q_OBJECT // must include this if you use Qt signals/slots
 
   public:
     GLWidget(QWidget *parent = NULL);
+
+  public slots:
+    void slot_refresh();
 
   protected:
     void initializeGL();
@@ -46,7 +51,15 @@ namespace sensor_scope
     void mouseMoveEvent(QMouseEvent *event);
     void keyPressEvent(QKeyEvent *event);
 
+    void prepare_data();
+
     boost::shared_ptr<DataCollector> data_collector;
+    GLuint index_display_list;
+    unsigned int current_index;
+
+    boost::shared_ptr<QTimer> refresh_timer;
+
+    static const unsigned int nb_buffers_const;
   };
 }
 
