@@ -38,7 +38,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 ##############################################################################
 
 rosbuild_include(qt_build qt-ros)
-rosbuild_prepare_qt4(QtCore QtGui) # Add the appropriate components to the component list here
+rosbuild_prepare_qt4(QtCore QtGui QtOpenGl) # Add the appropriate components to the component list here
 
 ##############################################################################
 # Sections
@@ -51,6 +51,7 @@ file(GLOB_RECURSE QT_MOC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS in
 QT4_ADD_RESOURCES(QT_RESOURCES_CPP ${QT_RESOURCES})
 QT4_WRAP_UI(QT_FORMS_HPP ${QT_FORMS})
 QT4_WRAP_CPP(QT_MOC_HPP ${QT_MOC})
+
 
 ##############################################################################
 # Sources

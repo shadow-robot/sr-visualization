@@ -28,9 +28,11 @@
 #ifndef sensor_scope_MAIN_WINDOW_H
 #define sensor_scope_MAIN_WINDOW_H
 
+#include <boost/smart_ptr.hpp>
 #include <QtGui/QMainWindow>
 #include "ui_main_window.h"
 #include "qnode.hpp"
+#include "glwidget.hpp"
 
 namespace sensor_scope {
   class MainWindow : public QMainWindow {
@@ -48,14 +50,11 @@ namespace sensor_scope {
 
   public slots:
     void on_actionAbout_triggered();
-    void on_button_connect_clicked(bool check );
-    void on_checkbox_use_environment_stateChanged(int state);
-
-    void updateLoggingView();
 
   private:
     Ui::MainWindowDesign ui;
     QNode qnode;
+    boost::shared_ptr<GLWidget> gl_widget;
   };
 
 }  // namespace sensor_scope
