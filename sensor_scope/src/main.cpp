@@ -26,9 +26,14 @@
 #include <QtGui>
 #include <QApplication>
 #include "../include/sensor_scope/main_window.hpp"
+#include <ros/ros.h>
 
 int main(int argc, char **argv)
 {
+  ros::init(argc, argv, "sensor_scope");
+  ros::AsyncSpinner spinner(2); // Use 2 threads
+  spinner.start();
+
   QApplication app(argc, argv);
   sensor_scope::MainWindow w(argc,argv);
   w.show();

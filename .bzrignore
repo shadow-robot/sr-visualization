@@ -6,3 +6,5 @@ sr_graph/include/sr_graph/moc_glwidget.cxx
 build
 bin/sensor_scope
 bin/sensor_scope
+bin/sensor_scope
+sensor_scope/bin/sensor_scope

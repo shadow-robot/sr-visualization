@@ -38,6 +38,8 @@ namespace sensor_scope
 
     index_display_list = glGenLists(nb_buffers_const);
 
+    data_collector = boost::shared_ptr<DataCollector>( new DataCollector() );
+
     refresh_timer = boost::shared_ptr<QTimer>(new QTimer());
     refresh_timer->setInterval(33);
     connect(refresh_timer.get(), SIGNAL(timeout()), this, SLOT(slot_refresh()));
@@ -85,10 +87,7 @@ namespace sensor_scope
     glBegin(GL_POINTS);
     for( unsigned int i=0; i < 500; ++i)
     {
-      if( current_index == 0)
-        glVertex2f(i,i);
-      else
-        glVertex2f(i,i + 200);
+      glVertex2f(i, data_collector->get_data(i) * 200 );
     }
     glEnd();
     glEndList();
