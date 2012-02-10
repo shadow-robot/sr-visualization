@@ -43,8 +43,8 @@ namespace sensor_scope
   void DataCollector::msg_callback(const std_msgs::Float64ConstPtr& msg)
   {
     boost::mutex::scoped_lock(mutex);
-    data_deque_->push_back(boost::shared_ptr<double>(new double(msg->data)));
-    data_deque_->pop_front();
+    data_deque_->push_front(boost::shared_ptr<double>(new double(msg->data)));
+    data_deque_->pop_back();
   }
 
   double DataCollector::get_data(int index)

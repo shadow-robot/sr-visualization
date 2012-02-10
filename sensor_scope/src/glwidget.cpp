@@ -29,21 +29,37 @@
 
 namespace sensor_scope
 {
-  const unsigned int GLWidget::nb_buffers_const = 2;
+  const unsigned int GLWidget::nb_buffers_const_ = 2;
 
-  GLWidget::GLWidget(QWidget *parent) :
-    QGLWidget(parent), current_index(0)
+  GLWidget::GLWidget(QWidget *parent, QTreeWidget* tree_elements) :
+    QGLWidget(parent)
   {
     setMouseTracking(true);
 
-    index_display_list = glGenLists(nb_buffers_const);
+    tree_elements_ = tree_elements;
 
-    data_collector = boost::shared_ptr<DataCollector>( new DataCollector() );
+    add_tree_item_();
 
-    refresh_timer = boost::shared_ptr<QTimer>(new QTimer());
-    refresh_timer->setInterval(33);
-    connect(refresh_timer.get(), SIGNAL(timeout()), this, SLOT(slot_refresh()));
-    refresh_timer->start();
+    index_display_list_ = glGenLists(nb_buffers_const_);
+
+    data_collector_ = boost::shared_ptr<DataCollector>( new DataCollector() );
+
+    refresh_timer_ = boost::shared_ptr<QTimer>(new QTimer());
+    refresh_timer_->setInterval(33);
+    connect(refresh_timer_.get(), SIGNAL(timeout()), this, SLOT(slot_refresh()));
+    refresh_timer_->start();
+  }
+
+  void GLWidget::add_tree_item_()
+  {
+    QStringList test;
+    test << "Test";
+    boost::shared_ptr<QTreeWidgetItem> new_item = boost::shared_ptr<QTreeWidgetItem>( new QTreeWidgetItem( tree_elements_, test ) );
+    tree_items_.push_back( new_item );
+    tree_elements_->addTopLevelItem( new_item.get() );
+
+    for(int col=0; col < tree_elements_->columnCount() ; ++col)
+      tree_elements_->resizeColumnToContents(col);
   }
 
   void GLWidget::initializeGL()
@@ -74,28 +90,25 @@ namespace sensor_scope
 
     glColor3f(1,0,0);
 
-    glListBase(index_display_list);
-    glCallList( current_index );
+    glListBase( index_display_list_ );
+    glCallList( 0 );
 
-    prepare_data();
+    prepare_data_();
   }
 
-  void GLWidget::prepare_data()
+  void GLWidget::prepare_data_()
   {
-    glNewList(index_display_list + current_index, GL_COMPILE);
+    glNewList(index_display_list_ , GL_COMPILE);
 
     glBegin(GL_POINTS);
-    for( unsigned int i=0; i < 500; ++i)
+    for( int i=0; i < width(); ++i)
     {
-      glVertex2f(i, data_collector->get_data(i) * 200 );
+      //ROS_ERROR_STREAM(" ["<< i <<"] -> " <<  data_collector_->get_data(i) +  height() / 2 );
+      //raw data (we display it unscaled)
+      glVertex2f(i, data_collector_->get_data(i) +  height() / 2 );
     }
     glEnd();
     glEndList();
-
-    current_index += 1;
-
-    if( current_index == nb_buffers_const)
-      current_index = 0;
   }
 
   void GLWidget::slot_refresh()

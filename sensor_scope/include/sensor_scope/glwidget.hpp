@@ -29,6 +29,7 @@
 
 #include <QTimer>
 #include <QtOpenGL/QGLWidget>
+#include <QTreeWidgetItem>
 #include "data_collector.hpp"
 
 namespace sensor_scope
@@ -38,7 +39,7 @@ namespace sensor_scope
     Q_OBJECT // must include this if you use Qt signals/slots
 
   public:
-    GLWidget(QWidget *parent = NULL);
+    GLWidget(QWidget *parent = NULL, QTreeWidget* tree_elements = NULL);
 
   public slots:
     void slot_refresh();
@@ -51,15 +52,19 @@ namespace sensor_scope
     void mouseMoveEvent(QMouseEvent *event);
     void keyPressEvent(QKeyEvent *event);
 
-    void prepare_data();
+    void add_tree_item_();
+    void prepare_data_();
 
-    boost::shared_ptr<DataCollector> data_collector;
-    GLuint index_display_list;
-    unsigned int current_index;
+    boost::shared_ptr<DataCollector> data_collector_;
+    GLuint index_display_list_;
 
-    boost::shared_ptr<QTimer> refresh_timer;
+    boost::shared_ptr<QTimer> refresh_timer_;
 
-    static const unsigned int nb_buffers_const;
+    QTreeWidget* tree_elements_;
+
+    static const unsigned int nb_buffers_const_;
+
+    std::vector<boost::shared_ptr<QTreeWidgetItem> > tree_items_;
   };
 }
 

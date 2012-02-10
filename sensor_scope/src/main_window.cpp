@@ -40,7 +40,11 @@ namespace sensor_scope
     ui.setupUi(this); // Calling this incidentally connects all ui's triggers to on_...() callbacks in this class.
     QObject::connect(ui.actionAbout_Qt, SIGNAL(triggered(bool)), qApp, SLOT(aboutQt())); // qApp is a global variable for the application
 
-    gl_widget = boost::shared_ptr<GLWidget>( new GLWidget(this) );
+    QStringList headers;
+    headers << "Motor" << "Joint" << "Type" << "raw value" << "calibrated value";
+    ui.tree_elements->setHeaderLabels( headers );
+
+    gl_widget = boost::shared_ptr<GLWidget>( new GLWidget(this, ui.tree_elements) );
     gl_widget->setSizePolicy( QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding) );
 
     ui.gl_layout->addWidget( gl_widget.get() );

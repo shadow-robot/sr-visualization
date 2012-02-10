@@ -25,17 +25,44 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_4">
       <item>
-       <widget class="QPushButton" name="pushButton">
-        <property name="text">
-         <string>PushButton</string>
+       <widget class="QTreeWidget" name="tree_elements">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pushButton_2">
-        <property name="text">
-         <string>PushButton</string>
+        <property name="animated">
+         <bool>true</bool>
         </property>
+        <property name="columnCount">
+         <number>5</number>
+        </property>
+        <column>
+         <property name="text">
+          <string notr="true">1</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string notr="true">2</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string notr="true">3</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string notr="true">4</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string notr="true">5</string>
+         </property>
+        </column>
        </widget>
       </item>
      </layout>
