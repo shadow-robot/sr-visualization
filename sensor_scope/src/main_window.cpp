@@ -42,9 +42,11 @@ namespace sensor_scope
 
     QStringList headers;
     headers << "Motor" << "Joint" << "Type" << "raw value" << "calibrated value";
-    ui.tree_elements->setHeaderLabels( headers );
+    ui.tree_options->setHeaderLabels( headers );
 
-    gl_widget = boost::shared_ptr<GLWidget>( new GLWidget(this, ui.tree_elements) );
+    add_tree_item_();
+
+    gl_widget = boost::shared_ptr<GLWidget>( new GLWidget(this) );
     gl_widget->setSizePolicy( QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding) );
 
     ui.gl_layout->addWidget( gl_widget.get() );
@@ -55,6 +57,18 @@ namespace sensor_scope
   }
 
   MainWindow::~MainWindow() {}
+
+  void MainWindow::add_tree_item_()
+  {
+    QStringList test;
+    test << "Test";
+    boost::shared_ptr<DisplayItem> new_item = boost::shared_ptr<DisplayItem>( new DisplayItem( ui.tree_options, 0, "FFJ1" ) );
+    tree_items_.push_back( new_item );
+    ui.tree_options->addTopLevelItem( new_item.get() );
+
+    for(int col=0; col < ui.tree_options->columnCount() ; ++col)
+      ui.tree_options->resizeColumnToContents(col);
+  }
 
   void MainWindow::on_actionAbout_triggered()
   {

@@ -31,14 +31,10 @@ namespace sensor_scope
 {
   const unsigned int GLWidget::nb_buffers_const_ = 2;
 
-  GLWidget::GLWidget(QWidget *parent, QTreeWidget* tree_elements) :
+  GLWidget::GLWidget(QWidget *parent) :
     QGLWidget(parent)
   {
     setMouseTracking(true);
-
-    tree_elements_ = tree_elements;
-
-    add_tree_item_();
 
     index_display_list_ = glGenLists(nb_buffers_const_);
 
@@ -48,18 +44,6 @@ namespace sensor_scope
     refresh_timer_->setInterval(33);
     connect(refresh_timer_.get(), SIGNAL(timeout()), this, SLOT(slot_refresh()));
     refresh_timer_->start();
-  }
-
-  void GLWidget::add_tree_item_()
-  {
-    QStringList test;
-    test << "Test";
-    boost::shared_ptr<QTreeWidgetItem> new_item = boost::shared_ptr<QTreeWidgetItem>( new QTreeWidgetItem( tree_elements_, test ) );
-    tree_items_.push_back( new_item );
-    tree_elements_->addTopLevelItem( new_item.get() );
-
-    for(int col=0; col < tree_elements_->columnCount() ; ++col)
-      tree_elements_->resizeColumnToContents(col);
   }
 
   void GLWidget::initializeGL()

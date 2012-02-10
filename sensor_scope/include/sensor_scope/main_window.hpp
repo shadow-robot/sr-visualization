@@ -34,6 +34,8 @@
 #include "qnode.hpp"
 #include "glwidget.hpp"
 
+#include "../include/sensor_scope/display_item.hpp"
+
 namespace sensor_scope {
   class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -55,6 +57,10 @@ namespace sensor_scope {
     Ui::MainWindowDesign ui;
     QNode qnode;
     boost::shared_ptr<GLWidget> gl_widget;
+
+    void add_tree_item_();
+
+    std::vector<boost::shared_ptr<DisplayItem> > tree_items_;
   };
 
 }  // namespace sensor_scope

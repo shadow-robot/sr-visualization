@@ -1,8 +1,8 @@
 /**
- * @file   glwidget.hpp
+ * @file   display_item.hpp
  * @author Ugo Cupcic <ugo@shadowrobot.com>
- * @date   Thu Feb  9 11:15:24 2012
-*
+ * @date   Fri Feb 10 15:03:55 2012
+ *
 * Copyright 2011 Shadow Robot Company Ltd.
 *
 * This program is free software: you can redistribute it and/or modify it
@@ -24,42 +24,19 @@
  *
  */
 
-#ifndef _GL_WIDGET_HPP_
-#define _GL_WIDGET_HPP_
+#include "../include/sensor_scope/display_item.hpp"
 
-#include <QTimer>
-#include <QtOpenGL/QGLWidget>
-#include <QTreeWidgetItem>
-#include "data_collector.hpp"
+#include <sstream>
 
 namespace sensor_scope
 {
-  class GLWidget : public QGLWidget
+  DisplayItem::DisplayItem(QTreeWidget* parent, int motor_id, std::string joint_name) :
+    QTreeWidgetItem(parent, QTreeWidgetItem::Type)
   {
-    Q_OBJECT // must include this if you use Qt signals/slots
-
-  public:
-    GLWidget(QWidget *parent = NULL);
-
-  public slots:
-    void slot_refresh();
-
-  protected:
-    void initializeGL();
-    void resizeGL(int w, int h);
-    void paintGL();
-    void mousePressEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
-    void keyPressEvent(QKeyEvent *event);
-
-    void prepare_data_();
-
-    boost::shared_ptr<DataCollector> data_collector_;
-    GLuint index_display_list_;
-
-    boost::shared_ptr<QTimer> refresh_timer_;
-
-    static const unsigned int nb_buffers_const_;
+    std::stringstream ss;
+    ss << "Motor " << motor_id;
+    setText(0, ss.str().c_str());
+    setText(1, joint_name.c_str());
   };
 }
 
@@ -68,5 +45,3 @@ Local Variables:
    c-basic-offset: 2
 End:
 */
-
-#endif
