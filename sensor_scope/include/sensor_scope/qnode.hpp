@@ -35,7 +35,7 @@
 namespace sensor_scope
 {
   class QNode : public QThread
-{
+  {
     Q_OBJECT
   public:
     QNode(int argc, char** argv );
