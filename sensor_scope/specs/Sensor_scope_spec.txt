@@ -1,0 +1,69 @@
+A lot of this functionality has to do with being able to pick out signals from
+a crowd of many signals.
+
+
+
+Functions:
+
+    Turn on or off graphs of all available signals.
+
+    Change transmission rate of signals.
+
+    Each signal can draw two types of graph:
+    * Full-scale graph where top of window represents max possible value for integer type (e.g. 65535).
+      Bottom of window represents 0. This graph can be vertically zoomed.
+    * Bit-level graph where one pixel represents one LSB of signal. This graph cannot be zoomed.
+
+    Each signal has the following adjustments:
+    * Is signed / unsigned data.
+    * Show full-scale graph (Tick box)
+    * Show bit-level graph  (Tick box)
+    * Show zero line        (Tick box)
+    * Adjust vertical scale of full-scale graph.
+    * Display mode:
+      - pixels only. Each sample is represented by a single pixel. Zooming the time axis too much leads to gaps between pixels
+      - Large pixels only. Same as above with large pixels.
+      - Each sample represented by a horizontal line.
+    * Highlight mode: (Tick box) If any signals have this box ticked, then all unticked signals go to 25% brightness, and go to the background.
+    * vertical offset: +1/3 ; 0 ; -1/3
+
+    Each signal also shows the following data in text form:
+    * Absolute value of the integer in 0x%04x format.
+    * Calibrated value in real units if available.
+    * Some sense of the amount of noise (not urgent)
+
+
+    Zoom X: Zoom the time axis using the mouse scroll wheel. Zoom centred on the mouse cursor position.
+    Zoom Y: Zoom the Y axis by hovering the mouse over the name of the signal, and using the scroll wheel.
+
+    Drag: Right-click and hold the graph to stop time. Drag mouse to scroll the graph in the X and Y directions.
+          Release the mouse to let time flow again.
+
+    When time is stopped, moving the mouse on the graph does the following:
+    * Render faint vertical line at mouse X position.
+    *
+
+
+    Render flags: The flags data is harder to render, but I think we can render it like this:
+
+    Current choke:              ******************************
+    EEPROM writing:        **************
+    CRC Failed
+    Config out of range:
+
+    I.E. render the names of the flags on the left of the screen. Render a rectangle for each flag.
+    The rectangles scroll along with the other graphs, but the names stay fixed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
