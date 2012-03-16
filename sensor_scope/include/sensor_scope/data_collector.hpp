@@ -44,9 +44,11 @@ namespace sensor_scope
     void msg_callback(const std_msgs::Float64ConstPtr& msg);
 
     double get_data(int index);
+
+    typedef boost::shared_ptr<std::deque<boost::shared_ptr<double> > > DoubleDequePtr;
   protected:
     ros::NodeHandle node_tilde_;
-    boost::shared_ptr<std::deque<boost::shared_ptr<double> > > data_deque_;
+    DoubleDequePtr data_deque_;
 
     ros::Subscriber subscriber_;
 

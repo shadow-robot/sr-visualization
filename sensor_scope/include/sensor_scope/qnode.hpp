@@ -35,8 +35,8 @@
 namespace sensor_scope
 {
   class QNode : public QThread
-{
-    Q_OBJECT
+  {
+  Q_OBJECT
   public:
     QNode(int argc, char** argv );
     virtual ~QNode();
@@ -53,7 +53,11 @@ namespace sensor_scope
       Fatal
     };
 
-    QStringListModel* loggingModel() { return &logging_model; }
+    QStringListModel* loggingModel()
+    {
+      return &logging_model;
+    }
+
     void log( const LogLevel &level, const std::string &msg);
 
   signals:

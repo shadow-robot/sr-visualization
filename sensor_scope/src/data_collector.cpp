@@ -34,7 +34,7 @@ namespace sensor_scope
   {
     subscriber_ = node_tilde_.subscribe( "/sr_movements/targets", 100, &sensor_scope::DataCollector::msg_callback, this);
 
-    data_deque_ = boost::shared_ptr<std::deque<boost::shared_ptr<double> > >( new std::deque<boost::shared_ptr<double> >(nb_points_to_store_) );
+    data_deque_ = DoubleDequePtr( new std::deque<boost::shared_ptr<double> >(nb_points_to_store_) );
   }
 
   DataCollector::~DataCollector()
