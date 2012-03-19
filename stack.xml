@@ -1,9 +1,20 @@
 <stack>
-  <description brief="sr_visualization">sr_visualization</description>
-  <author>Maintained by Genevieve & Ugo</author>
-  <license>BSD</license>  
+  <description brief="sr_visualization">This stack contains the different gui and gui plugins used with the shadow robot stacks.</description>
+  <author>Maintained by Ugo Cupcic / software@shadowrobot.com</author>
+  <license>GPL</license>  
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/sr_visualization</url>
+  <depend stack="common_msgs" /> <!-- sensor_msgs -->
+  <depend stack="object_manipulation" /> <!-- object_manipulator -->
+  <depend stack="pr2_controllers" /> <!-- control_toolbox -->
+  <depend stack="pr2_mechanism" /> <!-- pr2_mechanism_msgs -->
+  <depend stack="pr2_object_manipulation" /> <!-- tabletop_object_detector, tabletop_collision_map_processing -->
+  <depend stack="qt_ros" /> <!-- qt_build -->
   <depend stack="ros" />
+  <depend stack="ros_comm" /> <!-- std_msgs, rospy, roscpp -->
+  <depend stack="shadow_robot" /> <!-- sr_robot_msgs, sr_hand -->
+  <depend stack="shadow_robot_ethercat" /> <!-- sr_robot_lib -->
+  <depend stack="sr_contrib" /> <!-- sr_automatic_pid_tuning, sr_friction_compensation -->
+  <depend stack="sr_teleop" /> <!-- cyberglove -->
 
 </stack>
