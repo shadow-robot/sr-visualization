@@ -1,0 +1,15 @@
+<library path="src">
+  <class name="SrGuiGraspController" type="sr_gui_grasp_controller.grasp_controller.SrGuiGraspController" base_class_type="rqt_gui_py::Plugin">
+    <description>
+	A plugin for interpolating between grasps.
+    </description>
+    <qtgui>
+      <group>
+	<label>Shadow Robot</label>
+      </group>
+      <icon type="file">../icons/hand.png</icon>
+      <label>Shadow Grasp Controller</label>
+      <statustip>A plugin for interpolating between grasps.</statustip>
+    </qtgui>
+  </class>
+</library>

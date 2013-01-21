@@ -1,0 +1,23 @@
+<package>
+  <description brief="sr_gui_controller_tuner">
+
+     sr_gui_controller_tuner is a rosgui plugin for tuning the sr_mechanism_controllers
+
+  </description>
+  <author>Ugo Cupcic</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/sr_gui_controller_tuner</url>
+  <depend package="rospy"/>
+  <depend package="rqt_gui"/>
+  <depend package="rqt_gui_py"/>
+  <depend package="sr_robot_msgs"/>
+  <depend package="pr2_mechanism_msgs"/>
+
+  <export>
+    <rqt_gui plugin="${prefix}/sr_controller_tuner_plugin.xml"/>
+  </export>
+
+</package>
+
+
