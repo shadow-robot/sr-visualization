@@ -37,8 +37,9 @@ import rospy
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
-from QtCore import QEvent, QObject, Qt, QTimer, Slot
-from QtGui import QShortcut, QMessageBox, QWidget, QIcon
+import rosgraph
+
+from QtGui import QWidget
 
 class SrGuiSelfTest(Plugin):
 
@@ -66,9 +67,9 @@ class SrGuiSelfTest(Plugin):
 
     def on_btn_refresh_nodes_clicked_(self):
         self.nodes = []
-        print "TODO refresh nodes with available self_test service"
 
-        self.nodes = ["gazebo", "self_test"]
+        #gets all the list of services and only keep the nodes which have a self_test service
+        self.nodes = [x[0].split('/')[1] for x in rosgraph.masterapi.Master("/").getSystemState()[2] if "self_test" in x[0]]
 
         self._widget.nodes_combo.clear()
         for node in self.nodes:
