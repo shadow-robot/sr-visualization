@@ -37,6 +37,8 @@ import rospy
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
+from diagnostic_msgs.srv import SelfTest
+
 import rosgraph
 
 from QtGui import QWidget
@@ -58,12 +60,21 @@ class SrGuiSelfTest(Plugin):
         self._widget.btn_refresh_nodes.pressed.connect(self.on_btn_refresh_nodes_clicked_)
         self._widget.btn_test.pressed.connect(self.on_btn_test_clicked_)
 
+        self._widget.btn_test.setEnabled(False)
+
         self.nodes = None
         self.selected_node_ = None
         self._widget.nodes_combo.currentIndexChanged.connect(self.new_node_selected_)
 
     def on_btn_test_clicked_(self):
-        print "TODO run self test"
+        self_test_srv = rospy.ServiceProxy(self.selected_node_+"/self_test", SelfTest)
+        resp = None
+        try:
+            resp = self_test_srv()
+        except rospy.ServiceException, e:
+            rospy.logerr("Failed to called " + self.selected_node_+"/self_test %s"%str(e))
+
+        print "TODO: display "+ resp
 
     def on_btn_refresh_nodes_clicked_(self):
         self.nodes = []
@@ -77,6 +88,11 @@ class SrGuiSelfTest(Plugin):
 
     def new_node_selected_(self, index=None):
         self.selected_node_ = self.nodes[index]
+
+        if index != None:
+            self._widget.btn_test.setEnabled(True)
+        else:
+            self._widget.btn_test.setEnabled(False)
 
     def _unregisterPublisher(self):
         if self._publisher is not None:
