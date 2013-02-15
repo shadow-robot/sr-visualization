@@ -38,10 +38,11 @@ from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
 from diagnostic_msgs.srv import SelfTest
+from diagnostic_msgs.msg import DiagnosticStatus
 
 import rosgraph
 
-from QtGui import QWidget
+from QtGui import QWidget, QTreeWidgetItem
 
 class SrGuiSelfTest(Plugin):
 
@@ -66,7 +67,10 @@ class SrGuiSelfTest(Plugin):
         self.selected_node_ = None
         self._widget.nodes_combo.currentIndexChanged.connect(self.new_node_selected_)
 
+        self.on_btn_refresh_nodes_clicked_()
+
     def on_btn_test_clicked_(self):
+        #TODO: do this in a thread
         self_test_srv = rospy.ServiceProxy(self.selected_node_+"/self_test", SelfTest)
         resp = None
         try:
@@ -74,7 +78,31 @@ class SrGuiSelfTest(Plugin):
         except rospy.ServiceException, e:
             rospy.logerr("Failed to called " + self.selected_node_+"/self_test %s"%str(e))
 
-        print "TODO: display "+ resp
+        node_item = None
+        if resp.passed == DiagnosticStatus.OK:
+            node_item = QTreeWidgetItem(["OK", self.selected_node_+"("+str(resp.id)+")"])
+        elif resp.passed == DiagnosticStatus.WARN:
+            node_item = QTreeWidgetItem(["WARN", self.selected_node_+"("+str(resp.id)+")"])
+        else:
+            node_item = QTreeWidgetItem(["FAILED", self.selected_node_+"("+str(resp.id)+")"])
+        self._widget.test_tree.addTopLevelItem(node_item)
+
+        for status in resp.status:
+            display = ["", "", "", status.name, status.message]
+            if status.level == status.OK:
+                display[2] = "OK"
+            elif status.level == status.WARN:
+                display[2] = "WARN"
+            else:
+                display[2] = "ERROR"
+            st_item = QTreeWidgetItem(node_item, display)
+            self._widget.test_tree.addTopLevelItem(st_item)
+            st_item.setExpanded(True)
+        node_item.setExpanded(True)
+
+        for col in range(0, self._widget.test_tree.columnCount()):
+            self._widget.test_tree.resizeColumnToContents(col)
+
 
     def on_btn_refresh_nodes_clicked_(self):
         self.nodes = []

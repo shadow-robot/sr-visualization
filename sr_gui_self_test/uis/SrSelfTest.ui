@@ -57,10 +57,30 @@
     </widget>
    </item>
    <item>
-    <widget class="QTreeWidget" name="tree">
+    <widget class="QTreeWidget" name="test_tree">
      <column>
       <property name="text">
        <string notr="true">1</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Node</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Passed</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Test Description</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Test Message</string>
       </property>
      </column>
     </widget>
