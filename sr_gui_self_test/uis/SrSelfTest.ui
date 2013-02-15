@@ -122,7 +122,7 @@
          <item>
           <widget class="QLabel" name="label_node">
            <property name="text">
-            <string>Node</string>
+            <string>No Plots to display</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
