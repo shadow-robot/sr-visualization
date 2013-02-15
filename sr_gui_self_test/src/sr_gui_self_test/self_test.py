@@ -38,11 +38,10 @@ from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
 from diagnostic_msgs.srv import SelfTest
-from diagnostic_msgs.msg import DiagnosticStatus
 
 import rosgraph
 
-from QtGui import QWidget, QTreeWidgetItem, QColor
+from QtGui import QWidget, QTreeWidgetItem, QColor, QPixmap
 
 green = QColor(153, 231, 96)
 orange = QColor(247, 206, 134)
@@ -62,13 +61,23 @@ class SrGuiSelfTest(Plugin):
         self._widget.setObjectName('SrSelfTestUi')
         context.add_widget(self._widget)
 
+        self.nodes = None
+        self.selected_node_ = None
+
+        self.index_picture = 0
+        self.list_of_pics = []
+        self.list_of_pics_tests = []
+
         self._widget.btn_refresh_nodes.pressed.connect(self.on_btn_refresh_nodes_clicked_)
         self._widget.btn_test.pressed.connect(self.on_btn_test_clicked_)
 
+        self._widget.btn_next.pressed.connect(self.on_btn_next_clicked_)
+        self._widget.btn_prev.pressed.connect(self.on_btn_prev_clicked_)
+
         self._widget.btn_test.setEnabled(False)
 
-        self.nodes = None
-        self.selected_node_ = None
+        self._widget.btn_prev.setEnabled(False)
+        self._widget.btn_next.setEnabled(False)
         self._widget.nodes_combo.currentIndexChanged.connect(self.new_node_selected_)
 
         self.on_btn_refresh_nodes_clicked_()
@@ -125,9 +134,41 @@ class SrGuiSelfTest(Plugin):
                 st_item.setExpanded(True)
             node_item.setExpanded(True)
 
+        #display the plots if available
+        self.display_plots_()
+
         for col in range(0, self._widget.test_tree.columnCount()):
             self._widget.test_tree.resizeColumnToContents(col)
 
+    def display_plots_(self):
+        self.list_of_pics = []
+        self.list_of_pics_tests = []
+        for root, dirs, files in os.walk("/tmp/self_tests/"):
+            for f in files:
+                if ".png" in f:
+                    self.list_of_pics.append(os.path.join(root,f))
+                    self.list_of_pics_tests.append(root.split("/")[-1])
+
+        self.index_picture = 0
+        self.refresh_pic_()
+
+    def refresh_pic_(self):
+        if len(self.list_of_pics) > 0:
+            self._widget.label_node.setText(self.list_of_pics_tests[self.index_picture] + " ["+str(self.index_picture+1)+"/"+str(len(self.list_of_pics))+"]")
+            self._widget.img.setPixmap(QPixmap(self.list_of_pics[self.index_picture]))
+            self._widget.btn_prev.setEnabled(True)
+            self._widget.btn_next.setEnabled(True)
+        else:
+            self._widget.btn_prev.setEnabled(False)
+            self._widget.btn_next.setEnabled(False)
+
+    def on_btn_next_clicked_(self):
+        self.index_picture = min(self.index_picture + 1, len(self.list_of_pics) - 1)
+        self.refresh_pic_()
+
+    def on_btn_prev_clicked_(self):
+        self.index_picture = max(self.index_picture - 1, 0)
+        self.refresh_pic_()
 
     def on_btn_refresh_nodes_clicked_(self):
         self.nodes = []
