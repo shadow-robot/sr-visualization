@@ -42,7 +42,11 @@ from diagnostic_msgs.msg import DiagnosticStatus
 
 import rosgraph
 
-from QtGui import QWidget, QTreeWidgetItem
+from QtGui import QWidget, QTreeWidgetItem, QColor
+
+green = QColor(153, 231, 96)
+orange = QColor(247, 206, 134)
+red = QColor(236, 178, 178)
 
 class SrGuiSelfTest(Plugin):
 
@@ -96,20 +100,27 @@ class SrGuiSelfTest(Plugin):
 
             node_item = None
             if resp.passed:
-                node_item = QTreeWidgetItem(["OK", n+"("+str(resp.id)+")"])
+                node_item = QTreeWidgetItem(["OK", n+" ["+str(resp.id)+"]"])
+                node_item.setBackgroundColor(0, QColor(green))
             else:
-                node_item = QTreeWidgetItem(["FAILED", n+"("+str(resp.id)+")"])
+                node_item = QTreeWidgetItem(["FAILED", n+" ["+str(resp.id)+"]"])
+                node_item.setBackgroundColor(0, QColor(red))
             self._widget.test_tree.addTopLevelItem(node_item)
 
             for status in resp.status:
                 display = ["", "", "", status.name, status.message]
+                color = None
                 if status.level == status.OK:
                     display[2] = "OK"
+                    color = QColor(green)
                 elif status.level == status.WARN:
                     display[2] = "WARN"
+                    color = QColor(orange)
                 else:
                     display[2] = "ERROR"
+                    color = QColor(red)
                 st_item = QTreeWidgetItem(node_item, display)
+                st_item.setBackgroundColor(2, color)
                 self._widget.test_tree.addTopLevelItem(st_item)
                 st_item.setExpanded(True)
             node_item.setExpanded(True)

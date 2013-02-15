@@ -29,7 +29,10 @@
       <item>
        <widget class="QPushButton" name="btn_refresh_nodes">
         <property name="text">
-         <string>Refresh Nodes</string>
+         <string>Refresh Nodes [F5]</string>
+        </property>
+        <property name="shortcut">
+         <string>F5</string>
         </property>
        </widget>
       </item>
@@ -49,7 +52,13 @@
       <item>
        <widget class="QPushButton" name="btn_test">
         <property name="text">
-         <string>Run Tests</string>
+         <string>Run Tests [Return]</string>
+        </property>
+        <property name="shortcut">
+         <string>Return</string>
+        </property>
+        <property name="default">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -65,7 +74,7 @@
      </column>
      <column>
       <property name="text">
-       <string>Node</string>
+       <string>Node [id]</string>
       </property>
      </column>
      <column>
