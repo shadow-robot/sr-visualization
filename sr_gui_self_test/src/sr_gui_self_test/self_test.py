@@ -161,6 +161,7 @@ class SrGuiSelfTest(Plugin):
         else:
             self._widget.btn_prev.setEnabled(False)
             self._widget.btn_next.setEnabled(False)
+        self._widget.img.update()
 
     def on_btn_next_clicked_(self):
         self.index_picture = min(self.index_picture + 1, len(self.list_of_pics) - 1)
