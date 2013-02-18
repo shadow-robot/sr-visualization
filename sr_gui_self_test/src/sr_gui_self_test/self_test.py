@@ -51,6 +51,15 @@ red = QColor(236, 178, 178)
 
 class AsyncService(QThread):
     def __init__(self, widget, node_name, index):
+        """
+        Calling the self test services asynchronously
+        so that it doesn't "kill" the GUI while they run.
+        (also runs all test services in parallel -> faster).
+
+        @widget: parent widget
+        @node_name: name of the node for which we're running the self_test
+        @index: index of this thread in the list of threads (to find out which thread finished in callback)
+        """
         QThread.__init__(self, widget)
         self.node_name = node_name
         self.service_name = node_name+"/self_test"
@@ -59,6 +68,9 @@ class AsyncService(QThread):
         self.resp = None
 
     def run(self):
+        """
+        Calls the node/self_test service and emits a signal once it's finished running.
+        """
         self_test_srv = rospy.ServiceProxy(self.service_name, SelfTest)
         try:
             self.resp = self_test_srv()
@@ -71,8 +83,11 @@ class AsyncService(QThread):
         self.emit(SIGNAL("test_finished(QPoint)"), QPoint( self.index, 0))
 
 class SrGuiSelfTest(Plugin):
-
     def __init__(self, context):
+        """
+        Detects which nodes are advertising a self_test service, makes it possible to run them,
+        and display the results.
+        """
         super(SrGuiSelfTest, self).__init__(context)
         self.setObjectName('SrGuiSelfTest')
 
@@ -107,6 +122,9 @@ class SrGuiSelfTest(Plugin):
         self.on_btn_refresh_nodes_clicked_()
 
     def on_btn_test_clicked_(self):
+        """
+        Run the tests in separate threads (in parallel)
+        """
         #disable btn, fold previous tests and reset progress bar
         self._widget.btn_test.setEnabled(False)
         root_item = self._widget.test_tree.invisibleRootItem()
@@ -135,6 +153,9 @@ class SrGuiSelfTest(Plugin):
             thread.start()
 
     def on_test_finished_(self, point):
+        """
+        Callback from test_finished signal. Displays the results and update the progress
+        """
         thread = self.test_threads[point.x()]
         resp = thread.resp
         node_item = None
@@ -188,6 +209,10 @@ class SrGuiSelfTest(Plugin):
 
 
     def display_plots_(self, display_node):
+        """
+        Loads the plots available in /tmp/self_tests/node (place where the sr_self_test saves
+        the plots for the fingers movements)
+        """
         self.list_of_pics = []
         self.list_of_pics_tests = []
         for root, dirs, files in os.walk("/tmp/self_tests/"):
@@ -202,6 +227,9 @@ class SrGuiSelfTest(Plugin):
         self.refresh_pic_()
 
     def refresh_pic_(self):
+        """
+        Refresh the pic being displayed
+        """
         if len(self.list_of_pics) > 0:
             self._widget.label_node.setText(self.list_of_pics_tests[self.index_picture] + " ["+str(self.index_picture+1)+"/"+str(len(self.list_of_pics))+"]")
             self._widget.img.setPixmap(QPixmap(self.list_of_pics[self.index_picture]))
@@ -213,14 +241,23 @@ class SrGuiSelfTest(Plugin):
         self._widget.img.update()
 
     def on_btn_next_clicked_(self):
+        """
+        Next pic
+        """
         self.index_picture = min(self.index_picture + 1, len(self.list_of_pics) - 1)
         self.refresh_pic_()
 
     def on_btn_prev_clicked_(self):
+        """
+        Prev pic
+        """
         self.index_picture = max(self.index_picture - 1, 0)
         self.refresh_pic_()
 
     def on_btn_refresh_nodes_clicked_(self):
+        """
+        Refresh the list of nodes (check which node is advertising a self_test service)
+        """
         self.nodes = []
 
         #gets all the list of services and only keep the nodes which have a self_test service
@@ -236,6 +273,9 @@ class SrGuiSelfTest(Plugin):
             self._widget.nodes_combo.addItem(node)
 
     def new_node_selected_(self, index=None):
+        """
+        Callback for node selection dropdown
+        """
         self.selected_node_ = self.nodes[index]
 
         if index != None:
