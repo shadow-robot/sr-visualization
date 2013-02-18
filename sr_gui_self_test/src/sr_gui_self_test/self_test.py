@@ -42,10 +42,32 @@ from diagnostic_msgs.srv import SelfTest
 import rosgraph
 
 from QtGui import QWidget, QTreeWidgetItem, QColor, QPixmap
+from QtCore import QThread, SIGNAL, QPoint
 
 green = QColor(153, 231, 96)
 orange = QColor(247, 206, 134)
 red = QColor(236, 178, 178)
+
+class AsyncService(QThread):
+    def __init__(self, widget, node_name, index):
+        QThread.__init__(self, widget)
+        self.node_name = node_name
+        self.service_name = node_name+"/self_test"
+        self.index = index
+
+        self.resp = None
+
+    def run(self):
+        self_test_srv = rospy.ServiceProxy(self.service_name, SelfTest)
+        try:
+            self.resp = self_test_srv()
+        except rospy.ServiceException, e:
+            rospy.logerr("Failed to called " + self.service_name+" %s"%str(e))
+        if self.resp == None:
+            rospy.logerr("Failed to called " + self.service_name+" %s"%str(e))
+            return
+
+        self.emit(SIGNAL("test_finished(QPoint)"), QPoint( self.index, 0))
 
 class SrGuiSelfTest(Plugin):
 
@@ -63,6 +85,7 @@ class SrGuiSelfTest(Plugin):
 
         self.nodes = None
         self.selected_node_ = None
+        self.test_threads = []
 
         self.index_picture = 0
         self.list_of_pics = []
@@ -83,71 +106,76 @@ class SrGuiSelfTest(Plugin):
         self.on_btn_refresh_nodes_clicked_()
 
     def on_btn_test_clicked_(self):
-        nodes_to_test = []
-        if self.selected_node_ == "All":
-            nodes_to_test = self.nodes[1:]
-        else:
-            nodes_to_test = [self.selected_node_]
-
         #fold previous tests
         root_item = self._widget.test_tree.invisibleRootItem()
         for i in range( root_item.childCount() ):
             item = root_item.child(i)
             item.setExpanded(False)
 
+        #delete previous results
+        self.test_threads = []
+
+        nodes_to_test = []
+        if self.selected_node_ == "All":
+            nodes_to_test = self.nodes[1:]
+        else:
+            nodes_to_test = [self.selected_node_]
+
         for n in nodes_to_test:
-            #TODO: do this in a thread
-            self_test_srv = rospy.ServiceProxy(n+"/self_test", SelfTest)
-            resp = None
-            try:
-                resp = self_test_srv()
-            except rospy.ServiceException, e:
-                rospy.logerr("Failed to called " + n+"/self_test %s"%str(e))
-            if resp == None:
-                rospy.logerr("Failed to called " + n+"/self_test %s"%str(e))
-                return
+            self.test_threads.append(AsyncService(self._widget, n, len(self.test_threads)))
+            self._widget.connect(self.test_threads[-1], SIGNAL("test_finished(QPoint)"), self.on_test_finished_)
 
-            node_item = None
-            if resp.passed:
-                node_item = QTreeWidgetItem(["OK", n+" ["+str(resp.id)+"]"])
-                node_item.setBackgroundColor(0, QColor(green))
+        for thread in self.test_threads:
+            thread.start()
+
+    def on_test_finished_(self, point):
+        thread = self.test_threads[point.x()]
+        resp = thread.resp
+        node_item = None
+        if resp.passed:
+            node_item = QTreeWidgetItem(["OK", thread.node_name + " ["+str(resp.id)+"]"])
+            node_item.setBackgroundColor(0, QColor(green))
+        else:
+            node_item = QTreeWidgetItem(["FAILED", thread.node_name + " ["+str(resp.id)+"]"])
+            node_item.setBackgroundColor(0, QColor(red))
+        self._widget.test_tree.addTopLevelItem(node_item)
+
+        #also display statuses
+        for status in resp.status:
+            display = ["", "", "", status.name, status.message]
+            color = None
+            if status.level == status.OK:
+                display[2] = "OK"
+                color = QColor(green)
+            elif status.level == status.WARN:
+                display[2] = "WARN"
+                color = QColor(orange)
             else:
-                node_item = QTreeWidgetItem(["FAILED", n+" ["+str(resp.id)+"]"])
-                node_item.setBackgroundColor(0, QColor(red))
-            self._widget.test_tree.addTopLevelItem(node_item)
-
-            for status in resp.status:
-                display = ["", "", "", status.name, status.message]
-                color = None
-                if status.level == status.OK:
-                    display[2] = "OK"
-                    color = QColor(green)
-                elif status.level == status.WARN:
-                    display[2] = "WARN"
-                    color = QColor(orange)
-                else:
-                    display[2] = "ERROR"
-                    color = QColor(red)
-                st_item = QTreeWidgetItem(node_item, display)
-                st_item.setBackgroundColor(2, color)
-                self._widget.test_tree.addTopLevelItem(st_item)
-                st_item.setExpanded(True)
-            node_item.setExpanded(True)
+                display[2] = "ERROR"
+                color = QColor(red)
+            st_item = QTreeWidgetItem(node_item, display)
+            st_item.setBackgroundColor(2, color)
+            self._widget.test_tree.addTopLevelItem(st_item)
+            st_item.setExpanded(True)
+        node_item.setExpanded(True)
 
         #display the plots if available
-        self.display_plots_()
+        self.display_plots_(thread.node_name)
 
         for col in range(0, self._widget.test_tree.columnCount()):
             self._widget.test_tree.resizeColumnToContents(col)
 
-    def display_plots_(self):
+
+    def display_plots_(self, display_node):
         self.list_of_pics = []
         self.list_of_pics_tests = []
         for root, dirs, files in os.walk("/tmp/self_tests/"):
             for f in files:
-                if ".png" in f:
-                    self.list_of_pics.append(os.path.join(root,f))
-                    self.list_of_pics_tests.append(root.split("/")[-1])
+                node_name = root.split("/")[-1]
+                if node_name == display_node:
+                    if ".png" in f:
+                        self.list_of_pics.append(os.path.join(root,f))
+                        self.list_of_pics_tests.append(node_name)
 
         self.index_picture = 0
         self.refresh_pic_()
