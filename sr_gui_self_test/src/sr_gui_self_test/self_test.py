@@ -43,6 +43,7 @@ import rosgraph
 
 from QtGui import QWidget, QTreeWidgetItem, QColor, QPixmap
 from QtCore import QThread, SIGNAL, QPoint
+from QtCore import Qt
 
 green = QColor(153, 231, 96)
 orange = QColor(247, 206, 134)
@@ -106,11 +107,16 @@ class SrGuiSelfTest(Plugin):
         self.on_btn_refresh_nodes_clicked_()
 
     def on_btn_test_clicked_(self):
-        #fold previous tests
+        #disable btn, fold previous tests and reset progress bar
+        self._widget.btn_test.setEnabled(False)
         root_item = self._widget.test_tree.invisibleRootItem()
         for i in range( root_item.childCount() ):
             item = root_item.child(i)
             item.setExpanded(False)
+        #also change cursor to "wait"
+        self._widget.setCursor(Qt.WaitCursor)
+
+        self._widget.progress_bar.reset()
 
         #delete previous results
         self.test_threads = []
@@ -164,6 +170,21 @@ class SrGuiSelfTest(Plugin):
 
         for col in range(0, self._widget.test_tree.columnCount()):
             self._widget.test_tree.resizeColumnToContents(col)
+
+        #display progress advancement
+        nb_threads_finished = 0
+        for thread in self.test_threads:
+            if thread.resp is not None:
+                nb_threads_finished += 1
+
+        percentage = 100.0 * nb_threads_finished / len(self.test_threads)
+        self._widget.progress_bar.setValue( percentage )
+
+        if percentage == 100.0:
+            #all tests were run, reenable button
+            self._widget.btn_test.setEnabled(True)
+            #also change cursor to standard arrow
+            self._widget.setCursor(Qt.ArrowCursor)
 
 
     def display_plots_(self, display_node):
