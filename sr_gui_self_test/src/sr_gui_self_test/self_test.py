@@ -29,7 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-import os
+import os, tarfile, shutil
 import roslib
 roslib.load_manifest('sr_gui_self_test')
 import rospy
@@ -41,7 +41,7 @@ from diagnostic_msgs.srv import SelfTest
 
 import rosgraph
 
-from QtGui import QWidget, QTreeWidgetItem, QColor, QPixmap
+from QtGui import QWidget, QTreeWidgetItem, QColor, QPixmap, QMessageBox
 from QtCore import QThread, SIGNAL, QPoint
 from QtCore import Qt
 
@@ -82,6 +82,21 @@ class AsyncService(QThread):
 
         self.emit(SIGNAL("test_finished(QPoint)"), QPoint( self.index, 0))
 
+    def save(self):
+        """
+        Save the test results in a file at /tmp/self_tests/node/results.txt
+        """
+        if self.resp != None:
+            path = "/tmp/self_tests/"+self.node_name
+            if not os.path.exists(path):
+                os.makedirs(path)
+            f = open(path+"/results.txt", "w")
+            f.write( str(self.resp) )
+            f.close()
+        else:
+            rospy.logerr("Test for "+self.node_name+" can't be saved: no results found.")
+
+
 class SrGuiSelfTest(Plugin):
     def __init__(self, context):
         """
@@ -107,19 +122,42 @@ class SrGuiSelfTest(Plugin):
         self.list_of_pics = []
         self.list_of_pics_tests = []
 
+        self._widget.btn_test.setEnabled(False)
+        self._widget.btn_save.setEnabled(False)
+        self._widget.btn_prev.setEnabled(False)
+        self._widget.btn_next.setEnabled(False)
+
         self._widget.btn_refresh_nodes.pressed.connect(self.on_btn_refresh_nodes_clicked_)
         self._widget.btn_test.pressed.connect(self.on_btn_test_clicked_)
+        self._widget.btn_save.pressed.connect(self.on_btn_save_clicked_)
 
         self._widget.btn_next.pressed.connect(self.on_btn_next_clicked_)
         self._widget.btn_prev.pressed.connect(self.on_btn_prev_clicked_)
 
-        self._widget.btn_test.setEnabled(False)
-
-        self._widget.btn_prev.setEnabled(False)
-        self._widget.btn_next.setEnabled(False)
         self._widget.nodes_combo.currentIndexChanged.connect(self.new_node_selected_)
 
         self.on_btn_refresh_nodes_clicked_()
+
+
+    def on_btn_save_clicked_(self):
+        """
+        Save the tests in a tarball.
+        """
+        for test in self.test_threads:
+            test.save()
+
+        #backup previous test results if they exist
+        path = "/tmp/self_tests.tar.gz"
+        if os.path.isfile(path):
+            shutil.copy(path, path+".bk")
+            os.remove(path)
+
+        #create the tarball and save everything in it.
+        tarball = tarfile.open(path, "w:gz")
+        tarball.add("/tmp/self_tests")
+        tarball.close()
+
+        QMessageBox.warning(self._widget, "Information", "A tarball was saved in "+path+", please email it to hand@shadowrobot.com.")
 
     def on_btn_test_clicked_(self):
         """
@@ -127,6 +165,7 @@ class SrGuiSelfTest(Plugin):
         """
         #disable btn, fold previous tests and reset progress bar
         self._widget.btn_test.setEnabled(False)
+        self._widget.btn_save.setEnabled(False)
         root_item = self._widget.test_tree.invisibleRootItem()
         for i in range( root_item.childCount() ):
             item = root_item.child(i)
@@ -206,6 +245,7 @@ class SrGuiSelfTest(Plugin):
             self._widget.btn_test.setEnabled(True)
             #also change cursor to standard arrow
             self._widget.setCursor(Qt.ArrowCursor)
+            self._widget.btn_save.setEnabled(True)
 
 
     def display_plots_(self, display_node):
