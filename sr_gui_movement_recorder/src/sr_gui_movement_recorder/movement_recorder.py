@@ -340,7 +340,7 @@ class SrGuiMovementRecorder(Plugin):
 
         self.frame.setLayout(self.layout)
 
-        path_to_icons = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../images/icons/')
+        path_to_icons = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../images/icons/')
         self.load_btn.setIcon(QIcon(path_to_icons + 'load.png'))
         self.save_btn.setIcon(QIcon(path_to_icons + 'save.png'))
         self.stop_btn.setIcon(QIcon(path_to_icons + 'stop.png'))
