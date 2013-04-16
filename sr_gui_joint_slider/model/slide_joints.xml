@@ -21,8 +21,8 @@
                 <controller name="position">
                     <command_topic>/srh/sendupdate</command_topic>
                     <msg_type>sr_robot_msgs/sendupdate</msg_type>
-                    <min>-25</min>
-                    <max>25</max>
+                    <min>-20</min>
+                    <max>20</max>
                 </controller>
             </joint>
             <joint name="MFJ0">
@@ -45,8 +45,8 @@
                 <controller name="position">
                     <command_topic>/srh/sendupdate</command_topic>
                     <msg_type>sr_robot_msgs/sendupdate</msg_type>
-                    <min>-25</min>
-                    <max>25</max>
+                    <min>-20</min>
+                    <max>20</max>
                 </controller>
             </joint>
             <joint name="RFJ0">
@@ -69,8 +69,8 @@
                 <controller name="position">
                     <command_topic>/srh/sendupdate</command_topic>
                     <msg_type>sr_robot_msgs/sendupdate</msg_type>
-                    <min>-25</min>
-                    <max>25</max>
+                    <min>-20</min>
+                    <max>20</max>
                 </controller>
             </joint>
             <joint name="LFJ0">
@@ -93,8 +93,8 @@
                 <controller name="position">
                     <command_topic>/srh/sendupdate</command_topic>
                     <msg_type>sr_robot_msgs/sendupdate</msg_type>
-                    <min>-25</min>
-                    <max>25</max>
+                    <min>-20</min>
+                    <max>20</max>
                 </controller>
             </joint>
             <joint name="LFJ5">
@@ -117,8 +117,8 @@
                 <controller name="position">
                     <command_topic>/srh/sendupdate</command_topic>
                     <msg_type>sr_robot_msgs/sendupdate</msg_type>
-                    <min>-30</min>
-                    <max>30</max>
+                    <min>-40</min>
+                    <max>40</max>
                 </controller>
             </joint>
             <joint name="THJ3">
@@ -150,7 +150,7 @@
                     <command_topic>/srh/sendupdate</command_topic>
                     <msg_type>sr_robot_msgs/sendupdate</msg_type>
                     <min>-45</min>
-                    <max>35</max>
+                    <max>30</max>
                 </controller>
             </joint>
             <joint name="WRJ2">
@@ -221,14 +221,14 @@
                 <controller name="mixed_position_velocity">
                     <command_topic>/sh_ffj4_mixed_position_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
-                    <min>-25</min>
-                    <max>25</max>
+                    <min>-20</min>
+                    <max>20</max>
                 </controller>
                 <controller name="position">
                     <command_topic>/sh_ffj4_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
-                    <min>-25</min>
-                    <max>25</max>
+                    <min>-20</min>
+                    <max>20</max>
                 </controller>
                 <controller name="velocity">
                     <command_topic>/sh_ffj4_velocity_controller/command</command_topic>
@@ -299,14 +299,14 @@
                 <controller name="mixed_position_velocity">
                     <command_topic>/sh_mfj4_mixed_position_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
-                    <min>-25</min>
-                    <max>25</max>
+                    <min>-20</min>
+                    <max>20</max>
                 </controller>
                 <controller name="position">
                     <command_topic>/sh_mfj4_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
-                    <min>-25</min>
-                    <max>25</max>
+                    <min>-20</min>
+                    <max>20</max>
                 </controller>
                 <controller name="velocity">
                     <command_topic>/sh_mfj4_velocity_controller/command</command_topic>
@@ -377,14 +377,14 @@
                 <controller name="mixed_position_velocity">
                     <command_topic>/sh_rfj4_mixed_position_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
-                    <min>-25</min>
-                    <max>25</max>
+                    <min>-20</min>
+                    <max>20</max>
                 </controller>
                 <controller name="position">
                     <command_topic>/sh_rfj4_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
-                    <min>-25</min>
-                    <max>25</max>
+                    <min>-20</min>
+                    <max>20</max>
                 </controller>
                 <controller name="velocity">
                     <command_topic>/sh_rfj4_velocity_controller/command</command_topic>
@@ -455,14 +455,14 @@
                 <controller name="mixed_position_velocity">
                     <command_topic>/sh_lfj4_mixed_position_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
-                    <min>-25</min>
-                    <max>25</max>
+                    <min>-20</min>
+                    <max>20</max>
                 </controller>
                 <controller name="position">
                     <command_topic>/sh_lfj4_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
-                    <min>-25</min>
-                    <max>25</max>
+                    <min>-20</min>
+                    <max>20</max>
                 </controller>
                 <controller name="velocity">
                     <command_topic>/sh_lfj4_velocity_controller/command</command_topic>
@@ -533,14 +533,14 @@
                 <controller name="mixed_position_velocity">
                     <command_topic>/sh_thj2_mixed_position_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
-                    <min>-30</min>
-                    <max>30</max>
+                    <min>-40</min>
+                    <max>40</max>
                 </controller>
                 <controller name="position">
                     <command_topic>/sh_thj2_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
-                    <min>-30</min>
-                    <max>30</max>
+                    <min>-40</min>
+                    <max>40</max>
                 </controller>
                 <controller name="velocity">
                     <command_topic>/sh_thj2_velocity_controller/command</command_topic>
@@ -638,13 +638,13 @@
                     <command_topic>/sh_wrj1_mixed_position_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-45</min>
-                    <max>35</max>
+                    <max>30</max>
                 </controller>
                 <controller name="position">
                     <command_topic>/sh_wrj1_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-45</min>
-                    <max>35</max>
+                    <max>30</max>
                 </controller>
                 <controller name="velocity">
                     <command_topic>/sh_wrj1_velocity_controller/command</command_topic>
