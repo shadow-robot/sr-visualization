@@ -86,10 +86,6 @@ class AsyncService(QThread):
         """
         Calls the node/self_test service and emits a signal once it's finished running.
         """
-        import time
-        for i in range(0,100):
-            time.sleep(0.1)
-
         self_test_srv = rospy.ServiceProxy(self.service_name, SelfTest)
         try:
             self.resp = self_test_srv()
