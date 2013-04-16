@@ -32,16 +32,16 @@
 import os, tarfile, shutil
 import roslib
 roslib.load_manifest('sr_gui_self_test')
-import rospy
+import rospy, rosgraph
+import time
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
+from sr_robot_msgs.srv import ManualSelfTest, ManualSelfTestResponse
 from diagnostic_msgs.srv import SelfTest
 
-import rosgraph
-
-from QtGui import QWidget, QTreeWidgetItem, QColor, QPixmap, QMessageBox
+from QtGui import QWidget, QTreeWidgetItem, QColor, QPixmap, QMessageBox, QInputDialog
 from QtCore import QThread, SIGNAL, QPoint
 from QtCore import Qt
 
@@ -61,16 +61,35 @@ class AsyncService(QThread):
         @index: index of this thread in the list of threads (to find out which thread finished in callback)
         """
         QThread.__init__(self, widget)
+        self._widget = widget
         self.node_name = node_name
         self.service_name = node_name+"/self_test"
         self.index = index
 
+        self.srv_manual_test_ = rospy.Service(node_name+"/manual_self_tests", ManualSelfTest, self.manual_test_srv_cb_)
+
+        self.manual_test_req_ = None
+        self.manual_test_res_ = None
+
         self.resp = None
+
+    def manual_test_srv_cb_(self, req):
+        self.manual_test_req_ = req
+        self.emit(SIGNAL("manual_test(QPoint)"), QPoint( self.index, 0))
+
+        while self.manual_test_res_ == None:
+            time.sleep(0.01)
+
+        return self.manual_test_res_
 
     def run(self):
         """
         Calls the node/self_test service and emits a signal once it's finished running.
         """
+        import time
+        for i in range(0,100):
+            time.sleep(0.1)
+
         self_test_srv = rospy.ServiceProxy(self.service_name, SelfTest)
         try:
             self.resp = self_test_srv()
@@ -96,6 +115,11 @@ class AsyncService(QThread):
         else:
             rospy.logerr("Test for "+self.node_name+" can't be saved: no results found.")
 
+    def shutdown(self):
+        self.manual_test_res_ = None
+        self.manual_test_req_ = None
+        self.srv_manual_test_.shutdown()
+        self.srv_manual_test_ = None
 
 class SrGuiSelfTest(Plugin):
     def __init__(self, context):
@@ -187,6 +211,7 @@ class SrGuiSelfTest(Plugin):
         for n in nodes_to_test:
             self.test_threads.append(AsyncService(self._widget, n, len(self.test_threads)))
             self._widget.connect(self.test_threads[-1], SIGNAL("test_finished(QPoint)"), self.on_test_finished_)
+            self._widget.connect(self.test_threads[-1], SIGNAL("manual_test(QPoint)"), self.on_manual_test_)
 
         for thread in self.test_threads:
             thread.start()
@@ -236,6 +261,7 @@ class SrGuiSelfTest(Plugin):
         for thread in self.test_threads:
             if thread.resp is not None:
                 nb_threads_finished += 1
+                thread.shutdown()
 
         percentage = 100.0 * nb_threads_finished / len(self.test_threads)
         self._widget.progress_bar.setValue( percentage )
@@ -246,7 +272,15 @@ class SrGuiSelfTest(Plugin):
             #also change cursor to standard arrow
             self._widget.setCursor(Qt.ArrowCursor)
             self._widget.btn_save.setEnabled(True)
+            #empty thread list
+            self.test_threads = []
 
+    def on_manual_test_(self, point):
+        thread = self.test_threads[point.x()]
+
+        text, ok = QInputDialog.getText(self._widget, "Manual Test", thread.manual_test_req_.message)
+
+        thread.manual_test_res_ = ManualSelfTestResponse(ok, text)
 
     def display_plots_(self, display_node):
         """
