@@ -41,7 +41,7 @@ from python_qt_binding import loadUi
 from sr_robot_msgs.srv import ManualSelfTest, ManualSelfTestResponse
 from diagnostic_msgs.srv import SelfTest
 
-from QtGui import QWidget, QTreeWidgetItem, QColor, QPixmap, QMessageBox, QInputDialog
+from QtGui import QWidget, QTreeWidgetItem, QColor, QPixmap, QMessageBox, QInputDialog, QDialog
 from QtCore import QThread, SIGNAL, QPoint
 from QtCore import Qt
 
@@ -278,9 +278,15 @@ class SrGuiSelfTest(Plugin):
     def on_manual_test_(self, point):
         thread = self.test_threads[point.x()]
 
-        text, ok = QInputDialog.getText(self._widget, "Manual Test", thread.manual_test_req_.message)
+        input_dialog = QInputDialog(self._widget)
+        input_dialog.setOkButtonText("OK - Test successful.")
+        input_dialog.setCancelButtonText("NO - Test failed (please enter a comment to say why the test fail above).")
+        input_dialog.setLabelText(thread.manual_test_req_.message)
+        input_dialog.setWindowTitle( thread.node_name + " - Manual Test")
 
-        thread.manual_test_res_ = ManualSelfTestResponse(ok, text)
+        ok = (QDialog.Accepted == input_dialog.exec_())
+
+        thread.manual_test_res_ = ManualSelfTestResponse(ok, input_dialog.textValue())
 
     def display_plots_(self, display_node):
         """
