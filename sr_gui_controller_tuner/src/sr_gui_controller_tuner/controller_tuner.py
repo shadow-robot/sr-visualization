@@ -155,9 +155,9 @@ class MoveThread(QThread):
         elif self.joint_name_ in ["LFJ5"]:
             return [0.0, math.radians(45.0)]
         elif self.joint_name_ in ["FFJ4", "MFJ4", "RFJ4", "LFJ4"]:
-            return [math.radians(-25.0), math.radians(25.0)]
+            return [math.radians(-20.0), math.radians(20.0)]
         elif self.joint_name_ in ["THJ2"]:
-            return [math.radians(-30.0), math.radians(30.0)]
+            return [math.radians(-40.0), math.radians(40.0)]
         elif self.joint_name_ in ["THJ3"]:
             return [math.radians(-15.0), math.radians(15.0)]
         elif self.joint_name_ in ["THJ4"]:
@@ -165,7 +165,7 @@ class MoveThread(QThread):
         elif self.joint_name_ in ["THJ5"]:
             return [math.radians(-60.0), math.radians(60.0)]
         elif self.joint_name_ in ["WRJ1"]:
-            return [math.radians(-35.0), math.radians(45.0)]
+            return [math.radians(-30.0), math.radians(45.0)]
         elif self.joint_name_ in ["WRJ2"]:
             return [math.radians(-30.0), math.radians(10.0)]
 
