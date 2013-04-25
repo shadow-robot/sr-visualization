@@ -12,6 +12,7 @@
   <depend package="rqt_gui"/>
   <depend package="rqt_gui_py"/>
   <depend package="diagnostic_msgs"/>
+  <depend package="sr_robot_msgs"/>
 
   <export>
     <rqt_gui plugin="${prefix}/sr_self_test_plugin.xml"/>
