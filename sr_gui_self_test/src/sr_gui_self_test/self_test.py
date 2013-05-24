@@ -41,7 +41,7 @@ from python_qt_binding import loadUi
 from sr_robot_msgs.srv import ManualSelfTest, ManualSelfTestResponse
 from diagnostic_msgs.srv import SelfTest
 
-from QtGui import QWidget, QTreeWidgetItem, QColor, QPixmap, QMessageBox, QInputDialog, QDialog, QSplitter, QLabel, QSizePolicy
+from QtGui import QWidget, QTreeWidgetItem, QColor, QPixmap, QMessageBox, QInputDialog, QDialog, QSplitter, QLabel, QSizePolicy, QResizeEvent
 from QtCore import QThread, SIGNAL, QPoint
 from QtCore import Qt
 
@@ -333,6 +333,7 @@ class SrGuiSelfTest(Plugin):
                         self.list_of_pics.append(os.path.join(root,f))
                         self.list_of_pics_tests.append(node_name)
 
+        self.list_of_pics.sort()
         self.index_picture = 0
         self.refresh_pic_()
 
@@ -350,7 +351,8 @@ class SrGuiSelfTest(Plugin):
             self.plot_widget_.btn_prev.setEnabled(False)
             self.plot_widget_.btn_next.setEnabled(False)
 
-        self.resizeable_plot.resize(self.resizeable_plot.size())
+        #dummy resize event to get the plot to be drawn
+        self.resizeable_plot.resizeEvent(QResizeEvent(self.resizeable_plot.size(), self.resizeable_plot.size()))
 
     def on_btn_next_clicked_(self):
         """
