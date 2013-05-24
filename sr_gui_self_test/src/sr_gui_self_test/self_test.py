@@ -41,7 +41,7 @@ from python_qt_binding import loadUi
 from sr_robot_msgs.srv import ManualSelfTest, ManualSelfTestResponse
 from diagnostic_msgs.srv import SelfTest
 
-from QtGui import QWidget, QTreeWidgetItem, QColor, QPixmap, QMessageBox, QInputDialog, QDialog, QSplitter
+from QtGui import QWidget, QTreeWidgetItem, QColor, QPixmap, QMessageBox, QInputDialog, QDialog, QSplitter, QLabel, QSizePolicy
 from QtCore import QThread, SIGNAL, QPoint
 from QtCore import Qt
 
@@ -117,6 +117,18 @@ class AsyncService(QThread):
         self.srv_manual_test_.shutdown()
         self.srv_manual_test_ = None
 
+class ResizeableQPlot(QLabel):
+    def __init__(self, parent):
+        QLabel.__init__(self, parent)
+        self.plot_pixmap = None
+
+    def resizeEvent(self, event):
+        if self.plot_pixmap != None:
+            pixmap = self.plot_pixmap
+            size = event.size()
+            self.setPixmap(pixmap.scaled(size, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+
+
 class SrGuiSelfTest(Plugin):
     def __init__(self, context):
         """
@@ -157,6 +169,12 @@ class SrGuiSelfTest(Plugin):
         self.index_picture = 0
         self.list_of_pics = []
         self.list_of_pics_tests = []
+
+        #add plot widget
+        self.resizeable_plot = ResizeableQPlot(self.plot_widget_)
+        self.resizeable_plot.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
+        self.resizeable_plot.setAlignment(Qt.AlignCenter)
+        self.plot_widget_.plot_layout.addWidget(self.resizeable_plot)
 
         self._widget.btn_test.setEnabled(False)
         self._widget.btn_save.setEnabled(False)
@@ -324,13 +342,15 @@ class SrGuiSelfTest(Plugin):
         """
         if len(self.list_of_pics) > 0:
             self.plot_widget_.label_node.setText(self.list_of_pics_tests[self.index_picture] + " ["+str(self.index_picture+1)+"/"+str(len(self.list_of_pics))+"]")
-            self.plot_widget_.img.setPixmap(QPixmap(self.list_of_pics[self.index_picture]))
+
+            self.resizeable_plot.plot_pixmap = QPixmap(self.list_of_pics[self.index_picture])
             self.plot_widget_.btn_prev.setEnabled(True)
             self.plot_widget_.btn_next.setEnabled(True)
         else:
             self.plot_widget_.btn_prev.setEnabled(False)
             self.plot_widget_.btn_next.setEnabled(False)
-        self.plot_widget_.img.update()
+
+        self.resizeable_plot.resize(self.resizeable_plot.size())
 
     def on_btn_next_clicked_(self):
         """
