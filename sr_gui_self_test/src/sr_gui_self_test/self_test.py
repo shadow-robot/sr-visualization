@@ -41,7 +41,7 @@ from python_qt_binding import loadUi
 from sr_robot_msgs.srv import ManualSelfTest, ManualSelfTestResponse
 from diagnostic_msgs.srv import SelfTest
 
-from QtGui import QWidget, QTreeWidgetItem, QColor, QPixmap, QMessageBox, QInputDialog, QDialog
+from QtGui import QWidget, QTreeWidgetItem, QColor, QPixmap, QMessageBox, QInputDialog, QDialog, QSplitter, QLabel, QSizePolicy, QResizeEvent
 from QtCore import QThread, SIGNAL, QPoint
 from QtCore import Qt
 
@@ -117,6 +117,18 @@ class AsyncService(QThread):
         self.srv_manual_test_.shutdown()
         self.srv_manual_test_ = None
 
+class ResizeableQPlot(QLabel):
+    def __init__(self, parent):
+        QLabel.__init__(self, parent)
+        self.plot_pixmap = None
+
+    def resizeEvent(self, event):
+        if self.plot_pixmap != None:
+            pixmap = self.plot_pixmap
+            size = event.size()
+            self.setPixmap(pixmap.scaled(size, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+
+
 class SrGuiSelfTest(Plugin):
     def __init__(self, context):
         """
@@ -129,10 +141,26 @@ class SrGuiSelfTest(Plugin):
         self._publisher = None
         self._widget = QWidget()
 
+        #the UI is split into 3 files
         ui_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../uis/SrSelfTest.ui')
         loadUi(ui_file, self._widget)
         self._widget.setObjectName('SrSelfTestUi')
         context.add_widget(self._widget)
+
+        self.test_widget_ = QWidget()
+        ui_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../uis/self_test.ui')
+        loadUi(ui_file, self.test_widget_)
+        self.plot_widget_ = QWidget()
+        ui_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../uis/test_plot.ui')
+        loadUi(ui_file, self.plot_widget_)
+
+        #we load both the test and plot widget in the mdi area
+        self.splitter_ = QSplitter(Qt.Vertical, self._widget)
+        self._widget.test_layout.addWidget(self.splitter_)
+        self.splitter_.addWidget( self.test_widget_ )
+        self.splitter_.addWidget( self.plot_widget_ )
+        self.test_widget_.show()
+        self.plot_widget_.show()
 
         self.nodes = None
         self.selected_node_ = None
@@ -142,17 +170,23 @@ class SrGuiSelfTest(Plugin):
         self.list_of_pics = []
         self.list_of_pics_tests = []
 
+        #add plot widget
+        self.resizeable_plot = ResizeableQPlot(self.plot_widget_)
+        self.resizeable_plot.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
+        self.resizeable_plot.setAlignment(Qt.AlignCenter)
+        self.plot_widget_.plot_layout.addWidget(self.resizeable_plot)
+
         self._widget.btn_test.setEnabled(False)
         self._widget.btn_save.setEnabled(False)
-        self._widget.btn_prev.setEnabled(False)
-        self._widget.btn_next.setEnabled(False)
+        self.plot_widget_.btn_prev.setEnabled(False)
+        self.plot_widget_.btn_next.setEnabled(False)
 
         self._widget.btn_refresh_nodes.pressed.connect(self.on_btn_refresh_nodes_clicked_)
         self._widget.btn_test.pressed.connect(self.on_btn_test_clicked_)
         self._widget.btn_save.pressed.connect(self.on_btn_save_clicked_)
 
-        self._widget.btn_next.pressed.connect(self.on_btn_next_clicked_)
-        self._widget.btn_prev.pressed.connect(self.on_btn_prev_clicked_)
+        self.plot_widget_.btn_next.pressed.connect(self.on_btn_next_clicked_)
+        self.plot_widget_.btn_prev.pressed.connect(self.on_btn_prev_clicked_)
 
         self._widget.nodes_combo.currentIndexChanged.connect(self.new_node_selected_)
 
@@ -186,7 +220,7 @@ class SrGuiSelfTest(Plugin):
         #disable btn, fold previous tests and reset progress bar
         self._widget.btn_test.setEnabled(False)
         self._widget.btn_save.setEnabled(False)
-        root_item = self._widget.test_tree.invisibleRootItem()
+        root_item = self.test_widget_.test_tree.invisibleRootItem()
         for i in range( root_item.childCount() ):
             item = root_item.child(i)
             item.setExpanded(False)
@@ -225,7 +259,7 @@ class SrGuiSelfTest(Plugin):
         else:
             node_item = QTreeWidgetItem(["FAILED", thread.node_name + " ["+str(resp.id)+"]"])
             node_item.setBackgroundColor(0, QColor(red))
-        self._widget.test_tree.addTopLevelItem(node_item)
+        self.test_widget_.test_tree.addTopLevelItem(node_item)
 
         #also display statuses
         for status in resp.status:
@@ -242,15 +276,15 @@ class SrGuiSelfTest(Plugin):
                 color = QColor(red)
             st_item = QTreeWidgetItem(node_item, display)
             st_item.setBackgroundColor(2, color)
-            self._widget.test_tree.addTopLevelItem(st_item)
+            self.test_widget_.test_tree.addTopLevelItem(st_item)
             st_item.setExpanded(True)
         node_item.setExpanded(True)
 
         #display the plots if available
         self.display_plots_(thread.node_name)
 
-        for col in range(0, self._widget.test_tree.columnCount()):
-            self._widget.test_tree.resizeColumnToContents(col)
+        for col in range(0, self.test_widget_.test_tree.columnCount()):
+            self.test_widget_.test_tree.resizeColumnToContents(col)
 
         #display progress advancement
         nb_threads_finished = 0
@@ -299,6 +333,7 @@ class SrGuiSelfTest(Plugin):
                         self.list_of_pics.append(os.path.join(root,f))
                         self.list_of_pics_tests.append(node_name)
 
+        self.list_of_pics.sort()
         self.index_picture = 0
         self.refresh_pic_()
 
@@ -307,14 +342,17 @@ class SrGuiSelfTest(Plugin):
         Refresh the pic being displayed
         """
         if len(self.list_of_pics) > 0:
-            self._widget.label_node.setText(self.list_of_pics_tests[self.index_picture] + " ["+str(self.index_picture+1)+"/"+str(len(self.list_of_pics))+"]")
-            self._widget.img.setPixmap(QPixmap(self.list_of_pics[self.index_picture]))
-            self._widget.btn_prev.setEnabled(True)
-            self._widget.btn_next.setEnabled(True)
+            self.plot_widget_.label_node.setText(self.list_of_pics_tests[self.index_picture] + " ["+str(self.index_picture+1)+"/"+str(len(self.list_of_pics))+"]")
+
+            self.resizeable_plot.plot_pixmap = QPixmap(self.list_of_pics[self.index_picture])
+            self.plot_widget_.btn_prev.setEnabled(True)
+            self.plot_widget_.btn_next.setEnabled(True)
         else:
-            self._widget.btn_prev.setEnabled(False)
-            self._widget.btn_next.setEnabled(False)
-        self._widget.img.update()
+            self.plot_widget_.btn_prev.setEnabled(False)
+            self.plot_widget_.btn_next.setEnabled(False)
+
+        #dummy resize event to get the plot to be drawn
+        self.resizeable_plot.resizeEvent(QResizeEvent(self.resizeable_plot.size(), self.resizeable_plot.size()))
 
     def on_btn_next_clicked_(self):
         """
