@@ -307,6 +307,8 @@ class SrGuiSelfTest(Plugin):
         self._widget.progress_bar.setValue( percentage )
 
         if percentage == 100.0:
+            QMessageBox.information(self._widget, "Information", "If the tests passed, the communications\n with the hand are fine.")
+
             #all tests were run, reenable button
             self._widget.btn_test.setEnabled(True)
             #also change cursor to standard arrow

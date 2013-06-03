@@ -72,6 +72,18 @@
     </widget>
    </item>
    <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Please start the position controllers for the hand before starting the hand. You can use the change controllers plugin.
+
+Be aware that the remaining tests can take up to 1/2h to complete - make sure the computer doesn't go to sleep while the tests are running or they'll stop.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QFrame" name="test_area">
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
