@@ -45,6 +45,8 @@ from QtGui import QWidget, QTreeWidgetItem, QColor, QPixmap, QMessageBox, QInput
 from QtCore import QThread, SIGNAL, QPoint
 from QtCore import Qt
 
+from time import sleep
+
 green = QColor(153, 231, 96)
 orange = QColor(247, 206, 134)
 red = QColor(236, 178, 178)
@@ -66,20 +68,28 @@ class AsyncService(QThread):
         self.service_name = node_name+"/self_test"
         self.index = index
 
-        self.srv_manual_test_ = rospy.Service(node_name+"/manual_self_tests", ManualSelfTest, self.manual_test_srv_cb_)
-
         self.manual_test_req_ = None
         self.manual_test_res_ = None
-
         self.resp = None
 
+        self.waiting_for_manual_test_ = False
+
+        self.srv_manual_test_ = rospy.Service(node_name+"/manual_self_tests", ManualSelfTest, self.manual_test_srv_cb_)
+
     def manual_test_srv_cb_(self, req):
+        while self.waiting_for_manual_test_:
+            sleep(0.1)
+        self.waiting_for_manual_test_ = True
+        self.manual_test_res_ = None
+
         self.manual_test_req_ = req
+
         self.emit(SIGNAL("manual_test(QPoint)"), QPoint( self.index, 0))
 
         while self.manual_test_res_ == None:
             time.sleep(0.01)
 
+        self.waiting_for_manual_test_ = False
         return self.manual_test_res_
 
     def run(self):
@@ -297,6 +307,8 @@ class SrGuiSelfTest(Plugin):
         self._widget.progress_bar.setValue( percentage )
 
         if percentage == 100.0:
+            QMessageBox.information(self._widget, "Information", "If the tests passed, the communications\n with the hand are fine.")
+
             #all tests were run, reenable button
             self._widget.btn_test.setEnabled(True)
             #also change cursor to standard arrow
@@ -309,7 +321,7 @@ class SrGuiSelfTest(Plugin):
         thread = self.test_threads[point.x()]
 
         input_dialog = QInputDialog(self._widget)
-        input_dialog.setOkButtonText("OK - Test successful.")
+        input_dialog.setOkButtonText("OK - Test successful." )
         input_dialog.setCancelButtonText("NO - Test failed (please enter a comment to say why the test fail above).")
         input_dialog.setLabelText(thread.manual_test_req_.message)
         input_dialog.setWindowTitle( thread.node_name + " - Manual Test")
