@@ -227,6 +227,9 @@ class SrGuiSelfTest(Plugin):
         """
         Run the tests in separate threads (in parallel)
         """
+        #empty thread list
+        self.test_threads = []
+
         #disable btn, fold previous tests and reset progress bar
         self._widget.btn_test.setEnabled(False)
         self._widget.btn_save.setEnabled(False)
@@ -314,8 +317,6 @@ class SrGuiSelfTest(Plugin):
             #also change cursor to standard arrow
             self._widget.setCursor(Qt.ArrowCursor)
             self._widget.btn_save.setEnabled(True)
-            #empty thread list
-            self.test_threads = []
 
     def on_manual_test_(self, point):
         thread = self.test_threads[point.x()]
