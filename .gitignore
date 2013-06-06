@@ -26,4 +26,10 @@ sr_gui_motor_resetter/src/sr_gui_motor_resetter/motor_resetter.pyc
 sr_gui_movement_recorder/build/
 sr_gui_movement_recorder/src/sr_gui_movement_recorder/__init__.pyc
 sr_gui_movement_recorder/src/sr_gui_movement_recorder/movement_recorder.pyc
-
+sr_gui_motor_resetter/.cproject
+sr_gui_motor_resetter/.project
+sr_gui_motor_resetter/.pydevproject
+sr_gui_motor_resetter/cmake_install.cmake
+sr_gui_self_test/build/
+sr_gui_self_test/src/sr_gui_self_test/__init__.pyc
+sr_gui_self_test/src/sr_gui_self_test/self_test.pyc

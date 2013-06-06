@@ -38,8 +38,8 @@ class MotorFlasher(QThread):
         for motor in self.parent.motors:
             if motor.checkbox.checkState() == Qt.Checked:
                 try:
-                    print("resetting: /realtime_loop/reset_motor_"+motor.motor_name)
-                    self.flasher_service = rospy.ServiceProxy('/realtime_loop/reset_motor_'+motor.motor_name, Empty)
+                    print("resetting: realtime_loop/reset_motor_"+motor.motor_name)
+                    self.flasher_service = rospy.ServiceProxy('realtime_loop/reset_motor_'+motor.motor_name, Empty)
                     self.flasher_service()
                 except rospy.ServiceException, e:
                     self.emit( SIGNAL("failed(QString)"),
@@ -102,7 +102,7 @@ class SrGuiMotorResetter(Plugin):
         if rospy.has_param("joint_to_motor_mapping"):
             joint_to_motor_mapping = rospy.get_param("joint_to_motor_mapping")
         else:
-            QMessageBox.warning(self.motors_frame, "Warning", "Couldn't fint the joint_to_motor_mapping parameter. Make sure the etherCAT Hand node is running")
+            QMessageBox.warning(self.motors_frame, "Warning", "Couldn't find the joint_to_motor_mapping parameter. Make sure the etherCAT Hand node is running")
             self.close_plugin()
             return
 
