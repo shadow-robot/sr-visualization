@@ -222,7 +222,7 @@ class SrGuiChangeControllers(Plugin):
 
             controllers_to_start = self.controllers[controller]
 
-            load_controllers = rospy.ServiceProxy('/pr2_controller_manager/load_controller', LoadController)
+            load_controllers = rospy.ServiceProxy('pr2_controller_manager/load_controller', LoadController)
             for load_control in controllers_to_start:
                 if load_control not in all_loaded_controllers:
                     try:
@@ -246,12 +246,12 @@ class SrGuiChangeControllers(Plugin):
 
     def change_force_ctrl_type(self, chng_type_msg):
         '''
-        Calls the service (/realtime_loop/change_control_type) that allows to tell the driver (sr_robot_lib) which type of force control has to be sent to the motor:
+        Calls the service (realtime_loop/change_control_type) that allows to tell the driver (sr_robot_lib) which type of force control has to be sent to the motor:
             - torque demand (sr_robot_msgs::ControlType::FORCE)
             - PWM (sr_robot_msgs::ControlType::PWM)
         '''
         success = True
-        change_control_type = rospy.ServiceProxy('/realtime_loop/change_control_type', ChangeControlType)
+        change_control_type = rospy.ServiceProxy('realtime_loop/change_control_type', ChangeControlType)
         try:
             resp1 = change_control_type(chng_type_msg)
             if resp1.result.control_type != chng_type_msg.control_type:
