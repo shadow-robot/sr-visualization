@@ -106,9 +106,9 @@ class SrControllerTunerApp(object):
         running_ctrls = []
 
         try:
-            rospy.wait_for_service('/pr2_controller_manager/list_controllers', self.CONTROLLER_MANAGER_DETECTION_TIMEOUT)
+            rospy.wait_for_service('pr2_controller_manager/list_controllers', self.CONTROLLER_MANAGER_DETECTION_TIMEOUT)
         
-            controllers = rospy.ServiceProxy('/pr2_controller_manager/list_controllers', ListControllers)
+            controllers = rospy.ServiceProxy('pr2_controller_manager/list_controllers', ListControllers)
             resp = None
             try:
                 resp = controllers()
@@ -144,7 +144,7 @@ class SrControllerTunerApp(object):
         return running_ctrls
     
     def refresh_control_mode(self):
-        self.control_mode = rospy.get_param('/realtime_loop/default_control_mode', 'FORCE')
+        self.control_mode = rospy.get_param('realtime_loop/default_control_mode', 'FORCE')
 
     def get_controller_settings( self, controller_type ):
         """
@@ -161,16 +161,16 @@ class SrControllerTunerApp(object):
         """
         param_name = ""
         if controller_type == "Motor Force":
-            param_name = "/"+ joint_name.lower() +"/pid"
+            param_name = joint_name.lower() +"/pid"
         elif controller_type == "Position":
-            param_name =  "/sh_"+ joint_name.lower()+"_position_controller/pid"
+            param_name =  "sh_"+ joint_name.lower()+"_position_controller/pid"
         elif controller_type == "Velocity":
-            param_name =  "/sh_"+ joint_name.lower()+"_velocity_controller/pid"
+            param_name =  "sh_"+ joint_name.lower()+"_velocity_controller/pid"
         elif controller_type == "Mixed Position/Velocity":
-            param_name = ["/sh_"+ joint_name.lower()+"_mixed_position_velocity_controller/position_pid",
-                          "/sh_"+ joint_name.lower()+"_mixed_position_velocity_controller/velocity_pid" ]
+            param_name = ["sh_"+ joint_name.lower()+"_mixed_position_velocity_controller/position_pid",
+                          "sh_"+ joint_name.lower()+"_mixed_position_velocity_controller/velocity_pid" ]
         elif controller_type == "Effort":
-            param_name =  "/sh_"+ joint_name.lower()+"_effort_controller"
+            param_name =  "sh_"+ joint_name.lower()+"_effort_controller"
 
         return self.pid_loader.get_settings( param_name )
 
@@ -182,27 +182,27 @@ class SrControllerTunerApp(object):
         service_name = ""
         if controller_type == "Motor Force":
             #/realtime_loop/change_force_PID_FFJ0
-            service_name =  "/realtime_loop/change_force_PID_"+joint_name.upper()
+            service_name =  "realtime_loop/change_force_PID_"+joint_name.upper()
             pid_service = rospy.ServiceProxy(service_name, ForceController)
 
         elif controller_type == "Position":
             #/sh_ffj3_position_controller/set_gains
-            service_name =  "/sh_"+joint_name.lower()+"_position_controller/set_gains"
+            service_name =  "sh_"+joint_name.lower()+"_position_controller/set_gains"
             pid_service = rospy.ServiceProxy(service_name, SetPidGains)
 
         elif controller_type == "Velocity":
             #/sh_ffj3_velocity_controller/set_gains
-            service_name =  "/sh_"+joint_name.lower()+"_velocity_controller/set_gains"
+            service_name =  "sh_"+joint_name.lower()+"_velocity_controller/set_gains"
             pid_service = rospy.ServiceProxy(service_name, SetPidGains)
 
         elif controller_type == "Mixed Position/Velocity":
             #/sh_ffj3_mixed_position_velocity_controller/set_gains
-            service_name =  "/sh_"+joint_name.lower()+"_mixed_position_velocity_controller/set_gains"
+            service_name =  "sh_"+joint_name.lower()+"_mixed_position_velocity_controller/set_gains"
             pid_service = rospy.ServiceProxy(service_name, SetMixedPositionVelocityPidGains)
 
         elif controller_type == "Effort":
             #/sh_ffj3_effort_controller/set_gains
-            service_name =  "/sh_"+joint_name.lower()+"_effort_controller/set_gains"
+            service_name =  "sh_"+joint_name.lower()+"_effort_controller/set_gains"
             pid_service = rospy.ServiceProxy(service_name, SetEffortControllerGains)
 
         else:

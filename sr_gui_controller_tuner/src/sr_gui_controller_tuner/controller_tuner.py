@@ -255,7 +255,9 @@ class SrGuiControllerTuner(Plugin):
         except:
             rospy.logwarn("couldnt find the sr_ethercat_hand_config package, do you have the sr_config stack installed?")
 
-        subpath = "/controls/host"
+        #Reading the param that contains the config_dir suffix that we should use for this hand (e.g. '' normally for a right hand  or 'lh' if this is for a left hand)
+        config_subdir = rospy.get_param('config_dir', '')
+        subpath = "/controls/host/" + config_subdir
         if self.sr_controller_tuner_app_.edit_only_mode:
             filter_files = "*.yaml"
         else:
@@ -269,7 +271,7 @@ class SrGuiControllerTuner(Plugin):
                 
         if self.controller_type == "Motor Force":
             filter_files = "Config (*motor"+filter_files+")"
-            subpath = "/controls/motors"
+            subpath = "/controls/motors/" + config_subdir
         elif self.controller_type == "Position":
             filter_files = "Config (*position_controller"+filter_files+")"
         elif self.controller_type == "Velocity":
