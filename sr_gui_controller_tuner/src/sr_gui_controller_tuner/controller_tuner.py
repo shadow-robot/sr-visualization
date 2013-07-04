@@ -63,19 +63,19 @@ class PlotThread(QThread):
             # the joint 0s are published on a different topic: /joint_0s/joint_states
             if not self.is_joint_0_:
                 #subscribe to joint_states to get the index of the joint in the message
-                self.subscriber_ = rospy.Subscriber("/joint_states", JointState, self.js_callback_)
+                self.subscriber_ = rospy.Subscriber("joint_states", JointState, self.js_callback_)
 
                 #wait until we got the joint index in the joint
                 # states message
                 while self.joint_index_in_joint_state_ == None:
                     time.sleep(0.01)
 
-                rxplot_str += "/joint_states/effort["+ str(self.joint_index_in_joint_state_) +"]"
+                rxplot_str += "joint_states/effort["+ str(self.joint_index_in_joint_state_) +"]"
             else:
-                rxplot_str += "/joint_0s/joint_states/effort["+ str(self.joint_index_in_joint_state_) +"]"
+                rxplot_str += "joint_0s/joint_states/effort["+ str(self.joint_index_in_joint_state_) +"]"
 
         elif self.controller_type_ == "Position":
-            rxplot_str += "sh_"+self.joint_name_.lower()+"_position_controller/state/set_point,sh_"+self.joint_name_.lower()+"_position_controller/state/process_value /sh_" + self.joint_name_.lower()+"_position_controller/state/command"
+            rxplot_str += "sh_"+self.joint_name_.lower()+"_position_controller/state/set_point,sh_"+self.joint_name_.lower()+"_position_controller/state/process_value sh_" + self.joint_name_.lower()+"_position_controller/state/command"
         elif self.controller_type_ == "Velocity":
             rxplot_str += "sh_"+self.joint_name_.lower()+"_velocity_controller/state/set_point,sh_"+self.joint_name_.lower()+"_velocity_controller/state/process_value"
         elif self.controller_type_ == "Mixed Position/Velocity":
