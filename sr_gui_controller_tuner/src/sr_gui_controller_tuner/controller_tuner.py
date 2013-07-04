@@ -127,8 +127,9 @@ class MoveThread(QThread):
             controller_name_ = "sh_"+self.joint_name_.lower()+"_mixed_position_velocity_controller"
 
         min_max = self.get_min_max_()
+        ns = rospy.get_namespace()
 
-        string = "<launch> <node pkg=\"sr_movements\" name=\"sr_movements\" type=\"sr_movements\">"
+        string = "<launch> <node ns=\"" + ns + "\" pkg=\"sr_movements\" name=\"sr_movements\" type=\"sr_movements\">"
         string += "<remap from=\"~targets\" to=\""+ controller_name_ +"/command\"/>"
         string += "<remap from=\"~inputs\" to=\""+ controller_name_ +"/state\"/>"
         string += "<param name=\"image_path\" value=\"$(find sr_movements)/movements/test.png\"/>"
