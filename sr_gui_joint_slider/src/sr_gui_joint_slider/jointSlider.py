@@ -180,7 +180,7 @@ class EtherCATHandSlider(ExtendedSlider):
             self.initialize_controller()
 
         if (self.current_controller_index != -1):
-            if (self.joint.controller_list[self.current_controller_index].name == "mixed_position_velocity") or (self.joint.controller_list[self.current_controller_index].name == "position"):
+            if (self.joint.controller_list[self.current_controller_index].name == "mixed_position_velocity") or (self.joint.controller_list[self.current_controller_index].name == "position") or (self.joint.controller_list[self.current_controller_index].name == "muscle_position"):
                 self.pub.publish(radians(float(value)))
             elif self.joint.controller_list[self.current_controller_index].name == "velocity":
                 self.pub.publish(float(value) / 100.0)
@@ -189,7 +189,7 @@ class EtherCATHandSlider(ExtendedSlider):
 
     def update(self):
         try:
-            if (self.joint.controller_list[self.current_controller_index].name == "mixed_position_velocity") or (self.joint.controller_list[self.current_controller_index].name == "position"):
+            if (self.joint.controller_list[self.current_controller_index].name == "mixed_position_velocity") or (self.joint.controller_list[self.current_controller_index].name == "position")  or (self.joint.controller_list[self.current_controller_index].name == "muscle_position"):
                 self.current_value = round(degrees(self.robot_lib.get_position(self.joint.name)),1)
             elif (self.joint.controller_list[self.current_controller_index].name == "velocity"):
                 self.current_value = round(self.robot_lib.get_velocity(self.joint.name),1)
@@ -197,7 +197,7 @@ class EtherCATHandSlider(ExtendedSlider):
                 self.current_value = round(self.robot_lib.get_effort(self.joint.name),1)
             self.value.setText("Val: " + str(self.current_value))
             if self.first_update_done == False:
-                if (self.joint.controller_list[self.current_controller_index].name == "mixed_position_velocity") or (self.joint.controller_list[self.current_controller_index].name == "position"):
+                if (self.joint.controller_list[self.current_controller_index].name == "mixed_position_velocity") or (self.joint.controller_list[self.current_controller_index].name == "position")  or (self.joint.controller_list[self.current_controller_index].name == "muscle_position"):
                     self.slider.setSliderPosition(self.current_value)
                     self.slider.setValue(self.current_value)
                     self.target.setText("Tgt: " + str(self.current_value))
@@ -212,7 +212,7 @@ class EtherCATHandSlider(ExtendedSlider):
         Refresh the current position of the slider
         """
         if (self.current_controller_index != -1):
-            if (self.joint.controller_list[self.current_controller_index].name == "mixed_position_velocity") or (self.joint.controller_list[self.current_controller_index].name == "position"):
+            if (self.joint.controller_list[self.current_controller_index].name == "mixed_position_velocity") or (self.joint.controller_list[self.current_controller_index].name == "position") or (self.joint.controller_list[self.current_controller_index].name == "muscle_position"):
                 self.slider.setSliderPosition(self.current_value)
                 self.slider.setValue(self.current_value)
                 self.target.setText("Tgt: " + str(self.current_value))
@@ -221,7 +221,7 @@ class EtherCATHandSlider(ExtendedSlider):
         """
         Depending on the type of controllers we may want a different behaviour
         """
-        if (self.joint.controller_list[self.current_controller_index].name == "mixed_position_velocity") or (self.joint.controller_list[self.current_controller_index].name == "position"):
+        if (self.joint.controller_list[self.current_controller_index].name == "mixed_position_velocity") or (self.joint.controller_list[self.current_controller_index].name == "position") or (self.joint.controller_list[self.current_controller_index].name == "muscle_position"):
             if self.pos_slider_tracking_behaviour:
                 self.slider.setTracking(True)
             else:
