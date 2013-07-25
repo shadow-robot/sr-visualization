@@ -242,7 +242,7 @@ class SrGuiChangeControllers(Plugin):
                 success = False
 
         if not success:
-            rospy.logwarn("Failed to change some of the controllers. This could be normal if this is not a 5 finger hand.")
+            rospy.logwarn("Failed to change some of the controllers. This is normal if this is not a 5 finger hand.")
 
     def change_force_ctrl_type(self, chng_type_msg):
         '''
