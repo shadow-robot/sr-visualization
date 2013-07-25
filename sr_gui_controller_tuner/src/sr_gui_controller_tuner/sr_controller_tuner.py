@@ -93,7 +93,7 @@ class SrControllerTunerApp(object):
         """
         self.xml_path = xml_path
         self.all_controller_types = ["Motor Force", "Position", "Velocity",
-                                     "Mixed Position/Velocity", "Effort"]
+                                     "Mixed Position/Velocity", "Effort", "Muscle Position"]
         self.pid_loader = PidLoader()
         
         self.edit_only_mode = False
@@ -164,6 +164,8 @@ class SrControllerTunerApp(object):
             param_name = joint_name.lower() +"/pid"
         elif controller_type == "Position":
             param_name =  "sh_"+ joint_name.lower()+"_position_controller/pid"
+        elif controller_type == "Muscle Position":
+            param_name =  "sh_"+ joint_name.lower()+"_muscle_position_controller/pid"
         elif controller_type == "Velocity":
             param_name =  "sh_"+ joint_name.lower()+"_velocity_controller/pid"
         elif controller_type == "Mixed Position/Velocity":
@@ -188,6 +190,11 @@ class SrControllerTunerApp(object):
         elif controller_type == "Position":
             #/sh_ffj3_position_controller/set_gains
             service_name =  "sh_"+joint_name.lower()+"_position_controller/set_gains"
+            pid_service = rospy.ServiceProxy(service_name, SetPidGains)
+
+        elif controller_type == "Muscle Position":
+            #/sh_ffj3_position_controller/set_gains
+            service_name =  "sh_"+joint_name.lower()+"_muscle_position_controller/set_gains"
             pid_service = rospy.ServiceProxy(service_name, SetPidGains)
 
         elif controller_type == "Velocity":
@@ -225,6 +232,15 @@ class SrControllerTunerApp(object):
                 return False
 
         elif controller_type == "Position":
+            try:
+                pid_service(float(contrlr_settings_converted["p"]), float(contrlr_settings_converted["i"]),
+                            float(contrlr_settings_converted["d"]), float(contrlr_settings_converted["i_clamp"]),
+                            float(contrlr_settings_converted["max_force"]), float(contrlr_settings_converted["position_deadband"]),
+                            int(contrlr_settings_converted["friction_deadband"]) )
+            except:
+                return False
+
+        elif controller_type == "Muscle Position":
             try:
                 pid_service(float(contrlr_settings_converted["p"]), float(contrlr_settings_converted["i"]),
                             float(contrlr_settings_converted["d"]), float(contrlr_settings_converted["i_clamp"]),
@@ -275,6 +291,8 @@ class SrControllerTunerApp(object):
             param_name = [""+joint_name.lower() ,"pid"]
         elif controller_type == "Position":
             param_name =  ["sh_"+joint_name.lower()+"_position_controller" , "pid"]
+        elif controller_type == "Muscle Position":
+            param_name =  ["sh_"+joint_name.lower()+"_muscle_position_controller" , "pid"]
         elif controller_type == "Velocity":
             param_name =  ["sh_"+joint_name.lower()+"_velocity_controller" , "pid"]
         elif controller_type == "Mixed Position/Velocity":
