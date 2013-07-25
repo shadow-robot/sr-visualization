@@ -122,36 +122,27 @@ class SrGuiBootloader(Plugin):
 
 
     def populate_motors(self):
-        if rospy.has_param("joint_to_motor_mapping"):
-            joint_to_motor_mapping = rospy.get_param("joint_to_motor_mapping")
-        else:
-            QMessageBox.warning(self.motors_frame, "Warning", "Couldn't fint the joint_to_motor_mapping parameter. Make sure the etherCAT Hand node is running")
-            self.close_plugin()
-            return
-
-        joint_names = [
-                ["FFJ0", "FFJ1", "FFJ2", "FFJ3", "FFJ4"],
-                ["MFJ0", "MFJ1", "MFJ2", "MFJ3", "MFJ4"],
-                ["RFJ0", "RFJ1", "RFJ2", "RFJ3", "RFJ4"],
-                ["LFJ0", "LFJ1", "LFJ2", "LFJ3", "LFJ4", "LFJ5"],
-                ["THJ1", "THJ2", "THJ3", "THJ4","THJ5"],
-                ["WRJ1", "WRJ2"]
-            ]
-
         row = 0
         col = 0
-        index_jtm_mapping = 0
-        for finger in joint_names:
-            col = 0
-            for joint_name in finger:
-                motor_index = joint_to_motor_mapping[index_jtm_mapping]
-                if motor_index != -1:
-                    motor = Motor(self.motors_frame, joint_name, motor_index)
-                    self.motors_frame.layout().addWidget(motor, row, col)
-                    self.motors.append( motor )
-                    col += 1
-                index_jtm_mapping += 1
-            row += 1
+        for motor_index in range(0, 4):
+            if motor_index == 0:
+                row = 0
+                col = 0
+            elif motor_index == 1:
+                row = 0
+                col = 1
+            elif motor_index == 2:
+                row = 1
+                col = 0
+            elif motor_index == 3:
+                row = 1
+                col = 1
+                 
+            muscle_driver_name = "Muscle driver " + str(motor_index)
+            motor = Motor(self.motors_frame, muscle_driver_name, motor_index)
+            self.motors_frame.layout().addWidget(motor, row, col)
+            self.motors.append( motor )
+
 
     def diagnostics_callback(self, msg):
         for status in msg.status:
