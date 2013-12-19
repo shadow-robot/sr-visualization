@@ -522,3 +522,4 @@ class SrGuiControllerTuner(Plugin):
 
     def restore_settings(self, global_settings, perspective_settings):
         pass
+

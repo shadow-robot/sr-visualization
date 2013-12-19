@@ -167,25 +167,25 @@
         <joints>
             <joint name="FFJ0">
                 <controller name="mixed_position_velocity">
-                    <command_topic>/sh_ffj0_mixed_position_velocity_controller/command</command_topic>
+                    <command_topic>sh_ffj0_mixed_position_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>180</max>
                 </controller>
                 <controller name="position">
-                    <command_topic>/sh_ffj0_position_controller/command</command_topic>
+                    <command_topic>sh_ffj0_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>180</max>
                 </controller>
                 <controller name="velocity">
-                    <command_topic>/sh_ffj0_velocity_controller/command</command_topic>
+                    <command_topic>sh_ffj0_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-50</min>
                     <max>50</max>
                 </controller>
                 <controller name="effort">
-                    <command_topic>/sh_ffj0_effort_controller/command</command_topic>
+                    <command_topic>sh_ffj0_effort_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-900</min>
                     <max>900</max>
@@ -193,25 +193,25 @@
             </joint>
             <joint name="FFJ3">
                 <controller name="mixed_position_velocity">
-                    <command_topic>/sh_ffj3_mixed_position_velocity_controller/command</command_topic>
+                    <command_topic>sh_ffj3_mixed_position_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>90</max>
                 </controller>
                 <controller name="position">
-                    <command_topic>/sh_ffj3_position_controller/command</command_topic>
+                    <command_topic>sh_ffj3_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>90</max>
                 </controller>
                 <controller name="velocity">
-                    <command_topic>/sh_ffj3_velocity_controller/command</command_topic>
+                    <command_topic>sh_ffj3_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-50</min>
                     <max>50</max>
                 </controller>
                 <controller name="effort">
-                    <command_topic>/sh_ffj3_effort_controller/command</command_topic>
+                    <command_topic>sh_ffj3_effort_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-900</min>
                     <max>900</max>
@@ -219,25 +219,25 @@
             </joint>
             <joint name="FFJ4">
                 <controller name="mixed_position_velocity">
-                    <command_topic>/sh_ffj4_mixed_position_velocity_controller/command</command_topic>
+                    <command_topic>sh_ffj4_mixed_position_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-20</min>
                     <max>20</max>
                 </controller>
                 <controller name="position">
-                    <command_topic>/sh_ffj4_position_controller/command</command_topic>
+                    <command_topic>sh_ffj4_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-20</min>
                     <max>20</max>
                 </controller>
                 <controller name="velocity">
-                    <command_topic>/sh_ffj4_velocity_controller/command</command_topic>
+                    <command_topic>sh_ffj4_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-50</min>
                     <max>50</max>
                 </controller>
                 <controller name="effort">
-                    <command_topic>/sh_ffj4_effort_controller/command</command_topic>
+                    <command_topic>sh_ffj4_effort_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-900</min>
                     <max>900</max>
@@ -245,25 +245,25 @@
             </joint>
             <joint name="MFJ0">
                 <controller name="mixed_position_velocity">
-                    <command_topic>/sh_mfj0_mixed_position_velocity_controller/command</command_topic>
+                    <command_topic>sh_mfj0_mixed_position_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>180</max>
                 </controller>
                 <controller name="position">
-                    <command_topic>/sh_mfj0_position_controller/command</command_topic>
+                    <command_topic>sh_mfj0_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>180</max>
                 </controller>
                 <controller name="velocity">
-                    <command_topic>/sh_mfj0_velocity_controller/command</command_topic>
+                    <command_topic>sh_mfj0_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-50</min>
                     <max>50</max>
                 </controller>
                 <controller name="effort">
-                    <command_topic>/sh_mfj0_effort_controller/command</command_topic>
+                    <command_topic>sh_mfj0_effort_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-900</min>
                     <max>900</max>
@@ -271,25 +271,25 @@
             </joint>
             <joint name="MFJ3">
                 <controller name="mixed_position_velocity">
-                    <command_topic>/sh_mfj3_mixed_position_velocity_controller/command</command_topic>
+                    <command_topic>sh_mfj3_mixed_position_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>90</max>
                 </controller>
                 <controller name="position">
-                    <command_topic>/sh_mfj3_position_controller/command</command_topic>
+                    <command_topic>sh_mfj3_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>90</max>
                 </controller>
                 <controller name="velocity">
-                    <command_topic>/sh_mfj3_velocity_controller/command</command_topic>
+                    <command_topic>sh_mfj3_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-50</min>
                     <max>50</max>
                 </controller>
                 <controller name="effort">
-                    <command_topic>/sh_mfj3_effort_controller/command</command_topic>
+                    <command_topic>sh_mfj3_effort_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-900</min>
                     <max>900</max>
@@ -297,25 +297,25 @@
             </joint>
             <joint name="MFJ4">
                 <controller name="mixed_position_velocity">
-                    <command_topic>/sh_mfj4_mixed_position_velocity_controller/command</command_topic>
+                    <command_topic>sh_mfj4_mixed_position_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-20</min>
                     <max>20</max>
                 </controller>
                 <controller name="position">
-                    <command_topic>/sh_mfj4_position_controller/command</command_topic>
+                    <command_topic>sh_mfj4_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-20</min>
                     <max>20</max>
                 </controller>
                 <controller name="velocity">
-                    <command_topic>/sh_mfj4_velocity_controller/command</command_topic>
+                    <command_topic>sh_mfj4_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-50</min>
                     <max>50</max>
                 </controller>
                 <controller name="effort">
-                    <command_topic>/sh_mfj4_effort_controller/command</command_topic>
+                    <command_topic>sh_mfj4_effort_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-900</min>
                     <max>900</max>
@@ -323,25 +323,25 @@
             </joint>
             <joint name="RFJ0">
                 <controller name="mixed_position_velocity">
-                    <command_topic>/sh_rfj0_mixed_position_velocity_controller/command</command_topic>
+                    <command_topic>sh_rfj0_mixed_position_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>180</max>
                 </controller>
                 <controller name="position">
-                    <command_topic>/sh_rfj0_position_controller/command</command_topic>
+                    <command_topic>sh_rfj0_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>180</max>
                 </controller>
                 <controller name="velocity">
-                    <command_topic>/sh_rfj0_velocity_controller/command</command_topic>
+                    <command_topic>sh_rfj0_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-50</min>
                     <max>50</max>
                 </controller>
                 <controller name="effort">
-                    <command_topic>/sh_rfj0_effort_controller/command</command_topic>
+                    <command_topic>sh_rfj0_effort_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-900</min>
                     <max>900</max>
@@ -349,25 +349,25 @@
             </joint>
             <joint name="RFJ3">
                 <controller name="mixed_position_velocity">
-                    <command_topic>/sh_rfj3_mixed_position_velocity_controller/command</command_topic>
+                    <command_topic>sh_rfj3_mixed_position_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>90</max>
                 </controller>
                 <controller name="position">
-                    <command_topic>/sh_rfj3_position_controller/command</command_topic>
+                    <command_topic>sh_rfj3_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>90</max>
                 </controller>
                 <controller name="velocity">
-                    <command_topic>/sh_rfj3_velocity_controller/command</command_topic>
+                    <command_topic>sh_rfj3_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-50</min>
                     <max>50</max>
                 </controller>
                 <controller name="effort">
-                    <command_topic>/sh_rfj3_effort_controller/command</command_topic>
+                    <command_topic>sh_rfj3_effort_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-900</min>
                     <max>900</max>
@@ -375,25 +375,25 @@
             </joint>
             <joint name="RFJ4">
                 <controller name="mixed_position_velocity">
-                    <command_topic>/sh_rfj4_mixed_position_velocity_controller/command</command_topic>
+                    <command_topic>sh_rfj4_mixed_position_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-20</min>
                     <max>20</max>
                 </controller>
                 <controller name="position">
-                    <command_topic>/sh_rfj4_position_controller/command</command_topic>
+                    <command_topic>sh_rfj4_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-20</min>
                     <max>20</max>
                 </controller>
                 <controller name="velocity">
-                    <command_topic>/sh_rfj4_velocity_controller/command</command_topic>
+                    <command_topic>sh_rfj4_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-50</min>
                     <max>50</max>
                 </controller>
                 <controller name="effort">
-                    <command_topic>/sh_rfj4_effort_controller/command</command_topic>
+                    <command_topic>sh_rfj4_effort_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-900</min>
                     <max>900</max>
@@ -401,25 +401,25 @@
             </joint>
             <joint name="LFJ0">
                 <controller name="mixed_position_velocity">
-                    <command_topic>/sh_lfj0_mixed_position_velocity_controller/command</command_topic>
+                    <command_topic>sh_lfj0_mixed_position_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>180</max>
                 </controller>
                 <controller name="position">
-                    <command_topic>/sh_lfj0_position_controller/command</command_topic>
+                    <command_topic>sh_lfj0_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>180</max>
                 </controller>
                 <controller name="velocity">
-                    <command_topic>/sh_lfj0_velocity_controller/command</command_topic>
+                    <command_topic>sh_lfj0_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-50</min>
                     <max>50</max>
                 </controller>
                 <controller name="effort">
-                    <command_topic>/sh_lfj0_effort_controller/command</command_topic>
+                    <command_topic>sh_lfj0_effort_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-900</min>
                     <max>900</max>
@@ -427,25 +427,25 @@
             </joint>
             <joint name="LFJ3">
                 <controller name="mixed_position_velocity">
-                    <command_topic>/sh_lfj3_mixed_position_velocity_controller/command</command_topic>
+                    <command_topic>sh_lfj3_mixed_position_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>90</max>
                 </controller>
                 <controller name="position">
-                    <command_topic>/sh_lfj3_position_controller/command</command_topic>
+                    <command_topic>sh_lfj3_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>90</max>
                 </controller>
                 <controller name="velocity">
-                    <command_topic>/sh_lfj3_velocity_controller/command</command_topic>
+                    <command_topic>sh_lfj3_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-50</min>
                     <max>50</max>
                 </controller>
                 <controller name="effort">
-                    <command_topic>/sh_lfj3_effort_controller/command</command_topic>
+                    <command_topic>sh_lfj3_effort_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-900</min>
                     <max>900</max>
@@ -453,25 +453,25 @@
             </joint>
             <joint name="LFJ4">
                 <controller name="mixed_position_velocity">
-                    <command_topic>/sh_lfj4_mixed_position_velocity_controller/command</command_topic>
+                    <command_topic>sh_lfj4_mixed_position_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-20</min>
                     <max>20</max>
                 </controller>
                 <controller name="position">
-                    <command_topic>/sh_lfj4_position_controller/command</command_topic>
+                    <command_topic>sh_lfj4_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-20</min>
                     <max>20</max>
                 </controller>
                 <controller name="velocity">
-                    <command_topic>/sh_lfj4_velocity_controller/command</command_topic>
+                    <command_topic>sh_lfj4_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-50</min>
                     <max>50</max>
                 </controller>
                 <controller name="effort">
-                    <command_topic>/sh_lfj4_effort_controller/command</command_topic>
+                    <command_topic>sh_lfj4_effort_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-900</min>
                     <max>900</max>
@@ -479,25 +479,25 @@
             </joint>
             <joint name="LFJ5">
                 <controller name="mixed_position_velocity">
-                    <command_topic>/sh_lfj5_mixed_position_velocity_controller/command</command_topic>
+                    <command_topic>sh_lfj5_mixed_position_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>45</max>
                 </controller>
                 <controller name="position">
-                    <command_topic>/sh_lfj5_position_controller/command</command_topic>
+                    <command_topic>sh_lfj5_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>45</max>
                 </controller>
                 <controller name="velocity">
-                    <command_topic>/sh_lfj5_velocity_controller/command</command_topic>
+                    <command_topic>sh_lfj5_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-50</min>
                     <max>50</max>
                 </controller>
                 <controller name="effort">
-                    <command_topic>/sh_lfj5_effort_controller/command</command_topic>
+                    <command_topic>sh_lfj5_effort_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-900</min>
                     <max>900</max>
@@ -505,25 +505,25 @@
             </joint>
             <joint name="THJ1">
                 <controller name="mixed_position_velocity">
-                    <command_topic>/sh_thj1_mixed_position_velocity_controller/command</command_topic>
+                    <command_topic>sh_thj1_mixed_position_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>90</max>
                 </controller>
                 <controller name="position">
-                    <command_topic>/sh_thj1_position_controller/command</command_topic>
+                    <command_topic>sh_thj1_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>90</max>
                 </controller>
                 <controller name="velocity">
-                    <command_topic>/sh_thj1_velocity_controller/command</command_topic>
+                    <command_topic>sh_thj1_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-50</min>
                     <max>50</max>
                 </controller>
                 <controller name="effort">
-                    <command_topic>/sh_thj1_effort_controller/command</command_topic>
+                    <command_topic>sh_thj1_effort_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-900</min>
                     <max>900</max>
@@ -531,25 +531,25 @@
             </joint>
             <joint name="THJ2">
                 <controller name="mixed_position_velocity">
-                    <command_topic>/sh_thj2_mixed_position_velocity_controller/command</command_topic>
+                    <command_topic>sh_thj2_mixed_position_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-40</min>
                     <max>40</max>
                 </controller>
                 <controller name="position">
-                    <command_topic>/sh_thj2_position_controller/command</command_topic>
+                    <command_topic>sh_thj2_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-40</min>
                     <max>40</max>
                 </controller>
                 <controller name="velocity">
-                    <command_topic>/sh_thj2_velocity_controller/command</command_topic>
+                    <command_topic>sh_thj2_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-50</min>
                     <max>50</max>
                 </controller>
                 <controller name="effort">
-                    <command_topic>/sh_thj2_effort_controller/command</command_topic>
+                    <command_topic>sh_thj2_effort_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-900</min>
                     <max>900</max>
@@ -557,25 +557,25 @@
             </joint>
             <joint name="THJ3">
                 <controller name="mixed_position_velocity">
-                    <command_topic>/sh_thj3_mixed_position_velocity_controller/command</command_topic>
+                    <command_topic>sh_thj3_mixed_position_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-15</min>
                     <max>15</max>
                 </controller>
                 <controller name="position">
-                    <command_topic>/sh_thj3_position_controller/command</command_topic>
+                    <command_topic>sh_thj3_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-15</min>
                     <max>15</max>
                 </controller>
                 <controller name="velocity">
-                    <command_topic>/sh_thj3_velocity_controller/command</command_topic>
+                    <command_topic>sh_thj3_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-50</min>
                     <max>50</max>
                 </controller>
                 <controller name="effort">
-                    <command_topic>/sh_thj3_effort_controller/command</command_topic>
+                    <command_topic>sh_thj3_effort_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-900</min>
                     <max>900</max>
@@ -583,25 +583,25 @@
             </joint>
             <joint name="THJ4">
                 <controller name="mixed_position_velocity">
-                    <command_topic>/sh_thj4_mixed_position_velocity_controller/command</command_topic>
+                    <command_topic>sh_thj4_mixed_position_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>70</max>
                 </controller>
                 <controller name="position">
-                    <command_topic>/sh_thj4_position_controller/command</command_topic>
+                    <command_topic>sh_thj4_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>70</max>
                 </controller>
                 <controller name="velocity">
-                    <command_topic>/sh_thj4_velocity_controller/command</command_topic>
+                    <command_topic>sh_thj4_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-50</min>
                     <max>50</max>
                 </controller>
                 <controller name="effort">
-                    <command_topic>/sh_thj4_effort_controller/command</command_topic>
+                    <command_topic>sh_thj4_effort_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-900</min>
                     <max>900</max>
@@ -609,25 +609,25 @@
             </joint>
             <joint name="THJ5">
                 <controller name="mixed_position_velocity">
-                    <command_topic>/sh_thj5_mixed_position_velocity_controller/command</command_topic>
+                    <command_topic>sh_thj5_mixed_position_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-60</min>
                     <max>60</max>
                 </controller>
                 <controller name="position">
-                    <command_topic>/sh_thj5_position_controller/command</command_topic>
+                    <command_topic>sh_thj5_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-60</min>
                     <max>60</max>
                 </controller>
                 <controller name="velocity">
-                    <command_topic>/sh_thj5_velocity_controller/command</command_topic>
+                    <command_topic>sh_thj5_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-50</min>
                     <max>50</max>
                 </controller>
                 <controller name="effort">
-                    <command_topic>/sh_thj5_effort_controller/command</command_topic>
+                    <command_topic>sh_thj5_effort_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-900</min>
                     <max>900</max>
@@ -635,25 +635,25 @@
             </joint>
             <joint name="WRJ1">
                 <controller name="mixed_position_velocity">
-                    <command_topic>/sh_wrj1_mixed_position_velocity_controller/command</command_topic>
+                    <command_topic>sh_wrj1_mixed_position_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-45</min>
                     <max>30</max>
                 </controller>
                 <controller name="position">
-                    <command_topic>/sh_wrj1_position_controller/command</command_topic>
+                    <command_topic>sh_wrj1_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-45</min>
                     <max>30</max>
                 </controller>
                 <controller name="velocity">
-                    <command_topic>/sh_wrj1_velocity_controller/command</command_topic>
+                    <command_topic>sh_wrj1_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-50</min>
                     <max>50</max>
                 </controller>
                 <controller name="effort">
-                    <command_topic>/sh_wrj1_effort_controller/command</command_topic>
+                    <command_topic>sh_wrj1_effort_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-900</min>
                     <max>900</max>
@@ -661,25 +661,25 @@
             </joint>
             <joint name="WRJ2">
                 <controller name="mixed_position_velocity">
-                    <command_topic>/sh_wrj2_mixed_position_velocity_controller/command</command_topic>
+                    <command_topic>sh_wrj2_mixed_position_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-30</min>
                     <max>10</max>
                 </controller>
                 <controller name="position">
-                    <command_topic>/sh_wrj2_position_controller/command</command_topic>
+                    <command_topic>sh_wrj2_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-30</min>
                     <max>10</max>
                 </controller>
                 <controller name="velocity">
-                    <command_topic>/sh_wrj2_velocity_controller/command</command_topic>
+                    <command_topic>sh_wrj2_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-50</min>
                     <max>50</max>
                 </controller>
                 <controller name="effort">
-                    <command_topic>/sh_wrj2_effort_controller/command</command_topic>
+                    <command_topic>sh_wrj2_effort_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-900</min>
                     <max>900</max>
