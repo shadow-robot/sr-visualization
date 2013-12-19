@@ -4,7 +4,7 @@ find_package(catkin REQUIRED COMPONENTS rospy rqt_gui rqt_gui_py pr2_mechanism_m
 
 catkin_package(
     DEPENDS
-    CATKIN_DEPENDS rospy rqt_gui rqt_gui_py std_msgs std_srvs diagnostic_msgs sr_robot_msgs
+    CATKIN_DEPENDS rospy rqt_gui rqt_gui_py pr2_mechanism_msgs sr_robot_msgs
     INCLUDE_DIRS
     LIBRARIES
 )
