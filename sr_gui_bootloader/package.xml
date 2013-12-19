@@ -1,0 +1,38 @@
+<package>
+  <name>sr_gui_bootloader</name>
+  <version>1.2.0</version>
+  <description>A GUI plugin for bootloading the motors on the shadow etherCAT hand.</description>
+  <maintainer email="software@shadowrobot.com">Ugo Cupcic </maintainer>
+
+  <license>GPL</license>
+
+  <url type="website">http://ros.org/wiki/sr_gui_bootloader</url>
+
+  <author email="software@shadowrobot.com">Ugo Cupcic </author>
+
+  <!-- Dependencies which this package needs to build itself. -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed to compile this package. -->
+  <build_depend>rospy</build_depend>
+  <build_depend>rqt_gui</build_depend>
+  <build_depend>rqt_gui_py</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>std_srvs</build_depend>
+  <build_depend>diagnostic_msgs</build_depend>
+  <build_depend>sr_robot_msgs</build_depend>
+
+  <!-- Dependencies needed after this package is compiled. -->
+  <run_depend>rospy</run_depend>
+  <run_depend>rqt_gui</run_depend>
+  <run_depend>rqt_gui_py</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>std_srvs</run_depend>
+  <run_depend>diagnostic_msgs</run_depend>
+  <run_depend>sr_robot_msgs</run_depend>
+
+<export>
+    <rqt_gui plugin="${prefix}/sr_bootloader.xml"/>
+</export>
+
+</package>
