@@ -1,0 +1,23 @@
+<package>
+  <description brief="sr_gui_change_muscle_controllers">
+
+     sr_gui_change_muscle_controllers is a rosgui plugin for loading the different controllers.
+
+  </description>
+  <author>Toni Oliver</author>
+  <license>GPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/sr_gui_change_muscle_controllers</url>
+  <depend package="rospy"/>
+  <depend package="rqt_gui"/>
+  <depend package="rqt_gui_py"/>
+  <depend package="pr2_mechanism_msgs"/>
+  <depend package="sr_robot_msgs"/>
+
+  <export>
+    <rqt_gui plugin="${prefix}/sr_change_controllers_plugin.xml"/>
+  </export>
+
+</package>
+
+

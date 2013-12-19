@@ -1,0 +1,23 @@
+<library path="src">
+  <class name="Change Controllers" type="sr_gui_change_muscle_controllers.change_controllers.SrGuiChangeControllers" base_class_type="rqt_gui_py::Plugin">
+    <description>
+	A plugin for loading the different controllers for a Shadow edc muscle hand. It allows to load the desired type of controllers for all the joints in the Shadow Robot Hand (all the same type).
+	The plugin does not read the current state of the controllers, so if the controllers are loaded from outside the plugin, the initial state
+	of the plugin will be inconsistent with the state of the controllers. The Stop button stops all the currently running controllers, even if
+	different types of controllers are running for the different joints.
+    </description>
+    <qtgui>
+      <group>
+	<label>Shadow Robot</label>
+      </group>
+      <group>
+	<label>Controllers</label>
+      </group>
+      <label>Change Muscle Controllers</label>
+      <icon type="file">../icons/hand.png</icon>
+      <statustip>
+    A plugin for loading the desired type of controller for all the joints in the Shadow Robot Muscle Hand.
+      </statustip>
+    </qtgui>
+  </class>
+</library>

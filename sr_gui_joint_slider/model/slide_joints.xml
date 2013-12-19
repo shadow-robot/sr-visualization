@@ -178,6 +178,12 @@
                     <min>0</min>
                     <max>180</max>
                 </controller>
+                <controller name="muscle_position">
+                    <command_topic>sh_ffj0_muscle_position_controller/command</command_topic>
+                    <msg_type>std_msgs/Float64</msg_type>
+                    <min>0</min>
+                    <max>180</max>
+                </controller>
                 <controller name="velocity">
                     <command_topic>sh_ffj0_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
@@ -200,6 +206,12 @@
                 </controller>
                 <controller name="position">
                     <command_topic>sh_ffj3_position_controller/command</command_topic>
+                    <msg_type>std_msgs/Float64</msg_type>
+                    <min>0</min>
+                    <max>90</max>
+                </controller>
+                <controller name="muscle_position">
+                    <command_topic>sh_ffj3_muscle_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>90</max>
@@ -230,6 +242,12 @@
                     <min>-20</min>
                     <max>20</max>
                 </controller>
+                <controller name="muscle_position">
+                    <command_topic>sh_ffj4_muscle_position_controller/command</command_topic>
+                    <msg_type>std_msgs/Float64</msg_type>
+                    <min>-20</min>
+                    <max>20</max>
+                </controller>
                 <controller name="velocity">
                     <command_topic>sh_ffj4_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
@@ -252,6 +270,12 @@
                 </controller>
                 <controller name="position">
                     <command_topic>sh_mfj0_position_controller/command</command_topic>
+                    <msg_type>std_msgs/Float64</msg_type>
+                    <min>0</min>
+                    <max>180</max>
+                </controller>
+                <controller name="muscle_position">
+                    <command_topic>sh_mfj0_muscle_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>180</max>
@@ -282,6 +306,12 @@
                     <min>0</min>
                     <max>90</max>
                 </controller>
+                <controller name="muscle_position">
+                    <command_topic>sh_mfj3_muscle_position_controller/command</command_topic>
+                    <msg_type>std_msgs/Float64</msg_type>
+                    <min>0</min>
+                    <max>90</max>
+                </controller>
                 <controller name="velocity">
                     <command_topic>sh_mfj3_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
@@ -304,6 +334,12 @@
                 </controller>
                 <controller name="position">
                     <command_topic>sh_mfj4_position_controller/command</command_topic>
+                    <msg_type>std_msgs/Float64</msg_type>
+                    <min>-20</min>
+                    <max>20</max>
+                </controller>
+                <controller name="muscle_position">
+                    <command_topic>sh_mfj4_muscle_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-20</min>
                     <max>20</max>
@@ -334,6 +370,12 @@
                     <min>0</min>
                     <max>180</max>
                 </controller>
+                <controller name="muscle_position">
+                    <command_topic>sh_rfj0_muscle_position_controller/command</command_topic>
+                    <msg_type>std_msgs/Float64</msg_type>
+                    <min>0</min>
+                    <max>180</max>
+                </controller>
                 <controller name="velocity">
                     <command_topic>sh_rfj0_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
@@ -350,6 +392,12 @@
             <joint name="RFJ3">
                 <controller name="mixed_position_velocity">
                     <command_topic>sh_rfj3_mixed_position_velocity_controller/command</command_topic>
+                    <msg_type>std_msgs/Float64</msg_type>
+                    <min>0</min>
+                    <max>90</max>
+                </controller>
+                <controller name="muscle_position">
+                    <command_topic>sh_rfj3_muscle_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>90</max>
@@ -386,6 +434,12 @@
                     <min>-20</min>
                     <max>20</max>
                 </controller>
+                <controller name="muscle_position">
+                    <command_topic>sh_rfj4_muscle_position_controller/command</command_topic>
+                    <msg_type>std_msgs/Float64</msg_type>
+                    <min>-20</min>
+                    <max>20</max>
+                </controller>
                 <controller name="velocity">
                     <command_topic>sh_rfj4_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
@@ -408,6 +462,12 @@
                 </controller>
                 <controller name="position">
                     <command_topic>sh_lfj0_position_controller/command</command_topic>
+                    <msg_type>std_msgs/Float64</msg_type>
+                    <min>0</min>
+                    <max>180</max>
+                </controller>
+                <controller name="muscle_position">
+                    <command_topic>sh_lfj0_muscle_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>180</max>
@@ -438,6 +498,12 @@
                     <min>0</min>
                     <max>90</max>
                 </controller>
+                <controller name="muscle_position">
+                    <command_topic>sh_lfj3_muscle_position_controller/command</command_topic>
+                    <msg_type>std_msgs/Float64</msg_type>
+                    <min>0</min>
+                    <max>90</max>
+                </controller>
                 <controller name="velocity">
                     <command_topic>sh_lfj3_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
@@ -460,6 +526,12 @@
                 </controller>
                 <controller name="position">
                     <command_topic>sh_lfj4_position_controller/command</command_topic>
+                    <msg_type>std_msgs/Float64</msg_type>
+                    <min>-20</min>
+                    <max>20</max>
+                </controller>
+                <controller name="muscle_position">
+                    <command_topic>sh_lfj4_muscle_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-20</min>
                     <max>20</max>
@@ -490,6 +562,12 @@
                     <min>0</min>
                     <max>45</max>
                 </controller>
+                <controller name="muscle_position">
+                    <command_topic>sh_lfj5_muscle_position_controller/command</command_topic>
+                    <msg_type>std_msgs/Float64</msg_type>
+                    <min>0</min>
+                    <max>45</max>
+                </controller>
                 <controller name="velocity">
                     <command_topic>sh_lfj5_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
@@ -512,6 +590,12 @@
                 </controller>
                 <controller name="position">
                     <command_topic>sh_thj1_position_controller/command</command_topic>
+                    <msg_type>std_msgs/Float64</msg_type>
+                    <min>0</min>
+                    <max>90</max>
+                </controller>
+                <controller name="muscle_position">
+                    <command_topic>sh_thj1_muscle_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>0</min>
                     <max>90</max>
@@ -542,6 +626,12 @@
                     <min>-40</min>
                     <max>40</max>
                 </controller>
+                <controller name="muscle_position">
+                    <command_topic>sh_thj2_muscle_position_controller/command</command_topic>
+                    <msg_type>std_msgs/Float64</msg_type>
+                    <min>-40</min>
+                    <max>40</max>
+                </controller>
                 <controller name="velocity">
                     <command_topic>sh_thj2_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
@@ -564,6 +654,12 @@
                 </controller>
                 <controller name="position">
                     <command_topic>sh_thj3_position_controller/command</command_topic>
+                    <msg_type>std_msgs/Float64</msg_type>
+                    <min>-15</min>
+                    <max>15</max>
+                </controller>
+                <controller name="muscle_position">
+                    <command_topic>sh_thj3_muscle_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-15</min>
                     <max>15</max>
@@ -594,6 +690,12 @@
                     <min>0</min>
                     <max>70</max>
                 </controller>
+                <controller name="muscle_position">
+                    <command_topic>sh_thj4_muscle_position_controller/command</command_topic>
+                    <msg_type>std_msgs/Float64</msg_type>
+                    <min>0</min>
+                    <max>70</max>
+                </controller>
                 <controller name="velocity">
                     <command_topic>sh_thj4_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
@@ -616,6 +718,12 @@
                 </controller>
                 <controller name="position">
                     <command_topic>sh_thj5_position_controller/command</command_topic>
+                    <msg_type>std_msgs/Float64</msg_type>
+                    <min>-60</min>
+                    <max>60</max>
+                </controller>
+                <controller name="muscle_position">
+                    <command_topic>sh_thj5_muscle_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-60</min>
                     <max>60</max>
@@ -646,6 +754,12 @@
                     <min>-45</min>
                     <max>30</max>
                 </controller>
+                <controller name="muscle_position">
+                    <command_topic>sh_wrj1_muscle_position_controller/command</command_topic>
+                    <msg_type>std_msgs/Float64</msg_type>
+                    <min>-45</min>
+                    <max>30</max>
+                </controller>
                 <controller name="velocity">
                     <command_topic>sh_wrj1_velocity_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
@@ -668,6 +782,12 @@
                 </controller>
                 <controller name="position">
                     <command_topic>sh_wrj2_position_controller/command</command_topic>
+                    <msg_type>std_msgs/Float64</msg_type>
+                    <min>-30</min>
+                    <max>10</max>
+                </controller>
+                <controller name="muscle_position">
+                    <command_topic>sh_wrj2_muscle_position_controller/command</command_topic>
                     <msg_type>std_msgs/Float64</msg_type>
                     <min>-30</min>
                     <max>10</max>
