@@ -388,7 +388,7 @@ class SrGuiSelfTest(Plugin):
         self.nodes = []
 
         #gets all the list of services and only keep the nodes which have a self_test service
-        self.nodes = [x[0].split('/')[1] for x in rosgraph.masterapi.Master("/").getSystemState()[2] if "self_test" in x[0]]
+        self.nodes = [x[0].split('/')[len(x[0].split('/'))-2] for x in rosgraph.masterapi.Master("/").getSystemState()[2] if "self_test" in x[0]]
 
         #uniquify items in the list
         self.nodes = list(set(self.nodes))
