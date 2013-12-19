@@ -76,6 +76,8 @@ class PlotThread(QThread):
 
         elif self.controller_type_ == "Position":
             rxplot_str += "sh_"+self.joint_name_.lower()+"_position_controller/state/set_point,sh_"+self.joint_name_.lower()+"_position_controller/state/process_value sh_" + self.joint_name_.lower()+"_position_controller/state/command"
+        elif self.controller_type_ == "Muscle Position":
+            rxplot_str += "sh_"+self.joint_name_.lower()+"_muscle_position_controller/state/set_point,sh_"+self.joint_name_.lower()+"_muscle_position_controller/state/process_value sh_" + self.joint_name_.lower()+"_muscle_position_controller/state/pseudo_command sh_" + self.joint_name_.lower()+"_muscle_position_controller/state/valve_muscle_0,sh_" + self.joint_name_.lower()+"_muscle_position_controller/state/valve_muscle_1"
         elif self.controller_type_ == "Velocity":
             rxplot_str += "sh_"+self.joint_name_.lower()+"_velocity_controller/state/set_point,sh_"+self.joint_name_.lower()+"_velocity_controller/state/process_value"
         elif self.controller_type_ == "Mixed Position/Velocity":
@@ -123,6 +125,8 @@ class MoveThread(QThread):
         controller_name_ = ""
         if self.controller_type_ == "Position":
             controller_name_ = "sh_"+self.joint_name_.lower()+"_position_controller"
+        if self.controller_type_ == "Muscle Position":
+            controller_name_ = "sh_"+self.joint_name_.lower()+"_muscle_position_controller"
         elif self.controller_type_ == "Mixed Position/Velocity":
             controller_name_ = "sh_"+self.joint_name_.lower()+"_mixed_position_velocity_controller"
 
@@ -275,6 +279,8 @@ class SrGuiControllerTuner(Plugin):
             subpath = "/controls/motors/" + config_subdir
         elif self.controller_type == "Position":
             filter_files = "Config (*position_controller"+filter_files+")"
+        elif self.controller_type == "Muscle Position":
+            filter_files = "Config (*muscle_joint_position_controller"+filter_files+")"
         elif self.controller_type == "Velocity":
             filter_files = "Config (*velocity_controller"+filter_files+")"
         elif self.controller_type == "Mixed Position/Velocity":
@@ -446,7 +452,7 @@ class SrGuiControllerTuner(Plugin):
                         self.ctrl_widgets[ motor_name ]["btn_plot"].clicked.connect(partial(self.on_btn_plot_pressed_, motor_name, self.ctrl_widgets[ motor_name ]["btn_plot"]))
                         layout_buttons.addWidget(btn_plot)
     
-                        if self.controller_type in ["Position", "Mixed Position/Velocity"]:
+                        if self.controller_type in ["Position", "Muscle Position", "Mixed Position/Velocity"]:
                             #only adding Move button for position controllers
                             btn_move = QPushButton("Move")
                             self.ctrl_widgets[ motor_name ]["btn_move"] = btn_move

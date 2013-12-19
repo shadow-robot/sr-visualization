@@ -70,8 +70,10 @@ class SrHandCalibration(Plugin):
 
     def btn_save_clicked_(self):
         path_to_config = "~"
+        #Reading the param that contains the config_dir suffix that we should use for this hand (e.g. '' normally for a right hand  or 'lh' if this is for a left hand)
+        config_dir = rospy.get_param('config_dir', '')
         try:
-            path_to_config = roslib.packages.get_pkg_dir("sr_ethercat_hand_config") + "/calibrations"
+            path_to_config = roslib.packages.get_pkg_dir("sr_ethercat_hand_config") + "/calibrations/" + config_dir
         except:
             rospy.logwarn("couldnt find the sr_ethercat_hand_config package")
 
@@ -93,8 +95,10 @@ class SrHandCalibration(Plugin):
 
     def btn_load_clicked_(self):
         path_to_config = "~"
+        #Reading the param that contains the config_dir suffix that we should use for this hand (e.g. '' normally for a right hand  or 'lh' if this is for a left hand)
+        config_dir = rospy.get_param('config_dir', '')
         try:
-            path_to_config = roslib.packages.get_pkg_dir("sr_ethercat_hand_config") + "/calibrations"
+            path_to_config = roslib.packages.get_pkg_dir("sr_ethercat_hand_config") + "/calibrations/" + config_dir
         except:
             rospy.logwarn("couldnt find the sr_ethercat_hand_config package")
 
@@ -126,4 +130,3 @@ class SrHandCalibration(Plugin):
 
     def restore_settings(self, global_settings, perspective_settings):
         pass
-
