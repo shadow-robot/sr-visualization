@@ -20,7 +20,7 @@ import roslib
 roslib.load_manifest('sr_gui_hand_calibration')
 import rospy
 
-from etherCAT_hand_lib import EtherCAT_Hand_Lib
+from sr_robot_lib.etherCAT_hand_lib import EtherCAT_Hand_Lib
 from QtGui import QTreeWidgetItem, QTreeWidgetItemIterator, QColor, QIcon, QMessageBox
 from PyQt4.Qt import QTimer
 from PyQt4.QtCore import SIGNAL

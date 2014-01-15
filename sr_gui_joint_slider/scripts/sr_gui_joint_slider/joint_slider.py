@@ -33,8 +33,8 @@ from QtGui import QWidget, QShortcut, QMessageBox, QFrame
 from pr2_mechanism_msgs.srv import ListControllers, SwitchController, LoadController
 
 from sr_gui_joint_slider.jointSlider import JointController, Joint, CANHandSlider, EtherCATHandSlider, ArmSlider, CANHandSelectionSlider, EtherCATSelectionSlider, ArmSelectionSlider
-from etherCAT_hand_lib import EtherCAT_Hand_Lib
-from shadowhand_ros import ShadowHand_ROS
+from sr_robot_lib.etherCAT_hand_lib import EtherCAT_Hand_Lib
+from sr_hand.shadowhand_ros import ShadowHand_ROS
 
 class SrGuiJointSlider(Plugin):
 

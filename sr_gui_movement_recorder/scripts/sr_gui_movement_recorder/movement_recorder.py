@@ -33,7 +33,7 @@ from pr2_mechanism_msgs.srv import ListControllers, SwitchController, LoadContro
 import xml.etree.ElementTree as ET
 import time, threading
 
-from shadowhand_ros import ShadowHand_ROS
+from sr_hand.shadowhand_ros import ShadowHand_ROS
 
 class Step(QWidget):
     """

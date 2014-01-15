@@ -27,11 +27,11 @@ from QtCore import Qt, QEvent, QObject
 import QtGui
 from QtGui import *
 
-from Grasp import Grasp
-from grasps_interpoler import GraspInterpoler
-from grasps_parser import GraspParser
+from sr_hand.grasp.Grasp import Grasp
+from sr_hand.grasp.grasps_interpoler import GraspInterpoler
+from sr_hand.grasp.grasps_parser import GraspParser
 
-from shadowhand_ros import ShadowHand_ROS
+from sr_hand.shadowhand_ros import ShadowHand_ROS
 
 class JointSelecter(QtGui.QWidget):
     """
