@@ -12,13 +12,13 @@
 
   <!-- Dependencies which this package needs to build itself. -->
   <buildtool_depend>catkin</buildtool_depend>
-
+  
   <!-- Dependencies needed to compile this package. -->
   <build_depend>rospy</build_depend>
   <build_depend>rqt_gui</build_depend>
   <build_depend>rqt_gui_py</build_depend>
   <build_depend>diagnostic_msgs</build_depend>
-  <build_depend>sr_robot_msgs</build_depend>
+  <build_depend>sr_robot_msgs</build_depend>  
 
   <!-- Dependencies needed after this package is compiled. -->
   <run_depend>rospy</run_depend>

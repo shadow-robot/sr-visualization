@@ -7,7 +7,7 @@
       <group>
 	<label>Shadow Robot</label>
       </group>
-      <icon type="file">../icons/hand.png</icon>
+      <icon type="file">../sr_icons/icons/hand.png</icon>
       <label>Shadow Movement Recorder</label>
       <statustip>A plugin for loading the different controllers.</statustip>
     </qtgui>

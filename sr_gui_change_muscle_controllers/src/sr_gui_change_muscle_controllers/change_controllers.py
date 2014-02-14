@@ -45,8 +45,8 @@ from sr_robot_msgs.msg import ControlType
 
 class SrGuiChangeControllers(Plugin):
     
-    CONTROLLER_ON_ICON_PATH = '../../images/icons/green.png'
-    CONTROLLER_OFF_ICON_PATH = '../../images/icons/red.png'
+    CONTROLLER_ON_ICON_PATH = '../../../sr_icons/icons/green.png'
+    CONTROLLER_OFF_ICON_PATH = '../../../sr_icons/icons/red.png'
     CONTROLLER_ON_ICON = QIcon(os.path.join(os.path.dirname(os.path.realpath(__file__)), CONTROLLER_ON_ICON_PATH))
     CONTROLLER_OFF_ICON = QIcon(os.path.join(os.path.dirname(os.path.realpath(__file__)), CONTROLLER_OFF_ICON_PATH))
 

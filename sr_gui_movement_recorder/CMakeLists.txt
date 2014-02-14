@@ -9,3 +9,9 @@ catkin_package(
     LIBRARIES
 )
 catkin_python_setup()
+
+install( DIRECTORY uis DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION} )
+
+install( DIRECTORY saved_src DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION} )
+
+install( FILES sr_gui_movement_recorder_plugin.xml DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION} )

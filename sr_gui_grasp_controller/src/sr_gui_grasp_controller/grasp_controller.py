@@ -307,7 +307,7 @@ class SrGuiGraspController(Plugin):
 
         self.setObjectName('SrGuiGraspController')
         self_dir      = os.path.dirname(os.path.realpath(__file__));
-        self.ui_dir   = os.path.join(self_dir, '../../ui')
+        self.ui_dir   = os.path.join(self_dir, '../../uis')
         self.img_dir  = os.path.join(self_dir, '../../images')
         self.icon_dir = os.path.join(self_dir, '../../images/icons')
         self.sr_lib   = ShadowHand_ROS()

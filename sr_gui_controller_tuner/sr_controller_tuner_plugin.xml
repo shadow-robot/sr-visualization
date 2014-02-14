@@ -11,7 +11,7 @@
 	<label>Controllers</label>
       </group>
       <label>Controller Tuner</label>
-      <icon type="file">../icons/hand.png</icon>
+      <icon type="file">../sr_icons/icons/hand.png</icon>
       <statustip>A plugin for tuning the sr_mechanism_controllers.</statustip>
     </qtgui>
   </class>
