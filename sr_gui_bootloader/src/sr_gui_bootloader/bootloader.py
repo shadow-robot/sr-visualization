@@ -79,8 +79,7 @@ class SrGuiBootloader(Plugin):
         self._publisher = None
         self._widget = QWidget()
 
-        rp = rospkg.RosPack()
-        ui_file = os.path.join(rp.get_path('sr_gui_bootloader'), 'uis', 'SrBootloader.ui')
+        ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_bootloader'), 'uis', 'SrBootloader.ui')
         loadUi(ui_file, self._widget)
         self._widget.setObjectName('SrMotorResetterUi')
         context.add_widget(self._widget)
@@ -106,7 +105,7 @@ class SrGuiBootloader(Plugin):
         path_to_bootloader = "~"
         try:
             rp = rospkg.RosPack()
-            path_to_bootloader = os.path.join(rp.get_path('sr_external_dependencies'), '/compiled_firmware/released_firmware/')
+            path_to_bootloader = os.path.join(rospkg.RosPack().get_path('sr_external_dependencies'), '/compiled_firmware/released_firmware/')
         except:
             rospy.logwarn("couldnt find the sr_edc_controller_configuration package")
 

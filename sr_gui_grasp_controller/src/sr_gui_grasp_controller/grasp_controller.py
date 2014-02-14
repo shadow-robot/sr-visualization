@@ -25,9 +25,9 @@ from QtCore import Qt, QEvent, QObject
 import QtGui
 from QtGui import *
 
-from sr_hand.grasp.Grasp import Grasp
-from sr_hand.grasp.grasps_interpoler import GraspInterpoler
-from sr_hand.grasp.grasps_parser import GraspParser
+from sr_hand.Grasp import Grasp
+from sr_hand.grasps_interpoler import GraspInterpoler
+from sr_hand.grasps_parser import GraspParser
 
 from sr_hand.shadowhand_ros import ShadowHand_ROS
 
@@ -309,7 +309,7 @@ class SrGuiGraspController(Plugin):
         
         self.sr_lib   = ShadowHand_ROS()
         
-        ui_file = os.path.join(rp.get_path('sr_gui_grasp_controller'), 'uis', 'SrGuiGraspController.ui')
+        ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_grasp_controller'), 'uis', 'SrGuiGraspController.ui')
         self._widget     = QWidget()
         loadUi(ui_file, self._widget)
         context.add_widget(self._widget)
