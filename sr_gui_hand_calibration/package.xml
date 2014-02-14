@@ -2,7 +2,7 @@
   <name>sr_gui_hand_calibration</name>
   <version>1.2.0</version>
   <description>This is a rosgui plugin for calibrating the Shadow EtherCAT Hand.</description>
-  <maintainer email="software@shadowrobot.com">Ugo Cupcic </maintainer>
+  <maintainer email="software@shadowrobot.com">Shadow Robot's software team</maintainer>
 
   <license>GPL</license>
 

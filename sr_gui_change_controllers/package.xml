@@ -2,7 +2,7 @@
   <name>sr_gui_change_controllers</name>
   <version>1.2.0</version>
   <description>sr_gui_change_controllers is a rosgui plugin for loading the different controllers.</description>
-  <maintainer email="software@shadowrobot.com">Ugo Cupcic </maintainer>
+  <maintainer email="software@shadowrobot.com">Shadow Robot's software team</maintainer>
 
   <license>GPL</license>
 

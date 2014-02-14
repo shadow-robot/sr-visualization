@@ -9,3 +9,7 @@ catkin_package(
     LIBRARIES
 )
 catkin_python_setup()
+
+install(PROGRAMS scripts/
+         DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)

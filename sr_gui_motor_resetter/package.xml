@@ -2,7 +2,7 @@
   <name>sr_gui_motor_resetter</name>
   <version>1.2.0</version>
   <description>sr_gui_motor_resetter - gui plugin for resetting motors on the shadow hand.</description>
-  <maintainer email="software@shadowrobot.com">Mark Pitchless</maintainer>
+  <maintainer email="software@shadowrobot.com">Shadow Robot's software team</maintainer>
 
   <license>GPL</license>
 

@@ -2,7 +2,7 @@
   <name>sr_gui_joint_slider</name>
   <version>1.2.0</version>
   <description>sr_gui_joint_slider is a rosgui plugin to change the position of the different joints.</description>
-  <maintainer email="software@shadowrobot.com">Ugo Cupcic </maintainer>
+  <maintainer email="software@shadowrobot.com">Shadow Robot's software team</maintainer>
 
   <license>GPL</license>
 

@@ -2,7 +2,7 @@
   <name>sr_gui_muscle_driver_bootloader</name>
   <version>1.2.0</version>
   <description>A GUI plugin for bootloading the muscle drivers on the etherCAT muscle shadow hand.</description>
-  <maintainer email="software@shadowrobot.com">Ugo Cupcic</maintainer>
+  <maintainer email="software@shadowrobot.com">Shadow Robot's software team</maintainer>
   <license>GPL</license>
   <url>http://ros.org/wiki/sr_gui_muscle_driver_bootloader</url>
   

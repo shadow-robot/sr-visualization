@@ -2,7 +2,7 @@
   <name>sr_visualization</name>
   <version>1.2.0</version>
   <description>This stack contains the different gui and gui plugins used with the shadow robot stacks.</description>
-  <maintainer email="software@shadowrobot.com">Maintained by Ugo Cupcic </maintainer>
+  <maintainer email="software@shadowrobot.com">Shadow Robot's software team</maintainer>
 
   <license>GPL</license>
   <license>BSD</license>
