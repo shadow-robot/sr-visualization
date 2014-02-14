@@ -16,8 +16,6 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import roslib
-roslib.load_manifest('sr_gui_hand_calibration')
 import rospy
 
 from sr_robot_lib.etherCAT_hand_lib import EtherCAT_Hand_Lib

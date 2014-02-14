@@ -16,8 +16,6 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import roslib
-roslib.load_manifest('sr_gui_controller_tuner')
 import rospy
 
 from xml.etree import ElementTree as ET

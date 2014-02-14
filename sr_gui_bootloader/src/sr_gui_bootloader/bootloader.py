@@ -14,9 +14,7 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import roslib
-roslib.load_manifest('sr_gui_bootloader')
-import rospy
+import rospy, rospkg
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
@@ -81,7 +79,8 @@ class SrGuiBootloader(Plugin):
         self._publisher = None
         self._widget = QWidget()
 
-        ui_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../uis/SrBootloader.ui')
+        rp = rospkg.RosPack()
+        ui_file = os.path.join(rp.get_path('sr_gui_bootloader'), 'uis', 'SrBootloader.ui')
         loadUi(ui_file, self._widget)
         self._widget.setObjectName('SrMotorResetterUi')
         context.add_widget(self._widget)
@@ -106,7 +105,8 @@ class SrGuiBootloader(Plugin):
         #select hex file bootloader
         path_to_bootloader = "~"
         try:
-            path_to_bootloader = roslib.packages.get_pkg_dir("sr_external_dependencies") + "/compiled_firmware/released_firmware/"
+            rp = rospkg.RosPack()
+            path_to_bootloader = os.path.join(rp.get_path('sr_external_dependencies'), '/compiled_firmware/released_firmware/')
         except:
             rospy.logwarn("couldnt find the sr_edc_controller_configuration package")
 

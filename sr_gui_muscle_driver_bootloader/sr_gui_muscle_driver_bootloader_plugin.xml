@@ -10,7 +10,7 @@
       <group>
 	<label>EtherCAT</label>
       </group>
-      <icon type="file">../sr_icons/icons/hand.png</icon>
+      <icon type="file">../sr_visualization_icons/icons/hand.png</icon>
       <label>Muscle Driver Bootloader</label>
       <statustip>A plugin for bootloading the muscle drivers on the etherCAT muscle shadow hand.</statustip>
     </qtgui>

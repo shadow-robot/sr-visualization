@@ -14,7 +14,7 @@
 	<label>Controllers</label>
       </group>
       <label>Change Controllers</label>
-      <icon type="file">../sr_icons/icons/hand.png</icon>
+      <icon type="file">../sr_visualization_icons/icons/hand.png</icon>
       <statustip>
     A plugin for loading the desired type of controller for all the joints in the Shadow Robot Hand.
       </statustip>

@@ -13,9 +13,7 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os, time
-import roslib; roslib.load_manifest('sr_gui_grasp_controller')
-import rospy
+import os, time, rospy, rospkg
 
 from rospy import loginfo, logerr, logdebug
 
@@ -306,13 +304,12 @@ class SrGuiGraspController(Plugin):
         super(SrGuiGraspController, self).__init__(context)
 
         self.setObjectName('SrGuiGraspController')
-        self_dir      = os.path.dirname(os.path.realpath(__file__));
-        self.ui_dir   = os.path.join(self_dir, '../../uis')
-        self.img_dir  = os.path.join(self_dir, '../../images')
-        self.icon_dir = os.path.join(self_dir, '../../images/icons')
+        
+        self.icon_dir = os.path.join(rospkg.RosPack().get_path('sr_visualization_icons'), '/icons')
+        
         self.sr_lib   = ShadowHand_ROS()
-
-        ui_file      = os.path.join(self.ui_dir, 'SrGuiGraspController.ui')
+        
+        ui_file = os.path.join(rp.get_path('sr_gui_grasp_controller'), 'uis', 'SrGuiGraspController.ui')
         self._widget     = QWidget()
         loadUi(ui_file, self._widget)
         context.add_widget(self._widget)

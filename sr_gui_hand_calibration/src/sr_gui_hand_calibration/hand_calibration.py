@@ -16,11 +16,7 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import os
-
-import roslib
-roslib.load_manifest('sr_gui_hand_calibration')
-import rospy
+import os, rospy, rospkg
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
@@ -39,7 +35,7 @@ class SrHandCalibration(Plugin):
         self._publisher = None
         self._widget = QWidget()
 
-        ui_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../uis/SrHandCalibration.ui')
+        ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_hand_calibration'), 'uis', 'SrHandCalibration.ui')
         loadUi(ui_file, self._widget)
         self._widget.setObjectName('SrHandCalibrationUi')
         context.add_widget(self._widget)
@@ -73,7 +69,7 @@ class SrHandCalibration(Plugin):
         #Reading the param that contains the config_dir suffix that we should use for this hand (e.g. '' normally for a right hand  or 'lh' if this is for a left hand)
         config_dir = rospy.get_param('config_dir', '')
         try:
-            path_to_config = roslib.packages.get_pkg_dir("sr_ethercat_hand_config") + "/calibrations/" + config_dir
+            path_to_config = os.path.join(rospkg.RosPack().get_path('sr_ethercat_hand_config'), 'calibrations', config_dir)
         except:
             rospy.logwarn("couldnt find the sr_ethercat_hand_config package")
 
@@ -98,7 +94,7 @@ class SrHandCalibration(Plugin):
         #Reading the param that contains the config_dir suffix that we should use for this hand (e.g. '' normally for a right hand  or 'lh' if this is for a left hand)
         config_dir = rospy.get_param('config_dir', '')
         try:
-            path_to_config = roslib.packages.get_pkg_dir("sr_ethercat_hand_config") + "/calibrations/" + config_dir
+            path_to_config = os.path.join(rospkg.RosPack().get_path('sr_ethercat_hand_config'), 'calibrations', config_dir)
         except:
             rospy.logwarn("couldnt find the sr_ethercat_hand_config package")
 

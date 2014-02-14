@@ -7,7 +7,7 @@
       <group>
 	<label>Shadow Robot</label>
       </group>
-      <icon type="file">../sr_icons/icons/hand.png</icon>
+      <icon type="file">../sr_visualization_icons/icons/hand.png</icon>
       <label>Shadow Grasp Controller</label>
       <statustip>A plugin for interpolating between grasps.</statustip>
     </qtgui>

@@ -29,10 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-import os
-import roslib
-roslib.load_manifest('sr_gui_change_controllers')
-import rospy
+import os, rospy, rospkg
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
@@ -44,11 +41,9 @@ from sr_robot_msgs.srv import ChangeControlType
 from sr_robot_msgs.msg import ControlType
 
 class SrGuiChangeControllers(Plugin):
-    
-    CONTROLLER_ON_ICON_PATH = '../../../sr_icons/icons/green.png'
-    CONTROLLER_OFF_ICON_PATH = '../../../sr_icons/icons/red.png'
-    CONTROLLER_ON_ICON = QIcon(os.path.join(os.path.dirname(os.path.realpath(__file__)), CONTROLLER_ON_ICON_PATH))
-    CONTROLLER_OFF_ICON = QIcon(os.path.join(os.path.dirname(os.path.realpath(__file__)), CONTROLLER_OFF_ICON_PATH))
+    ICON_DIR = os.path.join(rospkg.RosPack().get_path('sr_visualization_icons'), 'icons')
+    CONTROLLER_ON_ICON = QIcon(os.path.join(ICON_DIR, 'green.png'))
+    CONTROLLER_OFF_ICON = QIcon(os.path.join(ICON_DIR, 'red.png'))
 
     controllers = {"effort": ["sh_ffj0_effort_controller", "sh_ffj3_effort_controller", "sh_ffj4_effort_controller", "sh_mfj0_effort_controller", "sh_mfj3_effort_controller", "sh_mfj4_effort_controller", "sh_rfj0_effort_controller", "sh_rfj3_effort_controller", "sh_rfj4_effort_controller", "sh_lfj0_effort_controller", "sh_lfj3_effort_controller", "sh_lfj4_effort_controller", "sh_lfj5_effort_controller", "sh_thj1_effort_controller", "sh_thj2_effort_controller", "sh_thj3_effort_controller", "sh_thj4_effort_controller", "sh_thj5_effort_controller", "sh_wrj1_effort_controller", "sh_wrj2_effort_controller"],
                    "position": ["sh_ffj0_position_controller", "sh_ffj3_position_controller", "sh_ffj4_position_controller", "sh_mfj0_position_controller", "sh_mfj3_position_controller", "sh_mfj4_position_controller", "sh_rfj0_position_controller", "sh_rfj3_position_controller", "sh_rfj4_position_controller", "sh_lfj0_position_controller", "sh_lfj3_position_controller", "sh_lfj4_position_controller", "sh_lfj5_position_controller", "sh_thj1_position_controller", "sh_thj2_position_controller", "sh_thj3_position_controller", "sh_thj4_position_controller", "sh_thj5_position_controller", "sh_wrj1_position_controller", "sh_wrj2_position_controller"],
@@ -63,7 +58,7 @@ class SrGuiChangeControllers(Plugin):
         self._publisher = None
         self._widget = QWidget()
 
-        ui_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../uis/SrChangeControllers.ui')
+        ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_change_controllers'), 'uis', 'SrChangeControllers.ui')
         loadUi(ui_file, self._widget)
         self._widget.setObjectName('SrChangeControllersUi')
         context.add_widget(self._widget)

@@ -13,10 +13,7 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import roslib
-roslib.load_manifest('sr_gui_motor_resetter')
-import rospy
+import os, rospkg, rospy
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
@@ -77,7 +74,7 @@ class SrGuiMotorResetter(Plugin):
         self._publisher = None
         self._widget = QWidget()
 
-        ui_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../uis/SrGuiMotorResetter.ui')
+        ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_motor_resetter'), 'uis', 'SrGuiMotorResetter.ui')
         loadUi(ui_file, self._widget)
         self._widget.setObjectName('SrMotorResetterUi')
         context.add_widget(self._widget)

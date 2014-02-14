@@ -16,8 +16,7 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import roslib; roslib.load_manifest('sr_gui_controller_tuner')
-import rospy
+import rospy, os
 
 import yaml
 try:
@@ -82,7 +81,7 @@ class PidSaver(object):
 if __name__ == '__main__':
     path_to_config = "~"
     try:
-        path_to_config = roslib.packages.get_pkg_dir("sr_edc_controller_configuration")
+        path_to_config = os.path.join(rospkg.RosPack().get_path("sr_edc_controller_configuration"))
 
         pid_saver = PidSaver(path_to_config+"/sr_edc_mixed_position_velocity_joint_controllers.yaml")
         pid_saver.save_settings(["sh_wrj2_mixed_position_velocity_controller","pid"], {"d":1.0})

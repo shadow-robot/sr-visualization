@@ -17,11 +17,7 @@
 #
 
 import os, subprocess, math, time
-
-import roslib
-roslib.load_manifest('sr_gui_controller_tuner')
-import rospy, rosparam
-
+import rospy, rosparam, rospkg
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
@@ -194,7 +190,7 @@ class SrGuiControllerTuner(Plugin):
 
         self.file_to_save = None
 
-        ui_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../uis/SrGuiControllerTuner.ui')
+        ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_controller_tuner'), 'uis', 'SrGuiControllerTuner.ui')
         loadUi(ui_file, self._widget)
         self._widget.setObjectName('SrControllerTunerUi')
         context.add_widget(self._widget)
@@ -210,7 +206,7 @@ class SrGuiControllerTuner(Plugin):
         self.ctrl_widgets = {}
 
         #a library which helps us doing the real work.
-        self.sr_controller_tuner_app_ = SrControllerTunerApp( os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../data/controller_settings.xml') )
+        self.sr_controller_tuner_app_ = SrControllerTunerApp( os.path.join(rospkg.RosPack().get_path('sr_gui_controller_tuner'), 'data', 'controller_settings.xml') )
 
         #refresh the controllers once
         self.on_btn_refresh_ctrl_clicked_()
@@ -256,7 +252,7 @@ class SrGuiControllerTuner(Plugin):
     def on_btn_select_file_path_clicked_(self):
         path_to_config = "~"
         try:
-            path_to_config = roslib.packages.get_pkg_dir("sr_ethercat_hand_config")
+            path_to_config = os.path.join(rospkg.RosPack().get_path('sr_ethercat_hand_config'))
         except:
             rospy.logwarn("couldnt find the sr_ethercat_hand_config package, do you have the sr_config stack installed?")
 

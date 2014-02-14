@@ -1,5 +1,5 @@
 <package>
-  <name>sr_icons</name>
+  <name>sr_visualization_icons</name>
   <version>1.2.0</version>
   <description>Contains icons used by all guis in sr_visualization.</description>
   <maintainer email="software@shadowrobot.com">Shadow Robot's software team</maintainer>

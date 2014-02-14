@@ -16,10 +16,7 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import os
-import roslib
-roslib.load_manifest('sr_gui_movement_recorder')
-import rospy
+import os, rospy, rospkg
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
@@ -281,7 +278,7 @@ class SrGuiMovementRecorder(Plugin):
         self._publisher = None
         self._widget = QWidget()
 
-        ui_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../uis/SrGuiMovementRecorder.ui')
+        ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_movement_recorder'), 'uis', 'SrGuiMovementRecorder.ui')
         loadUi(ui_file, self._widget)
         self._widget.setObjectName('SrGuiMovementRecorderUi')
         context.add_widget(self._widget)
@@ -340,11 +337,11 @@ class SrGuiMovementRecorder(Plugin):
 
         self.frame.setLayout(self.layout)
 
-        path_to_icons = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../../sr_icons/icons/')
-        self.load_btn.setIcon(QIcon(path_to_icons + 'load.png'))
-        self.save_btn.setIcon(QIcon(path_to_icons + 'save.png'))
-        self.stop_btn.setIcon(QIcon(path_to_icons + 'stop.png'))
-        self.play_btn.setIcon(QIcon(path_to_icons + 'play.png'))
+        path_to_icons = os.path.join( rospkg.RosPack().get_path('sr_visualization_icons'), 'icons')
+        self.load_btn.setIcon( QIcon( os.path.join( path_to_icons, 'load.png' )))
+        self.save_btn.setIcon( QIcon( os.path.join( path_to_icons, 'save.png' )))
+        self.stop_btn.setIcon( QIcon( os.path.join( path_to_icons, 'stop.png' )))
+        self.play_btn.setIcon( QIcon( os.path.join( path_to_icons, 'play.png' )))
 
         self.steps = []
         self.add_step()

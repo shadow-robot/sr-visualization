@@ -29,11 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-import os, tarfile, shutil
-import roslib
-roslib.load_manifest('sr_gui_self_test')
-import rospy, rosgraph
-import time
+import os, tarfile, shutil, rospy, rosgraph, rospkg, time
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
@@ -152,16 +148,17 @@ class SrGuiSelfTest(Plugin):
         self._widget = QWidget()
 
         #the UI is split into 3 files
-        ui_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../uis/SrSelfTest.ui')
+        ui_path = os.path.join(rospkg.RosPack().get_path('sr_gui_self_test'), 'uis')
+        ui_file = os.path.join(ui_path, 'SrSelfTest.ui')
         loadUi(ui_file, self._widget)
         self._widget.setObjectName('SrSelfTestUi')
         context.add_widget(self._widget)
 
         self.test_widget_ = QWidget()
-        ui_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../uis/self_test.ui')
+        ui_file = os.path.join(ui_path, 'self_test.ui')
         loadUi(ui_file, self.test_widget_)
         self.plot_widget_ = QWidget()
-        ui_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../uis/test_plot.ui')
+        ui_file = os.path.join(ui_path, 'test_plot.ui')
         loadUi(ui_file, self.plot_widget_)
 
         #we load both the test and plot widget in the mdi area

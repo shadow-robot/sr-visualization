@@ -10,7 +10,7 @@
       <group>
 	<label>EtherCAT</label>
       </group>
-      <icon type="file">../sr_icons/icons/hand.png</icon>
+      <icon type="file">../sr_visualization_icons/icons/hand.png</icon>
       <label>Motor Resetter</label>
       <statustip>A plugin for resetting shadow hand motors.</statustip>
     </qtgui>

@@ -16,12 +16,7 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import os
-import sys
-
-import roslib
-roslib.load_manifest('sr_gui_joint_slider')
-import rospy
+import os, sys, rospkg, rospy
 
 from xml.etree import ElementTree as ET
 
@@ -44,14 +39,14 @@ class SrGuiJointSlider(Plugin):
 
         self._widget = QWidget()
 
-        ui_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../uis/SrJointSlider.ui')
+        ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_joint_slider'), 'uis', 'SrJointSlider.ui')
         loadUi(ui_file, self._widget)
 
         self._widget.setObjectName('SrJointSliderUi')
         context.add_widget(self._widget)
 
         #read the xml configuration file
-        config_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../model/slide_joints.xml')
+        config_file = os.path.join(rospkg.RosPack().get_path('sr_gui_joint_slider'), 'model', 'slide_joints.xml')
         self.tree = ET.ElementTree()
         self.tree.parse(config_file)
         self.robots = None
@@ -212,15 +207,16 @@ class SrGuiJointSlider(Plugin):
         self.sliders = list()
         for joint in self.joints:
             slider = None
+            slider_ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_joint_slider'), 'uis', 'Slider.ui')
             if self._widget.comboBox.currentText() == "CAN Hand":
-                slider = CANHandSlider(joint, '../../uis/Slider.ui', self.robot_lib_CAN, self, self._widget.scrollAreaWidgetContents)
+                slider = CANHandSlider(joint, slider_ui_file, self.robot_lib_CAN, self, self._widget.scrollAreaWidgetContents)
             elif self._widget.comboBox.currentText() == "EtherCAT Hand":
                 try:
-                    slider = EtherCATHandSlider(joint, '../../uis/Slider.ui', self.robot_lib_eth, self, self._widget.scrollAreaWidgetContents)
+                    slider = EtherCATHandSlider(joint, slider_ui_file, self.robot_lib_eth, self, self._widget.scrollAreaWidgetContents)
                 except Exception, e:
                     rospy.loginfo(e)
             elif self._widget.comboBox.currentText() == "Arm":
-                slider = ArmSlider(joint, '../../uis/Slider.ui', self.robot_lib_CAN, self, self._widget.scrollAreaWidgetContents)
+                slider = ArmSlider(joint, slider_ui_file, self.robot_lib_CAN, self, self._widget.scrollAreaWidgetContents)
             else:
                 rospy.logwarn("Unknown robot name: " + self._widget.comboBox.currentText())
 
@@ -232,12 +228,13 @@ class SrGuiJointSlider(Plugin):
                 self.sliders.append(slider)
 
         #Create the slider to move all the selected joint sliders
+        selection_slider_ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_joint_slider'), 'uis', 'SelectionSlider.ui')
         if self._widget.comboBox.currentText() == "CAN Hand":
-            self.selection_slider = CANHandSelectionSlider("Change sel.", 0, 100, '../../uis/SelectionSlider.ui', self.robot_lib_CAN, self, self._widget.scrollAreaWidgetContents)
+            self.selection_slider = CANHandSelectionSlider("Change sel.", 0, 100, selection_slider_ui_file, self.robot_lib_CAN, self, self._widget.scrollAreaWidgetContents)
         elif self._widget.comboBox.currentText() == "EtherCAT Hand":
-            self.selection_slider = EtherCATSelectionSlider("Change sel.", 0, 100, '../../uis/SelectionSlider.ui', self, self._widget.scrollAreaWidgetContents)
+            self.selection_slider = EtherCATSelectionSlider("Change sel.", 0, 100, selection_slider_ui_file, self, self._widget.scrollAreaWidgetContents)
         elif self._widget.comboBox.currentText() == "Arm":
-            self.selection_slider = ArmSelectionSlider("Change sel.", 0, 100, '../../uis/SelectionSlider.ui', self.robot_lib_CAN, self, self._widget.scrollAreaWidgetContents)
+            self.selection_slider = ArmSelectionSlider("Change sel.", 0, 100, selection_slider_ui_file, self.robot_lib_CAN, self, self._widget.scrollAreaWidgetContents)
         else:
             rospy.logwarn("Unknown robot name: " + self._widget.comboBox.currentText())
 
