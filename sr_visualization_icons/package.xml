@@ -6,11 +6,13 @@
 
   <license>GPL</license>
   
-  <url type="website">http://ros.org/wiki/sr_gui_muscle_driver_bootloader</url>
+  <url type="website">http://ros.org/wiki/sr_visualization_icons</url>
+  <url type="repository">https://github.com/shadow-robot/sr-visualization</url>
+  <url type="bugtracker">https://github.com/shadow-robot/sr-visualization/issues</url>
 
   <author email="software@shadowrobot.com">Ugo Cupcic</author>
 
-  <!-- Dependencies which this package needs to build itself. -->
+  
   <buildtool_depend>catkin</buildtool_depend>
 
 </package>

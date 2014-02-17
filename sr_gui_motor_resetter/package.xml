@@ -7,13 +7,15 @@
   <license>GPL</license>
 
   <url type="website">http://ros.org/wiki/sr_gui_motor_resetter</url>
+  <url type="repository">https://github.com/shadow-robot/sr-visualization</url>
+  <url type="bugtracker">https://github.com/shadow-robot/sr-visualization/issues</url>
 
   <author email="software@shadowrobot.com">Mark Pitchless</author>
 
-  <!-- Dependencies which this package needs to build itself. -->
+  
   <buildtool_depend>catkin</buildtool_depend>
   
-  <!-- Dependencies needed to compile this package. -->
+  
   <build_depend>rospy</build_depend>
   <build_depend>rqt_gui</build_depend>
   <build_depend>rqt_gui_py</build_depend>
@@ -21,7 +23,7 @@
   <build_depend>std_srvs</build_depend>
   <build_depend>diagnostic_msgs</build_depend>
 
-  <!-- Dependencies needed after this package is compiled. -->
+  
   <run_depend>rospy</run_depend>
   <run_depend>rqt_gui</run_depend>
   <run_depend>rqt_gui_py</run_depend>
@@ -30,7 +32,7 @@
   <run_depend>diagnostic_msgs</run_depend>
 
 <export>
-    <rqt_gui plugin="${prefix}/sr_motor_resetter_plugin.xml"/>
+    <rqt_gui plugin="${prefix}/sr_motor_resetter_plugin.xml" />
 </export>
 
 </package>
