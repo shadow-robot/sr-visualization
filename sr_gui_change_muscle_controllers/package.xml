@@ -3,8 +3,10 @@
   <version>1.2.0</version>
   <description>sr_gui_change_muscle_controllers is a rosgui plugin for loading the different controllers.</description>
   <maintainer email="software@shadowrobot.com">Shadow Robot's software team</maintainer>
+  
   <license>GPL</license>
-  <url>http://ros.org/wiki/sr_gui_change_muscle_controllers</url>
+  
+  <url type="website">http://ros.org/wiki/sr_gui_change_muscle_controllers</url>
   
   <author email="software@shadowrobot.com">Ugo Cupcic</author>
 
