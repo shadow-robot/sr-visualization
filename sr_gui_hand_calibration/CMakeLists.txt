@@ -9,3 +9,7 @@ catkin_package(
     LIBRARIES
 )
 catkin_python_setup()
+
+install( DIRECTORY uis DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION} )
+
+install( FILES sr_gui_hand_calibration_plugin.xml DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION} )

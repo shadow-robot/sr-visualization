@@ -9,3 +9,9 @@ catkin_package(
     LIBRARIES
 )
 catkin_python_setup()
+
+install( DIRECTORY uis DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION} )
+
+install( DIRECTORY model DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION} )
+
+install( FILES sr_joint_slider_plugin.xml DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION} )
