@@ -31,6 +31,8 @@
 
 import os, rospy, rospkg
 
+from time import sleep
+
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
@@ -253,6 +255,17 @@ class SrGuiChangeControllers(Plugin):
                 success = False
         except rospy.ServiceException:
             success = False
+
+        # Disable buttons for 3 secs until motors change their parameters
+        self._widget.btn_effort.setEnabled(False)
+        self._widget.btn_position.setEnabled(False)
+        self._widget.btn_mixed.setEnabled(False)
+        self._widget.btn_velocity.setEnabled(False)
+        sleep(3)
+        self._widget.btn_effort.setEnabled(True)
+        self._widget.btn_position.setEnabled(True)
+        self._widget.btn_mixed.setEnabled(True)
+        self._widget.btn_velocity.setEnabled(True)
 
         if not success:
             QMessageBox.warning(self._widget, "Warning", "Failed to change the control type.")
