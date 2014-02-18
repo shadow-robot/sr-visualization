@@ -26,6 +26,7 @@
   <run_depend>sr_gui_movement_recorder</run_depend>
   <run_depend>sr_gui_hand_calibration</run_depend>
   <run_depend>sr_gui_grasp_controller</run_depend>
+  <run_depend>sr_visualization_icons</run_depend>
 
   <export>
     <metapackage />
