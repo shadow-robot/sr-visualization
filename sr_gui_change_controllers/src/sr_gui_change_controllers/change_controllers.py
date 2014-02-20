@@ -43,6 +43,9 @@ from sr_robot_msgs.srv import ChangeControlType
 from sr_robot_msgs.msg import ControlType
 
 class SrGuiChangeControllers(Plugin):
+    """
+    A rosgui plugin for loading the different controllers
+    """
     ICON_DIR = os.path.join(rospkg.RosPack().get_path('sr_visualization_icons'), 'icons')
     CONTROLLER_ON_ICON = QIcon(os.path.join(ICON_DIR, 'green.png'))
     CONTROLLER_OFF_ICON = QIcon(os.path.join(ICON_DIR, 'red.png'))
@@ -94,7 +97,10 @@ class SrGuiChangeControllers(Plugin):
         self._widget.radioButtonPWM.toggled.connect(self.on_control_mode_radio_button_toggled_)
 
     def on_control_mode_radio_button_toggled_(self, checked):
-        #We only react to the currently ON radio button event
+        """
+        Switch between FORCE, PWM modes
+        We only react to the currently ON radio button event
+        """
         if checked:
             change_type_msg = ChangeControlType()
             if self._widget.radioButtonTorque.isChecked():
@@ -106,6 +112,9 @@ class SrGuiChangeControllers(Plugin):
             self.change_force_ctrl_type(change_type_msg)
         
     def on_stop_ctrl_clicked_(self):
+        """
+        Stop controller
+        """
         self._widget.btn_stop.setEnabled(False)
         self._widget.btn_mixed.setIcon(self.CONTROLLER_OFF_ICON)
         self._widget.btn_mixed.setChecked(False)
@@ -119,6 +128,9 @@ class SrGuiChangeControllers(Plugin):
         self._widget.btn_stop.setEnabled(True)
 
     def on_effort_ctrl_clicked_(self):
+        """
+        Effort controller selected
+        """
         self._widget.btn_effort.setEnabled(False)
         if not self._widget.btn_effort.isChecked():
             self._widget.btn_effort.setIcon(self.CONTROLLER_ON_ICON)
@@ -139,6 +151,9 @@ class SrGuiChangeControllers(Plugin):
         self._widget.btn_effort.setEnabled(True)
 
     def on_position_ctrl_clicked_(self):
+        """
+        Position controller selected
+        """
         self._widget.btn_position.setEnabled(False)
         if not self._widget.btn_position.isChecked():
             self._widget.btn_position.setIcon(self.CONTROLLER_ON_ICON)
@@ -159,6 +174,9 @@ class SrGuiChangeControllers(Plugin):
         self._widget.btn_position.setEnabled(True)
 
     def on_mixed_ctrl_clicked_(self):
+        """
+        Mixed controller selected
+        """
         self._widget.btn_mixed.setEnabled(False)
         if not self._widget.btn_mixed.isChecked():
             self._widget.btn_mixed.setIcon(self.CONTROLLER_ON_ICON)
@@ -181,6 +199,9 @@ class SrGuiChangeControllers(Plugin):
             
 
     def on_velocity_ctrl_clicked_(self):
+        """
+        Velocity controller selected
+        """
         self._widget.btn_velocity.setEnabled(False)
         if not self._widget.btn_velocity.isChecked():
             self._widget.btn_velocity.setIcon(self.CONTROLLER_ON_ICON)
@@ -203,6 +224,9 @@ class SrGuiChangeControllers(Plugin):
 
 
     def change_ctrl(self, controller):
+        """
+        Switch the current controller
+        """
         success = True
         list_controllers = rospy.ServiceProxy('pr2_controller_manager/list_controllers', ListControllers)
         try:
@@ -242,11 +266,12 @@ class SrGuiChangeControllers(Plugin):
             rospy.logwarn("Failed to change some of the controllers. This is normal if this is not a 5 finger hand.")
 
     def change_force_ctrl_type(self, chng_type_msg):
-        '''
+        """
         Calls the service (realtime_loop/change_control_type) that allows to tell the driver (sr_robot_lib) which type of force control has to be sent to the motor:
             - torque demand (sr_robot_msgs::ControlType::FORCE)
             - PWM (sr_robot_msgs::ControlType::PWM)
-        '''
+        it will deactivate the Effort, Position, Mixed and Velocity buttons for 3 secs to allow hardware controllers to be updated 
+        """
         success = True
         change_control_type = rospy.ServiceProxy('realtime_loop/change_control_type', ChangeControlType)
         try:

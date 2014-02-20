@@ -27,6 +27,9 @@ from QtCore import QVariant
 from sr_gui_hand_calibration.sr_hand_calibration_model import HandCalibration
 
 class SrHandCalibration(Plugin):
+    """
+    A rosgui plugin for calibrating the Shadow EtherCAT Hand
+    """
 
     def __init__(self, context):
         super(SrHandCalibration, self).__init__(context)
@@ -52,6 +55,9 @@ class SrHandCalibration(Plugin):
         self.populate_tree()
 
     def populate_tree(self):
+        """
+        Create tree with calibrations
+        """
         self._widget.tree_calibration.clear()
 
         self.hand_model = HandCalibration( tree_widget = self._widget.tree_calibration, progress_bar = self._widget.progress )
@@ -65,6 +71,10 @@ class SrHandCalibration(Plugin):
             self._widget.tree_calibration.resizeColumnToContents(col)
 
     def btn_save_clicked_(self):
+        """
+        Save calibration to a yaml file.
+        sr_ethercat_hand_config package must be installed
+        """
         path_to_config = "~"
         #Reading the param that contains the config_dir suffix that we should use for this hand (e.g. '' normally for a right hand  or 'lh' if this is for a left hand)
         config_dir = rospy.get_param('config_dir', '')
@@ -90,13 +100,17 @@ class SrHandCalibration(Plugin):
         self.hand_model.save( filename )
 
     def btn_load_clicked_(self):
+        """
+        Load calibration from a yaml file.
+        sr_ethercat_hand_config package must be installed
+        """
         path_to_config = "~"
         #Reading the param that contains the config_dir suffix that we should use for this hand (e.g. '' normally for a right hand  or 'lh' if this is for a left hand)
         config_dir = rospy.get_param('config_dir', '')
         try:
             path_to_config = os.path.join(rospkg.RosPack().get_path('sr_ethercat_hand_config'), 'calibrations', config_dir)
         except:
-            rospy.logwarn("couldnt find the sr_ethercat_hand_config package")
+            rospy.logwarn("couldn't find the sr_ethercat_hand_config package")
 
         filter_files = "*.yaml"
         filename, _ = QFileDialog.getOpenFileName(self._widget.tree_calibration, self._widget.tr('Load Calibration'),
@@ -109,6 +123,9 @@ class SrHandCalibration(Plugin):
         self.hand_model.load( filename )
 
     def btn_joint_0s_clicked_(self):
+        """
+        calibrate the first joint of each finger
+        """
         self.hand_model.calibrate_joint0s( self._widget.btn_joint_0s )
 
     def _unregisterPublisher(self):

@@ -271,6 +271,9 @@ class SignalWidget(QWidget):
         super(SignalWidget, self).__init__(parent)
 
 class SrGuiMovementRecorder(Plugin):
+    """
+    A rosgui plugin for recording and replaying movements
+    """
     def __init__(self, context):
         super(SrGuiMovementRecorder, self).__init__(context)
         self.setObjectName('SrGuiMovementRecorder')
@@ -381,7 +384,10 @@ class SrGuiMovementRecorder(Plugin):
                 elem.tail = i
 
     def load(self):
-        #remove all the present steps
+        """
+        remove all the present steps
+        and load new from xml file
+        """
         filename = QFileDialog.getOpenFileName(self.frame, 'Open Script', '')
         filename = filename[0]
 
@@ -502,4 +508,3 @@ class SrGuiMovementRecorder(Plugin):
     def shutdown_plugin(self):
         self.remove_all_steps()
         self._unregisterPublisher()
-

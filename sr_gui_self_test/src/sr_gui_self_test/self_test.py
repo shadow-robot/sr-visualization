@@ -136,6 +136,9 @@ class ResizeableQPlot(QLabel):
 
 
 class SrGuiSelfTest(Plugin):
+    """
+    A rosgui plugin for running self diagnostics of a Shadow robot hand
+    """
     def __init__(self, context):
         """
         Detects which nodes are advertising a self_test service, makes it possible to run them,
@@ -258,7 +261,7 @@ class SrGuiSelfTest(Plugin):
 
     def on_test_finished_(self, point):
         """
-        Callback from test_finished signal. Displays the results and update the progress
+        Callback from test_finished signal. Display the results and update the progress
         """
         thread = self.test_threads[point.x()]
         resp = thread.resp

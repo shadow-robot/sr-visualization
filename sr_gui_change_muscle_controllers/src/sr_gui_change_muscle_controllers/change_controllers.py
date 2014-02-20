@@ -41,7 +41,9 @@ from sr_robot_msgs.srv import ChangeControlType
 from sr_robot_msgs.msg import ControlType
 
 class SrGuiChangeControllers(Plugin):
-    
+    """
+    A rosgui plugin for loading the different controllers
+    """
     ICON_DIR = os.path.join(rospkg.RosPack().get_path('sr_visualization_icons'), 'icons')
     CONTROLLER_ON_ICON = QIcon(os.path.join(ICON_DIR, 'green.png'))
     CONTROLLER_OFF_ICON = QIcon(os.path.join(ICON_DIR, 'red.png'))
@@ -74,6 +76,9 @@ class SrGuiChangeControllers(Plugin):
         self._widget.btn_position.pressed.connect(self.on_position_ctrl_clicked_)
         
     def on_stop_ctrl_clicked_(self):
+        """
+        Stop the controller
+        """
         self._widget.btn_stop.setEnabled(False)
         self._widget.btn_valve.setIcon(self.CONTROLLER_OFF_ICON)
         self._widget.btn_valve.setChecked(False)
@@ -83,6 +88,9 @@ class SrGuiChangeControllers(Plugin):
         self._widget.btn_stop.setEnabled(True)
 
     def on_valve_ctrl_clicked_(self):
+        """
+        Switch to valve control
+        """
         self._widget.btn_valve.setEnabled(False)
         if not self._widget.btn_valve.isChecked():
             self._widget.btn_valve.setIcon(self.CONTROLLER_ON_ICON)
@@ -99,6 +107,9 @@ class SrGuiChangeControllers(Plugin):
         self._widget.btn_valve.setEnabled(True)
 
     def on_position_ctrl_clicked_(self):
+        """
+        Switch to position control
+        """
         self._widget.btn_position.setEnabled(False)
         if not self._widget.btn_position.isChecked():
             self._widget.btn_position.setIcon(self.CONTROLLER_ON_ICON)
@@ -115,6 +126,9 @@ class SrGuiChangeControllers(Plugin):
         self._widget.btn_position.setEnabled(True)
 
     def change_ctrl(self, controller):
+        """
+        Switch controller type
+        """
         success = True
         list_controllers = rospy.ServiceProxy('pr2_controller_manager/list_controllers', ListControllers)
         try:

@@ -53,6 +53,10 @@ class PlotThread(QThread):
         self.subprocess_ = []
 
     def run(self):
+        """
+        Creates an appropriate plot according to controller type
+        Also creates a subscription if controller is of Motor Force type
+        """
         rxplot_str = "rxplot -b 30 -p 30 --title=" + self.plot_title_ + " "
 
         if self.controller_type_ == "Motor Force":
@@ -117,6 +121,9 @@ class MoveThread(QThread):
         self.wait()
 
     def create_launch_file_(self):
+        """
+        Create a launch file dynamically
+        """
         #Not using automatic move for velocity and effort controllers
         controller_name_ = ""
         if self.controller_type_ == "Position":
@@ -149,6 +156,9 @@ class MoveThread(QThread):
         return tmp_launch_file.name
 
     def get_min_max_(self):
+        """
+        Retrieve joint limits in radians for joint in self.joint_name 
+        """
         if self.joint_name_ in ["FFJ0", "MFJ0", "RFJ0", "LFJ0"]:
             return [0.0, math.radians(180.0)]
         elif self.joint_name_ in ["FFJ3", "MFJ3", "RFJ3", "LFJ3", "THJ1"]:
@@ -171,6 +181,9 @@ class MoveThread(QThread):
             return [math.radians(-30.0), math.radians(10.0)]
 
     def launch_(self):
+        """
+        launch a dynamically created launch file
+        """
         filename = self.create_launch_file_()
 
         launch_string = "roslaunch "+filename
@@ -178,7 +191,9 @@ class MoveThread(QThread):
         self.subprocess_.append( subprocess.Popen(launch_string.split()) )
 
 class SrGuiControllerTuner(Plugin):
-
+    """
+    a rosgui plugin for tuning the sr_mechanism_controllers
+    """
     def __init__(self, context):
         super(SrGuiControllerTuner, self).__init__(context)
         self.setObjectName('SrGuiControllerTuner')
@@ -234,12 +249,18 @@ class SrGuiControllerTuner(Plugin):
         self.move_threads.append(move_thread)
 
     def on_changed_controller_type_(self, index = None):
+        """
+        When controller type is changed clear the chosen file path and refresh the tree with the controller settings
+        """
         if index == None:
             return
         self.reset_file_path()
         self.refresh_controller_tree_( self.controllers_in_dropdown[index] )
         
     def reset_file_path(self):
+        """
+        Clear the chosen file path and disable the save button until user selects another path
+        """
         self._widget.txt_file_path.setText("")
 
         self._widget.btn_load.setEnabled(False)
@@ -250,11 +271,15 @@ class SrGuiControllerTuner(Plugin):
         self._widget.btn_save_selected.setEnabled(False)
 
     def on_btn_select_file_path_clicked_(self):
+        """
+        Perform controller tuning and save settings to user specified file
+        sr_config stack must be installed
+        """
         path_to_config = "~"
         try:
             path_to_config = os.path.join(rospkg.RosPack().get_path('sr_ethercat_hand_config'))
         except:
-            rospy.logwarn("couldnt find the sr_ethercat_hand_config package, do you have the sr_config stack installed?")
+            rospy.logwarn("couldn't find the sr_ethercat_hand_config package, do you have the sr_config stack installed?")
 
         #Reading the param that contains the config_dir suffix that we should use for this hand (e.g. '' normally for a right hand  or 'lh' if this is for a left hand)
         config_subdir = rospy.get_param('config_dir', '')
@@ -305,7 +330,9 @@ class SrGuiControllerTuner(Plugin):
         self._widget.btn_save_selected.setEnabled(True)
 
     def on_btn_load_clicked_(self):
-        #reload the parameters in rosparam, then refresh the tree widget
+        """
+        reload the parameters in rosparam, then refresh the tree widget
+        """
         paramlist = rosparam.load_file( self.file_to_save )
         for params,ns in paramlist:
             rosparam.upload_params(ns, params)
@@ -313,6 +340,9 @@ class SrGuiControllerTuner(Plugin):
         self.refresh_controller_tree_( self.controllers_in_dropdown[self._widget.dropdown_ctrl.currentIndex()] )
 
     def on_btn_save_selected_clicked_(self):
+        """
+        Save only the selected controllers
+        """
         selected_items = self._widget.tree_ctrl_settings.selectedItems()
 
         if len( selected_items ) == 0:
@@ -323,10 +353,16 @@ class SrGuiControllerTuner(Plugin):
                 self.save_controller( str(it.text(1)) )
 
     def on_btn_save_all_clicked_(self):
+        """
+        Save all controllers
+        """
         for motor in self.ctrl_widgets.keys():
             self.save_controller( motor )
 
     def on_btn_set_selected_clicked_(self):
+        """
+        Sets the current values for selected controllers using the ros service.
+        """
         selected_items = self._widget.tree_ctrl_settings.selectedItems()
 
         if len( selected_items ) == 0:
@@ -337,10 +373,16 @@ class SrGuiControllerTuner(Plugin):
                 self.set_controller( str(it.text(1)) )
 
     def on_btn_set_all_clicked_(self):
+        """
+        Sets the current values for all controllers using the ros service.
+        """
         for motor in self.ctrl_widgets.keys():
             self.set_controller( motor )
 
     def on_btn_refresh_ctrl_clicked_(self):
+        """
+        Calls refresh_controller_tree_ after preparing widgets
+        """
         ctrls = self.sr_controller_tuner_app_.get_ctrls()
         self.sr_controller_tuner_app_.refresh_control_mode()
         self.controllers_in_dropdown = []
@@ -352,6 +394,9 @@ class SrGuiControllerTuner(Plugin):
         self.refresh_controller_tree_()
 
     def read_settings(self, joint_name):
+        """
+        retrive settings for joint with given name
+        """
         dict_of_widgets = self.ctrl_widgets[joint_name]
 
         settings = {}
@@ -371,8 +416,7 @@ class SrGuiControllerTuner(Plugin):
 
     def set_controller(self, joint_name):
         """
-        Sets the current values for the given controller
-        using the ros service.
+        Sets the current values for the given controller using the ros service.
         """
         settings = self.read_settings( joint_name )
 
@@ -387,8 +431,7 @@ class SrGuiControllerTuner(Plugin):
 
     def save_controller(self, joint_name):
         """
-        Sets the current values for the given controller
-        using the ros service.
+        Saves the current values for the given controller using the ros service.
         """
         settings = self.read_settings( joint_name )
 
@@ -398,10 +441,13 @@ class SrGuiControllerTuner(Plugin):
 
     def refresh_controller_tree_(self, controller_type = "Motor Force"):
         """
-        Get the controller settings and their ranges and display them in
-        the tree.
+        Get the controller settings and their ranges and display them in the tree.
+        Buttons and plots will be added unless in edit_only mode.
+        Move button will be added if controller is position type
+        Buttons "set all" "set selected" and "stop movements" are disabled in edit_only_mode
+        Controller settings must exist for every motor of every finger in the yaml file.
         """
-        #buttons "set all" "set selected" and "stop movements" are disabled in edit_only_mode
+        
         if self.sr_controller_tuner_app_.edit_only_mode:
             self._widget.btn_set_selected.setEnabled(False)
             self._widget.btn_set_all.setEnabled(False)

@@ -70,7 +70,9 @@ class Motor(QFrame):
 
 
 class SrGuiBootloader(Plugin):
-
+    """
+    A GUI plugin for bootloading the muscle drivers on the etherCAT muscle shadow hand
+    """
     def __init__(self, context):
         super(SrGuiBootloader, self).__init__(context)
         self.setObjectName('SrGuiBootloader')
@@ -100,12 +102,14 @@ class SrGuiBootloader(Plugin):
         self._widget.btn_bootload.pressed.connect(self.on_bootload_pressed)
 
     def on_select_bootloader_pressed(self):
-        #select hex file bootloader
+        """
+        Select a hex file to bootload. Hex files must exist in the released_firmaware folder
+        """
         path_to_bootloader = "~"
         try:
             path_to_bootloader = os.path.join(rospkg.RosPack().get_path('sr_external_dependencies'), 'compiled_firmware', 'released_firmware')
         except:
-            rospy.logwarn("couldnt find the sr_edc_controller_configuration package")
+            rospy.logwarn("couldn't find the sr_edc_controller_configuration package")
 
         filter_files = "*.hex"
         filename, _ = QFileDialog.getOpenFileName(self._widget.motors_frame, self._widget.tr('Select hex file to bootload'),
@@ -119,6 +123,10 @@ class SrGuiBootloader(Plugin):
 
 
     def populate_motors(self):
+        """
+        Find motors according to joint_to_motor_mapping mapping that must exist on the parameter server
+        and add to the list of Motor objects etherCAT hand node must be running
+        """
         row = 0
         col = 0
         for motor_index in range(0, 4):
@@ -167,14 +175,23 @@ class SrGuiBootloader(Plugin):
                                 motor.revision_label.setPalette(palette);
 
     def on_select_all_pressed(self):
+        """
+        Select all motors
+        """
         for motor in self.motors:
             motor.checkbox.setCheckState( Qt.Checked )
 
     def on_select_none_pressed(self):
+        """
+        Unselect all motors
+        """
         for motor in self.motors:
             motor.checkbox.setCheckState( Qt.Unchecked )
 
     def on_bootload_pressed(self):
+        """
+        Start programming motors
+        """
         self.progress_bar.reset()
         nb_motors_to_program = 0
         for motor in self.motors:
@@ -203,6 +220,9 @@ class SrGuiBootloader(Plugin):
         self.progress_bar.setValue( int(point.x()) )
 
     def finished_programming_motors(self):
+        """
+        Programming of motors completed
+        """
         self.motors_frame.setEnabled(True)
         self._widget.btn_select_all.setEnabled(True)
         self._widget.btn_select_none.setEnabled(True)

@@ -149,6 +149,9 @@ class EtherCATHandSlider(ExtendedSlider):
             self.set_slider_behaviour()
 
     def get_current_joint_controller(self, current_controllers):
+        """
+        @return: index of the current controller or -1 on failure
+        """
         for index, joint_controller in enumerate(self.joint.controller_list):
             for controller in current_controllers:
                 if (controller.find(self.joint.name.lower() + '_' + joint_controller.name) != -1):
@@ -156,6 +159,9 @@ class EtherCATHandSlider(ExtendedSlider):
         return -1
 
     def get_current_controllers(self):
+        """
+        @return: list of current controllers
+        """
         success = True
         list_controllers = rospy.ServiceProxy('pr2_controller_manager/list_controllers', ListControllers)
         try:
@@ -209,7 +215,7 @@ class EtherCATHandSlider(ExtendedSlider):
         
     def refresh(self):
         """
-        Refresh the current position of the slider
+        Refresh the current position of the slider with index = self.current_controller_index 
         """
         if (self.current_controller_index != -1):
             if (self.joint.controller_list[self.current_controller_index].name == "mixed_position_velocity") or (self.joint.controller_list[self.current_controller_index].name == "position") or (self.joint.controller_list[self.current_controller_index].name == "muscle_position"):
@@ -219,7 +225,7 @@ class EtherCATHandSlider(ExtendedSlider):
 
     def set_slider_behaviour(self):
         """
-        Depending on the type of controllers we may want a different behaviour
+        Set the behaviour of the slider according to controller type
         """
         if (self.joint.controller_list[self.current_controller_index].name == "mixed_position_velocity") or (self.joint.controller_list[self.current_controller_index].name == "position") or (self.joint.controller_list[self.current_controller_index].name == "muscle_position"):
             if self.pos_slider_tracking_behaviour:
@@ -365,12 +371,12 @@ class EtherCATSelectionSlider(SelectionSlider):
 
     def set_slider_behaviour(self):
         """
-        Depending on the type of controllers we may want a different behaviour
+        Set the behaviour of the slider according to controller type
+        Currently we set the tracking to true for all the slide types
+        If any of the controllers is an effort or velocity controller we will activate the slider released signal detection
+        And set the slider halfway (50) as that is the position of the 0 for effort and velocity controllers
         """
-        #Currently we set the tracking to true for all the slide types
         self.slider.setTracking(True)
-        #If any of the controllers is an effort or velocity controller we will activate the slider released signal detection
-        #And set the slider halfway (50) as that is the position of the 0 for effort and velocity controllers
         for slider in self.plugin_parent.sliders:
             if (slider.joint.controller_list[slider.current_controller_index].name == "effort")  or (slider.joint.controller_list[slider.current_controller_index].name == "velocity"):
                 self.connect(self.slider, QtCore.SIGNAL('sliderReleased()'), self.on_slider_released)
@@ -380,7 +386,9 @@ class EtherCATSelectionSlider(SelectionSlider):
                 break
 
     def changeValue(self, value):
-        #modify the values from the selected sliders.
+        """
+        modify the values from the selected sliders.
+        """
         for slider in self.plugin_parent.sliders:
             if slider.is_selected:
                 temp_value = ((slider.slider.maximum() - slider.slider.minimum()) * float(value) / 100.0) + slider.slider.minimum()
@@ -410,7 +418,9 @@ class CANHandSelectionSlider(SelectionSlider):
         self.slider.setTracking(True)
 
     def changeValue(self, value):
-        #modify the values from the selected sliders.
+        """
+        modify the values from the selected sliders.
+        """
         joint_dict = {}
         for slider in self.plugin_parent.sliders:
             if slider.is_selected:
@@ -433,7 +443,9 @@ class ArmSelectionSlider(SelectionSlider):
         self.slider.setTracking(True)
 
     def changeValue(self, value):
-        #modify the values from the selected sliders.
+        """
+        modify the values from the selected sliders.
+        """
         joint_dict = {}
         for slider in self.plugin_parent.sliders:
             if slider.is_selected:
@@ -445,7 +457,3 @@ class ArmSelectionSlider(SelectionSlider):
         self.robot_lib.sendupdate_arm_from_dict(joint_dict)
         self.current_value = value
         self.target.setText("Tgt: " + str(value) + "%")
-
-
-
-

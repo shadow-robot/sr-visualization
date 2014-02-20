@@ -32,7 +32,9 @@ from sr_robot_lib.etherCAT_hand_lib import EtherCAT_Hand_Lib
 from sr_hand.shadowhand_ros import ShadowHand_ROS
 
 class SrGuiJointSlider(Plugin):
-
+    """
+    A rosgui plugin to change the position of the different joints
+    """
     def __init__(self, context):
         super(SrGuiJointSlider, self).__init__(context)
         self.setObjectName('SrGuiJointSlider')
@@ -91,6 +93,13 @@ class SrGuiJointSlider(Plugin):
         return robot_types
 
     def on_robot_type_changed_(self):
+        """
+        Read joints configuration the config from the file
+        Clear existing slider widgets from layout
+        Load the correct robot library
+        Create and load the new slider widgets
+        """
+        
         #We first read the config from the file into a joints list
         j = self.robots[self._widget.comboBox.currentIndex()].find("joints")
         if sys.version_info < (2, 7):
@@ -134,44 +143,52 @@ class SrGuiJointSlider(Plugin):
         self._widget.reloadButton.setEnabled(True)
 
     def on_reload_button_cicked_(self):
-        #Clear existing slider widgets from layout
+        """
+        Clear existing slider widgets from layout
+        Load the correct robot library
+        Create and load the new slider widgets
+        """
+        
         self.delete_old_sliders_()
 
-        #Load the correct robot library
         self.load_robot_library_()
         
         self._widget.sliderReleaseCheckBox.setCheckState(Qt.Unchecked)
 
         if self.is_active:
-            #Create and load the new slider widgets
             self.load_new_sliders_()
     
     def on_refresh_button_cicked_(self):
-        #Call refresh for every slider
+        """
+        Call refresh for every slider
+        """
         for slider in self.sliders:
             slider.refresh()
     
     def on_slider_release_checkbox_clicked_(self, state):
+        """
+        Set tracking behaviour of each slider to false if checkbox is checked, true otherwise 
+        """
+        
         if state == Qt.Checked:
-            #Call set_new_slider_behaviour for every slider
-            # the tracking behaviour will be set to false
             for slider in self.sliders:
                 slider.set_new_slider_behaviour(False)
         else:
-            #Call set_new_slider_behaviour for every slider
             for slider in self.sliders:
                 slider.set_new_slider_behaviour(True)
             
         
 
     def delete_old_sliders_(self):
-        #Clear existing slider widgets from layout
+        """
+        Clear existing slider widgets from layout
+        Empty the slider list
+        """
         for old_slider in self.sliders:
             self._widget.horizontalLayout.removeWidget(old_slider)
             old_slider.close()
             old_slider.deleteLater()
 
-        #Empty the slider list
         self.sliders = list()
 
         if(self.selection_slider is not None):
@@ -181,7 +198,9 @@ class SrGuiJointSlider(Plugin):
             self.selection_slider = None
 
     def load_robot_library_(self):
-        #Load the correct robot library
+        """
+        Load the correct robot library
+        """
         if self._widget.comboBox.currentText() in ["CAN Hand", "Arm"]:
             self.is_active = True
             if self.robot_lib_CAN is None:
@@ -194,7 +213,7 @@ class SrGuiJointSlider(Plugin):
             if self.robot_lib_eth is None:
                 self.robot_lib_eth = EtherCAT_Hand_Lib()
                 if not self.robot_lib_eth.activate_joint_states():
-                    btn_pressed = QMessageBox.warning(self._widget, "Warning", "The EtherCAT Hand node doesn't seem to be running. Try to reload the sliders when it is.")
+                    btn_pressed = QMessageBox.warning(self._widget, "Warning", "The EtherCAT Hand node doesn't seem to be running. Try reloading the sliders when it is.")
                     self.is_active = False
                     if self.robot_lib_eth is not None:
                         self.robot_lib_eth.on_close()
@@ -203,7 +222,11 @@ class SrGuiJointSlider(Plugin):
             rospy.logwarn("Unknown robot name: " + self._widget.comboBox.currentText())
 
     def load_new_sliders_(self):
-        #Create the new slider widgets
+        """
+        Create the new slider widgets
+        Load the new slider
+        Put the slider in the list
+        """
         self.sliders = list()
         for joint in self.joints:
             slider = None
