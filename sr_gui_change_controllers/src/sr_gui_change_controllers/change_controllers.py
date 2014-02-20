@@ -270,7 +270,7 @@ class SrGuiChangeControllers(Plugin):
         Calls the service (realtime_loop/change_control_type) that allows to tell the driver (sr_robot_lib) which type of force control has to be sent to the motor:
             - torque demand (sr_robot_msgs::ControlType::FORCE)
             - PWM (sr_robot_msgs::ControlType::PWM)
-        it will deactivate the Effort, Position, Mixed and Velocity buttons for 3 secs to allow hardware contrllers to be updated 
+        it will deactivate the Effort, Position, Mixed and Velocity buttons for 3 secs to allow hardware controllers to be updated 
         """
         success = True
         change_control_type = rospy.ServiceProxy('realtime_loop/change_control_type', ChangeControlType)
