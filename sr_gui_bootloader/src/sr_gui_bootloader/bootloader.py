@@ -50,7 +50,7 @@ class MotorBootloader(QThread):
 
                 if resp == SimpleMotorFlasherResponse.FAIL:
                     self.emit( SIGNAL("failed(QString)"),
-                               "Bootloading motor "++"failed" )
+                               "Bootloading motor {} failed".format(bootloaded_motors) )
                 bootloaded_motors += 1
                 self.emit( SIGNAL("motor_finished(QPoint)"), QPoint( bootloaded_motors, 0.0 ) )
 
@@ -164,6 +164,7 @@ class SrGuiBootloader(Plugin):
             row += 1
 
     def diagnostics_callback(self, msg):
+
         for status in msg.status:
             for motor in self.motors:
                 if motor.motor_name in status.name:

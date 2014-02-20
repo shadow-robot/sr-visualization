@@ -66,7 +66,9 @@ class Motor(QFrame):
 
 
 class SrGuiMotorResetter(Plugin):
-
+    """
+    A gui plugin for resetting motors on the shadow hand.
+    """
     def __init__(self, context):
         super(SrGuiMotorResetter, self).__init__(context)
         self.setObjectName('SrGuiMotorResetter')

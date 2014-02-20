@@ -38,14 +38,14 @@ red = QColor(236, 178, 178)
 
 class IndividualCalibration( QTreeWidgetItem ):
     """
+    Calibrate a single joint by raw and calibrated values
+    Calibrated joints will appear as green
+    or orange if calibrations are loaded from a file
     """
-
     def __init__(self, joint_name,
                  raw_value, calibrated_value,
                  parent_widget, tree_widget,
                  robot_lib):
-        """
-        """
         self.joint_name = joint_name
         self.raw_value = int(raw_value)
         self.calibrated_value = calibrated_value
@@ -65,21 +65,25 @@ class IndividualCalibration( QTreeWidgetItem ):
         self.tree_widget.remove
 
     def calibrate(self):
+        """
+        Performs the joint calibration and sets background to green
+        calibrate only the calibration lines, not the items for the fingers / joints / hand
+        """
         self.raw_value = self.robot_lib.get_average_raw_value(self.joint_name, 100)
         self.setText( 2, str(self.raw_value) )
 
         for col in xrange(self.tree_widget.columnCount()):
-            #calibrate only the calibration lines, not the items for
-            # the fingers / joints / hand
             if self.text(2) != "":
                 self.setBackgroundColor(col, QColor(green))
 
         self.is_calibrated = True
 
     def set_is_loaded_calibration(self):
+        """
+        set the background to orange: those values are loaded
+        from the file, not recalibrated
+        """
         for col in xrange(self.tree_widget.columnCount()):
-            #set the background to orange: those values are loaded
-            # from the file, not recalibrated
             if self.text(2) != "":
                 self.setBackgroundColor(col, QColor(orange))
 
@@ -91,6 +95,8 @@ class IndividualCalibration( QTreeWidgetItem ):
 
 class JointCalibration( QTreeWidgetItem ):
     """
+    Calibrate a single joint by calibrations list
+    Also displays the current joint position in the GUI
     """
 
     nb_values_to_check = 5
@@ -98,8 +104,6 @@ class JointCalibration( QTreeWidgetItem ):
                  calibrations,
                  parent_widget, tree_widget,
                  robot_lib):
-        """
-        """
         self.joint_name = joint_name
         self.tree_widget = tree_widget
         self.robot_lib = robot_lib
@@ -176,14 +180,13 @@ class JointCalibration( QTreeWidgetItem ):
 
 class FingerCalibration( QTreeWidgetItem ):
     """
+    calibrate all joints of a finger
     """
 
     def __init__(self, finger_name,
                  finger_joints,
                  parent_widget, tree_widget,
                  robot_lib):
-        """
-        """
 
         QTreeWidgetItem.__init__(self, parent_widget, [finger_name, "", "", ""] )
 
@@ -199,6 +202,7 @@ class FingerCalibration( QTreeWidgetItem ):
 
 class HandCalibration( QTreeWidgetItem ):
     """
+    calibrate all joints of all fingers of a hand
     """
     #TODO: Import this from an xml file?
     joint_map = {"First Finger":[ [ "FFJ1", [ [0.0, 0.0],
@@ -329,8 +333,6 @@ class HandCalibration( QTreeWidgetItem ):
                  fingers = ["First Finger", "Middle Finger",
                             "Ring Finger", "Little Finger",
                             "Thumb", "Wrist"]):
-        """
-        """
         self.fingers = []
         #this is set to False if the user doesn't want to continue
         # when there are no EtherCAT hand node currently running.
