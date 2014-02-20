@@ -371,7 +371,7 @@ class EtherCATSelectionSlider(SelectionSlider):
 
     def set_slider_behaviour(self):
         """
-        Set the behaviour of te slide according to controller type
+        Set the behaviour of the slider according to controller type
         Currently we set the tracking to true for all the slide types
         If any of the controllers is an effort or velocity controller we will activate the slider released signal detection
         And set the slider halfway (50) as that is the position of the 0 for effort and velocity controllers
