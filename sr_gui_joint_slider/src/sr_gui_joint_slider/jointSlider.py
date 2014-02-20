@@ -225,7 +225,7 @@ class EtherCATHandSlider(ExtendedSlider):
 
     def set_slider_behaviour(self):
         """
-        Set the behaviour of te slide according to controller type
+        Set the behaviour of the slider according to controller type
         """
         if (self.joint.controller_list[self.current_controller_index].name == "mixed_position_velocity") or (self.joint.controller_list[self.current_controller_index].name == "position") or (self.joint.controller_list[self.current_controller_index].name == "muscle_position"):
             if self.pos_slider_tracking_behaviour:
