@@ -213,7 +213,7 @@ class SrGuiJointSlider(Plugin):
             if self.robot_lib_eth is None:
                 self.robot_lib_eth = EtherCAT_Hand_Lib()
                 if not self.robot_lib_eth.activate_joint_states():
-                    btn_pressed = QMessageBox.warning(self._widget, "Warning", "The EtherCAT Hand node doesn't seem to be running. Try to reload the sliders when it is.")
+                    btn_pressed = QMessageBox.warning(self._widget, "Warning", "The EtherCAT Hand node doesn't seem to be running. Try reloading the sliders when it is.")
                     self.is_active = False
                     if self.robot_lib_eth is not None:
                         self.robot_lib_eth.on_close()

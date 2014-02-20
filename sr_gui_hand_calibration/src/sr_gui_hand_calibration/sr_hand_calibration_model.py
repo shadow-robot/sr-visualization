@@ -151,6 +151,10 @@ class JointCalibration( QTreeWidgetItem ):
         return [self.joint_name, config]
 
     def update_joint_pos(self):
+        """
+        Update the joint position if there are enough nonequal values
+        If the values are equal it can be assumed the sensor are not measuring properly
+        """
         raw_value = self.robot_lib.get_raw_value( self.joint_name )
         self.setText( 2, str(raw_value) )
 

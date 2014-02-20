@@ -164,7 +164,6 @@ class SrGuiBootloader(Plugin):
             row += 1
 
     def diagnostics_callback(self, msg):
-
         for status in msg.status:
             for motor in self.motors:
                 if motor.motor_name in status.name:

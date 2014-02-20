@@ -149,7 +149,7 @@ class SrControllerTunerApp(object):
     def get_controller_settings( self, controller_type ):
         """
         Parses a file containing the controller settings
-        and their min and max values, and returna them.
+        and their min and max values, and returns them.
         """
         ctrl_settings = CtrlSettings(self.xml_path, controller_type)
 

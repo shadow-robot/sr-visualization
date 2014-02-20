@@ -508,4 +508,3 @@ class SrGuiMovementRecorder(Plugin):
     def shutdown_plugin(self):
         self.remove_all_steps()
         self._unregisterPublisher()
-

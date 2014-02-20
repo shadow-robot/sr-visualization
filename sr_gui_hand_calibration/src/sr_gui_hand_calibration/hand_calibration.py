@@ -110,7 +110,7 @@ class SrHandCalibration(Plugin):
         try:
             path_to_config = os.path.join(rospkg.RosPack().get_path('sr_ethercat_hand_config'), 'calibrations', config_dir)
         except:
-            rospy.logwarn("couldnt find the sr_ethercat_hand_config package")
+            rospy.logwarn("couldn't find the sr_ethercat_hand_config package")
 
         filter_files = "*.yaml"
         filename, _ = QFileDialog.getOpenFileName(self._widget.tree_calibration, self._widget.tr('Load Calibration'),

@@ -457,7 +457,3 @@ class ArmSelectionSlider(SelectionSlider):
         self.robot_lib.sendupdate_arm_from_dict(joint_dict)
         self.current_value = value
         self.target.setText("Tgt: " + str(value) + "%")
-
-
-
-

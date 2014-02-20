@@ -109,7 +109,7 @@ class SrGuiBootloader(Plugin):
         try:
             path_to_bootloader = os.path.join(rospkg.RosPack().get_path('sr_external_dependencies'), 'compiled_firmware', 'released_firmware')
         except:
-            rospy.logwarn("couldnt find the sr_edc_controller_configuration package")
+            rospy.logwarn("couldn't find the sr_edc_controller_configuration package")
 
         filter_files = "*.hex"
         filename, _ = QFileDialog.getOpenFileName(self._widget.motors_frame, self._widget.tr('Select hex file to bootload'),
