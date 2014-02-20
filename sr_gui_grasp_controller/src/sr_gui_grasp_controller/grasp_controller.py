@@ -78,6 +78,9 @@ class JointSelecter(QtGui.QWidget):
         self.show()
 
     def get_selected(self):
+        """
+        Retrieve selected joints
+        """
         joints = []
         for cb in self.checkboxes:
             if cb.isChecked():
@@ -86,10 +89,16 @@ class JointSelecter(QtGui.QWidget):
         return joints
 
     def select_all(self):
+        """
+        Select all joints
+        """
         for cb in self.checkboxes:
             cb.setChecked(True)
 
     def deselect_all(self):
+        """
+        Unselect all joints
+        """
         for cb in self.checkboxes:
             cb.setChecked(False)
 
@@ -155,9 +164,15 @@ class GraspSaver(QtGui.QDialog):
         self.show()
 
     def select_all(self):
+        """
+        Select all joints
+        """
         self.joint_selecter.select_all()
 
     def deselect_all(self):
+        """
+        Unselect all joints
+        """
         self.joint_selecter.deselect_all()
 
     def name_changed(self, name):
@@ -168,6 +183,9 @@ class GraspSaver(QtGui.QDialog):
             self.btn_ok.setDisabled(True)
 
     def accept(self):
+        """
+        Save grasp for the selected joints
+        """
         grasp = Grasp()
         grasp.grasp_name = self.grasp_name
 
@@ -196,17 +214,20 @@ class GraspChooser(QtGui.QWidget):
         self.title.setText(title)
 
     def draw(self):
+        """
+        Draw the gui and connect signals
+        """
         self.frame = QtGui.QFrame(self)
 
         self.list = QtGui.QListWidget()
         first_item = self.refresh_list()
-        self.connect(self.list, QtCore.SIGNAL('itemClicked(QListWidgetItem*)'), self.grasp_choosed)
+        self.connect(self.list, QtCore.SIGNAL('itemClicked(QListWidgetItem*)'), self.grasp_selected)
 
         self.connect(self.list, QtCore.SIGNAL('itemDoubleClicked(QListWidgetItem*)'), self.double_click)
         self.list.setViewMode(QtGui.QListView.ListMode)
         self.list.setResizeMode(QtGui.QListView.Adjust)
         self.list.setItemSelected(first_item, True)
-        self.grasp_choosed(first_item, first_time=True)
+        self.grasp_selected(first_item, first_time=True)
 
         self.layout = QtGui.QVBoxLayout()
         self.layout.addWidget(self.title)
@@ -225,17 +246,26 @@ class GraspChooser(QtGui.QWidget):
         self.show()
 
     def double_click(self, item):
+        """ 
+        Sends new targets to the hand from a dictionary mapping the name of the joint to the value of its target
+        """
         self.grasp = self.plugin_parent.sr_lib.grasp_parser.grasps[str(item.text())]
         self.plugin_parent.sr_lib.sendupdate_from_dict(self.grasp.joints_and_positions)
         self.plugin_parent.set_reference_grasp()
 
-    def grasp_choosed(self, item, first_time=False):
+    def grasp_selected(self, item, first_time=False):
+        """
+        grasp has been selected with a single click
+        """
         self.grasp = self.plugin_parent.sr_lib.grasp_parser.grasps[str(item.text())]
         if not first_time:
             self.plugin_parent.grasp_changed()
             self.plugin_parent.set_reference_grasp()
 
     def refresh_list(self, value = 0):
+        """
+        refreash list of grasps
+        """
         self.list.clear()
         first_item = None
         grasps = self.plugin_parent.sr_lib.grasp_parser.grasps.keys()
@@ -256,6 +286,9 @@ class GraspSlider(QtGui.QWidget):
         self.plugin_parent = plugin_parent
 
     def draw(self):
+        """
+        Draw the gui and connect signals
+        """
         self.frame = QtGui.QFrame(self)
         label_frame = QtGui.QFrame(self.frame)
         from_label = QtGui.QLabel()
@@ -293,10 +326,15 @@ class GraspSlider(QtGui.QWidget):
         self.show()
 
     def changeValue(self, value):
+        """
+        interpolate from the current grasp to new value
+        """
         self.plugin_parent.interpolate_grasps(value)
 
 class SrGuiGraspController(Plugin):
-    """Main GraspController plugin Dock window."""
+    """
+    Main GraspController plugin Dock window.
+    """
 
     reloadGraspSig = QtCore.pyqtSignal(int)
 
@@ -375,6 +413,9 @@ class SrGuiGraspController(Plugin):
         GraspSaver(self._widget, all_joints, self)
 
     def set_reference_grasp(self):
+        """
+        Set the current grasp as a reference for interpolation
+        """
         self.current_grasp.joints_and_positions = self.sr_lib.read_all_current_positions()
         
         if self.current_grasp.joints_and_positions is None:
@@ -394,6 +435,10 @@ class SrGuiGraspController(Plugin):
         self.grasp_slider.slider.setValue(0)
 
     def grasp_changed(self):
+        """
+        interpolate grasps from chosen to current one and from current to chosen
+        hand controllers must be running and reference must be set
+        """
         self.current_grasp.joints_and_positions = self.sr_lib.read_all_current_positions()
         
         if self.current_grasp.joints_and_positions is None:
@@ -404,6 +449,11 @@ class SrGuiGraspController(Plugin):
         self.grasp_interpoler_2 = GraspInterpoler(self.current_grasp, self.grasp_to_chooser.grasp)
 
     def interpolate_grasps(self, value):
+        """
+        interpolate grasp from the current one to the one indicated by value
+        or in the opposite direction if value < 0
+        hand controllers must be running and reference must be set
+        """
         if self.grasp_interpoler_1 is None \
             or self.grasp_interpoler_2 is None:
             QMessageBox.warning(self._widget, "Warning", "Could not read current grasp.\nCheck that the hand controllers are running.\nThen click \"Set Reference\"")

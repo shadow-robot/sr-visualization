@@ -25,6 +25,9 @@ except ImportError:
     from yaml import Loader, Dumper
 
 class PidLoader(object):
+    """
+    Loads pid parameters of each controller in parameters_dict from a yaml file
+    """
     def __init__(self):
         pass
 
@@ -52,6 +55,9 @@ class PidLoader(object):
         return param_dict
 
 class PidSaver(object):
+    """
+    Saves pid parameters of each controller in parameters_dict in a yaml file
+    """
     def __init__(self, file_path):
         self.path = file_path
 

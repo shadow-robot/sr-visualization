@@ -27,11 +27,11 @@ import unicodedata
 
 class CtrlSettings(object):
     """
+    Parses xml file and reads controller settings
+    Creates lists for headers, fingers, motors
     """
 
     def __init__(self, xml_path, controller_type):
-        """
-        """
         self.headers = []
 
         #open and parses the xml config file
@@ -83,12 +83,11 @@ class CtrlSettings(object):
 
 class SrControllerTunerApp(object):
     """
+    Handles loading, saving and setting of controller settings
     """
     CONTROLLER_MANAGER_DETECTION_TIMEOUT = 3.0
     
     def __init__(self, xml_path):
-        """
-        """
         self.xml_path = xml_path
         self.all_controller_types = ["Motor Force", "Position", "Velocity",
                                      "Mixed Position/Velocity", "Effort", "Muscle Position"]
@@ -99,8 +98,11 @@ class SrControllerTunerApp(object):
         
 
     def get_ctrls(self):
-        #return ["Motor Force", "Position"]
-        #
+        """
+        Retrieve currentlly running controllers
+        return ["Motor Force", "Position"]
+        """
+        
         running_ctrls = []
 
         try:
@@ -128,14 +130,14 @@ class SrControllerTunerApp(object):
             rospy.loginfo( "Running controller tuner in edit-only mode" )
             self.edit_only_mode = True
             del running_ctrls[:]
-            #In edit_only_mode all the controllers are available for edition
+            #In edit_only_mode all the controllers are available for editing
             for defined_ctrl_type in self.all_controller_types:
                 running_ctrls.append(defined_ctrl_type)
         except rospy.ROSException, e:
             rospy.loginfo( "Controller manager not running: %s"%str(e) )
             rospy.loginfo( "Running controller tuner in edit-only mode" )
             self.edit_only_mode = True
-            #In edit_only_mode all the controllers are available for edition
+            #In edit_only_mode all the controllers are available for editing
             for defined_ctrl_type in self.all_controller_types:
                 running_ctrls.append(defined_ctrl_type)
         
@@ -147,7 +149,7 @@ class SrControllerTunerApp(object):
     def get_controller_settings( self, controller_type ):
         """
         Parses a file containing the controller settings
-        and their min and max values, and return them.
+        and their min and max values, and returna them.
         """
         ctrl_settings = CtrlSettings(self.xml_path, controller_type)
 
@@ -176,7 +178,7 @@ class SrControllerTunerApp(object):
 
     def set_controller(self, joint_name, controller_type, controller_settings):
         """
-        Sets the controller calling the proper service with the correct syntax.
+        Sets the controller settings calling the proper service with the correct syntax for controller type.
         """
         pid_service = None
         service_name = ""
@@ -282,7 +284,7 @@ class SrControllerTunerApp(object):
 
     def save_controller(self, joint_name, controller_type, controller_settings, filename):
         """
-        Sets the controller calling the proper service with the correct syntax.
+        Saves the controller settings calling the proper service with the correct syntax for controller type
         """
         param_name = []
         if controller_type == "Motor Force":
