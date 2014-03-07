@@ -72,10 +72,8 @@ class PlotThread(QThread):
                     time.sleep(0.01)
 
                 rxplot_str += "joint_states/effort["+ str(self.joint_index_in_joint_state_) +"]"
-                
             else:
                 rxplot_str += "joint_0s/joint_states/effort["+ str(self.joint_index_in_joint_state_) +"]"
-                pass
 
         elif self.controller_type_ == "Position":
             rxplot_str += "sh_"+self.joint_name_.lower()+"_position_controller/state/set_point,sh_"+self.joint_name_.lower()+"_position_controller/state/process_value sh_" + self.joint_name_.lower()+"_position_controller/state/command"
