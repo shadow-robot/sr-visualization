@@ -57,7 +57,8 @@ class PlotThread(QThread):
         Creates an appropriate plot according to controller type
         Also creates a subscription if controller is of Motor Force type
         """
-        rxplot_str = "rxplot -b 30 -p 30 --title=" + self.plot_title_ + " "
+        #rxplot_str = "rxplot -b 30 -p 30 --title=" + self.plot_title_ + " "
+        rxplot_str = "rosrun rqt_plot rqt_plot " 
 
         if self.controller_type_ == "Motor Force":
             # the joint 0s are published on a different topic: /joint_0s/joint_states
