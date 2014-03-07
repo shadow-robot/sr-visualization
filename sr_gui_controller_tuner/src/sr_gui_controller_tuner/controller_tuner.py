@@ -57,7 +57,8 @@ class PlotThread(QThread):
         Creates an appropriate plot according to controller type
         Also creates a subscription if controller is of Motor Force type
         """
-        rxplot_str = "rxplot -b 30 -p 30 --title=" + self.plot_title_ + " "
+        #rxplot_str = "rxplot -b 30 -p 30 --title=" + self.plot_title_ + " "
+        rxplot_str = "rosrun rqt_plot rqt_plot " 
 
         if self.controller_type_ == "Motor Force":
             # the joint 0s are published on a different topic: /joint_0s/joint_states
@@ -71,8 +72,10 @@ class PlotThread(QThread):
                     time.sleep(0.01)
 
                 rxplot_str += "joint_states/effort["+ str(self.joint_index_in_joint_state_) +"]"
+                
             else:
                 rxplot_str += "joint_0s/joint_states/effort["+ str(self.joint_index_in_joint_state_) +"]"
+                pass
 
         elif self.controller_type_ == "Position":
             rxplot_str += "sh_"+self.joint_name_.lower()+"_position_controller/state/set_point,sh_"+self.joint_name_.lower()+"_position_controller/state/process_value sh_" + self.joint_name_.lower()+"_position_controller/state/command"
