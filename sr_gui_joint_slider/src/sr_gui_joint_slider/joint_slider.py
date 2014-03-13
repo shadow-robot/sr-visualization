@@ -68,6 +68,11 @@ class SrGuiJointSlider(Plugin):
         self._widget.reloadButton.pressed.connect(self.on_reload_button_cicked_)
         self._widget.refreshButton.pressed.connect(self.on_refresh_button_cicked_)
         self._widget.sliderReleaseCheckBox.stateChanged.connect(self.on_slider_release_checkbox_clicked_)
+        
+	# Default to ethercat hand sliders
+        if "EtherCAT Hand" in robot_types:
+            self._widget.comboBox.setCurrentIndex(robot_types.index("EtherCAT Hand"))
+            self.on_robot_type_changed_()
 
     def _unregister(self):
         if self.robot_lib_eth is not None:
