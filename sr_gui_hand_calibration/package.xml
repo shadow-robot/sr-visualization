@@ -1,26 +1,28 @@
 <package>
   <name>sr_gui_hand_calibration</name>
-  <version>1.2.0</version>
-  <description>This is a rosgui plugin for calibrating the Shadow EtherCAT Hand.</description>
-  <maintainer email="software@shadowrobot.com">Ugo Cupcic </maintainer>
+  <version>1.3.0</version>
+  <description>A GUI plugin for calibrating the Shadow EtherCAT Hand.</description>
+  <maintainer email="software@shadowrobot.com">Shadow Robot's software team</maintainer>
 
   <license>GPL</license>
 
   <url type="website">http://ros.org/wiki/sr_gui_hand_calibration</url>
+  <url type="repository">https://github.com/shadow-robot/sr-visualization</url>
+  <url type="bugtracker">https://github.com/shadow-robot/sr-visualization/issues</url>
 
   <author email="software@shadowrobot.com">Ugo Cupcic </author>
 
-  <!-- Dependencies which this package needs to build itself. -->
+  
   <buildtool_depend>catkin</buildtool_depend>
-
-  <!-- Dependencies needed to compile this package. -->
+  
+  
   <build_depend>rospy</build_depend>
   <build_depend>rqt_gui</build_depend>
   <build_depend>rqt_gui_py</build_depend>
   <build_depend>sr_robot_msgs</build_depend>
   <build_depend>sr_robot_lib</build_depend>
-
-  <!-- Dependencies needed after this package is compiled. -->
+  
+  
   <run_depend>rospy</run_depend>
   <run_depend>rqt_gui</run_depend>
   <run_depend>rqt_gui_py</run_depend>
@@ -28,7 +30,7 @@
   <run_depend>sr_robot_lib</run_depend>
 
 <export>
-    <rqt_gui plugin="${prefix}/sr_gui_hand_calibration_plugin.xml"/>
+    <rqt_gui plugin="${prefix}/sr_gui_hand_calibration_plugin.xml" />
 </export>
 
 </package>

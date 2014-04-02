@@ -1,19 +1,21 @@
 <package>
   <name>sr_gui_bootloader</name>
-  <version>1.2.0</version>
+  <version>1.3.0</version>
   <description>A GUI plugin for bootloading the motors on the shadow etherCAT hand.</description>
-  <maintainer email="software@shadowrobot.com">Ugo Cupcic </maintainer>
+  <maintainer email="software@shadowrobot.com">Shadow Robot's software team</maintainer>
 
   <license>GPL</license>
 
   <url type="website">http://ros.org/wiki/sr_gui_bootloader</url>
+  <url type="repository">https://github.com/shadow-robot/sr-visualization</url>
+  <url type="bugtracker">https://github.com/shadow-robot/sr-visualization/issues</url>
 
   <author email="software@shadowrobot.com">Ugo Cupcic </author>
 
-  <!-- Dependencies which this package needs to build itself. -->
+  
   <buildtool_depend>catkin</buildtool_depend>
 
-  <!-- Dependencies needed to compile this package. -->
+  
   <build_depend>rospy</build_depend>
   <build_depend>rqt_gui</build_depend>
   <build_depend>rqt_gui_py</build_depend>
@@ -21,8 +23,9 @@
   <build_depend>std_srvs</build_depend>
   <build_depend>diagnostic_msgs</build_depend>
   <build_depend>sr_robot_msgs</build_depend>
-
-  <!-- Dependencies needed after this package is compiled. -->
+  <build_depend>sr_visualization_icons</build_depend>
+  
+  
   <run_depend>rospy</run_depend>
   <run_depend>rqt_gui</run_depend>
   <run_depend>rqt_gui_py</run_depend>
@@ -30,9 +33,10 @@
   <run_depend>std_srvs</run_depend>
   <run_depend>diagnostic_msgs</run_depend>
   <run_depend>sr_robot_msgs</run_depend>
+  <run_depend>sr_visualization_icons</run_depend>
 
 <export>
-    <rqt_gui plugin="${prefix}/sr_bootloader.xml"/>
+    <rqt_gui plugin="${prefix}/sr_bootloader_plugin.xml" />
 </export>
 
 </package>

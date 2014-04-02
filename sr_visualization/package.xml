@@ -1,31 +1,36 @@
 <package>
   <name>sr_visualization</name>
-  <version>1.2.0</version>
-  <description>This stack contains the different gui and gui plugins used with the shadow robot stacks.</description>
-  <maintainer email="software@shadowrobot.com">Maintained by Ugo Cupcic </maintainer>
+  <version>1.3.0</version>
+  <description>This stack contains the different gui plugins used with the shadow robot stacks.</description>
+  <maintainer email="software@shadowrobot.com">Shadow Robot's software team</maintainer>
 
   <license>GPL</license>
   <license>BSD</license>
 
   <url type="website">http://ros.org/wiki/sr_visualization</url>
+  <url type="repository">https://github.com/shadow-robot/sr-visualization</url>
+  <url type="bugtracker">https://github.com/shadow-robot/sr-visualization/issues</url>
 
   <author email="software@shadowrobot.com">Maintained by Ugo Cupcic </author>
 
-  <!-- Dependencies which this package needs to build itself. -->
+  
   <buildtool_depend>catkin</buildtool_depend>
 
-  <!-- Dependencies needed after this package is compiled. -->
+  
   <run_depend>sr_gui_bootloader</run_depend>
+  <run_depend>sr_gui_muscle_driver_bootloader</run_depend>
   <run_depend>sr_gui_controller_tuner</run_depend>
   <run_depend>sr_gui_self_test</run_depend>
   <run_depend>sr_gui_motor_resetter</run_depend>
   <run_depend>sr_gui_joint_slider</run_depend>
   <run_depend>sr_gui_change_controllers</run_depend>
+  <run_depend>sr_gui_change_muscle_controllers</run_depend>
   <run_depend>sr_gui_movement_recorder</run_depend>
   <run_depend>sr_gui_hand_calibration</run_depend>
   <run_depend>sr_gui_grasp_controller</run_depend>
+  <run_depend>sr_visualization_icons</run_depend>
 
   <export>
-    <metapackage/>
+    <metapackage />
   </export>
 </package>

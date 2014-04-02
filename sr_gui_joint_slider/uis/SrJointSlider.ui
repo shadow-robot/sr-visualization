@@ -101,7 +101,7 @@
           <item>
            <widget class="QPushButton" name="refreshButton">
             <property name="text">
-             <string>Refresh sliders position</string>
+             <string>Refresh sliders' positions</string>
             </property>
            </widget>
           </item>
