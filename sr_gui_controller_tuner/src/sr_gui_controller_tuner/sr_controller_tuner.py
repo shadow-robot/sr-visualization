@@ -117,10 +117,10 @@ class SrControllerTunerApp(object):
             
             running_ctrls.append("Motor Force")
             if resp != None:
-                for state,controller in zip(resp.state, resp.controllers):
-                    if state == "running":
-                        split = controller.split("_")
-                        ctrl_type_tmp = split[2]
+                for controller in resp.controller:
+                    if controller.state == "running":
+                        splitted = controller.name.split("_")
+                        ctrl_type_tmp = splitted[2]
                         for defined_ctrl_type in self.all_controller_types:
                             if ctrl_type_tmp.lower() in defined_ctrl_type.lower():
                                 running_ctrls.append(defined_ctrl_type)

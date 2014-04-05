@@ -235,11 +235,8 @@ class SrGuiChangeControllers(Plugin):
             success = False
 
         if success:
-            current_controllers = []
-            all_loaded_controllers = resp1.controllers
-            for state,tmp_contrl in zip(resp1.state,resp1.controllers):
-                if state == "running":
-                    current_controllers.append(tmp_contrl)
+            current_controllers = [c.name for c in resp1.controller if c.state == "running"]
+            all_loaded_controllers = [c.name for c in resp1.controller]
 
             controllers_to_start = self.controllers[controller]
 
