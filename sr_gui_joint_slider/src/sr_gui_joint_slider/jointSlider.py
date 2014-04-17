@@ -30,7 +30,7 @@ from xml.etree import ElementTree as ET
 
 from PyQt4 import QtCore, QtGui, Qt
 from QtGui import QShortcut, QMessageBox, QFrame
-from controller_manager_msgs.srv import ListControllers, SwitchController, LoadController
+from controller_manager_msgs.srv import ListControllers
 from sr_robot_msgs.msg import sendupdate, joint
 from std_msgs.msg import Float64
 from math import radians, degrees
