@@ -36,7 +36,7 @@ from python_qt_binding import loadUi
 
 from QtCore import QEvent, QObject, Qt, QTimer, Slot
 from QtGui import QShortcut, QMessageBox, QWidget, QIcon
-import controller_manager_msgs.srv as controller_manager_srvs
+from controller_manager_msgs.srv import ListControllers, SwitchController, LoadController
 from sr_robot_msgs.srv import ChangeControlType
 from sr_robot_msgs.msg import ControlType
 
@@ -130,7 +130,7 @@ class SrGuiChangeControllers(Plugin):
         Switch controller type
         """
         success = True
-        list_controllers = rospy.ServiceProxy('controller_manager/list_controllers', controller_manager_srvs.ListControllers)
+        list_controllers = rospy.ServiceProxy('controller_manager/list_controllers', ListControllers)
         try:
             resp1 = list_controllers()
         except rospy.ServiceException:
@@ -142,7 +142,7 @@ class SrGuiChangeControllers(Plugin):
 
             controllers_to_start = self.controllers[controller]
 
-            load_controllers = rospy.ServiceProxy('controller_manager/load_controller', controller_manager_srvs.LoadController)
+            load_controllers = rospy.ServiceProxy('controller_manager/load_controller', LoadController)
             for load_control in controllers_to_start:
                 if load_control not in all_loaded_controllers:
                     try:
@@ -152,9 +152,9 @@ class SrGuiChangeControllers(Plugin):
                     if not resp1.ok:
                         success = False
 
-            switch_controllers = rospy.ServiceProxy('controller_manager/switch_controller', controller_manager_srvs.SwitchController)
+            switch_controllers = rospy.ServiceProxy('controller_manager/switch_controller', SwitchController)
             try:
-                resp1 = switch_controllers(controllers_to_start, current_controllers, controller_manager_srvs.SwitchController._request_class.BEST_EFFORT)
+                resp1 = switch_controllers(controllers_to_start, current_controllers, SwitchController._request_class.BEST_EFFORT)
             except rospy.ServiceException:
                 success = False
 

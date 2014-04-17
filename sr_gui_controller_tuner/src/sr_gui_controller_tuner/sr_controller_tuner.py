@@ -19,7 +19,7 @@
 import rospy
 
 from xml.etree import ElementTree as ET
-import controller_manager_msgs.srv as controller_manager_srvs
+from controller_manager_msgs.srv import ListControllers
 
 from sr_robot_msgs.srv import ForceController, SetEffortControllerGains, SetMixedPositionVelocityPidGains, SetPidGains
 from sr_gui_controller_tuner.pid_loader_and_saver import PidLoader, PidSaver
@@ -108,7 +108,7 @@ class SrControllerTunerApp(object):
         try:
             rospy.wait_for_service('controller_manager/list_controllers', self.CONTROLLER_MANAGER_DETECTION_TIMEOUT)
         
-            controllers = rospy.ServiceProxy('controller_manager/list_controllers', controller_manager_srvs.ListControllers)
+            controllers = rospy.ServiceProxy('controller_manager/list_controllers', ListControllers)
             resp = None
             try:
                 resp = controllers()
