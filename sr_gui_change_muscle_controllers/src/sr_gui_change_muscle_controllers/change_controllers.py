@@ -141,6 +141,7 @@ class SrGuiChangeControllers(Plugin):
             all_loaded_controllers = [c.name for c in resp1.controller]
 
             controllers_to_start = self.controllers[controller]
+            controllers_to_start.append('joint_state_controller')
 
             load_controllers = rospy.ServiceProxy('controller_manager/load_controller', LoadController)
             for load_control in controllers_to_start:
