@@ -107,23 +107,23 @@ class ExtendedSlider(QFrame):
 
     def update(self):
         raise NotImplementedError, "Virtual method, please implement."
-    
+
     def refresh(self):
         raise NotImplementedError, "Virtual method, please implement."
 
     def checkbox_click(self, value):
         self.is_selected = value
-    
+
     def set_slider_behaviour(self):
         raise NotImplementedError, "Virtual method, please implement."
-    
+
     def set_new_slider_behaviour(self, tracking):
         if tracking:
             self.pos_slider_tracking_behaviour = True
         else:
             self.pos_slider_tracking_behaviour = False
         self.set_slider_behaviour()
-    
+
 
 class EtherCATHandSlider(ExtendedSlider):
     """
@@ -145,7 +145,12 @@ class EtherCATHandSlider(ExtendedSlider):
             self.min_label.setText(str(self.joint.controller_list[self.current_controller_index].min))
             self.max_label.setText(str(self.joint.controller_list[self.current_controller_index].max))
 
-            self.pub = rospy.Publisher(self.joint.controller_list[self.current_controller_index].command_topic, Float64, latch=True)
+            self.pub = rospy.Publisher(
+                    self.joint.controller_list[self.current_controller_index].command_topic,
+                    Float64,
+                    queue_size=10,
+                    latch=True
+            )
             self.set_slider_behaviour()
 
     def get_current_joint_controller(self, current_controllers):
@@ -156,6 +161,7 @@ class EtherCATHandSlider(ExtendedSlider):
             for controller in current_controllers:
                 if (controller.find(self.joint.name.lower() + '_' + joint_controller.name) != -1):
                     return index
+        rospy.loginfo("Couldn't get controller for joint %s", self.joint.name.lower())
         return -1
 
     def get_current_controllers(self):
@@ -167,7 +173,7 @@ class EtherCATHandSlider(ExtendedSlider):
         try:
             resp1 = list_controllers()
         except rospy.ServiceException:
-            success = False 
+            success = False
 
         if success:
             return [c.name for c in resp1.controller if c.state == "running"]
@@ -206,10 +212,10 @@ class EtherCATHandSlider(ExtendedSlider):
                 self.first_update_done = True
         except:
             pass
-        
+
     def refresh(self):
         """
-        Refresh the current position of the slider with index = self.current_controller_index 
+        Refresh the current position of the slider with index = self.current_controller_index
         """
         if (self.current_controller_index != -1):
             if (self.joint.controller_list[self.current_controller_index].name == "mixed_position_velocity") or (self.joint.controller_list[self.current_controller_index].name == "position") or (self.joint.controller_list[self.current_controller_index].name == "muscle_position"):
@@ -237,7 +243,7 @@ class EtherCATHandSlider(ExtendedSlider):
         if (self.joint.controller_list[self.current_controller_index].name == "effort") or (self.joint.controller_list[self.current_controller_index].name == "velocity"):
             self.slider.setSliderPosition(0)
             self.changeValue(0)
-        
+
 
 class CANHandSlider(ExtendedSlider):
     """
@@ -264,7 +270,7 @@ class CANHandSlider(ExtendedSlider):
                 self.first_update_done = True
         except:
             pass
-    
+
     def refresh(self):
         """
         Refresh the current position of the slider
@@ -305,7 +311,7 @@ class ArmSlider(ExtendedSlider):
                 self.first_update_done = True
         except:
             pass
-    
+
     def refresh(self):
         """
         Refresh the current position of the slider
@@ -313,7 +319,7 @@ class ArmSlider(ExtendedSlider):
         self.slider.setSliderPosition(self.current_value)
         self.slider.setValue(self.current_value)
         self.target.setText("Tgt: " + str(self.current_value))
-    
+
     def set_slider_behaviour(self):
         if self.pos_slider_tracking_behaviour:
             self.slider.setTracking(True)
