@@ -29,15 +29,16 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-import os, rospy, rospkg
+import os
+import rospy
+import rospkg
 
 from time import sleep
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
-from QtCore import QEvent, QObject, Qt, QTimer, Slot
-from QtGui import QShortcut, QMessageBox, QWidget, QIcon
+from QtGui import QMessageBox, QWidget, QIcon
 from controller_manager_msgs.srv import ListControllers, SwitchController, LoadController
 from sr_robot_msgs.srv import ChangeControlType
 from sr_robot_msgs.msg import ControlType
@@ -67,7 +68,7 @@ class SrGuiChangeControllers(Plugin):
         loadUi(ui_file, self._widget)
         self._widget.setObjectName('SrChangeControllersUi')
         context.add_widget(self._widget)
-        
+
         #Setting the initial state of the controller buttons
         self._widget.btn_mixed.setIcon(self.CONTROLLER_OFF_ICON)
         self._widget.btn_mixed.setChecked(False)
@@ -84,7 +85,7 @@ class SrGuiChangeControllers(Plugin):
         self._widget.btn_position.pressed.connect(self.on_position_ctrl_clicked_)
         self._widget.btn_mixed.pressed.connect(self.on_mixed_ctrl_clicked_)
         self._widget.btn_velocity.pressed.connect(self.on_velocity_ctrl_clicked_)
-                
+
         #check the correct control box, depending on PWM_CONTROL env variable
         if os.environ.get('PWM_CONTROL') in [None, '0']:
             self._widget.radioButtonTorque.setChecked(True)
@@ -92,7 +93,7 @@ class SrGuiChangeControllers(Plugin):
         else:
             self._widget.radioButtonTorque.setChecked(False)
             self._widget.radioButtonPWM.setChecked(True)
-        
+
         self._widget.radioButtonTorque.toggled.connect(self.on_control_mode_radio_button_toggled_)
         self._widget.radioButtonPWM.toggled.connect(self.on_control_mode_radio_button_toggled_)
 
@@ -110,7 +111,7 @@ class SrGuiChangeControllers(Plugin):
                 change_type_msg.control_type = ControlType.PWM
                 rospy.loginfo("Change Control mode to PWM")
             self.change_force_ctrl_type(change_type_msg)
-        
+
     def on_stop_ctrl_clicked_(self):
         """
         Stop controller
@@ -195,8 +196,8 @@ class SrGuiChangeControllers(Plugin):
             rospy.loginfo("Mixed checked: " + str(self._widget.btn_mixed.isChecked()))
             self.change_ctrl( "stop" )
         self._widget.btn_mixed.setEnabled(True)
-            
-            
+
+
 
     def on_velocity_ctrl_clicked_(self):
         """
@@ -213,14 +214,14 @@ class SrGuiChangeControllers(Plugin):
             self._widget.btn_mixed.setIcon(self.CONTROLLER_OFF_ICON)
             self._widget.btn_mixed.setChecked(False)
             rospy.loginfo("Velocity checked: " + str(self._widget.btn_velocity.isChecked()))
-            self.change_ctrl( "velocity" )            
+            self.change_ctrl( "velocity" )
         else:
             self._widget.btn_velocity.setIcon(self.CONTROLLER_OFF_ICON)
             self._widget.btn_velocity.setChecked(False)
             rospy.loginfo("Velocity checked: " + str(self._widget.btn_velocity.isChecked()))
             self.change_ctrl( "stop" )
         self._widget.btn_velocity.setEnabled(True)
-            
+
 
 
     def change_ctrl(self, controller):
@@ -268,7 +269,7 @@ class SrGuiChangeControllers(Plugin):
         Calls the service (realtime_loop/change_control_type) that allows to tell the driver (sr_robot_lib) which type of force control has to be sent to the motor:
             - torque demand (sr_robot_msgs::ControlType::FORCE)
             - PWM (sr_robot_msgs::ControlType::PWM)
-        it will deactivate the Effort, Position, Mixed and Velocity buttons for 3 secs to allow hardware controllers to be updated 
+        it will deactivate the Effort, Position, Mixed and Velocity buttons for 3 secs to allow hardware controllers to be updated
         """
         success = True
         change_control_type = rospy.ServiceProxy('realtime_loop/change_control_type', ChangeControlType)

@@ -16,15 +16,17 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import os, sys, rospkg, rospy
+import os
+import rospkg
+import rospy
 
 from xml.etree import ElementTree as ET
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
-from QtCore import QEvent, QObject, Qt, QTimer, Slot
-from QtGui import QWidget, QShortcut, QMessageBox, QFrame
+from QtCore import Qt
+from QtGui import QWidget, QMessageBox
 
 from sr_gui_joint_slider.jointSlider import JointController, Joint, CANHandSlider, EtherCATHandSlider, ArmSlider, CANHandSelectionSlider, EtherCATSelectionSlider, ArmSelectionSlider
 from sr_robot_lib.etherCAT_hand_lib import EtherCAT_Hand_Lib
@@ -51,8 +53,9 @@ class SrGuiJointSlider(Plugin):
         self.tree = ET.ElementTree()
         self.tree.parse(config_file)
         self.robots = None
+        self.joints = []
 
-        self.sliders = list()
+        self.sliders = []
         self.selection_slider = None
 
         robot_types = self.get_robot_types(self.tree)
@@ -67,7 +70,7 @@ class SrGuiJointSlider(Plugin):
         self._widget.reloadButton.pressed.connect(self.on_reload_button_cicked_)
         self._widget.refreshButton.pressed.connect(self.on_refresh_button_cicked_)
         self._widget.sliderReleaseCheckBox.stateChanged.connect(self.on_slider_release_checkbox_clicked_)
-        
+
 	# Default to ethercat hand sliders
         if "EtherCAT Hand" in robot_types:
             self._widget.comboBox.setCurrentIndex(robot_types.index("EtherCAT Hand"))
@@ -87,10 +90,7 @@ class SrGuiJointSlider(Plugin):
         pass
 
     def get_robot_types(self, config):
-        if sys.version_info < (2, 7):
-            self.robots = list(config.getiterator("robot"))
-        else:
-            self.robots = list(config.iter("robot"))
+        self.robots = list(config.iter("robot"))
         robot_types = list()
         for element in self.robots:
             robot_types.append(element.attrib["name"])
@@ -103,22 +103,15 @@ class SrGuiJointSlider(Plugin):
         Load the correct robot library
         Create and load the new slider widgets
         """
-        
+
         #We first read the config from the file into a joints list
         j = self.robots[self._widget.comboBox.currentIndex()].find("joints")
-        if sys.version_info < (2, 7):
-            config_joints = list(j.getiterator("joint"))
-        else:
-            #For Python version 2.7 and later
-            config_joints = list(j.iter("joint"))
+        config_joints = list(j.iter("joint"))
 
         #Read the joints configuration
-        self.joints = list()
+        self.joints = []
         for config_joint in config_joints:
-            if sys.version_info < (2, 7):
-                config_joint_controllers = list(config_joint.getiterator("controller"))
-            else:
-                config_joint_controllers = list(config_joint.iter("controller"))
+            config_joint_controllers = list(config_joint.iter("controller"))
             joint_controllers = list()
             for config_controller in config_joint_controllers:
                 name = config_controller.attrib["name"]
@@ -137,13 +130,13 @@ class SrGuiJointSlider(Plugin):
 
         #Load the correct robot library
         self.load_robot_library_()
-        
+
         self._widget.sliderReleaseCheckBox.setCheckState(Qt.Unchecked)
 
         if self.is_active:
             #Create and load the new slider widgets
             self.load_new_sliders_()
-            
+
         self._widget.reloadButton.setEnabled(True)
 
     def on_reload_button_cicked_(self):
@@ -152,36 +145,36 @@ class SrGuiJointSlider(Plugin):
         Load the correct robot library
         Create and load the new slider widgets
         """
-        
+
         self.delete_old_sliders_()
 
         self.load_robot_library_()
-        
+
         self._widget.sliderReleaseCheckBox.setCheckState(Qt.Unchecked)
 
         if self.is_active:
             self.load_new_sliders_()
-    
+
     def on_refresh_button_cicked_(self):
         """
         Call refresh for every slider
         """
         for slider in self.sliders:
             slider.refresh()
-    
+
     def on_slider_release_checkbox_clicked_(self, state):
         """
-        Set tracking behaviour of each slider to false if checkbox is checked, true otherwise 
+        Set tracking behaviour of each slider to false if checkbox is checked, true otherwise
         """
-        
+
         if state == Qt.Checked:
             for slider in self.sliders:
                 slider.set_new_slider_behaviour(False)
         else:
             for slider in self.sliders:
                 slider.set_new_slider_behaviour(True)
-            
-        
+
+
 
     def delete_old_sliders_(self):
         """
@@ -193,7 +186,7 @@ class SrGuiJointSlider(Plugin):
             old_slider.close()
             old_slider.deleteLater()
 
-        self.sliders = list()
+        self.sliders = []
 
         if(self.selection_slider is not None):
             self._widget.horizontalLayout.removeWidget(self.selection_slider)
@@ -217,7 +210,7 @@ class SrGuiJointSlider(Plugin):
             if self.robot_lib_eth is None:
                 self.robot_lib_eth = EtherCAT_Hand_Lib()
                 if not self.robot_lib_eth.activate_joint_states():
-                    btn_pressed = QMessageBox.warning(self._widget, "Warning", "The EtherCAT Hand node doesn't seem to be running. Try reloading the sliders when it is.")
+                    QMessageBox.warning(self._widget, "Warning", "The EtherCAT Hand node doesn't seem to be running. Try reloading the sliders when it is.")
                     self.is_active = False
                     if self.robot_lib_eth is not None:
                         self.robot_lib_eth.on_close()
