@@ -16,13 +16,18 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import os, subprocess, math, time
-import rospy, rosparam, rospkg
+import os
+import subprocess
+import math
+import time
+import rospy
+import rosparam
+import rospkg
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
-from QtCore import QEvent, QObject, Qt, QTimer, Slot, SIGNAL, QThread
+from QtCore import Qt, QThread
 from QtGui import QWidget, QTreeWidgetItem, QCheckBox, QSpinBox, QDoubleSpinBox, QFileDialog, QMessageBox, QPushButton, QFrame, QHBoxLayout
 from functools import partial
 from tempfile import NamedTemporaryFile
@@ -58,7 +63,7 @@ class PlotThread(QThread):
         Also creates a subscription if controller is of Motor Force type
         """
         #rxplot_str = "rxplot -b 30 -p 30 --title=" + self.plot_title_ + " "
-        rxplot_str = "rosrun rqt_plot rqt_plot " 
+        rxplot_str = "rosrun rqt_plot rqt_plot "
 
         if self.controller_type_ == "Motor Force":
             # the joint 0s are published on a different topic: /joint_0s/joint_states
@@ -158,7 +163,7 @@ class MoveThread(QThread):
 
     def get_min_max_(self):
         """
-        Retrieve joint limits in radians for joint in self.joint_name 
+        Retrieve joint limits in radians for joint in self.joint_name
         """
         if self.joint_name_ in ["FFJ0", "MFJ0", "RFJ0", "LFJ0"]:
             return [0.0, math.radians(180.0)]
@@ -257,7 +262,7 @@ class SrGuiControllerTuner(Plugin):
             return
         self.reset_file_path()
         self.refresh_controller_tree_( self.controllers_in_dropdown[index] )
-        
+
     def reset_file_path(self):
         """
         Clear the chosen file path and disable the save button until user selects another path
@@ -293,9 +298,9 @@ class SrGuiControllerTuner(Plugin):
             else:
                 if self.sr_controller_tuner_app_.control_mode == "PWM":
                     filter_files = "*s_PWM.yaml"
-                else:                    
+                else:
                     filter_files = "*s.yaml"
-                
+
         if self.controller_type == "Motor Force":
             filter_files = "Config (*motor"+filter_files+")"
             subpath = "/controls/motors/" + config_subdir
@@ -448,7 +453,7 @@ class SrGuiControllerTuner(Plugin):
         Buttons "set all" "set selected" and "stop movements" are disabled in edit_only_mode
         Controller settings must exist for every motor of every finger in the yaml file.
         """
-        
+
         if self.sr_controller_tuner_app_.edit_only_mode:
             self._widget.btn_set_selected.setEnabled(False)
             self._widget.btn_set_all.setEnabled(False)
@@ -457,7 +462,7 @@ class SrGuiControllerTuner(Plugin):
             self._widget.btn_set_selected.setEnabled(True)
             self._widget.btn_set_all.setEnabled(True)
             self._widget.btn_stop_mvts.setEnabled(True)
-        
+
         self.controller_type = controller_type
         ctrl_settings = self.sr_controller_tuner_app_.get_controller_settings( controller_type )
 
@@ -494,7 +499,7 @@ class SrGuiControllerTuner(Plugin):
                         self.ctrl_widgets[ motor_name ]["btn_plot"] = btn_plot
                         self.ctrl_widgets[ motor_name ]["btn_plot"].clicked.connect(partial(self.on_btn_plot_pressed_, motor_name, self.ctrl_widgets[ motor_name ]["btn_plot"]))
                         layout_buttons.addWidget(btn_plot)
-    
+
                         if self.controller_type in ["Position", "Muscle Position", "Mixed Position/Velocity"]:
                             #only adding Move button for position controllers
                             btn_move = QPushButton("Move")
@@ -502,7 +507,7 @@ class SrGuiControllerTuner(Plugin):
                             self.ctrl_widgets[ motor_name ]["btn_move"].clicked.connect(partial(self.on_btn_move_pressed_,motor_name, self.ctrl_widgets[ motor_name ]["btn_move"]))
                             layout_buttons.addWidget(btn_move)
                             frame_buttons.setLayout(layout_buttons)
-    
+
                         self._widget.tree_ctrl_settings.setItemWidget(  motor_item, 0, frame_buttons )
 
                     for index_item,item in enumerate(ctrl_settings.headers):
