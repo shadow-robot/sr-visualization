@@ -141,7 +141,7 @@ class EtherCATHandSlider(ExtendedSlider):
             self.pub = rospy.Publisher(
                     self.joint.controller_list[self.current_controller_index].command_topic,
                     Float64,
-                    queue_size=10,
+                    queue_size=1,
                     latch=True
             )
             self.set_slider_behaviour()

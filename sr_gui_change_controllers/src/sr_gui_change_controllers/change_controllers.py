@@ -272,6 +272,10 @@ class SrGuiChangeControllers(Plugin):
         it will deactivate the Effort, Position, Mixed and Velocity buttons for 3 secs to allow hardware controllers to be updated
         """
         success = True
+        if chng_type_msg.control_type == ControlType.PWM:
+            os.environ['PWM_CONTROL'] = '1'
+        else:
+            os.environ['PWM_CONTROL'] =  ''
         change_control_type = rospy.ServiceProxy('realtime_loop/change_control_type', ChangeControlType)
         try:
             resp1 = change_control_type(chng_type_msg)
