@@ -141,11 +141,7 @@ class SrControllerTunerApp(object):
         return running_ctrls
 
     def refresh_control_mode(self):
-        control_mode = environ.get("PWM_CONTROL", "")
-        if control_mode == "" or control_mode == "0":
-            self.control_mode = "FORCE"
-        else:
-            self.control_mode = "PWM"
+        self.control_mode = rospy.get_param('realtime_loop/default_control_mode', 'FORCE')
 
     def get_controller_settings( self, controller_type ):
         """
