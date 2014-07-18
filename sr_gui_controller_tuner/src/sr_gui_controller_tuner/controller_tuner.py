@@ -132,12 +132,14 @@ class MoveThread(QThread):
         """
         #Not using automatic move for velocity and effort controllers
         controller_name_ = ""
+        message_type = "ros"
         if self.controller_type_ == "Position":
             controller_name_ = "sh_"+self.joint_name_.lower()+"_position_controller"
         if self.controller_type_ == "Muscle Position":
             controller_name_ = "sh_"+self.joint_name_.lower()+"_muscle_position_controller"
         elif self.controller_type_ == "Mixed Position/Velocity":
             controller_name_ = "sh_"+self.joint_name_.lower()+"_mixed_position_velocity_controller"
+            message_type = "sr"
 
         min_max = self.get_min_max_()
         ns = rospy.get_namespace()
@@ -151,7 +153,7 @@ class MoveThread(QThread):
         string += "<param name=\"publish_rate\" value=\"100\"/>"
         string += "<param name=\"repetition\" value=\"1000\"/>"
         string += "<param name=\"nb_step\" value=\"10000\"/>"
-        string += "<param name=\"msg_type\" value=\"sr\"/>"
+        string += "<param name=\"msg_type\" value=\"{}\"/>".format(message_type)
         string += "</node> </launch>"
 
         tmp_launch_file = NamedTemporaryFile(delete=False)

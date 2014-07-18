@@ -17,7 +17,6 @@
 #
 
 import rospy
-from os import environ
 
 from xml.etree import ElementTree as ET
 from controller_manager_msgs.srv import ListControllers
@@ -58,7 +57,7 @@ class CtrlSettings(object):
         self.nb_columns = len(self.headers)
 
         self.hand_item = ["Hand"]
-        self.hane_item.extend((self.nb_columns - 1)*[""])
+        self.hand_item.extend((self.nb_columns - 1)*[""])
 
         #read the fingers and the motors from the xml file
         self.fingers = []
