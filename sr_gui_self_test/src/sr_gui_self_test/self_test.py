@@ -105,10 +105,10 @@ class AsyncService(QThread):
 
     def save(self):
         """
-        Save the test results in a file at /tmp/self_tests/node/results.txt
+        Save the test results in a file at $HOME/.ros/log/self_tests/node/results.txt
         """
         if self.resp != None:
-            path = "/tmp/self_tests/"+self.node_name
+            path = self.path_to_data+"self_tests/"+self.node_name
             if not os.path.exists(path):
                 os.makedirs(path)
             f = open(path+"/results.txt", "w")
@@ -163,6 +163,9 @@ class SrGuiSelfTest(Plugin):
         self.plot_widget_ = QWidget()
         ui_file = os.path.join(ui_path, 'test_plot.ui')
         loadUi(ui_file, self.plot_widget_)
+        
+        # set the path where data are saved
+        self.path_to_data = os.path.expanduser('~') + "/.ros/log/"
 
         #we load both the test and plot widget in the mdi area
         self.splitter_ = QSplitter(Qt.Vertical, self._widget)
@@ -211,14 +214,14 @@ class SrGuiSelfTest(Plugin):
             test.save()
 
         #backup previous test results if they exist
-        path = "/tmp/self_tests.tar.gz"
+        path = self.path_to_data+"self_tests.tar.gz"
         if os.path.isfile(path):
             shutil.copy(path, path+".bk")
             os.remove(path)
 
         #create the tarball and save everything in it.
         tarball = tarfile.open(path, "w:gz")
-        tarball.add("/tmp/self_tests")
+        tarball.add(self.path_to_data+"self_tests")
         tarball.close()
 
         QMessageBox.warning(self._widget, "Information", "A tarball was saved in "+path+", please email it to hand@shadowrobot.com.")
@@ -333,12 +336,12 @@ class SrGuiSelfTest(Plugin):
 
     def display_plots_(self, display_node):
         """
-        Loads the plots available in /tmp/self_tests/node (place where the sr_self_test saves
+        Loads the plots available in $HOME/.ros/log/self_tests/node (place where the sr_self_test saves
         the plots for the fingers movements)
         """
         self.list_of_pics = []
         self.list_of_pics_tests = []
-        for root, dirs, files in os.walk("/tmp/self_tests/"):
+        for root, dirs, files in os.walk(self.path_to_data+"self_tests/"):
             for f in files:
                 node_name = root.split("/")[-1]
                 if node_name == display_node:
