@@ -48,7 +48,7 @@ orange = QColor(247, 206, 134)
 red = QColor(236, 178, 178)
 
 class AsyncService(QThread):
-    def __init__(self, widget, node_name, index):
+    def __init__(self, widget, node_name, index, path_to_data):
         """
         Calling the self test services asynchronously
         so that it doesn't "kill" the GUI while they run.
@@ -67,6 +67,7 @@ class AsyncService(QThread):
         self.manual_test_req_ = None
         self.manual_test_res_ = None
         self.resp = None
+        self.path_to_data=path_to_data
 
         self.waiting_for_manual_test_ = False
 
@@ -258,7 +259,7 @@ class SrGuiSelfTest(Plugin):
             nodes_to_test = [self.selected_node_]
 
         for n in nodes_to_test:
-            self.test_threads.append(AsyncService(self._widget, n, len(self.test_threads)))
+            self.test_threads.append(AsyncService(self._widget, n, len(self.test_threads), self.path_to_data))
             self._widget.connect(self.test_threads[-1], SIGNAL("test_finished(QPoint)"), self.on_test_finished_)
             self._widget.connect(self.test_threads[-1], SIGNAL("manual_test(QPoint)"), self.on_manual_test_)
 
