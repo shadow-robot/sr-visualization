@@ -165,8 +165,11 @@ class SrGuiSelfTest(Plugin):
         loadUi(ui_file, self.plot_widget_)
         
         # set the path where data are saved
-        self.path_to_data = os.path.expanduser('~') + "/.ros/log/"
-
+        self.path_to_data = os.path.expanduser('~')
+        if self.path_to_data == "":
+            self.path_to_data = "/tmp/"
+        else:
+            self.path_to_data += "/.ros/log/"
         #we load both the test and plot widget in the mdi area
         self.splitter_ = QSplitter(Qt.Vertical, self._widget)
         self._widget.test_layout.addWidget(self.splitter_)
