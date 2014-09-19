@@ -2,8 +2,8 @@
 Changelog for package sr_gui_bootloader
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.3.4 (2014-09-19)
+------------------
 * added sr_visualization_icons at deps
 * spelling fixes
 * docstrings updates

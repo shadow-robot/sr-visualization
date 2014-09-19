@@ -2,8 +2,8 @@
 Changelog for package sr_gui_controller_tuner
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.3.4 (2014-09-19)
+------------------
 * del forgotten pass statement
 * replaced rxplot calls with rqt_plot
 * updated descriptions in package.xml files to appear better in wiki pages

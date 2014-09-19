@@ -2,8 +2,8 @@
 Changelog for package sr_visualization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.3.4 (2014-09-19)
+------------------
 * added muscle stuff at metapackage
 * updated descriptions in package.xml files to appear better in wiki pages
 * added icons in dependencies

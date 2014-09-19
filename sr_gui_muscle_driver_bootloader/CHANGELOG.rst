@@ -2,8 +2,8 @@
 Changelog for package sr_gui_muscle_driver_bootloader
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.3.4 (2014-09-19)
+------------------
 * spelling fixes
 * docstrings updates
 * added icons in dependencies

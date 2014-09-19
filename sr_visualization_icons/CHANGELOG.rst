@@ -2,8 +2,8 @@
 Changelog for package sr_visualization_icons
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.3.4 (2014-09-19)
+------------------
 * Updated docstrings. Fixed build failure at ros jenkins server
 
 1.3.3 (2014-09-19)

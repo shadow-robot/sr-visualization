@@ -2,8 +2,8 @@
 Changelog for package sr_gui_grasp_controller
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.3.4 (2014-09-19)
+------------------
 * updated descriptions in package.xml files to appear better in wiki pages
 * Updated docstrings. Fixed build failure at ros jenkins server
 * added icons in dependencies

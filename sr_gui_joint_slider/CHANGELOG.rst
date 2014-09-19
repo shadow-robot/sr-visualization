@@ -2,8 +2,8 @@
 Changelog for package sr_gui_joint_slider
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.3.4 (2014-09-19)
+------------------
 * Default to ethercat hand
 * updated descriptions in package.xml files to appear better in wiki pages
 * docstrings updates
