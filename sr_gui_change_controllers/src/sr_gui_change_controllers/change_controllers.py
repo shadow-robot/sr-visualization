@@ -51,16 +51,18 @@ class SrGuiChangeControllers(Plugin):
     CONTROLLER_ON_ICON = QIcon(os.path.join(ICON_DIR, 'green.png'))
     CONTROLLER_OFF_ICON = QIcon(os.path.join(ICON_DIR, 'red.png'))
 
+    hand_ids = ["rh", "lh"]
+    
     joints = ["ffj0", "ffj3", "ffj4",
               "mfj0", "mfj3", "mfj4",
               "rfj0", "rfj3", "rfj4",
               "lfj0", "lfj3", "lfj4", "lfj5",
               "thj1", "thj2", "thj3", "thj4", "thj5",
               "wrj1", "wrj2"]
-    controllers = {"effort": ["sh_{}_effort_controller".format(joint) for joint in joints],
-                   "position": ["sh_{}_position_controller".format(joint) for joint in joints],
-                   "mixed": ["sh_{}_mixed_position_velocity_controller".format(joint) for joint in joints],
-                   "velocity": ["sh_{}_velocity_controller".format(joint) for joint in joints],
+    controllers = {"effort": ["sh_{0}_{1}_effort_controller".format(hand_id, joint) for joint in joints for hand_id in hand_ids],
+                   "position": ["sh_{0}_{1}_position_controller".format(hand_id, joint) for joint in joints for hand_id in hand_ids],
+                   "mixed": ["sh_{0}_{1}_mixed_position_velocity_controller".format(hand_id, joint) for joint in joints for hand_id in hand_ids],
+                   "velocity": ["sh_{0}_{1}_velocity_controller".format(hand_id, joint) for joint in joints for hand_id in hand_ids],
                    "stop": []}
     managed_controllers = [cont for type_conts in controllers.itervalues() for cont in type_conts]
 
@@ -276,7 +278,7 @@ class SrGuiChangeControllers(Plugin):
         it will deactivate the Effort, Position, Mixed and Velocity buttons for 3 secs to allow hardware controllers to be updated
         """
         success = True
-        change_control_type = rospy.ServiceProxy('realtime_loop/change_control_type', ChangeControlType)
+        change_control_type = rospy.ServiceProxy('realtime_loop/' + self.hand_ids[0] + '/change_control_type', ChangeControlType)
         try:
             resp1 = change_control_type(chng_type_msg)
             if resp1.result.control_type != chng_type_msg.control_type:
