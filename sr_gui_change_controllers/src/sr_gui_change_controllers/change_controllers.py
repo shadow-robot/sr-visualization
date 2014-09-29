@@ -278,13 +278,14 @@ class SrGuiChangeControllers(Plugin):
         it will deactivate the Effort, Position, Mixed and Velocity buttons for 3 secs to allow hardware controllers to be updated
         """
         success = True
-        change_control_type = rospy.ServiceProxy('realtime_loop/' + self.hand_ids[0] + '/change_control_type', ChangeControlType)
-        try:
-            resp1 = change_control_type(chng_type_msg)
-            if resp1.result.control_type != chng_type_msg.control_type:
+        for hand_id in self.hand_ids:
+            change_control_type = rospy.ServiceProxy('realtime_loop/' + hand_id + '/change_control_type', ChangeControlType)
+            try:
+                resp1 = change_control_type(chng_type_msg)
+                if resp1.result.control_type != chng_type_msg.control_type:
+                    success = False
+            except rospy.ServiceException:
                 success = False
-        except rospy.ServiceException:
-            success = False
 
         # Disable buttons for 3 secs until motors change their parameters
         self._widget.btn_effort.setEnabled(False)
