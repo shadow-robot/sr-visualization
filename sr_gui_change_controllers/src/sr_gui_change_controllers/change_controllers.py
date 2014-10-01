@@ -50,19 +50,28 @@ class SrGuiChangeControllers(Plugin):
     ICON_DIR = os.path.join(rospkg.RosPack().get_path('sr_visualization_icons'), 'icons')
     CONTROLLER_ON_ICON = QIcon(os.path.join(ICON_DIR, 'green.png'))
     CONTROLLER_OFF_ICON = QIcon(os.path.join(ICON_DIR, 'red.png'))
-
-    hand_ids = ["rh", "lh"]
     
+    hand_ids = []
+    hand_joint_prefixes = []
+    if rospy.has_param("hand/mapping"):
+        hand_mapping = rospy.get_param("hand/mapping")
+        for key, value in hand_mapping.items():
+            hand_ids.append(value)
+            hand_joint_prefixes.append(value + "_")
+    else:
+        hand_ids.append("")
+        hand_joint_prefixes.append("")
+     
     joints = ["ffj0", "ffj3", "ffj4",
               "mfj0", "mfj3", "mfj4",
               "rfj0", "rfj3", "rfj4",
               "lfj0", "lfj3", "lfj4", "lfj5",
               "thj1", "thj2", "thj3", "thj4", "thj5",
               "wrj1", "wrj2"]
-    controllers = {"effort": ["sh_{0}_{1}_effort_controller".format(hand_id, joint) for joint in joints for hand_id in hand_ids],
-                   "position": ["sh_{0}_{1}_position_controller".format(hand_id, joint) for joint in joints for hand_id in hand_ids],
-                   "mixed": ["sh_{0}_{1}_mixed_position_velocity_controller".format(hand_id, joint) for joint in joints for hand_id in hand_ids],
-                   "velocity": ["sh_{0}_{1}_velocity_controller".format(hand_id, joint) for joint in joints for hand_id in hand_ids],
+    controllers = {"effort": ["sh_{0}{1}_effort_controller".format(hand_joint_prefix, joint) for joint in joints for hand_joint_prefix in hand_joint_prefixes],
+                   "position": ["sh_{0}{1}_position_controller".format(hand_joint_prefix, joint) for joint in joints for hand_joint_prefix in hand_joint_prefixes],
+                   "mixed": ["sh_{0}{1}_mixed_position_velocity_controller".format(hand_joint_prefix, joint) for joint in joints for hand_joint_prefix in hand_joint_prefixes],
+                   "velocity": ["sh_{0}{1}_velocity_controller".format(hand_joint_prefix, joint) for joint in joints for hand_joint_prefix in hand_joint_prefixes],
                    "stop": []}
     managed_controllers = [cont for type_conts in controllers.itervalues() for cont in type_conts]
 
