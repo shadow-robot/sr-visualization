@@ -62,18 +62,10 @@ class SrGuiJointSlider(Plugin):
         self._widget.setObjectName('SrJointSliderUi')
         context.add_widget(self._widget)
 
-        #read the xml configuration file
-        config_file = os.path.join(rospkg.RosPack().get_path('sr_gui_joint_slider'), 'model', 'slide_joints.xml')
-        self.tree = ET.ElementTree()
-        self.tree.parse(config_file)
-        self.robots = None
         self.joints = []
 
         self.sliders = []
         self.selection_slider = None
-
-
-        self.is_active = True
 
         self._widget.reloadButton.pressed.connect(self.on_reload_button_cicked_)
         self._widget.refreshButton.pressed.connect(self.on_refresh_button_cicked_)
@@ -94,13 +86,6 @@ class SrGuiJointSlider(Plugin):
     def restore_settings(self, global_settings, perspective_settings):
         pass
 
-    def get_robot_types(self, config):
-        self.robots = list(config.iter("robot"))
-        robot_types = list()
-        for element in self.robots:
-            robot_types.append(element.attrib["name"])
-        return robot_types
-
     def on_robot_type_changed_(self):
         pass
 
@@ -120,8 +105,7 @@ class SrGuiJointSlider(Plugin):
 
         self._widget.sliderReleaseCheckBox.setCheckState(Qt.Unchecked)
 
-        if self.is_active:
-            self.load_new_sliders_()
+        self.load_new_sliders_()
 
     def on_refresh_button_cicked_(self):
         """
