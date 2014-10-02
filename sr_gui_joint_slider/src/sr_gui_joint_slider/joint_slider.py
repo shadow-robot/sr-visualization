@@ -34,15 +34,14 @@ from sr_robot_msgs.msg import JointControllerState as SrJointControllerState
 from sr_robot_msgs.msg import JointMusclePositionControllerState
 
 from sr_gui_joint_slider.sliders import JointController, Joint, EtherCATHandSlider, EtherCATSelectionSlider
-from sr_robot_lib.etherCAT_hand_lib import EtherCAT_Hand_Lib
-from sr_hand.shadowhand_ros import ShadowHand_ROS
 
 class SrGuiJointSlider(Plugin):
     """
     A rosgui plugin to change the position of the different joints
     """
     
-    
+    # For each controller type this defines the category of controller it belongs to (position, velocity, effort) 
+    # and the msg type of the controller state topic
     controller_state_types = {"sr_mechanism_controllers/SrhJointPositionController": ("position", JointControllerState),
                              "sr_mechanism_controllers/SrhEffortJointController": ("effort", JointControllerState),
                              "sr_mechanism_controllers/SrhJointVelocityController": ("velocity", JointControllerState),
@@ -73,27 +72,18 @@ class SrGuiJointSlider(Plugin):
         self.sliders = []
         self.selection_slider = None
 
-        robot_types = ["EtherCAT Hand"]
-        self._widget.comboBox.addItems(robot_types)
-        self._widget.comboBox.setCurrentIndex(-1)
 
         self.is_active = True
-        self.robot_lib_CAN = None
-        self.robot_lib_eth = None
 
-        #self._widget.comboBox.activated.connect(self.on_robot_type_changed_)
         self._widget.reloadButton.pressed.connect(self.on_reload_button_cicked_)
         self._widget.refreshButton.pressed.connect(self.on_refresh_button_cicked_)
         self._widget.sliderReleaseCheckBox.stateChanged.connect(self.on_slider_release_checkbox_clicked_)
 
-	# Default to ethercat hand sliders
-        if "EtherCAT Hand" in robot_types:
-            self._widget.comboBox.setCurrentIndex(robot_types.index("EtherCAT Hand"))
-            self.on_robot_type_changed_()
+        self._widget.reloadButton.setEnabled(True)
+        self.on_reload_button_cicked_()
 
     def _unregister(self):
-        if self.robot_lib_eth is not None:
-            self.robot_lib_eth.on_close()
+        pass
 
     def shutdown_plugin(self):
         self._unregister()
@@ -112,49 +102,7 @@ class SrGuiJointSlider(Plugin):
         return robot_types
 
     def on_robot_type_changed_(self):
-        self._widget.reloadButton.setEnabled(True)
-        self.on_reload_button_cicked_()
-#         """
-#         Read joints configuration the config from the file
-#         Clear existing slider widgets from layout
-#         Load the correct robot library
-#         Create and load the new slider widgets
-#         """
-#  
-#         #We first read the config from the file into a joints list
-#         j = self.robots[self._widget.comboBox.currentIndex()].find("joints")
-#         config_joints = list(j.iter("joint"))
-#  
-#         #Read the joints configuration
-#         self.joints = []
-#         for config_joint in config_joints:
-#             config_joint_controllers = list(config_joint.iter("controller"))
-#             joint_controllers = list()
-#             for config_controller in config_joint_controllers:
-#                 name = config_controller.attrib["name"]
-#                 command_topic = config_controller.findtext("command_topic")
-#                 msg_type = config_controller.findtext("msg_type")
-#                 min = int(config_controller.findtext("min"))
-#                 max = int(config_controller.findtext("max"))
-#                 controller = JointController(name, command_topic, msg_type, min, max)
-#                 joint_controllers.append(controller)
-#             name = config_joint.attrib["name"]
-#             joint = Joint(name, joint_controllers)
-#             self.joints.append(joint)
-# 
-#         #Clear existing slider widgets from layout
-#         self.delete_old_sliders_()
-# 
-#         #Load the correct robot library
-#         self.load_robot_library_()
-# 
-#         self._widget.sliderReleaseCheckBox.setCheckState(Qt.Unchecked)
-# 
-#         if self.is_active:
-#             #Create and load the new slider widgets
-#             self.load_new_sliders_()
-# 
-#         self._widget.reloadButton.setEnabled(True)
+        pass
 
     def on_reload_button_cicked_(self):
         """
@@ -168,11 +116,7 @@ class SrGuiJointSlider(Plugin):
         
         self.joints = self._create_joints(controllers)
         
-        
-
         self.delete_old_sliders_()
-
-        self.load_robot_library_()
 
         self._widget.sliderReleaseCheckBox.setCheckState(Qt.Unchecked)
 
@@ -198,8 +142,6 @@ class SrGuiJointSlider(Plugin):
             for slider in self.sliders:
                 slider.set_new_slider_behaviour(True)
 
-
-
     def delete_old_sliders_(self):
         """
         Clear existing slider widgets from layout
@@ -218,30 +160,6 @@ class SrGuiJointSlider(Plugin):
             self.selection_slider.deleteLater()
             self.selection_slider = None
 
-    def load_robot_library_(self):
-        """
-        Load the correct robot library
-        """
-        if self._widget.comboBox.currentText() in ["CAN Hand", "Arm"]:
-            self.is_active = True
-            if self.robot_lib_CAN is None:
-                self.robot_lib_CAN = ShadowHand_ROS()
-        elif self._widget.comboBox.currentText() == "EtherCAT Hand":
-            self.is_active = True
-            if self.robot_lib_eth is not None:
-                self.robot_lib_eth.on_close()
-                self.robot_lib_eth = None
-            if self.robot_lib_eth is None:
-                self.robot_lib_eth = EtherCAT_Hand_Lib()
-                if not self.robot_lib_eth.activate_joint_states():
-                    QMessageBox.warning(self._widget, "Warning", "The EtherCAT Hand node doesn't seem to be running. Try reloading the sliders when it is.")
-                    self.is_active = False
-                    if self.robot_lib_eth is not None:
-                        self.robot_lib_eth.on_close()
-                        self.robot_lib_eth = None
-        else:
-            rospy.logwarn("Unknown robot name: " + self._widget.comboBox.currentText())
-
     def load_new_sliders_(self):
         """
         Create the new slider widgets
@@ -252,17 +170,11 @@ class SrGuiJointSlider(Plugin):
         for joint in self.joints:
             slider = None
             slider_ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_joint_slider'), 'uis', 'Slider.ui')
-#             if self._widget.comboBox.currentText() == "CAN Hand":
-#                 slider = CANHandSlider(joint, slider_ui_file, self.robot_lib_CAN, self, self._widget.scrollAreaWidgetContents)
-#             elif self._widget.comboBox.currentText() == "EtherCAT Hand":
+
             try:
                 slider = EtherCATHandSlider(joint, slider_ui_file, self, self._widget.scrollAreaWidgetContents)
             except Exception, e:
                 rospy.loginfo(e)
-#             elif self._widget.comboBox.currentText() == "Arm":
-#                 slider = ArmSlider(joint, slider_ui_file, self.robot_lib_CAN, self, self._widget.scrollAreaWidgetContents)
-#             else:
-#                 rospy.logwarn("Unknown robot name: " + self._widget.comboBox.currentText())
 
             if slider != None:
                 slider.setMaximumWidth(100)
@@ -273,14 +185,7 @@ class SrGuiJointSlider(Plugin):
 
         #Create the slider to move all the selected joint sliders
         selection_slider_ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_joint_slider'), 'uis', 'SelectionSlider.ui')
-#         if self._widget.comboBox.currentText() == "CAN Hand":
-#             self.selection_slider = CANHandSelectionSlider("Change sel.", 0, 100, selection_slider_ui_file, self.robot_lib_CAN, self, self._widget.scrollAreaWidgetContents)
-#         elif self._widget.comboBox.currentText() == "EtherCAT Hand":
         self.selection_slider = EtherCATSelectionSlider("Change sel.", 0, 100, selection_slider_ui_file, self, self._widget.scrollAreaWidgetContents)
-#         elif self._widget.comboBox.currentText() == "Arm":
-#             self.selection_slider = ArmSelectionSlider("Change sel.", 0, 100, selection_slider_ui_file, self.robot_lib_CAN, self, self._widget.scrollAreaWidgetContents)
-#         else:
-#             rospy.logwarn("Unknown robot name: " + self._widget.comboBox.currentText())
 
         self.selection_slider.setMaximumWidth(100)
         self._widget.horizontalLayout.addWidget(self.selection_slider)
@@ -307,7 +212,7 @@ class SrGuiJointSlider(Plugin):
         Load the description from the param named in the edit as an ET element.
         Sets self._robot_description_xml_root to the element.
         """
-        name = "robot_description"    #  self.robot_description_edit.text()
+        name = self._widget.robot_description_edit.text()
         self._robot_description_xml_root = None
         try:
             xml = rospy.get_param(name)
@@ -356,6 +261,8 @@ class SrGuiJointSlider(Plugin):
                     joint_controller = JointController(controller, controller_type, controller_state_type, controller_category)
                     rospy.loginfo("controller category: %s", controller_category)
                     joint_name = ctrl_params["joint"]
+                    if self._widget.joint_name_filter_edit.text() not in joint_name:
+                        continue
                     min, max, vel = self._get_joint_min_max_vel_special(joint_name)
                     joint = Joint(joint_name, min, max, vel, joint_controller)
                 else:

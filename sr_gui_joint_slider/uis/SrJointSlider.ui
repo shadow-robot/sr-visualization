@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>876</width>
+    <width>874</width>
     <height>693</height>
    </rect>
   </property>
@@ -56,15 +56,29 @@
            </spacer>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox"/>
-          </item>
-          <item>
            <widget class="QPushButton" name="reloadButton">
             <property name="enabled">
              <bool>false</bool>
             </property>
             <property name="text">
              <string>Reload</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="refreshButton">
+            <property name="text">
+             <string>Refresh sliders' positions</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="sliderReleaseCheckBox">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If checked the sliders have to be released to send a command.&lt;/p&gt;&lt;p&gt;If unckecked dragging the slider will send commands along the path.&lt;/p&gt;&lt;p&gt;It only affects position sliders (position controllers running).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>Slider release behaviour</string>
             </property>
            </widget>
           </item>
@@ -99,9 +113,16 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="refreshButton">
+           <widget class="QLabel" name="label">
             <property name="text">
-             <string>Refresh sliders' positions</string>
+             <string>Robot description</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="robot_description_edit">
+            <property name="text">
+             <string>robot_description</string>
             </property>
            </widget>
           </item>
@@ -136,14 +157,14 @@
            </spacer>
           </item>
           <item>
-           <widget class="QCheckBox" name="sliderReleaseCheckBox">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If checked the sliders have to be released to send a command.&lt;/p&gt;&lt;p&gt;If unckecked dragging the slider will send commands along the path.&lt;/p&gt;&lt;p&gt;It only affects position sliders (position controllers running).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
+           <widget class="QLabel" name="label_2">
             <property name="text">
-             <string>Slider release behaviour</string>
+             <string>Joint name filter</string>
             </property>
            </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="joint_name_filter_edit"/>
           </item>
           <item>
            <spacer name="horizontalSpacer_6">
@@ -170,8 +191,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>852</width>
-             <height>569</height>
+             <width>850</width>
+             <height>564</height>
             </rect>
            </property>
            <property name="minimumSize">
