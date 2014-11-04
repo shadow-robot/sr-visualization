@@ -118,6 +118,7 @@ class CybergloveCalibrer:
             description_function = do_nothing
         self.description_function = description_function
         
+    """
     def get_calibration_steps(self):
 	
 		joints1 = [Joint("G_IndexMPJ", 0, 90), Joint("G_IndexPIJ", 0, 90), 
@@ -157,12 +158,13 @@ class CybergloveCalibrer:
 		return 0
         
 		"""
-        def get_calibration_steps(self):
-       
+
+    def get_calibration_steps(self):
+        """
         Read the calibration steps from the xml file.
         
         @return: 0 when the values were read.
-       
+        """
         
         #first step: calibrate 0s, 3s and TH4 
         joints1 = [Joint("G_IndexMPJ", 0, 90), Joint("G_IndexPIJ", 0, 90), Joint("G_IndexDIJ", 0, 90), 
@@ -199,7 +201,6 @@ class CybergloveCalibrer:
                                                       joints = joints4 ))
         
         return 0
-        """ 
         
     def do_step_min(self, index):
         """
