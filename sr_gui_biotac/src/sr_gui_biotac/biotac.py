@@ -31,12 +31,13 @@
 
 import rospy
 import rospkg
+import os
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
 from QtGui import QMessageBox, QWidget, QIcon
-from sr_gui_biotac.msg import Biotac BiotacAll
+from sr_robot_msgs.msg import Biotac, BiotacAll
 
 class SrGuiBiotac(Plugin):
     """
@@ -50,9 +51,7 @@ class SrGuiBiotac(Plugin):
         self._publisher = None
         self._widget = QWidget()
 
-        ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_biotac'), 'uis', 'SrChangeControllers.ui')
+        ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_biotac'), 'uis', 'SrGuiBiotac.ui')
         loadUi(ui_file, self._widget)
         self._widget.setObjectName('SrBiotacUi')
         context.add_widget(self._widget)
-
-
