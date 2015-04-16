@@ -1,31 +1,20 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(sr_gui_biotac)
 
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  message_generation
-  message_runtime
   rospy
   rqt_gui
   rqt_gui_py
   sr_visualization_icons  
   std_msgs
+  sr_robot_msgs
 )
 
-## Generate messages in the 'msg' folder
- add_message_files(
-   FILES
-   Biotac.msg
-   BiotacAll.msg
- )
-
-## Generate added messages and services with any dependencies listed here
-generate_messages(
-   DEPENDENCIES
-   std_msgs  # Or other packages containing msgs
-)
+catkin_python_setup()
 
 ###################################
 ## catkin specific configuration ##
@@ -39,9 +28,8 @@ generate_messages(
 catkin_package(
   DEPENDS
   INCLUDE_DIRS include
-  CATKIN_DEPENDS message_generation message_runtime rospy rqt_gui rqt_gui_py
+  CATKIN_DEPENDS sr_robot_msgs std_msgs rospy rqt_gui rqt_gui_py
 
 )
-
 install( DIRECTORY uis DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION} )
 install( FILES sr_change_controllers_plugin.xml DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION} )
