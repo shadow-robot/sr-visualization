@@ -9,7 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   rqt_gui
   rqt_gui_py
-  sr_visualization_icons  
+  sr_visualization_icons
   std_msgs
   sr_robot_msgs
 )
@@ -27,7 +27,6 @@ catkin_python_setup()
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   DEPENDS
-  INCLUDE_DIRS include
   CATKIN_DEPENDS sr_robot_msgs std_msgs rospy rqt_gui rqt_gui_py
 
 )
