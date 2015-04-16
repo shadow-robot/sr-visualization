@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>BioTacGuiWindow</class>
- <widget class="QMainWindow" name="BioTacGuiWindow">
+ <widget class="QWidget" name="BioTacGuiWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
