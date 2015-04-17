@@ -144,8 +144,11 @@ class SrGuiBiotac(Plugin):
             rect = QRectF(self.sensing_electrodes_x[n], self.sensing_electrodes_y[n], RECTANGLE_WIDTH, RECTANGLE_HEIGHT)
 
             painter.setBrush(colour)
-#            painter.setFont(QFont("Arial", font_size_1))
             painter.drawEllipse(rect)
+
+
+
+            painter.setFont(QFont("Arial", font_size_1))
 
             """
             if n < 9 :
