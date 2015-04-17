@@ -147,7 +147,6 @@ class SrGuiBiotac(Plugin):
         painter = QPainter(self._widget)
 
         which_tactile = self.biotac_id_from_dropdown()
-        print (which_tactile)
 
         self.define_electrodes()
         
