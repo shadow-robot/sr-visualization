@@ -157,6 +157,22 @@ class SrGuiBiotac(Plugin):
 
             painter.drawText(rect, str(n+1) )
 
+
+        for n in range(NUMBER_OF_EXCITATION_ELECTRODES) :
+            colour = self.get_electrode_colour_from_value(value)
+
+            rect = QRectF(self.excitation_electrodes_x[n], self.excitation_electrodes_y[n], RECTANGLE_WIDTH, RECTANGLE_HEIGHT)
+
+            painter.setBrush( QColor(127,127,127) )
+            painter.drawEllipse(rect)
+
+            painter.setFont(QFont("Arial", font_size_1))
+
+            rect.setX (rect.x() + x_offset_4)
+            rect.setY (rect.y() + y_offset_4)
+
+            painter.drawText(rect, "X"+str(n+1) )
+
             
         self._widget.update()
 
