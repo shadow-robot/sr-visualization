@@ -37,7 +37,7 @@ from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
 from QtGui import QMessageBox, QWidget, QIcon, QColor, QPainter, QFont
-from QtCore import QRectF, QTimer, SIGNAL
+from QtCore import QRectF, QTimer, SIGNAL, SLOT
 from sr_robot_msgs.msg import Biotac, BiotacAll
 
 NUMBER_OF_SENSING_ELECTRODES    = 19
@@ -196,6 +196,9 @@ class SrGuiBiotac(Plugin):
             
         self._widget.update()
 
+    def subscribe_to_topic(self, prefix) :
+        rospy.Subscriber(prefix + "tactile", BiotacAll, self.tactile_cb)
+
     def __init__(self, context):
 
         super(SrGuiBiotac, self).__init__(context)
@@ -217,7 +220,11 @@ class SrGuiBiotac(Plugin):
         self._widget.connect(self.timer, SIGNAL("timeout()"), self._widget.update)
         self._widget.paintEvent = self.paintEvent
 
-        rospy.Subscriber("tactile", BiotacAll, self.tactile_cb)
+        self.subscribe_to_topic("/rh/")
+
+#        self._widget.select_prefix.editTextChanged = self.subscribe_to_topic
+
+        self._widget.connect(self._widget.select_prefix, SIGNAL("activated(QString)"), self.subscribe_to_topic)
 
         self.timer.start(50)
 
