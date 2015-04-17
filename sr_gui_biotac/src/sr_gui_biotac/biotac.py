@@ -146,18 +146,16 @@ class SrGuiBiotac(Plugin):
             painter.setBrush(colour)
             painter.drawEllipse(rect)
 
-
-
             painter.setFont(QFont("Arial", font_size_1))
 
-            """
             if n < 9 :
-                self.sensing_electrodes[n].setX (self.sensing_electrodes[n].x() + x_offset_2)
-                self.sensing_electrodes[n].setY (self.sensing_electrodes[n].y() + y_offset_2)
+                rect.setX (rect.x() + x_offset_2)
+                rect.setY (rect.y() + y_offset_2)
             else :
-                self.sensing_electrodes[n].setX (self.sensing_electrodes[n].x() + x_offset_3)
-                self.sensing_electrodes[n].setY (self.sensing_electrodes[n].y() + y_offset_3)
-             """
+                rect.setX (rect.x() + x_offset_3)
+                rect.setY (rect.y() + y_offset_3)
+
+            painter.drawText(rect, str(n+1) )
 
             
         self._widget.update()
