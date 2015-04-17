@@ -129,10 +129,25 @@ class SrGuiBiotac(Plugin):
 
         return QColor(r,g,b)
 
+    def biotac_id_from_dropdown(self) :
+        name = self._widget.btSelect.currentText()
+
+        if name == "FF" :
+            return 0
+        if name == "MF" :
+            return 1
+        if name == "RF" :
+            return 2
+        if name == "LF" :
+            return 3
+        if name == "TH" :
+            return 4
+
     def paintEvent(self, paintEvent):
         painter = QPainter(self._widget)
 
-        which_tactile = 0
+        which_tactile = self.biotac_id_from_dropdown()
+        print (which_tactile)
 
         self.define_electrodes()
         
