@@ -143,49 +143,55 @@ class SrGuiBiotac(Plugin):
         if name == "TH" :
             return 4
 
+    def draw_electrode(self, painter, elipse_x, elipse_y, text_x, text_y, colour, text) :
+
+            rect = QRectF(elipse_x, elipse_y, RECTANGLE_WIDTH, RECTANGLE_HEIGHT)
+
+            painter.setBrush(colour)
+            painter.drawEllipse(rect)
+
+            rect.setX(text_x)
+            rect.setY(text_y)
+
+            painter.drawText(rect, text)
+
+
     def paintEvent(self, paintEvent):
         painter = QPainter(self._widget)
-
         which_tactile = self.biotac_id_from_dropdown()
 
-        self.define_electrodes()
-        
+        painter.setFont(QFont("Arial", font_size_1))
+
         for n in range(NUMBER_OF_SENSING_ELECTRODES) :
             value = self.latest_data.tactiles[which_tactile].electrodes[n]
             eval( "self._widget.lcdE%02d.display(%d)" % (n +1 , value) )
             colour = self.get_electrode_colour_from_value(value)
 
-            rect = QRectF(self.sensing_electrodes_x[n], self.sensing_electrodes_y[n], RECTANGLE_WIDTH, RECTANGLE_HEIGHT)
-
-            painter.setBrush(colour)
-            painter.drawEllipse(rect)
-
-            painter.setFont(QFont("Arial", font_size_1))
+            elipse_x = self.sensing_electrodes_x[n]
+            elipse_y = self.sensing_electrodes_y[n]
 
             if n < 9 :
-                rect.setX (rect.x() + x_offset_2)
-                rect.setY (rect.y() + y_offset_2)
+                text_x = elipse_x + x_offset_2
+                text_y = elipse_y + y_offset_2
             else :
-                rect.setX (rect.x() + x_offset_3)
-                rect.setY (rect.y() + y_offset_3)
+                text_x = elipse_x + x_offset_3
+                text_y = elipse_y + y_offset_3
+            
 
-            painter.drawText(rect, str(n+1) )
+            self.draw_electrode( painter, elipse_x, elipse_y, text_x, text_y, colour, str(n+1) )
 
+        painter.setFont(QFont("Arial", font_size_2))
 
         for n in range(NUMBER_OF_EXCITATION_ELECTRODES) :
-            colour = self.get_electrode_colour_from_value(value)
+            elipse_x = self.excitation_electrodes_x[n]
+            elipse_y = self.excitation_electrodes_y[n]
 
-            rect = QRectF(self.excitation_electrodes_x[n], self.excitation_electrodes_y[n], RECTANGLE_WIDTH, RECTANGLE_HEIGHT)
+            colour = QColor(127,127,127)
 
-            painter.setBrush( QColor(127,127,127) )
-            painter.drawEllipse(rect)
+            text_x = elipse_x + x_offset_4
+            text_y = elipse_y + y_offset_4
 
-            painter.setFont(QFont("Arial", font_size_1))
-
-            rect.setX (rect.x() + x_offset_4)
-            rect.setY (rect.y() + y_offset_4)
-
-            painter.drawText(rect, "X"+str(n+1) )
+            self.draw_electrode( painter, elipse_x, elipse_y, text_x, text_y, colour, "X" + str(n+1) )
 
             
         self._widget.update()
