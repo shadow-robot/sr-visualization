@@ -75,7 +75,7 @@ class SrGuiJointSlider(Plugin):
         self.trajectory_state_sub = []
         #self.trajectory_state = []
         self.trajectory_state_slider_cb = []
-        self.trajectory_client = []
+        self.trajectory_pub = []
         self.trajectory_target = []
 
         self._widget.reloadButton.pressed.connect(self.on_reload_button_cicked_)
@@ -254,7 +254,7 @@ class SrGuiJointSlider(Plugin):
         self.trajectory_state_sub = []
         #self.trajectory_state = []
         self.trajectory_state_slider_cb = []
-        self.trajectory_client = []
+        self.trajectory_pub = []
         
         for controller in controllers:
             if controller.type == "position_controllers/JointTrajectoryController":
@@ -274,11 +274,11 @@ class SrGuiJointSlider(Plugin):
                         self.trajectory_target.append(JointTrajectory())
                         self.trajectory_state_sub.append(rospy.Subscriber(controller.name + "/state", controller_state_type, self._trajectory_state_cb, callback_args=len(self.trajectory_state_sub)))
                         self.trajectory_state_slider_cb.append([])
-                        self.trajectory_client.append(rospy.Publisher(controller.name + "/command", JointTrajectory, queue_size=1, latch=True))
+                        self.trajectory_pub.append(rospy.Publisher(controller.name + "/command", JointTrajectory, queue_size=1, latch=True))
                         for j_name in controller.resources:
                             joint_controller = JointController(controller.name, controller_type, controller_state_type, controller_category, \
                                                                self.trajectory_state_slider_cb[len(self.trajectory_state_slider_cb) - 1], \
-                                                               self.trajectory_client[len(self.trajectory_client) - 1], \
+                                                               self.trajectory_pub[len(self.trajectory_pub) - 1], \
                                                                self.trajectory_target[len(self.trajectory_target) - 1])
                             rospy.loginfo("controller category: %s", controller_category)
                             
