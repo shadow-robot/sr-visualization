@@ -35,7 +35,7 @@ from sr_robot_msgs.msg import JointMusclePositionControllerState
 from control_msgs.msg import JointTrajectoryControllerState
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
-from sr_gui_joint_slider.sliders import JointController, Joint, EtherCATHandSlider, EtherCATSelectionSlider
+from sr_gui_joint_slider.sliders import JointController, Joint, EtherCATHandSlider, EtherCATHandTrajectorySlider, EtherCATSelectionSlider
 
 class SrGuiJointSlider(Plugin):
     """
@@ -49,7 +49,8 @@ class SrGuiJointSlider(Plugin):
                              "sr_mechanism_controllers/SrhJointVelocityController": ("velocity", JointControllerState),
                              "sr_mechanism_controllers/SrhMixedPositionVelocityJointController": ("position", SrJointControllerState),
                              "sr_mechanism_controllers/SrhMuscleJointPositionController": ("position", JointMusclePositionControllerState),
-                             "position_controllers/JointTrajectoryController": ("position_trajectory", JointTrajectoryControllerState)} 
+                             "position_controllers/JointTrajectoryController": ("position_trajectory", JointTrajectoryControllerState),
+                             "effort_controllers/JointTrajectoryController": ("position_trajectory", JointTrajectoryControllerState)} 
     
     def __init__(self, context):
         super(SrGuiJointSlider, self).__init__(context)
@@ -69,13 +70,6 @@ class SrGuiJointSlider(Plugin):
 
         self.sliders = []
         self.selection_slider = None
-
-        self._widget.reloadButton.pressed.connect(self.on_reload_button_cicked_)
-        self._widget.refreshButton.pressed.connect(self.on_refresh_button_cicked_)
-        self._widget.sliderReleaseCheckBox.stateChanged.connect(self.on_slider_release_checkbox_clicked_)
-
-        self._widget.reloadButton.setEnabled(True)
-        self.on_reload_button_cicked_()
         
         # to be used by trajectory controller sliders
         self.trajectory_state_sub = []
@@ -83,6 +77,13 @@ class SrGuiJointSlider(Plugin):
         self.trajectory_state_slider_cb = []
         self.trajectory_client = []
         self.trajectory_target = []
+
+        self._widget.reloadButton.pressed.connect(self.on_reload_button_cicked_)
+        self._widget.refreshButton.pressed.connect(self.on_refresh_button_cicked_)
+        self._widget.sliderReleaseCheckBox.stateChanged.connect(self.on_slider_release_checkbox_clicked_)
+
+        self._widget.reloadButton.setEnabled(True)
+        self.on_reload_button_cicked_()
 
     def _unregister(self):
         pass
@@ -166,7 +167,10 @@ class SrGuiJointSlider(Plugin):
             slider_ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_joint_slider'), 'uis', 'Slider.ui')
 
             try:
-                slider = EtherCATHandSlider(joint, slider_ui_file, self, self._widget.scrollAreaWidgetContents)
+                if joint.controller.controller_category == "position_trajectory":
+                    slider = EtherCATHandTrajectorySlider(joint, slider_ui_file, self, self._widget.scrollAreaWidgetContents)
+                else:
+                    slider = EtherCATHandSlider(joint, slider_ui_file, self, self._widget.scrollAreaWidgetContents)
             except Exception, e:
                 rospy.loginfo(e)
 
@@ -286,8 +290,15 @@ class SrGuiJointSlider(Plugin):
                             joints.append(joint)
                     else:
                         joint_name = ctrl_params["joint"]
-                        if joint_name in trajectory_ctrl_joint_names:
+                        if joint_name in trajectory_ctrl_joint_names: # These joints are controlled by the trajectory controller
                             continue
+                        
+                        if "J0" in joint_name: # xxJ0 are controlled by the by the trajectory controller xxJ1 and xxJ2
+                            jname1 = joint_name.replace("J0", "J1")
+                            jname2 = joint_name.replace("J0", "J2")
+                            if jname1 in trajectory_ctrl_joint_names \
+                                and jname2 in trajectory_ctrl_joint_names:
+                                continue
                     
                         joint_controller = JointController(controller.name, controller_type, controller_state_type, controller_category)
                         rospy.loginfo("controller category: %s", controller_category)
@@ -308,15 +319,16 @@ class SrGuiJointSlider(Plugin):
         return joints
     
     def _trajectory_state_cb(self, msg, index):
-        print len(self.trajectory_target)
         if not self.trajectory_target[index].joint_names: #Initialize the targets with the current position
             self.trajectory_target[index].joint_names = msg.joint_names
             point = JointTrajectoryPoint()
-            point.positions = msg.actual.positions
+            point.positions = list(msg.actual.positions) # For some unexpected reason, msg.actual.positions appears to be a tuple instead of a list)
             point.velocities = [0] * len(msg.joint_names)
-            point.time_from_start = rospy.Duration.from_sec(0.002)
+            point.time_from_start = rospy.Duration.from_sec(0.005)
             self.trajectory_target[index].points = [point]
         
         for cb in self.trajectory_state_slider_cb[index]: # call the callbacks of the sliders in the list
             cb(msg)
+        
+        
         
