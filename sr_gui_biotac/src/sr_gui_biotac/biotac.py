@@ -41,22 +41,7 @@ from QtCore import QRectF, QTimer, SIGNAL, SLOT
 from sr_robot_msgs.msg import Biotac, BiotacAll
 
 
-RECTANGLE_WIDTH  = rospy.get_param("sr_gui_biotac/electrode_display_width" , 45)  # Display sizes for electrodes in pixels
-RECTANGLE_HEIGHT = rospy.get_param("sr_gui_biotac/electrode_display_height" , 45)
-    
-factor = rospy.get_param("sr_gui_biotac/display_location_scale_factor" , 17.5) ## Sets the multiplier to go from physical electrode location on the sensor in mm to display location in pixels
-
-x_display_offset = rospy.get_param("sr_gui_biotac/x_display_offset", [150, 12.5, 4.5, 3.5]) # Pixel offsets for displaying electrodes. offset[0] is applied to each electrode. 1,2 and 3 are the label offsets for displaying electrode number. 
-y_display_offset = rospy.get_param("sr_gui_biotac/y_display_offset", [-50, 4.0, 4.0, 4.0])
-
-label_font_size = rospy.get_param("sr_gui_biotac/electrode_label_font_sizes", [24, 22]) # Font sizes for labels on sensing + excitation electrodes
-
-default_topic = rospy.get_param('sr_gui_biotac/default_topic', "/rh/") # sets default topic prefix for multi-hand systems. ## TODO - make this automagicaly filled by testing topics available
-
 class SrGuiBiotac(Plugin):
-    """
-    A rosgui plugin for visualising biotac sensord data
-    """
 
     def define_electrodes(self): 
 
@@ -68,13 +53,13 @@ class SrGuiBiotac(Plugin):
 
 
         for n in range (len(self.sensing_electrodes_x )) :
-            self.sensing_electrodes_x[n] = self.sensing_electrodes_x[n] * factor + x_display_offset[0]
-            self.sensing_electrodes_y[n] = self.sensing_electrodes_y[n] * factor + y_display_offset[0]
+            self.sensing_electrodes_x[n] = self.sensing_electrodes_x[n] * self.factor + self.x_display_offset[0]
+            self.sensing_electrodes_y[n] = self.sensing_electrodes_y[n] * self.factor + self.y_display_offset[0]
 
 
         for n in range (len(self.excitation_electrodes_x ) ) : 
-            self.excitation_electrodes_x[n] = self.excitation_electrodes_x[n] * factor + x_display_offset[0]
-            self.excitation_electrodes_y[n] = self.excitation_electrodes_y[n] * factor + y_display_offset[0]
+            self.excitation_electrodes_x[n] = self.excitation_electrodes_x[n] * self.factor + self.x_display_offset[0]
+            self.excitation_electrodes_y[n] = self.excitation_electrodes_y[n] * self.factor + self.y_display_offset[0]
 
 
     def tactile_cb(self, msg):
@@ -126,7 +111,7 @@ class SrGuiBiotac(Plugin):
 
     def draw_electrode(self, painter, elipse_x, elipse_y, text_x, text_y, colour, text) :
 
-            rect = QRectF(elipse_x, elipse_y, RECTANGLE_WIDTH, RECTANGLE_HEIGHT)
+            rect = QRectF(elipse_x, elipse_y, self.RECTANGLE_WIDTH, self.RECTANGLE_HEIGHT)
 
             painter.setBrush(colour)
             painter.drawEllipse(rect)
@@ -141,7 +126,7 @@ class SrGuiBiotac(Plugin):
         painter = QPainter(self._widget)
         which_tactile = self.biotac_id_from_dropdown()
 
-        painter.setFont(QFont("Arial", label_font_size[0]))
+        painter.setFont(QFont("Arial", self.label_font_size[0]))
 
         for n in range(len(self.sensing_electrodes_x)):
             value = self.latest_data.tactiles[which_tactile].electrodes[n]
@@ -152,18 +137,18 @@ class SrGuiBiotac(Plugin):
             elipse_y = self.sensing_electrodes_y[n]
 
             if n < 9 :
-                text_x = elipse_x + x_display_offset[1]
-                text_y = elipse_y + y_display_offset[1]
+                text_x = elipse_x + self.x_display_offset[1]
+                text_y = elipse_y + self.y_display_offset[1]
 
             else :
-                text_x = elipse_x + x_display_offset[2]
-                text_y = elipse_y + y_display_offset[2]
+                text_x = elipse_x + self.x_display_offset[2]
+                text_y = elipse_y + self.y_display_offset[2]
 
             
 
             self.draw_electrode( painter, elipse_x, elipse_y, text_x, text_y, colour, str(n+1) )
 
-        painter.setFont(QFont("Arial", label_font_size[1]))
+        painter.setFont(QFont("Arial", self.label_font_size[1]))
 
         for n in range(len(self.excitation_electrodes_x)):
             elipse_x = self.excitation_electrodes_x[n]
@@ -171,8 +156,8 @@ class SrGuiBiotac(Plugin):
 
             colour = QColor(127,127,127)
 
-            text_x = elipse_x + x_display_offset[3]
-            text_y = elipse_y + y_display_offset[3]
+            text_x = elipse_x + self.x_display_offset[3]
+            text_y = elipse_y + self.y_display_offset[3]
 
             self.draw_electrode( painter, elipse_x, elipse_y, text_x, text_y, colour, "X" + str(n+1) )
 
@@ -182,11 +167,27 @@ class SrGuiBiotac(Plugin):
     def subscribe_to_topic(self, prefix) :
         rospy.Subscriber(prefix + "tactile", BiotacAll, self.tactile_cb)
 
+
+    def load_params(self) :
+        self.RECTANGLE_WIDTH  = rospy.get_param("sr_gui_biotac/electrode_display_width" , 45)  # Display sizes for electrodes in pixels
+        self.RECTANGLE_HEIGHT = rospy.get_param("sr_gui_biotac/electrode_display_height" , 45)
+    
+        self.factor = rospy.get_param("sr_gui_biotac/display_location_scale_factor" , 17.5) ## Sets the multiplier to go from physical electrode location on the sensor in mm to display location in pixels
+        self.x_display_offset = rospy.get_param("sr_gui_biotac/x_display_offset", [150, 12.5, 4.5, 3.5]) # Pixel offsets for displaying electrodes. offset[0] is applied to each electrode. 1,2 and 3 are the label offsets for displaying electrode number. 
+        self.y_display_offset = rospy.get_param("sr_gui_biotac/y_display_offset", [-50, 4.0, 4.0, 4.0])
+        self.label_font_size = rospy.get_param("sr_gui_biotac/electrode_label_font_sizes", [24, 22]) # Font sizes for labels on sensing + excitation electrodes
+        self.default_topic = rospy.get_param('sr_gui_biotac/default_topic', "/rh/") # sets default topic prefix for multi-hand systems. ## TODO - make this automagicaly filled by testing topics available
+
+
+
+
+
+
     def __init__(self, context):
 
         super(SrGuiBiotac, self).__init__(context)
         self.setObjectName('SrGuiBiotac')
-
+        self.load_params()
 
         self._publisher = None
         self._widget = QWidget()
@@ -203,9 +204,9 @@ class SrGuiBiotac(Plugin):
         self._widget.connect(self.timer, SIGNAL("timeout()"), self._widget.update)
         self._widget.paintEvent = self.paintEvent
 
-        self.subscribe_to_topic(default_topic)
+        self.subscribe_to_topic(self.default_topic)
 
-        self._widget.select_prefix.setCurrentIndex(self._widget.select_prefix.findText(default_topic))
+        self._widget.select_prefix.setCurrentIndex(self._widget.select_prefix.findText(self.default_topic))
 
 
         self._widget.connect(self._widget.select_prefix, SIGNAL("activated(QString)"), self.subscribe_to_topic)
