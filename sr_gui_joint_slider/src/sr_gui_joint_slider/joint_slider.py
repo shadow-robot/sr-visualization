@@ -32,6 +32,8 @@ from controller_manager_msgs.srv import ListControllers
 from control_msgs.msg import JointControllerState
 from sr_robot_msgs.msg import JointControllerState as SrJointControllerState
 from sr_robot_msgs.msg import JointMusclePositionControllerState
+from control_msgs.msg import JointTrajectoryControllerState
+from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
 from sr_gui_joint_slider.sliders import JointController, Joint, EtherCATHandSlider, EtherCATSelectionSlider
 
@@ -40,13 +42,14 @@ class SrGuiJointSlider(Plugin):
     A rosgui plugin to change the position of the different joints
     """
     
-    # For each controller type this defines the category of controller it belongs to (position, velocity, effort) 
+    # For each controller type this defines the category of controller it belongs to (position, velocity, effort, position_trajectory) 
     # and the msg type of the controller state topic
     controller_state_types = {"sr_mechanism_controllers/SrhJointPositionController": ("position", JointControllerState),
                              "sr_mechanism_controllers/SrhEffortJointController": ("effort", JointControllerState),
                              "sr_mechanism_controllers/SrhJointVelocityController": ("velocity", JointControllerState),
                              "sr_mechanism_controllers/SrhMixedPositionVelocityJointController": ("position", SrJointControllerState),
-                             "sr_mechanism_controllers/SrhMuscleJointPositionController": ("position", JointMusclePositionControllerState)} 
+                             "sr_mechanism_controllers/SrhMuscleJointPositionController": ("position", JointMusclePositionControllerState),
+                             "position_controllers/JointTrajectoryController": ("position_trajectory", JointTrajectoryControllerState)} 
     
     def __init__(self, context):
         super(SrGuiJointSlider, self).__init__(context)
@@ -73,6 +76,13 @@ class SrGuiJointSlider(Plugin):
 
         self._widget.reloadButton.setEnabled(True)
         self.on_reload_button_cicked_()
+        
+        # to be used by trajectory controller sliders
+        self.trajectory_state_sub = []
+        #self.trajectory_state = []
+        self.trajectory_state_slider_cb = []
+        self.trajectory_client = []
+        self.trajectory_target = []
 
     def _unregister(self):
         pass
@@ -176,7 +186,7 @@ class SrGuiJointSlider(Plugin):
 
     def get_current_controllers(self):
         """
-        @return: list of current controllers
+        @return: list of current controllers with associated data
         """
         success = True
         list_controllers = rospy.ServiceProxy('controller_manager/list_controllers', ListControllers)
@@ -186,7 +196,7 @@ class SrGuiJointSlider(Plugin):
             success = False
 
         if success:
-            return [c.name for c in resp1.controller if c.state == "running"]
+            return [c for c in resp1.controller if c.state == "running"]
         else:
             rospy.loginfo("Couldn't get list of controllers from controller_manager/list_controllers service")
             return []
@@ -235,26 +245,78 @@ class SrGuiJointSlider(Plugin):
     
     def _create_joints(self, controllers):
         joints = []
+        trajectory_ctrl_joint_names = []
+        self.trajectory_target = []
+        self.trajectory_state_sub = []
+        #self.trajectory_state = []
+        self.trajectory_state_slider_cb = []
+        self.trajectory_client = []
+        
         for controller in controllers:
-            if rospy.has_param(controller):
-                ctrl_params = rospy.get_param(controller)
+            if controller.type == "position_controllers/JointTrajectoryController":
+                for j_name in controller.resources:
+                    trajectory_ctrl_joint_names.append(j_name)
+                
+        for controller in controllers:
+            if rospy.has_param(controller.name):
+                ctrl_params = rospy.get_param(controller.name)
                 controller_type = ctrl_params["type"]
                 if controller_type in self.controller_state_types:
                     controller_state_type = self.controller_state_types[controller_type][1]
                     controller_category = self.controller_state_types[controller_type][0]
-                    joint_controller = JointController(controller, controller_type, controller_state_type, controller_category)
-                    rospy.loginfo("controller category: %s", controller_category)
-                    joint_name = ctrl_params["joint"]
-                    if self._widget.joint_name_filter_edit.text() not in joint_name:
-                        continue
-                    min, max, vel = self._get_joint_min_max_vel_special(joint_name)
-                    joint = Joint(joint_name, min, max, vel, joint_controller)
+                    
+                    if controller_category == "position_trajectory": # for a trajectory controller we will load a slider for every resource it manages
+                        
+                        self.trajectory_target.append(JointTrajectory())
+                        self.trajectory_state_sub.append(rospy.Subscriber(controller.name + "/state", controller_state_type, self._trajectory_state_cb, callback_args=len(self.trajectory_state_sub)))
+                        self.trajectory_state_slider_cb.append([])
+                        self.trajectory_client.append(rospy.Publisher(controller.name + "/command", JointTrajectory, queue_size=1, latch=True))
+                        for j_name in controller.resources:
+                            joint_controller = JointController(controller.name, controller_type, controller_state_type, controller_category, \
+                                                               self.trajectory_state_slider_cb[len(self.trajectory_state_slider_cb) - 1], \
+                                                               self.trajectory_client[len(self.trajectory_client) - 1], \
+                                                               self.trajectory_target[len(self.trajectory_target) - 1])
+                            rospy.loginfo("controller category: %s", controller_category)
+                            
+                            if self._widget.joint_name_filter_edit.text() not in j_name:
+                                continue
+                            
+                            min, max, vel = self._get_joint_min_max_vel_special(j_name)
+                            joint = Joint(j_name, min, max, vel, joint_controller)
+                            joints.append(joint)
+                    else:
+                        joint_name = ctrl_params["joint"]
+                        if joint_name in trajectory_ctrl_joint_names:
+                            continue
+                    
+                        joint_controller = JointController(controller.name, controller_type, controller_state_type, controller_category)
+                        rospy.loginfo("controller category: %s", controller_category)
+                        
+                        if self._widget.joint_name_filter_edit.text() not in joint_name:
+                            continue
+                        
+                        min, max, vel = self._get_joint_min_max_vel_special(joint_name)
+                        joint = Joint(joint_name, min, max, vel, joint_controller)
+                        joints.append(joint)
                 else:
-                    rospy.logwarn("Controller %s of type %s not supported", controller, controller_type)
+                    rospy.logwarn("Controller %s of type %s not supported", controller.name, controller_type)
                     continue
             else:
-                rospy.logwarn("Parameters for controller %s not found", controller)
+                rospy.logwarn("Parameters for controller %s not found", controller.name)
                 continue
             
-            joints.append(joint)
         return joints
+    
+    def _trajectory_state_cb(self, msg, index):
+        print len(self.trajectory_target)
+        if not self.trajectory_target[index].joint_names: #Initialize the targets with the current position
+            self.trajectory_target[index].joint_names = msg.joint_names
+            point = JointTrajectoryPoint()
+            point.positions = msg.actual.positions
+            point.velocities = [0] * len(msg.joint_names)
+            point.time_from_start = rospy.Duration.from_sec(0.002)
+            self.trajectory_target[index].points = [point]
+        
+        for cb in self.trajectory_state_slider_cb[index]: # call the callbacks of the sliders in the list
+            cb(msg)
+        

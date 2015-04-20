@@ -27,16 +27,20 @@ from controller_manager_msgs.srv import ListControllers
 from sr_robot_msgs.msg import sendupdate, joint
 from std_msgs.msg import Float64
 from math import radians, degrees
+from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
 class JointController():
     """
     Contains the min and the max and the command and state topics for the joint controller.
     """
-    def __init__(self, name, controller_type, controller_state_type, controller_category):
+    def __init__(self, name, controller_type, controller_state_type, controller_category, subscribe_status_cb_list=None, cmd_publisher=None, traj_target=None):
         self.name = name
         self.controller_type = controller_type
         self.controller_state_type = controller_state_type
         self.controller_category = controller_category
+        self.subscribe_status_cb_list = subscribe_status_cb_list
+        self.cmd_publisher = cmd_publisher
+        self.traj_target = traj_target
 
 class Joint():
     """
@@ -205,7 +209,68 @@ class EtherCATHandSlider(ExtendedSlider):
             self.slider.setSliderPosition(0)
             self.changeValue(0)
 
+class EtherCATHandTrajectorySlider(ExtendedSlider):
+    """
+    Slider for one EtherCAT Hand joint, that uses the trajectory controller interface.
+    """
+    def __init__(self, joint, uiFile, plugin_parent, parent=None):
+        ExtendedSlider.__init__(self, joint, uiFile, plugin_parent, parent)
 
+        self.initialize_controller()
+
+    def initialize_controller(self):
+        self.slider.setMinimum(self.joint.min)
+        self.slider.setMaximum(self.joint.max)
+        self.min_label.setText(str(self.joint.min))
+        self.max_label.setText(str(self.joint.max))
+
+        self.pub = self.joint.controller.cmd_publisher
+        self.set_slider_behaviour()
+        
+        self.joint.controller.subscribe_status_cb_list.append(self._state_cb)
+
+    def _state_cb(self, msg):
+        self.state = msg.actual.positions[msg.joint_names.index(self.joint.name)]
+
+    def sendupdate(self, value):
+        if self.joint.controller.traj_target.joint_names \
+            and self.joint.controller.traj_target.points:
+            self.joint.controller.traj_target.points[0].positions[self.joint.controller.traj_target.joint_names.index(self.joint.name)] = radians(float(value))
+            self.pub.publish(self.joint.controller.traj_target)
+
+    def update(self):
+        try:
+            self.current_value = round(degrees(self.state),1)
+            self.value.setText("Val: " + str(self.current_value))
+            if self.first_update_done == False:
+                self.slider.setSliderPosition(self.current_value)
+                self.slider.setValue(self.current_value)
+                self.target.setText("Tgt: " + str(self.current_value))
+
+                self.first_update_done = True
+        except:
+            pass
+
+    def refresh(self):
+        """
+        Refresh the current position of the slider with index = self.current_controller_index
+        """
+        self.slider.setSliderPosition(self.current_value)
+        self.slider.setValue(self.current_value)
+        self.target.setText("Tgt: " + str(self.current_value))
+
+    def set_slider_behaviour(self):
+        """
+        Set the behaviour of the slider according to controller type
+        """
+        if (self.joint.controller.controller_category == "position_trajectory"):
+            if self.pos_slider_tracking_behaviour:
+                self.slider.setTracking(True)
+            else:
+                self.slider.setTracking(False)
+
+    def on_slider_released(self):
+        pass
 
 class SelectionSlider(QFrame):
     """
