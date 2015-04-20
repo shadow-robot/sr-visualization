@@ -288,7 +288,10 @@ class SrGuiChangeControllers(Plugin):
         """
         success = True
         for hand_id in self.hand_ids:
-            change_control_type = rospy.ServiceProxy('realtime_loop/' + hand_id + '/change_control_type', ChangeControlType)
+            srv_path = 'realtime_loop/' + hand_id + '/change_control_type'
+            # remove double slash for empty hand_id
+            srv_path.replace("//", "/")
+            change_control_type = rospy.ServiceProxy(srv_path, ChangeControlType)
             try:
                 resp1 = change_control_type(chng_type_msg)
                 if resp1.result.control_type != chng_type_msg.control_type:
