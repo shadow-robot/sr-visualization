@@ -1,0 +1,20 @@
+<library path="src">
+  <class name="Teach Mode" type="sr_gui_teach_mode.teach_mode.SrGuiTeachMode" base_class_type="rqt_gui_py::Plugin">
+    <description>
+	A plugin to set the robots to teach mode.
+    </description>
+    <qtgui>
+      <group>
+	<label>Shadow Robot</label>
+      </group>
+      <group>
+	<label>Controllers</label>
+      </group>
+      <label>Teach mode</label>
+      <icon type="file">../sr_visualization_icons/icons/hand.png</icon>
+      <statustip>
+    A plugin to set the robots to teach mode.
+      </statustip>
+    </qtgui>
+  </class>
+</library>
