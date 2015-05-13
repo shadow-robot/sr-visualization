@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+
+#Disabling E1002 check since it complains about super for no reason - inheriting from QObject
+#pylint: disable=E1002
+
 import os
 from python_qt_binding import loadUi
 from qt_gui.plugin import Plugin
