@@ -23,8 +23,9 @@ import os, rospkg, rospy
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
-from QtCore import QEvent, QObject, Qt, QTimer,  QThread, SIGNAL, QPoint
-from QtGui import QWidget, QMessageBox, QFrame, QHBoxLayout, QCheckBox, QLabel, QCursor, QColor
+from QtCore import Qt, QThread, SIGNAL, QPoint
+from QtGui import QWidget, QMessageBox, QFrame, \
+    QHBoxLayout, QCheckBox, QLabel, QColor
 
 from std_srvs.srv import Empty
 from diagnostic_msgs.msg import DiagnosticArray
