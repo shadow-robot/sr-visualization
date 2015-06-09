@@ -32,18 +32,19 @@ from diagnostic_msgs.msg import DiagnosticArray
 
 class MotorFlasher(QThread):
 
-    def __init__(self, parent, nb_motors_to_program):
+    def __init__(self, parent, nb_motors_to_program, prefix):
         QThread.__init__(self, None)
         self.parent = parent
         self.nb_motors_to_program = nb_motors_to_program
+        self.prefix = prefix
 
     def run(self):
         programmed_motors = 0
         for motor in self.parent.motors:
             if motor.checkbox.checkState() == Qt.Checked:
                 try:
-                    print("resetting: realtime_loop/reset_motor_"+motor.motor_name)
-                    self.flasher_service = rospy.ServiceProxy('realtime_loop/reset_motor_'+motor.motor_name, Empty)
+                    print("resetting: " + self.prefix + "realtime_loop/reset_motor_"+motor.motor_name)
+                    self.flasher_service = rospy.ServiceProxy(self.prefix + 'realtime_loop/reset_motor_'+motor.motor_name, Empty)
                     self.flasher_service()
                 except rospy.ServiceException, e:
                     self.emit( SIGNAL("failed(QString)"),
@@ -96,7 +97,17 @@ class SrGuiMotorResetter(Plugin):
         self.progress_bar.hide()
 
         self.server_revision = 0
-        self.diag_sub = rospy.Subscriber("/diagnostics", DiagnosticArray, self.diagnostics_callback)
+
+
+        #setting the prefixes
+        self._prefix = "/"
+        self.diag_sub = rospy.Subscriber(self._prefix + "diagnostics", DiagnosticArray, self.diagnostics_callback)
+
+        self._widget.select_prefix.addItem("/")
+        self._widget.select_prefix.addItem("/rh/")
+        self._widget.select_prefix.addItem("/lh/")
+
+        self._widget.select_prefix.currentIndexChanged['QString'].connect(self.prefix_selected)
 
         # Bind button clicks
         self._widget.btn_select_all.pressed.connect(self.on_select_all_pressed)
@@ -132,7 +143,7 @@ class SrGuiMotorResetter(Plugin):
                 if motor_index != -1:
                     motor = Motor(self.motors_frame, joint_name, motor_index)
                     self.motors_frame.layout().addWidget(motor, row, col)
-                    self.motors.append( motor )
+                    self.motors.append(motor)
                     col += 1
                 index_jtm_mapping += 1
             row += 1
@@ -182,7 +193,7 @@ class SrGuiMotorResetter(Plugin):
             return
         self.progress_bar.setMaximum(nb_motors_to_program)
 
-        self.motor_flasher = MotorFlasher(self, nb_motors_to_program)
+        self.motor_flasher = MotorFlasher(self, nb_motors_to_program, self._prefix)
         self._widget.connect(self.motor_flasher, SIGNAL("finished()"), self.finished_programming_motors)
         self._widget.connect(self.motor_flasher, SIGNAL("motor_finished(QPoint)"), self.one_motor_finished)
         self._widget.connect(self.motor_flasher, SIGNAL("failed(QString)"), self.failed_programming_motors)
@@ -223,3 +234,10 @@ class SrGuiMotorResetter(Plugin):
 
     def restore_settings(self, global_settings, perspective_settings):
         pass
+
+    def prefix_selected(self, prefix):
+        self._prefix = prefix
+
+        self.diag_sub.unregister()
+        rospy.loginfo("subscribing to: " + self._prefix + "diagnostics")
+        self.diag_sub = rospy.Subscriber(self._prefix + "diagnostics", DiagnosticArray, self.diagnostics_callback)

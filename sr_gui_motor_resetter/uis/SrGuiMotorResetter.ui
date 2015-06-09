@@ -40,12 +40,12 @@
        <item>
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>Select Hand</string>
+          <string>Hand Prefix</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="combo_choose_hand"/>
+        <widget class="QComboBox" name="select_prefix"/>
        </item>
       </layout>
      </item>
