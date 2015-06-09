@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+
+#Disabling E1002 check since it complains about super for no reason - inheriting from QObject
+#pylint: disable=E1002
+
 # Copyright 2011 Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
@@ -18,13 +23,15 @@ import os, rospkg, rospy
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
-from QtCore import QEvent, QObject, Qt, QTimer, Slot, QThread, SIGNAL, QPoint
-from QtGui import QWidget, QShortcut, QMessageBox, QFrame, QHBoxLayout, QCheckBox, QLabel, QCursor, QColor, QMessageBox
+from QtCore import Qt, QThread, SIGNAL, QPoint
+from QtGui import QWidget, QMessageBox, QFrame, \
+    QHBoxLayout, QCheckBox, QLabel, QColor
 
 from std_srvs.srv import Empty
 from diagnostic_msgs.msg import DiagnosticArray
 
 class MotorFlasher(QThread):
+
     def __init__(self, parent, nb_motors_to_program):
         QThread.__init__(self, None)
         self.parent = parent
@@ -101,7 +108,8 @@ class SrGuiMotorResetter(Plugin):
         if rospy.has_param("joint_to_motor_mapping"):
             joint_to_motor_mapping = rospy.get_param("joint_to_motor_mapping")
         else:
-            QMessageBox.warning(self.motors_frame, "Warning", "Couldn't find the joint_to_motor_mapping parameter. Make sure the etherCAT Hand node is running")
+            QMessageBox.warning(self.motors_frame, "Warning",
+                                "Couldn't find the joint_to_motor_mapping parameter. Make sure the etherCAT Hand node is running")
             self.close_plugin()
             return
 
