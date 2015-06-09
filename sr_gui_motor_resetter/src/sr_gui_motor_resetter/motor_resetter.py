@@ -89,16 +89,6 @@ class SrGuiMotorResetter(Plugin):
         self._widget.setObjectName('SrMotorResetterUi')
         context.add_widget(self._widget)
 
-        # motors_frame is defined in the ui file with a grid layout
-        self.motors = []
-        self.motors_frame = self._widget.motors_frame
-        self.populate_motors()
-        self.progress_bar = self._widget.motors_progress_bar
-        self.progress_bar.hide()
-
-        self.server_revision = 0
-
-
         #setting the prefixes
         self._prefix = "/"
         self.diag_sub = rospy.Subscriber(self._prefix + "diagnostics", DiagnosticArray, self.diagnostics_callback)
@@ -108,6 +98,14 @@ class SrGuiMotorResetter(Plugin):
         self._widget.select_prefix.addItem("/lh/")
 
         self._widget.select_prefix.currentIndexChanged['QString'].connect(self.prefix_selected)
+        # motors_frame is defined in the ui file with a grid layout
+        self.motors = []
+        self.motors_frame = self._widget.motors_frame
+        self.populate_motors()
+        self.progress_bar = self._widget.motors_progress_bar
+        self.progress_bar.hide()
+
+        self.server_revision = 0
 
         # Bind button clicks
         self._widget.btn_select_all.pressed.connect(self.on_select_all_pressed)
@@ -116,12 +114,16 @@ class SrGuiMotorResetter(Plugin):
 
 
     def populate_motors(self):
-        if rospy.has_param("joint_to_motor_mapping"):
-            joint_to_motor_mapping = rospy.get_param("joint_to_motor_mapping")
+
+        for i in reversed(range(self.motors_frame.layout().count())):
+            self.motors_frame.layout().itemAt(i).widget().setParent(None)
+        self.motors = []
+
+        if rospy.has_param(self._prefix + "joint_to_motor_mapping"):
+            joint_to_motor_mapping = rospy.get_param(self._prefix + "joint_to_motor_mapping")
         else:
             QMessageBox.warning(self.motors_frame, "Warning",
                                 "Couldn't find the joint_to_motor_mapping parameter. Make sure the etherCAT Hand node is running")
-            self.close_plugin()
             return
 
         joint_names = [
@@ -241,3 +243,5 @@ class SrGuiMotorResetter(Plugin):
         self.diag_sub.unregister()
         rospy.loginfo("subscribing to: " + self._prefix + "diagnostics")
         self.diag_sub = rospy.Subscriber(self._prefix + "diagnostics", DiagnosticArray, self.diagnostics_callback)
+
+        self.populate_motors()
