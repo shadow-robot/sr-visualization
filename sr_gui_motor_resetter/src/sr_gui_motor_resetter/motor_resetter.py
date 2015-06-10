@@ -43,8 +43,8 @@ class MotorFlasher(QThread):
         for motor in self.parent.motors:
             if motor.checkbox.checkState() == Qt.Checked:
                 try:
-                    print("resetting: " + self.prefix + "realtime_loop/reset_motor_"+motor.motor_name)
-                    self.flasher_service = rospy.ServiceProxy(self.prefix + 'realtime_loop/reset_motor_'+motor.motor_name, Empty)
+                    print("resetting: realtime_loop/" + self.prefix + "reset_motor_"+motor.motor_name)
+                    self.flasher_service = rospy.ServiceProxy('realtime_loop/' + self.prefix + 'reset_motor_'+motor.motor_name, Empty)
                     self.flasher_service()
                 except rospy.ServiceException, e:
                     self.emit( SIGNAL("failed(QString)"),
@@ -90,12 +90,12 @@ class SrGuiMotorResetter(Plugin):
         context.add_widget(self._widget)
 
         #setting the prefixes
-        self._prefix = "/"
-        self.diag_sub = rospy.Subscriber(self._prefix + "diagnostics", DiagnosticArray, self.diagnostics_callback)
+        self._prefix = ""
+        self.diag_sub = rospy.Subscriber("diagnostics", DiagnosticArray, self.diagnostics_callback)
 
-        self._widget.select_prefix.addItem("/")
-        self._widget.select_prefix.addItem("/rh/")
-        self._widget.select_prefix.addItem("/lh/")
+        self._widget.select_prefix.addItem("")
+        self._widget.select_prefix.addItem("rh/")
+        self._widget.select_prefix.addItem("lh/")
 
         self._widget.select_prefix.currentIndexChanged['QString'].connect(self.prefix_selected)
         # motors_frame is defined in the ui file with a grid layout
@@ -123,7 +123,7 @@ class SrGuiMotorResetter(Plugin):
             joint_to_motor_mapping = rospy.get_param(self._prefix + "joint_to_motor_mapping")
         else:
             QMessageBox.warning(self.motors_frame, "Warning",
-                                "Couldn't find the joint_to_motor_mapping parameter. Make sure the etherCAT Hand node is running")
+                                "Couldn't find the " + self._prefix + "joint_to_motor_mapping parameter. Make sure the etherCAT Hand node is running")
             return
 
         joint_names = [
@@ -153,7 +153,7 @@ class SrGuiMotorResetter(Plugin):
     def diagnostics_callback(self, msg):
         for status in msg.status:
             for motor in self.motors:
-                if motor.motor_name in status.name:
+                if motor.motor_name in status.name and self._prefix.replace("/", "") in status.name:
                     for key_values in status.values:
                         if "Firmware svn revision" in key_values.key:
                             server_current_modified = key_values.value.split(" / ")
@@ -239,9 +239,4 @@ class SrGuiMotorResetter(Plugin):
 
     def prefix_selected(self, prefix):
         self._prefix = prefix
-
-        self.diag_sub.unregister()
-        rospy.loginfo("subscribing to: " + self._prefix + "diagnostics")
-        self.diag_sub = rospy.Subscriber(self._prefix + "diagnostics", DiagnosticArray, self.diagnostics_callback)
-
         self.populate_motors()
