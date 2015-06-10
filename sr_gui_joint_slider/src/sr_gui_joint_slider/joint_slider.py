@@ -274,7 +274,7 @@ class SrGuiJointSlider(Plugin):
                         self.trajectory_target.append(JointTrajectory())
                         self.trajectory_state_sub.append(rospy.Subscriber(controller.name + "/state", controller_state_type, self._trajectory_state_cb, callback_args=len(self.trajectory_state_sub)))
                         self.trajectory_state_slider_cb.append([])
-                        self.trajectory_pub.append(rospy.Publisher(controller.name + "/command", JointTrajectory, queue_size=1, latch=True))
+                        self.trajectory_pub.append(rospy.Publisher(controller.name + "/command", JointTrajectory, queue_size=1, latch=False))
                         for j_name in controller.resources:
                             joint_controller = JointController(controller.name, controller_type, controller_state_type, controller_category, \
                                                                self.trajectory_state_slider_cb[len(self.trajectory_state_slider_cb) - 1], \

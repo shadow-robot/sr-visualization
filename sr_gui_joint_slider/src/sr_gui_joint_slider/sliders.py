@@ -144,7 +144,7 @@ class EtherCATHandSlider(ExtendedSlider):
                 self.joint.controller.name + "/command",
                 Float64,
                 queue_size=1,
-                latch=True
+                latch=False
         )
         self.set_slider_behaviour()
         self.state_sub = rospy.Subscriber(self.joint.controller.name + "/state", self.joint.controller.controller_state_type, self._state_cb)
