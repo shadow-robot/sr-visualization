@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+
+#Disabling E1002 check since it complains about super for no reason - inheriting from QObject
+#pylint: disable=E1002
+
 # Copyright 2011 Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
@@ -18,25 +23,28 @@ import os, rospkg, rospy
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
-from QtCore import QEvent, QObject, Qt, QTimer, Slot, QThread, SIGNAL, QPoint
-from QtGui import QWidget, QShortcut, QMessageBox, QFrame, QHBoxLayout, QCheckBox, QLabel, QCursor, QColor, QMessageBox
+from QtCore import Qt, QThread, SIGNAL, QPoint
+from QtGui import QWidget, QMessageBox, QFrame, \
+    QHBoxLayout, QCheckBox, QLabel, QColor
 
 from std_srvs.srv import Empty
 from diagnostic_msgs.msg import DiagnosticArray
 
 class MotorFlasher(QThread):
-    def __init__(self, parent, nb_motors_to_program):
+
+    def __init__(self, parent, nb_motors_to_program, prefix):
         QThread.__init__(self, None)
         self.parent = parent
         self.nb_motors_to_program = nb_motors_to_program
+        self.prefix = prefix
 
     def run(self):
         programmed_motors = 0
         for motor in self.parent.motors:
             if motor.checkbox.checkState() == Qt.Checked:
                 try:
-                    print("resetting: realtime_loop/reset_motor_"+motor.motor_name)
-                    self.flasher_service = rospy.ServiceProxy('realtime_loop/reset_motor_'+motor.motor_name, Empty)
+                    print("resetting: realtime_loop/" + self.prefix + "reset_motor_"+motor.motor_name)
+                    self.flasher_service = rospy.ServiceProxy('realtime_loop/' + self.prefix + 'reset_motor_'+motor.motor_name, Empty)
                     self.flasher_service()
                 except rospy.ServiceException, e:
                     self.emit( SIGNAL("failed(QString)"),
@@ -81,6 +89,15 @@ class SrGuiMotorResetter(Plugin):
         self._widget.setObjectName('SrMotorResetterUi')
         context.add_widget(self._widget)
 
+        #setting the prefixes
+        self._prefix = ""
+        self.diag_sub = rospy.Subscriber("diagnostics", DiagnosticArray, self.diagnostics_callback)
+
+        self._widget.select_prefix.addItem("")
+        self._widget.select_prefix.addItem("rh/")
+        self._widget.select_prefix.addItem("lh/")
+
+        self._widget.select_prefix.currentIndexChanged['QString'].connect(self.prefix_selected)
         # motors_frame is defined in the ui file with a grid layout
         self.motors = []
         self.motors_frame = self._widget.motors_frame
@@ -89,7 +106,6 @@ class SrGuiMotorResetter(Plugin):
         self.progress_bar.hide()
 
         self.server_revision = 0
-        self.diag_sub = rospy.Subscriber("/diagnostics", DiagnosticArray, self.diagnostics_callback)
 
         # Bind button clicks
         self._widget.btn_select_all.pressed.connect(self.on_select_all_pressed)
@@ -98,11 +114,16 @@ class SrGuiMotorResetter(Plugin):
 
 
     def populate_motors(self):
-        if rospy.has_param("joint_to_motor_mapping"):
-            joint_to_motor_mapping = rospy.get_param("joint_to_motor_mapping")
+
+        for i in reversed(range(self.motors_frame.layout().count())):
+            self.motors_frame.layout().itemAt(i).widget().setParent(None)
+        self.motors = []
+
+        if rospy.has_param(self._prefix + "joint_to_motor_mapping"):
+            joint_to_motor_mapping = rospy.get_param(self._prefix + "joint_to_motor_mapping")
         else:
-            QMessageBox.warning(self.motors_frame, "Warning", "Couldn't find the joint_to_motor_mapping parameter. Make sure the etherCAT Hand node is running")
-            self.close_plugin()
+            QMessageBox.warning(self.motors_frame, "Warning",
+                                "Couldn't find the " + self._prefix + "joint_to_motor_mapping parameter. Make sure the etherCAT Hand node is running")
             return
 
         joint_names = [
@@ -124,7 +145,7 @@ class SrGuiMotorResetter(Plugin):
                 if motor_index != -1:
                     motor = Motor(self.motors_frame, joint_name, motor_index)
                     self.motors_frame.layout().addWidget(motor, row, col)
-                    self.motors.append( motor )
+                    self.motors.append(motor)
                     col += 1
                 index_jtm_mapping += 1
             row += 1
@@ -132,7 +153,7 @@ class SrGuiMotorResetter(Plugin):
     def diagnostics_callback(self, msg):
         for status in msg.status:
             for motor in self.motors:
-                if motor.motor_name in status.name:
+                if motor.motor_name in status.name and self._prefix.replace("/", "") in status.name:
                     for key_values in status.values:
                         if "Firmware svn revision" in key_values.key:
                             server_current_modified = key_values.value.split(" / ")
@@ -174,7 +195,7 @@ class SrGuiMotorResetter(Plugin):
             return
         self.progress_bar.setMaximum(nb_motors_to_program)
 
-        self.motor_flasher = MotorFlasher(self, nb_motors_to_program)
+        self.motor_flasher = MotorFlasher(self, nb_motors_to_program, self._prefix)
         self._widget.connect(self.motor_flasher, SIGNAL("finished()"), self.finished_programming_motors)
         self._widget.connect(self.motor_flasher, SIGNAL("motor_finished(QPoint)"), self.one_motor_finished)
         self._widget.connect(self.motor_flasher, SIGNAL("failed(QString)"), self.failed_programming_motors)
@@ -215,3 +236,7 @@ class SrGuiMotorResetter(Plugin):
 
     def restore_settings(self, global_settings, perspective_settings):
         pass
+
+    def prefix_selected(self, prefix):
+        self._prefix = prefix
+        self.populate_motors()
