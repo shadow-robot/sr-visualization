@@ -35,11 +35,7 @@ from cyberglove_calibrer import *
 from cyberglove_mapper import *
 #from cyberglove_library import Cyberglove
 
-import subprocess
-process = subprocess.Popen("rospack find sr_control_gui".split(), stdout=subprocess.PIPE)
-rootPath = process.communicate()[0]
-rootPath = rootPath.split('\n')
-rootPath = rootPath[0]
+rootPath = os.path.join(rospkg.RosPack().get_path('sr_gui_cyberglove_calibrator'))
 noimage_path = rootPath + '/images/image-missing.png'
 
 class StepDescription():
@@ -149,7 +145,7 @@ class StepSelector(QtGui.QWidget):
         first_item = None
         steps = self.calibrer.calibration_steps
         index = 1
-        base_image_path = rootPath + '/images/glove_calibration/step'
+        base_image_path = rootPath + '/images/step'
         for step in steps:
             item = QtGui.QListWidgetItem(step.step_name)
             if first_item == None:

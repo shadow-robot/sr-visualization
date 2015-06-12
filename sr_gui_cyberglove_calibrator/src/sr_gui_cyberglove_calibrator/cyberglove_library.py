@@ -46,18 +46,18 @@ class Cyberglove:
                         "G_ThumbAb": Joint(),
                         "G_IndexMPJ": Joint(),
                         "G_IndexPIJ": Joint(),
-                        #"G_IndexDIJ": Joint(),
+                        "G_IndexDIJ": Joint(),
                         "G_MiddleMPJ": Joint(),
                         "G_MiddlePIJ": Joint(),
-                       # "G_MiddleDIJ": Joint(),
+                        "G_MiddleDIJ": Joint(),
                         "G_MiddleIndexAb": Joint(),
                         "G_RingMPJ": Joint(),
                         "G_RingPIJ": Joint(),
-                        #"G_RingDIJ": Joint(),
+                        "G_RingDIJ": Joint(),
                         "G_RingMiddleAb": Joint(),
                         "G_PinkieMPJ": Joint(),
                         "G_PinkiePIJ": Joint(),
-                        #"G_PinkieDIJ": Joint(),
+                        "G_PinkieDIJ": Joint(),
                         "G_PinkieRingAb": Joint(),
                         "G_PalmArch": Joint(),
                         "G_WristPitch": Joint(),
@@ -70,8 +70,8 @@ class Cyberglove:
         self.hasglove = 0
         self.isFirstMessage = True
         self.liste = 0
-        self.raw = rospy.Subscriber('/raw/joint_states',JointState,self.callback_raw)
-        self.calibrated = rospy.Subscriber('/calibrated/joint_states',JointState,self.callback_calibrated)
+        self.raw = rospy.Subscriber('cyberglove/raw/joint_states',JointState,self.callback_raw)
+        self.calibrated = rospy.Subscriber('cyberglove/calibrated/joint_states',JointState,self.callback_calibrated)
         threading.Thread(None, rospy.spin)
         if self.has_glove():
 			time.sleep(1.0)

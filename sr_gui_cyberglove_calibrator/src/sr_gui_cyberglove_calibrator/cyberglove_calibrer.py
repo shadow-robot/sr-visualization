@@ -117,52 +117,13 @@ class CybergloveCalibrer:
         if description_function == None:
             description_function = do_nothing
         self.description_function = description_function
-        
+
     def get_calibration_steps(self):
-	
-		joints1 = [Joint("G_IndexMPJ", 0, 90), Joint("G_IndexPIJ", 0, 90), 
-                  Joint("G_MiddleMPJ", 0, 90), Joint("G_MiddlePIJ", 0, 90), 
-                  Joint("G_RingMPJ", 0, 90), Joint("G_RingPIJ", 0, 90), 
-                  Joint("G_PinkieMPJ", 0, 90), Joint("G_PinkiePIJ", 0, 90), 
-                  Joint("G_ThumbAb", 50, 0) ]
-                  
-		self.calibration_steps.append(CalibrationStep(step_name="Joints 0s, 3s and thumb abduction (THJ4)",
-                                                      step_description = ["Hand flat on a table, fingers joined, thumb opened",
-                                                                          "Hand forming a fist, thumb closed"],
-                                                      joints = joints1 ))
-        
-        #second step: calibrate 4s, TH1, TH2, TH5 and WR2
-		joints2 = [Joint("G_ThumbIJ", 90, 0), Joint("G_ThumbMPJ", 30, -30),  
-                   Joint("G_MiddleIndexAb", 0, 50), Joint("G_RingMiddleAb", 0, 50), Joint("G_PinkieRingAb", 0, 50),
-                   Joint("G_WristYaw", 10, -30)]
-		self.calibration_steps.append(CalibrationStep(step_name="Joints 4s + TH1, 2, and WR2",
-                                                      step_description = ["Hand flat fingers joined, thumb completely curled under the palm, wrist 2 bent to the left",
-                                                                          "Hand flat fingers apart, thumb completely opened, wrist bent 2 to the right"],
-                                                      joints = joints2 ))
-        
-        #third step: calibrate TH5 
-		joints3 = [Joint("G_ThumbRotate", 60, -60)]
-		self.calibration_steps.append(CalibrationStep(step_name="Joint TH5",
-                                                      step_description = ["thumb completely under the palm",
-                                                                          "thumb completely opened, curled over the palm"],
-                                                      joints = joints3 ))
-        
-        #fourth step: calibrate LF5 and WR1
-		joints4 = [Joint("G_PalmArch", 0, 40), Joint("G_WristPitch", -30, 40)]
-		self.calibration_steps.append(CalibrationStep(step_name="LF5 and WR1",
-                                                      step_description = ["Hand flat, wrist 1 bent backward",
-                                                                          "Palm curled (LFJ5), wrist 1 bent forward"],
-                                                      joints = joints4 ))
-        
-		return 0
-        
-		"""
-        def get_calibration_steps(self):
-       
+        """
         Read the calibration steps from the xml file.
         
         @return: 0 when the values were read.
-       
+        """
         
         #first step: calibrate 0s, 3s and TH4 
         joints1 = [Joint("G_IndexMPJ", 0, 90), Joint("G_IndexPIJ", 0, 90), Joint("G_IndexDIJ", 0, 90), 
@@ -199,7 +160,6 @@ class CybergloveCalibrer:
                                                       joints = joints4 ))
         
         return 0
-        """ 
         
     def do_step_min(self, index):
         """
