@@ -50,15 +50,20 @@ class SrGuiChangeControllers(Plugin):
     ICON_DIR = os.path.join(rospkg.RosPack().get_path('sr_visualization_icons'), 'icons')
     CONTROLLER_ON_ICON = QIcon(os.path.join(ICON_DIR, 'green.png'))
     CONTROLLER_OFF_ICON = QIcon(os.path.join(ICON_DIR, 'red.png'))
-    
+
     hand_ids = []
     hand_joint_prefixes = []
-    if rospy.has_param("hand/mapping"):
-        hand_mapping = rospy.get_param("hand/mapping")
+    # mapping is always in global ns
+    if rospy.has_param("/hand/mapping"):
+        hand_mapping = rospy.get_param("/hand/mapping")
         for key, value in hand_mapping.items():
             hand_ids.append(value)
-            hand_joint_prefixes.append(value + "_")
+            if value!='':
+                hand_joint_prefixes.append(value + "_")
+            else:
+                hand_joint_prefixes.append(value)
     else:
+        rospy.loginfo("no hand mapping found, not appending prefix")
         hand_ids.append("")
         hand_joint_prefixes.append("")
      
