@@ -51,56 +51,75 @@ class SrGuiChangeControllers(Plugin):
     CONTROLLER_ON_ICON = QIcon(os.path.join(ICON_DIR, 'green.png'))
     CONTROLLER_OFF_ICON = QIcon(os.path.join(ICON_DIR, 'red.png'))
 
-    hand_ids = []
-    hand_joint_prefixes = []
-    gui_ns=rospy.get_namespace().strip("/")
-    # mapping is always in global ns
-    if rospy.has_param("/hand/mapping"):
-        hand_mapping = rospy.get_param("/hand/mapping")
-        for key, value in hand_mapping.items():
-            # if namespace in the mapping, add only this one 
-            # avoids having the list of controllers of the second hand
-            if gui_ns in value:
-                hand_ids.append(value)
-    else:
-        hand_ids.append("")
 
-    if rospy.has_param("/hand/joint_prefix"):
-        hand_joint_prefix_mapping = rospy.get_param("/hand/joint_prefix")
-        for key, value in hand_joint_prefix_mapping.items():
-            # if namespace in the mapping, add only this one 
-            # avoids having the list of controllers of the second hand
-            if gui_ns in value:
-                hand_joint_prefixes.append(value)
-    else:
-        rospy.loginfo("no joint prefix found, not appending prefix")
-        hand_joint_prefixes.append("")
-     
-    joints = ["ffj0", "ffj3", "ffj4",
-              "mfj0", "mfj3", "mfj4",
-              "rfj0", "rfj3", "rfj4",
-              "lfj0", "lfj3", "lfj4", "lfj5",
-              "thj1", "thj2", "thj3", "thj4", "thj5",
-              "wrj1", "wrj2"]
-    controllers = {"effort": ["sh_{0}{1}_effort_controller".format(hand_joint_prefix, joint) for joint in joints for hand_joint_prefix in hand_joint_prefixes],
-                   "position": ["sh_{0}{1}_position_controller".format(hand_joint_prefix, joint) for joint in joints for hand_joint_prefix in hand_joint_prefixes],
-                   "mixed": ["sh_{0}{1}_mixed_position_velocity_controller".format(hand_joint_prefix, joint) for joint in joints for hand_joint_prefix in hand_joint_prefixes],
-                   "velocity": ["sh_{0}{1}_velocity_controller".format(hand_joint_prefix, joint) for joint in joints for hand_joint_prefix in hand_joint_prefixes],
-                   "stop": []}
-    managed_controllers = [cont for type_conts in controllers.itervalues() for cont in type_conts]
+    def populate_controllers(self):
+
+        self.hand_ids = []
+        hand_joint_prefixes = []
+        # mapping is always in global ns
+        if rospy.has_param("/hand/mapping"):
+            hand_mapping = rospy.get_param("/hand/mapping")
+            for key, value in hand_mapping.items():
+                # if prefix matches the mapping, add this hand
+                # empty prefix means both hands 
+                if self._prefix in value:
+                    self.hand_ids.append(value)
+        else:
+            self.hand_ids.append("")
+
+        if rospy.has_param("/hand/joint_prefix"):
+            hand_joint_prefix_mapping = rospy.get_param("/hand/joint_prefix")
+            for key, value in hand_joint_prefix_mapping.items():
+                # if prefix matches the mapping, add this hand
+                # empty prefix means both hands 
+                if self._prefix in value:
+                    hand_joint_prefixes.append(value)
+            if len(hand_joint_prefixes) == 0:
+                QMessageBox.warning(self._widget, "Warning", "No hand found with prefix :"+self._prefix)
+                hand_joint_prefixes.append("")
+        else:
+            rospy.loginfo("no joint prefix found, not appending prefix")
+            hand_joint_prefixes.append("")
+         
+        joints = ["ffj0", "ffj3", "ffj4",
+                  "mfj0", "mfj3", "mfj4",
+                  "rfj0", "rfj3", "rfj4",
+                  "lfj0", "lfj3", "lfj4", "lfj5",
+                  "thj1", "thj2", "thj3", "thj4", "thj5",
+                  "wrj1", "wrj2"]
+        self.controllers = {"effort": ["sh_{0}{1}_effort_controller".format(hand_joint_prefix, joint) for joint in joints for hand_joint_prefix in hand_joint_prefixes],
+                       "position": ["sh_{0}{1}_position_controller".format(hand_joint_prefix, joint) for joint in joints for hand_joint_prefix in hand_joint_prefixes],
+                       "mixed": ["sh_{0}{1}_mixed_position_velocity_controller".format(hand_joint_prefix, joint) for joint in joints for hand_joint_prefix in hand_joint_prefixes],
+                       "velocity": ["sh_{0}{1}_velocity_controller".format(hand_joint_prefix, joint) for joint in joints for hand_joint_prefix in hand_joint_prefixes],
+                       "stop": []}
+
+        self.managed_controllers = [cont for type_conts in self.controllers.itervalues() for cont in type_conts]
+
 
     def __init__(self, context):
         super(SrGuiChangeControllers, self).__init__(context)
         self.setObjectName('SrGuiChangeControllers')
 
         self._publisher = None
+        
         self._widget = QWidget()
 
         ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_change_controllers'), 'uis', 'SrChangeControllers.ui')
         loadUi(ui_file, self._widget)
         self._widget.setObjectName('SrChangeControllersUi')
         context.add_widget(self._widget)
-
+        
+        #setting the prefixes
+        self._prefix = ""
+        
+        self._widget.select_prefix.addItem("")
+        self._widget.select_prefix.addItem("rh")
+        self._widget.select_prefix.addItem("lh")
+        
+        self._widget.select_prefix.currentIndexChanged['QString'].connect(self.prefix_selected)
+        
+        self.populate_controllers()
+        
         #Setting the initial state of the controller buttons
         self._widget.btn_mixed.setIcon(self.CONTROLLER_OFF_ICON)
         self._widget.btn_mixed.setChecked(False)
@@ -326,6 +345,10 @@ class SrGuiChangeControllers(Plugin):
 
         if not success:
             QMessageBox.warning(self._widget, "Warning", "Failed to change the control type.")
+
+    def prefix_selected(self, prefix):
+        self._prefix = prefix
+        self.populate_controllers()
 
     def _unregisterPublisher(self):
         if self._publisher is not None:
