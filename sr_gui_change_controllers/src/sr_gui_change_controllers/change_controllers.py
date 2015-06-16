@@ -58,13 +58,15 @@ class SrGuiChangeControllers(Plugin):
         hand_mapping = rospy.get_param("/hand/mapping")
         for key, value in hand_mapping.items():
             hand_ids.append(value)
-            if value!='':
-                hand_joint_prefixes.append(value + "_")
-            else:
-                hand_joint_prefixes.append(value)
     else:
-        rospy.loginfo("no hand mapping found, not appending prefix")
         hand_ids.append("")
+
+    if rospy.has_param("/hand/joint_prefix"):
+        hand_joint_prefix_mapping = rospy.get_param("/hand/joint_prefix")
+        for key, value in hand_joint_prefix_mapping.items():
+            hand_joint_prefixes.append(value)
+    else:
+        rospy.loginfo("no joint prefix found, not appending prefix")
         hand_joint_prefixes.append("")
      
     joints = ["ffj0", "ffj3", "ffj4",
