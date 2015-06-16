@@ -53,18 +53,25 @@ class SrGuiChangeControllers(Plugin):
 
     hand_ids = []
     hand_joint_prefixes = []
+    gui_ns=rospy.get_namespace().strip("/")
     # mapping is always in global ns
     if rospy.has_param("/hand/mapping"):
         hand_mapping = rospy.get_param("/hand/mapping")
         for key, value in hand_mapping.items():
-            hand_ids.append(value)
+            # if namespace in the mapping, add only this one 
+            # avoids having the list of controllers of the second hand
+            if gui_ns in value:
+                hand_ids.append(value)
     else:
         hand_ids.append("")
 
     if rospy.has_param("/hand/joint_prefix"):
         hand_joint_prefix_mapping = rospy.get_param("/hand/joint_prefix")
         for key, value in hand_joint_prefix_mapping.items():
-            hand_joint_prefixes.append(value)
+            # if namespace in the mapping, add only this one 
+            # avoids having the list of controllers of the second hand
+            if gui_ns in value:
+                hand_joint_prefixes.append(value)
     else:
         rospy.loginfo("no joint prefix found, not appending prefix")
         hand_joint_prefixes.append("")
