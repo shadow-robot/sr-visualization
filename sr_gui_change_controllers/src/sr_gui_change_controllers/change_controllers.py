@@ -59,7 +59,7 @@ class SrGuiChangeControllers(Plugin):
         # mapping is always in global ns
         if rospy.has_param("/hand/mapping"):
             hand_mapping = rospy.get_param("/hand/mapping")
-            for key, value in hand_mapping.items():
+            for _, value in hand_mapping.items():
                 # if prefix matches the mapping, add this hand
                 # empty prefix means both hands 
                 if self._prefix in value:
@@ -69,7 +69,7 @@ class SrGuiChangeControllers(Plugin):
 
         if rospy.has_param("/hand/joint_prefix"):
             hand_joint_prefix_mapping = rospy.get_param("/hand/joint_prefix")
-            for key, value in hand_joint_prefix_mapping.items():
+            for _, value in hand_joint_prefix_mapping.items():
                 # if prefix matches the mapping, add this hand
                 # empty prefix means both hands 
                 if self._prefix in value:
@@ -87,11 +87,15 @@ class SrGuiChangeControllers(Plugin):
                   "lfj0", "lfj3", "lfj4", "lfj5",
                   "thj1", "thj2", "thj3", "thj4", "thj5",
                   "wrj1", "wrj2"]
-        self.controllers = {"effort": ["sh_{0}{1}_effort_controller".format(hand_joint_prefix, joint) for joint in joints for hand_joint_prefix in hand_joint_prefixes],
-                       "position": ["sh_{0}{1}_position_controller".format(hand_joint_prefix, joint) for joint in joints for hand_joint_prefix in hand_joint_prefixes],
-                       "mixed": ["sh_{0}{1}_mixed_position_velocity_controller".format(hand_joint_prefix, joint) for joint in joints for hand_joint_prefix in hand_joint_prefixes],
-                       "velocity": ["sh_{0}{1}_velocity_controller".format(hand_joint_prefix, joint) for joint in joints for hand_joint_prefix in hand_joint_prefixes],
-                       "stop": []}
+        self.controllers = {"effort": ["sh_{0}{1}_effort_controller".format(hand_joint_prefix, joint) for joint in joints
+                                                                                                      for hand_joint_prefix in hand_joint_prefixes],
+                            "position": ["sh_{0}{1}_position_controller".format(hand_joint_prefix, joint) for joint in joints 
+                                                                                                          for hand_joint_prefix in hand_joint_prefixes],
+                            "mixed": ["sh_{0}{1}_mixed_position_velocity_controller".format(hand_joint_prefix, joint) for joint in joints 
+                                                                                                          for hand_joint_prefix in hand_joint_prefixes],
+                            "velocity": ["sh_{0}{1}_velocity_controller".format(hand_joint_prefix, joint) for joint in joints 
+                                                                                                          for hand_joint_prefix in hand_joint_prefixes],
+                            "stop": []}
 
         self.managed_controllers = [cont for type_conts in self.controllers.itervalues() for cont in type_conts]
 
