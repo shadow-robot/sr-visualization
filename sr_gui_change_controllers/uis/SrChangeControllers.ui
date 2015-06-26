@@ -223,6 +223,16 @@
            </property>
           </spacer>
          </item>
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Hand Prefix</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="select_prefix"/>
+         </item>
         </layout>
        </item>
       </layout>
