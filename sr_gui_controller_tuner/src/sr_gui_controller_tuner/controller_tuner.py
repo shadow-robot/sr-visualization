@@ -291,6 +291,7 @@ class SrGuiControllerTuner(Plugin):
 
         #Reading the param that contains the config_dir suffix that we should use for this hand (e.g. '' normally for a right hand  or 'lh' if this is for a left hand)
         config_subdir = rospy.get_param('config_dir', '')
+        print "config_subdir: ",config_subdir
         subpath = "/controls/host/" + config_subdir
         if self.sr_controller_tuner_app_.edit_only_mode:
             filter_files = "*.yaml"
