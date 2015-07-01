@@ -155,7 +155,6 @@ class MoveThread(QThread):
         string += "<param name=\"nb_step\" value=\"10000\"/>"
         string += "<param name=\"msg_type\" value=\"{}\"/>".format(message_type)
         string += "</node> </launch>"
-
         tmp_launch_file = NamedTemporaryFile(delete=False)
 
         tmp_launch_file.writelines(string)
@@ -167,25 +166,28 @@ class MoveThread(QThread):
         """
         Retrieve joint limits in radians for joint in self.joint_name
         """
-        if self.joint_name_ in ["FFJ0", "MFJ0", "RFJ0", "LFJ0"]:
+        # assuming 4 character joint names at the end and trimming any prefix
+        # TODO: Shouldn't this be read from the URDF ?
+        joint_name = self.joint_name_[-4:]
+        if joint_name in ["FFJ0", "MFJ0", "RFJ0", "LFJ0"]:
             return [0.0, math.radians(180.0)]
-        elif self.joint_name_ in ["FFJ3", "MFJ3", "RFJ3", "LFJ3", "THJ1"]:
+        elif joint_name in ["FFJ3", "MFJ3", "RFJ3", "LFJ3", "THJ1"]:
             return [0.0, math.radians(90.0)]
-        elif self.joint_name_ in ["LFJ5"]:
+        elif joint_name in ["LFJ5"]:
             return [0.0, math.radians(45.0)]
-        elif self.joint_name_ in ["FFJ4", "MFJ4", "RFJ4", "LFJ4"]:
+        elif joint_name in ["FFJ4", "MFJ4", "RFJ4", "LFJ4"]:
             return [math.radians(-20.0), math.radians(20.0)]
-        elif self.joint_name_ in ["THJ2"]:
+        elif joint_name in ["THJ2"]:
             return [math.radians(-40.0), math.radians(40.0)]
-        elif self.joint_name_ in ["THJ3"]:
+        elif joint_name in ["THJ3"]:
             return [math.radians(-15.0), math.radians(15.0)]
-        elif self.joint_name_ in ["THJ4"]:
+        elif joint_name in ["THJ4"]:
             return [math.radians(0.0), math.radians(70.0)]
-        elif self.joint_name_ in ["THJ5"]:
+        elif joint_name in ["THJ5"]:
             return [math.radians(-60.0), math.radians(60.0)]
-        elif self.joint_name_ in ["WRJ1"]:
+        elif joint_name in ["WRJ1"]:
             return [math.radians(-30.0), math.radians(45.0)]
-        elif self.joint_name_ in ["WRJ2"]:
+        elif joint_name in ["WRJ2"]:
             return [math.radians(-30.0), math.radians(10.0)]
 
     def launch_(self):
@@ -217,6 +219,15 @@ class SrGuiControllerTuner(Plugin):
         loadUi(ui_file, self._widget)
         self._widget.setObjectName('SrControllerTunerUi')
         context.add_widget(self._widget)
+        
+        #setting the prefixes
+        self._prefix = ""
+        
+        self._widget.select_prefix.addItem("")
+        self._widget.select_prefix.addItem("rh/")
+        self._widget.select_prefix.addItem("lh/")
+        
+        self._widget.select_prefix.currentIndexChanged['QString'].connect(self.prefix_selected)
 
         #stores the movements threads to be able to stop them
         self.move_threads = []
@@ -231,6 +242,10 @@ class SrGuiControllerTuner(Plugin):
         #a library which helps us doing the real work.
         self.sr_controller_tuner_app_ = SrControllerTunerApp( os.path.join(rospkg.RosPack().get_path('sr_gui_controller_tuner'), 'data', 'controller_settings.xml') )
 
+        self.sr_controller_tuner_app_.prefix=self._prefix
+        self.sr_controller_tuner_app_.selected_prefix=self._prefix
+        #check the prefix once
+        self.sr_controller_tuner_app_.check_prefix()
         #refresh the controllers once
         self.on_btn_refresh_ctrl_clicked_()
         #attach the button pressed to its action
@@ -263,7 +278,8 @@ class SrGuiControllerTuner(Plugin):
         if index == None:
             return
         self.reset_file_path()
-        self.refresh_controller_tree_( self.controllers_in_dropdown[index] )
+        if len(self.controllers_in_dropdown)>0 :
+            self.refresh_controller_tree_( self.controllers_in_dropdown[index] )
 
     def reset_file_path(self):
         """
@@ -289,8 +305,10 @@ class SrGuiControllerTuner(Plugin):
         except:
             rospy.logwarn("couldn't find the sr_ethercat_hand_config package, do you have the sr_config stack installed?")
 
-        #Reading the param that contains the config_dir suffix that we should use for this hand (e.g. '' normally for a right hand  or 'lh' if this is for a left hand)
-        config_subdir = rospy.get_param('config_dir', '')
+        #Reading the param that contains the config_dir suffix that we should use for this hand (e.g.
+        # '' normally for a right hand  or 'lh' if this is for a left hand)
+        # the prefix for config dir must use the "checked" prefix, not the selected one (to handle GUI ns)
+        config_subdir = rospy.get_param(self.sr_controller_tuner_app_.prefix+'config_dir', '')
         print "config_subdir: ",config_subdir
         subpath = "/controls/host/" + config_subdir
         if self.sr_controller_tuner_app_.edit_only_mode:
@@ -402,6 +420,12 @@ class SrGuiControllerTuner(Plugin):
 
         self.refresh_controller_tree_()
 
+    def prefix_selected(self, prefix):
+        self._prefix = prefix
+        self.sr_controller_tuner_app_.selected_prefix=self._prefix
+        self.sr_controller_tuner_app_.check_prefix()
+        self.on_btn_refresh_ctrl_clicked_()
+
     def read_settings(self, joint_name):
         """
         retrive settings for joint with given name
@@ -410,14 +434,13 @@ class SrGuiControllerTuner(Plugin):
 
         settings = {}
         for item in dict_of_widgets.items():
-            try:
+            try:            
                 settings[item[0]] = item[1].value()
-            except AttributeError:
+            except AttributeError, TypeError:
                 try:
                     settings[item[0]] = 1 if item[1].checkState() == Qt.Checked else 0
-                except AttributeError:
+                except AttributeError, TypeError:
                     pass
-
         return settings
 
     def set_controller(self, joint_name):
@@ -468,6 +491,8 @@ class SrGuiControllerTuner(Plugin):
 
         self._widget.tree_ctrl_settings.clear()
         self._widget.tree_ctrl_settings.setColumnCount(ctrl_settings.nb_columns)
+        # clear the ctrl_widgets as the motor name might change also now
+        self.ctrl_widgets={}
 
         tmp_headers = []
         for header in ctrl_settings.headers:
