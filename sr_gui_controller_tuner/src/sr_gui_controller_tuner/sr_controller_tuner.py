@@ -172,61 +172,71 @@ class SrControllerTunerApp(object):
         return ["Motor Force", "Position"]
         """
         running_ctrls = []
+        
         # find controller manager in selected namespace
+        
         ctrl_srv_name = self.prefix+'controller_manager/list_controllers'
         try:
             rospy.wait_for_service(ctrl_srv_name, self.CONTROLLER_MANAGER_DETECTION_TIMEOUT)
 
         except rospy.ROSException, e:
-            # try at root namespace (in case bimanual setup in a single loop)
-            ctrl_srv_name = 'controller_manager/list_controllers'
-            try:
-                rospy.wait_for_service(ctrl_srv_name, self.CONTROLLER_MANAGER_DETECTION_TIMEOUT)
-                self.single_loop=True
-            except rospy.ROSException, e:
-                rospy.loginfo( "Controller manager not running: %s"%str(e) )
-                rospy.loginfo( "Running controller tuner in edit-only mode" )
+            # try at root namespace (only in case bimanual setup in a single loop and only if no GUI ns)
+            if self.namespace=="/":
+                ctrl_srv_name = 'controller_manager/list_controllers'
+                try:
+                    rospy.wait_for_service(ctrl_srv_name, self.CONTROLLER_MANAGER_DETECTION_TIMEOUT)
+                    self.single_loop=True
+                    rospy.loginfo("Detected single loop")
+                except rospy.ROSException, e:
+                    rospy.loginfo( "Controller manager not running: %s"%str(e) )
+                    rospy.loginfo( "Running controller tuner in edit-only mode" )
+                    self.edit_only_mode = True
+                    #In edit_only_mode all the controllers are available for editing
+                    for defined_ctrl_type in self.all_controller_types:
+                        running_ctrls.append(defined_ctrl_type)
+                    return running_ctrls
+            else:
                 self.edit_only_mode = True
                 #In edit_only_mode all the controllers are available for editing
                 for defined_ctrl_type in self.all_controller_types:
                     running_ctrls.append(defined_ctrl_type)
                 return running_ctrls
-            
-            # found a controller manager
-            controllers = rospy.ServiceProxy(ctrl_srv_name, ListControllers)
-            resp = None
-            try:
-                resp = controllers()
-            except rospy.ServiceException, e:
-                rospy.logerr( "Service did not process request: %s"%str(e) )
+          
+        # found a controller manager
+        controllers = rospy.ServiceProxy(ctrl_srv_name, ListControllers)
+        resp = None
+        try:
+            resp = controllers()
+        except rospy.ServiceException, e:
+            rospy.logerr( "Service did not process request: %s"%str(e) )
 
-            running_ctrls.append("Motor Force")
-            if resp != None:
-                for controller in resp.controller:
-                    if controller.state == "running":
-                        # find at the specific pattern of the controller
-                        splitted = re.split('[tfmrlw][fhr]j[0-5]_',controller.name)
-                        # only consider shadow (prefix sh_) controllers (drop js ctrl and others)
-                        if self.controller_prefix in splitted[0]:
-                          ctrl_type_tmp=""
-                          # only consider joint controllers (containing _xxjy_)
-                          if len(splitted)>=2:
-                            ctrl_type_tmp = splitted[1]
-                          # look at first word of the controller type
-                          ctrl_type_tmp_splitted=ctrl_type_tmp.split("_")
-                          for defined_ctrl_type in self.all_controller_types:
-                              if ctrl_type_tmp_splitted[0].lower() in defined_ctrl_type.lower():
-                                  running_ctrls.append(defined_ctrl_type)
-                                  self.edit_only_mode = False
-                                  return running_ctrls
-                        
-            rospy.loginfo( "No controllers currently running" )
-            rospy.loginfo( "Running controller tuner in edit-only mode" )
-            self.edit_only_mode = True
-            del running_ctrls[:]
-            #In edit_only_mode all the controllers are available for editing
-            for defined_ctrl_type in self.all_controller_types:
-                running_ctrls.append(defined_ctrl_type)
+        running_ctrls.append("Motor Force")
+        if resp != None:
+            for controller in resp.controller:
+                if controller.state == "running":
+                    # find at the specific pattern of the controller
+                    splitted = re.split('[tfmrlw][fhr]j[0-5]_',controller.name)
+                    # only consider shadow (prefix sh_) controllers (drop js ctrl and others)
+                    if self.controller_prefix in splitted[0]:
+                      ctrl_type_tmp=""
+                      # only consider joint controllers (containing _xxjy_)
+                      if len(splitted)>=2:
+                        ctrl_type_tmp = splitted[1]
+                      # look at first word of the controller type
+                      ctrl_type_tmp_splitted=ctrl_type_tmp.split("_")
+                      for defined_ctrl_type in self.all_controller_types:
+                          if ctrl_type_tmp_splitted[0].lower() in defined_ctrl_type.lower():
+                              running_ctrls.append(defined_ctrl_type)
+                              self.edit_only_mode = False
+                              return running_ctrls
+                    
+        rospy.loginfo( "No controllers currently running" )
+        rospy.loginfo( "Running controller tuner in edit-only mode" )
+        self.edit_only_mode = True
+        del running_ctrls[:]
+        #In edit_only_mode all the controllers are available for editing
+        for defined_ctrl_type in self.all_controller_types:
+            running_ctrls.append(defined_ctrl_type)
         
 
         return running_ctrls
