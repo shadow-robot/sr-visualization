@@ -36,8 +36,9 @@ from sensor_msgs.msg import JointState
 
 from sr_gui_controller_tuner.sr_controller_tuner import SrControllerTunerApp
 
+
 class PlotThread(QThread):
-    def __init__(self, parent = None, joint_name = "FFJ0", controller_type = "Motor Force"):
+    def __init__(self, parent=None, joint_name="FFJ0", controller_type="Motor Force"):
         QThread.__init__(self, parent)
         self.joint_name_ = joint_name
         self.is_joint_0_ = False
@@ -52,7 +53,7 @@ class PlotThread(QThread):
 
         #prepares the title for the plot (can't contain spaces)
         self.plot_title_ = self.joint_name_ + " " + self.controller_type_
-        self.plot_title_ = self.plot_title_.replace(" ", "_").replace("/","_")
+        self.plot_title_ = self.plot_title_.replace(" ", "_").replace("/", "_")
 
         #stores the subprocesses to be able to terminate them on close
         self.subprocess_ = []
@@ -73,29 +74,42 @@ class PlotThread(QThread):
 
                 #wait until we got the joint index in the joint
                 # states message
-                while self.joint_index_in_joint_state_ == None:
+                while self.joint_index_in_joint_state_ is None:
                     time.sleep(0.01)
 
-                rxplot_str += "joint_states/effort["+ str(self.joint_index_in_joint_state_) +"]"
+                rxplot_str += "joint_states/effort[" + str(self.joint_index_in_joint_state_) + "]"
             else:
-                rxplot_str += "joint_0s/joint_states/effort["+ str(self.joint_index_in_joint_state_) +"]"
+                rxplot_str += "joint_0s/joint_states/effort[" + str(self.joint_index_in_joint_state_) + "]"
 
         elif self.controller_type_ == "Position":
-            rxplot_str += "sh_"+self.joint_name_.lower()+"_position_controller/state/set_point,sh_"+self.joint_name_.lower()+"_position_controller/state/process_value sh_" + self.joint_name_.lower()+"_position_controller/state/command"
+            rxplot_str += "sh_" + self.joint_name_.lower() + "_position_controller/state/set_point,sh_" + self.joint_name_.lower() +\
+                          "_position_controller/state/process_value sh_" + self.joint_name_.lower() + "_position_controller/state/command"
         elif self.controller_type_ == "Muscle Position":
-            rxplot_str += "sh_"+self.joint_name_.lower()+"_muscle_position_controller/state/set_point,sh_"+self.joint_name_.lower()+"_muscle_position_controller/state/process_value sh_" + self.joint_name_.lower()+"_muscle_position_controller/state/pseudo_command sh_" + self.joint_name_.lower()+"_muscle_position_controller/state/valve_muscle_0,sh_" + self.joint_name_.lower()+"_muscle_position_controller/state/valve_muscle_1"
+            rxplot_str += "sh_" + self.joint_name_.lower() + "_muscle_position_controller/state/set_point,sh_" + self.joint_name_.lower() +\
+                          "_muscle_position_controller/state/process_value sh_" + self.joint_name_.lower() +\
+                          "_muscle_position_controller/state/pseudo_command sh_" + self.joint_name_.lower() +\
+                          "_muscle_position_controller/state/valve_muscle_0,sh_" + self.joint_name_.lower() +\
+                          "_muscle_position_controller/state/valve_muscle_1"
         elif self.controller_type_ == "Velocity":
-            rxplot_str += "sh_"+self.joint_name_.lower()+"_velocity_controller/state/set_point,sh_"+self.joint_name_.lower()+"_velocity_controller/state/process_value"
+            rxplot_str += "sh_" + self.joint_name_.lower() + "_velocity_controller/state/set_point,sh_" + self.joint_name_.lower() +\
+                          "_velocity_controller/state/process_value"
         elif self.controller_type_ == "Mixed Position/Velocity":
-            rxplot_str += "sh_"+self.joint_name_.lower()+"_mixed_position_velocity_controller/state/set_point,sh_"+self.joint_name_.lower()+"_mixed_position_velocity_controller/state/process_value sh_"+self.joint_name_.lower()+"_mixed_position_velocity_controller/state/process_value_dot,sh_"+self.joint_name_.lower()+"_mixed_position_velocity_controller/state/commanded_velocity sh_"+self.joint_name_.lower()+"_mixed_position_velocity_controller/state/command,sh_"+self.joint_name_.lower()+"_mixed_position_velocity_controller/state/measured_effort,sh_"+self.joint_name_.lower()+"_mixed_position_velocity_controller/state/friction_compensation"
+            rxplot_str += "sh_" + self.joint_name_.lower() + "_mixed_position_velocity_controller/state/set_point,sh_" +\
+                          self.joint_name_.lower() + "_mixed_position_velocity_controller/state/process_value sh_" + self.joint_name_.lower() +\
+                          "_mixed_position_velocity_controller/state/process_value_dot,sh_" + self.joint_name_.lower() +\
+                          "_mixed_position_velocity_controller/state/commanded_velocity sh_" + self.joint_name_.lower() +\
+                          "_mixed_position_velocity_controller/state/command,sh_" + self.joint_name_.lower() +\
+                          "_mixed_position_velocity_controller/state/measured_effort,sh_" + self.joint_name_.lower() +\
+                          "_mixed_position_velocity_controller/state/friction_compensation"
         elif self.controller_type_ == "Effort":
-            rxplot_str += "sh_"+self.joint_name_.lower()+"_effort_controller/state/set_point,sh_"+self.joint_name_.lower()+"_effort_controller/state/process_value"
+            rxplot_str += "sh_" + self.joint_name_.lower() + "_effort_controller/state/set_point,sh_" + self.joint_name_.lower() +\
+                          "_effort_controller/state/process_value"
 
-        self.subprocess_.append( subprocess.Popen(rxplot_str.split()) )
+        self.subprocess_.append(subprocess.Popen(rxplot_str.split()))
 
     def js_callback_(self, msg):
         #get the joint index once, then unregister
-        self.joint_index_in_joint_state_ = msg.name.index( self.joint_name_.upper() )
+        self.joint_index_in_joint_state_ = msg.name.index(self.joint_name_.upper())
         self.subscriber_.unregister()
         self.subscriber_ = None
 
@@ -104,14 +118,15 @@ class PlotThread(QThread):
             #killing the rxplot to close the window
             subprocess.kill()
 
-        if self.subscriber_ != None:
+        if self.subscriber_ is not None:
             self.subscriber_.unregister()
             self.subscriber_ = None
 
         self.wait()
 
+
 class MoveThread(QThread):
-    def __init__(self, parent = None, joint_name = "FFJ0", controller_type = "Motor Force"):
+    def __init__(self, parent=None, joint_name="FFJ0", controller_type="Motor Force"):
         QThread.__init__(self, parent)
         self.joint_name_ = joint_name
         self.controller_type_ = controller_type
@@ -142,14 +157,14 @@ class MoveThread(QThread):
             message_type = "sr"
 
         min_max = self.get_min_max_()
-        ns = rospy.get_namespace()
+        namespace = rospy.get_namespace()
 
-        string = "<launch> <node ns=\"" + ns + "\" pkg=\"sr_movements\" name=\"sr_movements\" type=\"sr_movements\">"
-        string += "<remap from=\"~targets\" to=\""+ controller_name_ +"/command\"/>"
-        string += "<remap from=\"~inputs\" to=\""+ controller_name_ +"/state\"/>"
+        string = "<launch> <node ns=\"" + namespace + "\" pkg=\"sr_movements\" name=\"sr_movements\" type=\"sr_movements\">"
+        string += "<remap from=\"~targets\" to=\"" + controller_name_ + "/command\"/>"
+        string += "<remap from=\"~inputs\" to=\"" + controller_name_ + "/state\"/>"
         string += "<param name=\"image_path\" value=\"$(find sr_movements)/movements/test.png\"/>"
-        string += "<param name=\"min\" value=\""+ str(min_max[0]) +"\"/>"
-        string += "<param name=\"max\" value=\""+ str(min_max[1]) + "\"/>"
+        string += "<param name=\"min\" value=\"" + str(min_max[0]) + "\"/>"
+        string += "<param name=\"max\" value=\"" + str(min_max[1]) + "\"/>"
         string += "<param name=\"publish_rate\" value=\"100\"/>"
         string += "<param name=\"repetition\" value=\"1000\"/>"
         string += "<param name=\"nb_step\" value=\"10000\"/>"
@@ -198,7 +213,8 @@ class MoveThread(QThread):
 
         launch_string = "roslaunch "+filename
 
-        self.subprocess_.append( subprocess.Popen(launch_string.split()) )
+        self.subprocess_.append(subprocess.Popen(launch_string.split()))
+
 
 class SrGuiControllerTuner(Plugin):
     """
@@ -219,14 +235,14 @@ class SrGuiControllerTuner(Plugin):
         loadUi(ui_file, self._widget)
         self._widget.setObjectName('SrControllerTunerUi')
         context.add_widget(self._widget)
-        
+
         #setting the prefixes
         self._prefix = ""
-        
+
         self._widget.select_prefix.addItem("")
         self._widget.select_prefix.addItem("rh/")
         self._widget.select_prefix.addItem("lh/")
-        
+
         self._widget.select_prefix.currentIndexChanged['QString'].connect(self.prefix_selected)
 
         #stores the movements threads to be able to stop them
@@ -240,10 +256,11 @@ class SrGuiControllerTuner(Plugin):
         self.ctrl_widgets = {}
 
         #a library which helps us doing the real work.
-        self.sr_controller_tuner_app_ = SrControllerTunerApp( os.path.join(rospkg.RosPack().get_path('sr_gui_controller_tuner'), 'data', 'controller_settings.xml') )
+        self.sr_controller_tuner_app_ = SrControllerTunerApp(os.path.join(rospkg.RosPack().get_path('sr_gui_controller_tuner'),
+                                                             'data', 'controller_settings.xml'))
 
-        self.sr_controller_tuner_app_.prefix=self._prefix
-        self.sr_controller_tuner_app_.selected_prefix=self._prefix
+        self.sr_controller_tuner_app_.prefix = self._prefix
+        self.sr_controller_tuner_app_.selected_prefix = self._prefix
         #check the prefix once
         self.sr_controller_tuner_app_.check_prefix()
         #refresh the controllers once
@@ -271,15 +288,15 @@ class SrGuiControllerTuner(Plugin):
         move_thread.start()
         self.move_threads.append(move_thread)
 
-    def on_changed_controller_type_(self, index = None):
+    def on_changed_controller_type_(self, index=None):
         """
         When controller type is changed clear the chosen file path and refresh the tree with the controller settings
         """
-        if index == None:
+        if index is None:
             return
         self.reset_file_path()
-        if len(self.controllers_in_dropdown)>0 :
-            self.refresh_controller_tree_( self.controllers_in_dropdown[index] )
+        if len(self.controllers_in_dropdown) > 0:
+            self.refresh_controller_tree_(self.controllers_in_dropdown[index])
 
     def reset_file_path(self):
         """
@@ -309,7 +326,7 @@ class SrGuiControllerTuner(Plugin):
         # '' normally for a right hand  or 'lh' if this is for a left hand)
         # the prefix for config dir must use the "checked" prefix, not the selected one (to handle GUI ns)
         config_subdir = rospy.get_param(self.sr_controller_tuner_app_.prefix+'config_dir', '')
-        print "config_subdir: ",config_subdir
+        print "config_subdir: ", config_subdir
         subpath = "/controls/host/" + config_subdir
         if self.sr_controller_tuner_app_.edit_only_mode:
             filter_files = "*.yaml"
@@ -360,11 +377,11 @@ class SrGuiControllerTuner(Plugin):
         """
         reload the parameters in rosparam, then refresh the tree widget
         """
-        paramlist = rosparam.load_file( self.file_to_save )
-        for params,ns in paramlist:
-            rosparam.upload_params(ns, params)
+        paramlist = rosparam.load_file(self.file_to_save)
+        for params, namespace in paramlist:
+            rosparam.upload_params(namespace, params)
 
-        self.refresh_controller_tree_( self.controllers_in_dropdown[self._widget.dropdown_ctrl.currentIndex()] )
+        self.refresh_controller_tree_(self.controllers_in_dropdown[self._widget.dropdown_ctrl.currentIndex()])
 
     def on_btn_save_selected_clicked_(self):
         """
@@ -372,19 +389,19 @@ class SrGuiControllerTuner(Plugin):
         """
         selected_items = self._widget.tree_ctrl_settings.selectedItems()
 
-        if len( selected_items ) == 0:
+        if len(selected_items) == 0:
             QMessageBox.warning(self._widget.tree_ctrl_settings, "Warning", "No motors selected.")
 
         for it in selected_items:
             if str(it.text(1)) != "":
-                self.save_controller( str(it.text(1)) )
+                self.save_controller(str(it.text(1)))
 
     def on_btn_save_all_clicked_(self):
         """
         Save all controllers
         """
         for motor in self.ctrl_widgets.keys():
-            self.save_controller( motor )
+            self.save_controller(motor)
 
     def on_btn_set_selected_clicked_(self):
         """
@@ -392,19 +409,19 @@ class SrGuiControllerTuner(Plugin):
         """
         selected_items = self._widget.tree_ctrl_settings.selectedItems()
 
-        if len( selected_items ) == 0:
+        if len(selected_items) == 0:
             QMessageBox.warning(self._widget.tree_ctrl_settings, "Warning", "No motors selected.")
 
         for it in selected_items:
             if str(it.text(1)) != "":
-                self.set_controller( str(it.text(1)) )
+                self.set_controller(str(it.text(1)))
 
     def on_btn_set_all_clicked_(self):
         """
         Sets the current values for all controllers using the ros service.
         """
         for motor in self.ctrl_widgets.keys():
-            self.set_controller( motor )
+            self.set_controller(motor)
 
     def on_btn_refresh_ctrl_clicked_(self):
         """
@@ -422,7 +439,7 @@ class SrGuiControllerTuner(Plugin):
 
     def prefix_selected(self, prefix):
         self._prefix = prefix
-        self.sr_controller_tuner_app_.selected_prefix=self._prefix
+        self.sr_controller_tuner_app_.selected_prefix = self._prefix
         self.sr_controller_tuner_app_.check_prefix()
         self.on_btn_refresh_ctrl_clicked_()
 
@@ -434,12 +451,12 @@ class SrGuiControllerTuner(Plugin):
 
         settings = {}
         for item in dict_of_widgets.items():
-            try:            
+            try:
                 settings[item[0]] = item[1].value()
-            except AttributeError, TypeError:
+            except AttributeError:
                 try:
                     settings[item[0]] = 1 if item[1].checkState() == Qt.Checked else 0
-                except AttributeError, TypeError:
+                except AttributeError:
                     pass
         return settings
 
@@ -447,28 +464,27 @@ class SrGuiControllerTuner(Plugin):
         """
         Sets the current values for the given controller using the ros service.
         """
-        settings = self.read_settings( joint_name )
+        settings = self.read_settings(joint_name)
 
         #uses the library to call the service properly
         success = self.sr_controller_tuner_app_.set_controller(joint_name, self.controller_type, settings)
-        if success == False:
+        if success is False:
             if self.controller_type == "Motor Force":
-                QMessageBox.warning(self._widget.tree_ctrl_settings, "Warning", "Failed to set the PID values for joint "+ joint_name +". This won't work for Gazebo controllers as there are no force controllers yet.")
+                QMessageBox.warning(self._widget.tree_ctrl_settings, "Warning", "Failed to set the PID values for joint " + joint_name
+                                    + ". This won't work for Gazebo controllers as there are no force controllers yet.")
             else:
-                QMessageBox.warning(self._widget.tree_ctrl_settings, "Warning", "Failed to set the PID values for joint "+ joint_name +".")
-
+                QMessageBox.warning(self._widget.tree_ctrl_settings, "Warning", "Failed to set the PID values for joint " + joint_name + ".")
 
     def save_controller(self, joint_name):
         """
         Saves the current values for the given controller using the ros service.
         """
-        settings = self.read_settings( joint_name )
+        settings = self.read_settings(joint_name)
 
         #uses the library to call the service properly
         self.sr_controller_tuner_app_.save_controller(joint_name, self.controller_type, settings, self.file_to_save)
 
-
-    def refresh_controller_tree_(self, controller_type = "Motor Force"):
+    def refresh_controller_tree_(self, controller_type="Motor Force"):
         """
         Get the controller settings and their ranges and display them in the tree.
         Buttons and plots will be added unless in edit_only mode.
@@ -487,33 +503,33 @@ class SrGuiControllerTuner(Plugin):
             self._widget.btn_stop_mvts.setEnabled(True)
 
         self.controller_type = controller_type
-        ctrl_settings = self.sr_controller_tuner_app_.get_controller_settings( controller_type )
+        ctrl_settings = self.sr_controller_tuner_app_.get_controller_settings(controller_type)
 
         self._widget.tree_ctrl_settings.clear()
         self._widget.tree_ctrl_settings.setColumnCount(ctrl_settings.nb_columns)
         # clear the ctrl_widgets as the motor name might change also now
-        self.ctrl_widgets={}
+        self.ctrl_widgets = {}
 
         tmp_headers = []
         for header in ctrl_settings.headers:
-            tmp_headers.append( header["name"] )
-        self._widget.tree_ctrl_settings.setHeaderLabels( tmp_headers )
+            tmp_headers.append(header["name"])
+        self._widget.tree_ctrl_settings.setHeaderLabels(tmp_headers)
 
         hand_item = QTreeWidgetItem(ctrl_settings.hand_item)
         self._widget.tree_ctrl_settings.addTopLevelItem(hand_item)
-        for index_finger,finger_settings in enumerate(ctrl_settings.fingers):
-            finger_item = QTreeWidgetItem( hand_item, finger_settings )
+        for index_finger, finger_settings in enumerate(ctrl_settings. fingers):
+            finger_item = QTreeWidgetItem(hand_item, finger_settings)
             self._widget.tree_ctrl_settings.addTopLevelItem(finger_item)
             for motor_settings in ctrl_settings.motors[index_finger]:
                 motor_name = motor_settings[1]
 
-                motor_item = QTreeWidgetItem( finger_item, motor_settings )
+                motor_item = QTreeWidgetItem(finger_item, motor_settings)
                 self._widget.tree_ctrl_settings.addTopLevelItem(motor_item)
 
-                parameter_values = self.sr_controller_tuner_app_.load_parameters( controller_type, motor_name )
+                parameter_values = self.sr_controller_tuner_app_.load_parameters(controller_type, motor_name)
                 if parameter_values != -1:
                     #the parameters have been found
-                    self.ctrl_widgets[ motor_name ] = {}
+                    self.ctrl_widgets[motor_name] = {}
 
                     #buttons for plot/move are not added in edit_only_mode
                     if not self.sr_controller_tuner_app_.edit_only_mode:
@@ -521,21 +537,23 @@ class SrGuiControllerTuner(Plugin):
                         frame_buttons = QFrame()
                         layout_buttons = QHBoxLayout()
                         btn_plot = QPushButton("Plot")
-                        self.ctrl_widgets[ motor_name ]["btn_plot"] = btn_plot
-                        self.ctrl_widgets[ motor_name ]["btn_plot"].clicked.connect(partial(self.on_btn_plot_pressed_, motor_name, self.ctrl_widgets[ motor_name ]["btn_plot"]))
+                        self.ctrl_widgets[motor_name]["btn_plot"] = btn_plot
+                        self.ctrl_widgets[motor_name]["btn_plot"].clicked.connect(partial(self.on_btn_plot_pressed_,
+                                                                                  motor_name, self.ctrl_widgets[motor_name]["btn_plot"]))
                         layout_buttons.addWidget(btn_plot)
 
                         if self.controller_type in ["Position", "Muscle Position", "Mixed Position/Velocity"]:
                             #only adding Move button for position controllers
                             btn_move = QPushButton("Move")
-                            self.ctrl_widgets[ motor_name ]["btn_move"] = btn_move
-                            self.ctrl_widgets[ motor_name ]["btn_move"].clicked.connect(partial(self.on_btn_move_pressed_,motor_name, self.ctrl_widgets[ motor_name ]["btn_move"]))
+                            self.ctrl_widgets[motor_name]["btn_move"] = btn_move
+                            self.ctrl_widgets[motor_name]["btn_move"].clicked.connect(partial(self.on_btn_move_pressed_, motor_name,
+                                                                                      self.ctrl_widgets[motor_name]["btn_move"]))
                             layout_buttons.addWidget(btn_move)
                             frame_buttons.setLayout(layout_buttons)
 
-                        self._widget.tree_ctrl_settings.setItemWidget(  motor_item, 0, frame_buttons )
+                        self._widget.tree_ctrl_settings.setItemWidget(motor_item, 0, frame_buttons)
 
-                    for index_item,item in enumerate(ctrl_settings.headers):
+                    for index_item, item in enumerate(ctrl_settings.headers):
                         if item["type"] == "Bool":
                             check_box = QCheckBox()
 
@@ -544,32 +562,31 @@ class SrGuiControllerTuner(Plugin):
                             check_box.setChecked(param_val)
                             if "sign" in param_name:
                                 check_box.setToolTip("Check if you want a negative sign\n(if the motor is being driven\n the wrong way around).")
-                                
-                            self._widget.tree_ctrl_settings.setItemWidget(  motor_item, index_item, check_box )
 
-                            self.ctrl_widgets[ motor_name ][param_name] = check_box
+                            self._widget.tree_ctrl_settings.setItemWidget(motor_item, index_item, check_box)
 
+                            self.ctrl_widgets[motor_name][param_name] = check_box
 
                         if item["type"] == "Int":
                             spin_box = QSpinBox()
-                            spin_box.setRange(int( item["min"] ), int( item["max"] ))
+                            spin_box.setRange(int(item["min"]), int(item["max"]))
 
                             param_name = item["name"].lower()
-                            spin_box.setValue( int(parameter_values[ param_name ] ) )
-                            self.ctrl_widgets[ motor_name ][param_name] = spin_box
+                            spin_box.setValue(int(parameter_values[param_name]))
+                            self.ctrl_widgets[motor_name][param_name] = spin_box
 
-                            self._widget.tree_ctrl_settings.setItemWidget(  motor_item, index_item, spin_box )
+                            self._widget.tree_ctrl_settings.setItemWidget(motor_item, index_item, spin_box)
 
                         if item["type"] == "Float":
                             spin_box = QDoubleSpinBox()
-                            spin_box.setRange( -65535.0, 65535.0 )
+                            spin_box.setRange(-65535.0, 65535.0)
                             spin_box.setDecimals(3)
 
                             param_name = item["name"].lower()
                             spin_box.setValue(float(parameter_values[param_name]))
-                            self.ctrl_widgets[ motor_name ][param_name] = spin_box
+                            self.ctrl_widgets[motor_name][param_name] = spin_box
 
-                            self._widget.tree_ctrl_settings.setItemWidget(  motor_item, index_item, spin_box )
+                            self._widget.tree_ctrl_settings.setItemWidget(motor_item, index_item, spin_box)
 
                         motor_item.setExpanded(True)
                 else:
@@ -580,12 +597,10 @@ class SrGuiControllerTuner(Plugin):
         for col in range(0, self._widget.tree_ctrl_settings.columnCount()):
             self._widget.tree_ctrl_settings.resizeColumnToContents(col)
 
-
     def on_btn_stop_mvts_clicked_(self):
         for move_thread in self.move_threads:
             move_thread.__del__()
         self.move_threads = []
-
 
     #########
     #Default methods for the rosgui plugins

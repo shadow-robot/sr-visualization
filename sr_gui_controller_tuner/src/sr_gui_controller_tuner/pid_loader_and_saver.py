@@ -26,6 +26,7 @@ try:
 except ImportError:
     from yaml import Loader, Dumper
 
+
 class PidLoader(object):
     """
     Loads pid parameters of each controller in parameters_dict from a yaml file
@@ -56,6 +57,7 @@ class PidLoader(object):
                 return -1
         return param_dict
 
+
 class PidSaver(object):
     """
     Saves pid parameters of each controller in parameters_dict in a yaml file
@@ -64,7 +66,7 @@ class PidSaver(object):
         self.path = file_path
 
     def save_settings(self, param_path, parameters_dict):
-        f = open(self.path,'r')
+        f = open(self.path, 'r')
         document = ""
         for line in f.readlines():
             document += line
@@ -92,7 +94,6 @@ if __name__ == '__main__':
         path_to_config = os.path.join(rospkg.RosPack().get_path("sr_edc_controller_configuration"))
 
         pid_saver = PidSaver(path_to_config+"/sr_edc_mixed_position_velocity_joint_controllers.yaml")
-        pid_saver.save_settings(["sh_wrj2_mixed_position_velocity_controller","pid"], {"d":1.0})
+        pid_saver.save_settings(["sh_wrj2_mixed_position_velocity_controller", "pid"], {"d": 1.0})
     except:
         rospy.logwarn("couldnt find the sr_edc_controller_configuration package")
-
