@@ -410,14 +410,11 @@ class SrGuiControllerTuner(Plugin):
 
         settings = {}
         for item in dict_of_widgets.items():
-            if item[0] == "sign":
-                if item[1].checkState() == Qt.Checked:
-                    settings["sign"] = 1
-                else:
-                    settings["sign"] = 0
-            else:
+            try:
+                settings[item[0]] = item[1].value()
+            except AttributeError:
                 try:
-                    settings[item[0]] = item[1].value()
+                    settings[item[0]] = 1 if item[1].checkState() == Qt.Checked else 0
                 except AttributeError:
                     pass
 
@@ -517,13 +514,15 @@ class SrGuiControllerTuner(Plugin):
                         if item["type"] == "Bool":
                             check_box = QCheckBox()
 
-                            if parameter_values["sign"] == 1.0:
-                                check_box.setChecked(True)
-
-                            check_box.setToolTip("Check if you want a negative sign\n(if the motor is being driven\n the wrong way around).")
+                            param_name = item["name"].lower()
+                            param_val = parameter_values[param_name]
+                            check_box.setChecked(param_val)
+                            if "sign" in param_name:
+                                check_box.setToolTip("Check if you want a negative sign\n(if the motor is being driven\n the wrong way around).")
+                                
                             self._widget.tree_ctrl_settings.setItemWidget(  motor_item, index_item, check_box )
 
-                            self.ctrl_widgets[ motor_name ]["sign"] = check_box
+                            self.ctrl_widgets[ motor_name ][param_name] = check_box
 
 
                         if item["type"] == "Int":
