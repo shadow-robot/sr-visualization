@@ -35,12 +35,12 @@ class CtrlSettings(object):
     def __init__(self, xml_path, controller_type, joint_prefix):
         self.headers = []
 
-        #open and parses the xml config file
+        # open and parses the xml config file
         xml_file = open(xml_path)
         xml_tree = ET.parse(xml_file)
         xml_file.close()
 
-        #read the settings from the xml file
+        # read the settings from the xml file
         ctrl_tree = None
         for ctrl in xml_tree.findall("controller"):
             ctrl_name = ctrl.attrib['name']
@@ -51,7 +51,7 @@ class CtrlSettings(object):
         if ctrl_tree is None:
             rospy.logerr("Couldn't find the settings for the controller " + controller_type)
 
-        #read the headers settings
+        # read the headers settings
         xml_headers = ctrl_tree.find("headers")
         for header in xml_headers.findall("item"):
             self.headers.append(header.attrib)
@@ -61,7 +61,7 @@ class CtrlSettings(object):
         self.hand_item = ["Hand"]
         self.hand_item.extend((self.nb_columns - 1)*[""])
 
-        #read the fingers and the motors from the xml file
+        # read the fingers and the motors from the xml file
         self.fingers = []
         self.motors = []
         all_fingers = xml_tree.find("fingers")
@@ -118,7 +118,7 @@ class SrControllerTunerApp(object):
 
         hand_ids = []
         hand_joint_prefixes = []
-        # unless imcompatible, use the selected prefix by default
+        # unless incompatible, use the selected prefix by default
         self.prefix = self.selected_prefix
         prefix = self.selected_prefix.rstrip("/")
         # mapping is always in global ns
@@ -126,7 +126,7 @@ class SrControllerTunerApp(object):
             hand_mapping = rospy.get_param("/hand/mapping")
             for _, value in hand_mapping.items():
                 # if prefix matches the mapping, add this hand (empty prefix means both hands)
-                if prefix in value:
+                if value.startswith(prefix):
                     hand_ids.append(value)
         if len(hand_ids) == 0:
             # no matching hand id to selected prefix, check for namespace
@@ -140,7 +140,7 @@ class SrControllerTunerApp(object):
 
         if len(hand_ids) > 1:
             # the plugin cannot handle more than one hand
-            rospy.logwarn("More than one hand found with prefix :"+prefix+" !\n Not loading controllers")
+            rospy.logwarn("More than one hand found with prefix :" + prefix + " !\n Not loading controllers")
             return False
 
         # joint_prefix always in global ns
@@ -153,16 +153,16 @@ class SrControllerTunerApp(object):
 
         if len(hand_joint_prefixes) > 1:
             # the plugin cannot handle more than one hand
-            rospy.logwarn("More than one hand found with prefix :"+prefix+" !\n Not loading controllers")
+            rospy.logwarn("More than one hand found with prefix :" + prefix + " !\n Not loading controllers")
             return False
 
         if len(hand_joint_prefixes) == 0:
-            rospy.logwarn("No hand found with prefix :"+prefix)
+            rospy.logwarn("No hand found with prefix :" + prefix)
             self.joint_prefix = ""
         else:
             self.joint_prefix = hand_joint_prefixes[0]
 
-        rospy.loginfo("using joint_prefix "+self.joint_prefix)
+        rospy.loginfo("using joint_prefix " + self.joint_prefix)
         return True
 
     def get_ctrls(self):
@@ -174,7 +174,7 @@ class SrControllerTunerApp(object):
 
         # find controller manager in selected namespace
 
-        ctrl_srv_name = self.prefix+'controller_manager/list_controllers'
+        ctrl_srv_name = self.prefix + 'controller_manager/list_controllers'
         try:
             rospy.wait_for_service(ctrl_srv_name, self.CONTROLLER_MANAGER_DETECTION_TIMEOUT)
 
@@ -189,17 +189,9 @@ class SrControllerTunerApp(object):
                 except rospy.ROSException, e:
                     rospy.loginfo("Controller manager not running: %s"%str(e))
                     rospy.loginfo("Running controller tuner in edit-only mode")
-                    self.edit_only_mode = True
-                    #In edit_only_mode all the controllers are available for editing
-                    for defined_ctrl_type in self.all_controller_types:
-                        running_ctrls.append(defined_ctrl_type)
-                    return running_ctrls
+                    return self.set_edit_only(running_ctrls)
             else:
-                self.edit_only_mode = True
-                #In edit_only_mode all the controllers are available for editing
-                for defined_ctrl_type in self.all_controller_types:
-                    running_ctrls.append(defined_ctrl_type)
-                return running_ctrls
+                return self.set_edit_only(running_ctrls)
 
         # found a controller manager
         controllers = rospy.ServiceProxy(ctrl_srv_name, ListControllers)
@@ -231,15 +223,23 @@ class SrControllerTunerApp(object):
 
         rospy.loginfo("No controllers currently running")
         rospy.loginfo("Running controller tuner in edit-only mode")
-        self.edit_only_mode = True
         del running_ctrls[:]
-        #In edit_only_mode all the controllers are available for editing
+        return self.set_edit_only(running_ctrls)
+
+    def set_edit_only(self, running_ctrls):
+        """
+        Sets all the controllers to defined type for edit-only mode
+        """
+        self.edit_only_mode = True
+        # In edit_only_mode all the controllers are available for editing
         for defined_ctrl_type in self.all_controller_types:
             running_ctrls.append(defined_ctrl_type)
-
         return running_ctrls
 
     def refresh_control_mode(self):
+        """
+        Effectively change control mode on the realtime loop
+        """
         self.control_mode = rospy.get_param('realtime_loop/' + self.prefix + 'default_control_mode', 'FORCE')
 
     def get_controller_settings(self, controller_type):
@@ -284,34 +284,34 @@ class SrControllerTunerApp(object):
         prefix = self.prefix if self.single_loop is not True else ""
 
         if controller_type == "Motor Force":
-            #/realtime_loop/change_force_PID_FFJ0
+            # /realtime_loop/change_force_PID_FFJ0
             # currently use non-prefixed joint names but adds prefix in the middle
             # no matter if single or dual loops there is always a prefix for motors
             service_name = "realtime_loop/"+self.prefix+"change_force_PID_"+joint_name[-4:].upper()
             pid_service = rospy.ServiceProxy(service_name, ForceController)
 
         elif controller_type == "Position":
-            #/sh_ffj3_position_controller/set_gains
+            # /sh_ffj3_position_controller/set_gains
             service_name = prefix+self.controller_prefix+joint_name.lower()+"_position_controller/set_gains"
             pid_service = rospy.ServiceProxy(service_name, SetPidGains)
 
         elif controller_type == "Muscle Position":
-            #/sh_ffj3_position_controller/set_gains
+            # /sh_ffj3_position_controller/set_gains
             service_name = prefix+self.controller_prefix+joint_name.lower()+"_muscle_position_controller/set_gains"
             pid_service = rospy.ServiceProxy(service_name, SetPidGains)
 
         elif controller_type == "Velocity":
-            #/sh_ffj3_velocity_controller/set_gains
+            # /sh_ffj3_velocity_controller/set_gains
             service_name = prefix+self.controller_prefix+joint_name.lower()+"_velocity_controller/set_gains"
             pid_service = rospy.ServiceProxy(service_name, SetPidGains)
 
         elif controller_type == "Mixed Position/Velocity":
-            #/sh_ffj3_mixed_position_velocity_controller/set_gains
+            # /sh_ffj3_mixed_position_velocity_controller/set_gains
             service_name = prefix+self.controller_prefix+joint_name.lower()+"_mixed_position_velocity_controller/set_gains"
             pid_service = rospy.ServiceProxy(service_name, SetMixedPositionVelocityPidGains)
 
         elif controller_type == "Effort":
-            #/sh_ffj3_effort_controller/set_gains
+            # /sh_ffj3_effort_controller/set_gains
             service_name = prefix+self.controller_prefix+joint_name.lower()+"_effort_controller/set_gains"
             pid_service = rospy.ServiceProxy(service_name, SetEffortControllerGains)
 
