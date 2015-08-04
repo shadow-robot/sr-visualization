@@ -100,7 +100,6 @@ class SrGuiBootloader(Plugin):
         # motors_frame is defined in the ui file with a grid layout
         self.motors = []
         self.motors_frame = self._widget.motors_frame
-        #self.populate_motors()
         self.progress_bar = self._widget.motors_progress_bar
         self.progress_bar.hide()
 
