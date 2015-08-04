@@ -27,7 +27,7 @@ from diagnostic_msgs.msg import DiagnosticArray
 from sr_robot_msgs.srv import SimpleMotorFlasher, SimpleMotorFlasherResponse
 
 class MotorBootloader(QThread):
-    def __init__(self, parent, nb_motors_to_program):
+    def __init__(self, parent, nb_motors_to_program, prefix):
         QThread.__init__(self, None)
         self.parent = parent
         self.nb_motors_to_program = nb_motors_to_program
