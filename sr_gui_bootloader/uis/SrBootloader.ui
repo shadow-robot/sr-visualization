@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>502</width>
-    <height>292</height>
+    <width>525</width>
+    <height>354</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -17,7 +17,7 @@
    <string>Bootloader</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="0" column="0">
+   <item row="1" column="0">
     <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0">
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
@@ -102,6 +102,37 @@
         <string>%v of %m</string>
        </property>
       </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="0" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Hand Prefix</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="select_prefix">
+       <property name="maxCount">
+        <number>2147483641</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
    </item>
