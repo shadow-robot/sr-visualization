@@ -31,6 +31,7 @@ class MotorBootloader(QThread):
         QThread.__init__(self, None)
         self.parent = parent
         self.nb_motors_to_program = nb_motors_to_program
+        self.prefix = prefix
 
     def run(self):
         """
@@ -41,7 +42,7 @@ class MotorBootloader(QThread):
         for motor in self.parent.motors:
             if motor.checkbox.checkState() == Qt.Checked:
                 try:
-                    self.bootloader_service = rospy.ServiceProxy('SimpleMotorFlasher', SimpleMotorFlasher)
+                    self.bootloader_service = rospy.ServiceProxy(self.prefix + 'SimpleMotorFlasher', SimpleMotorFlasher)
                     resp = self.bootloader_service( firmware_path.encode('ascii', 'ignore'), motor.motor_index )
                 except rospy.ServiceException, e:
                     self.emit( SIGNAL("failed(QString)"),
@@ -88,11 +89,18 @@ class SrGuiBootloader(Plugin):
         loadUi(ui_file, self._widget)
         self._widget.setObjectName('SrMotorResetterUi')
         context.add_widget(self._widget)
+        
+        #setting the prefixes
+        self._prefix = ""
+        self._widget.select_prefix.addItem("")
+        self._widget.select_prefix.addItem("rh/")
+        self._widget.select_prefix.addItem("lh/")
+        self._widget.select_prefix.currentIndexChanged['QString'].connect(self.prefix_selected)
 
         # motors_frame is defined in the ui file with a grid layout
         self.motors = []
         self.motors_frame = self._widget.motors_frame
-        self.populate_motors()
+        #self.populate_motors()
         self.progress_bar = self._widget.motors_progress_bar
         self.progress_bar.hide()
 
@@ -132,11 +140,11 @@ class SrGuiBootloader(Plugin):
         Find motors according to joint_to_motor_mapping mapping that must exist on the parameter server
         and add to the list of Motor objects etherCAT hand node must be running
         """
-        if rospy.has_param("joint_to_motor_mapping"):
-            joint_to_motor_mapping = rospy.get_param("joint_to_motor_mapping")
+        if rospy.has_param(self._prefix + "joint_to_motor_mapping"):
+            joint_to_motor_mapping = rospy.get_param(self._prefix + "joint_to_motor_mapping")
         else:
-            QMessageBox.warning(self.motors_frame, "Warning", "Couldn't find the joint_to_motor_mapping parameter. Make sure the etherCAT Hand node is running")
-            self.close_plugin()
+            QMessageBox.warning(self.motors_frame, "Warning",
+                                "Couldn't find the " + self._prefix + "joint_to_motor_mapping parameter. Make sure the etherCAT Hand node is running")
             return
 
         joint_names = [
@@ -166,7 +174,7 @@ class SrGuiBootloader(Plugin):
     def diagnostics_callback(self, msg):
         for status in msg.status:
             for motor in self.motors:
-                if motor.motor_name in status.name:
+                if motor.motor_name in status.name and self._prefix.replace("/", "") in status.name:
                     for key_values in status.values:
                         if "Firmware svn revision" in key_values.key:
                             server_current_modified = key_values.value.split(" / ")
@@ -261,3 +269,6 @@ class SrGuiBootloader(Plugin):
     def restore_settings(self, global_settings, perspective_settings):
         pass
 
+    def prefix_selected(self, prefix):
+        self._prefix = prefix
+        self.populate_motors()
