@@ -44,6 +44,8 @@ from controller_manager_msgs.srv import SwitchController, LoadController
 from sr_robot_msgs.srv import ChangeControlType
 from sr_robot_msgs.msg import ControlType
 from sr_utilities.hand_finder import HandFinder
+
+
 class SrGuiChangeControllers(Plugin):
     """
     A rosgui plugin for loading the different controllers
@@ -108,8 +110,7 @@ class SrGuiChangeControllers(Plugin):
                 "sh_{0}{1}_velocity_controller".format(
                     hand_joint_prefix, joint)
                 for joint in joints for hand_joint_prefix in
-                hand_joint_prefixes],
-                            "stop": []}
+                hand_joint_prefixes], "stop": []}
 
         self.managed_controllers = [
             cont for type_conts in self.controllers.itervalues()
@@ -232,7 +233,7 @@ class SrGuiChangeControllers(Plugin):
             self._widget.btn_velocity.setChecked(False)
             rospy.loginfo("Effort checked: " + str(
                 self._widget.btn_effort.isChecked()))
-            self.change_ctrl( "effort" )
+            self.change_ctrl("effort")
         else:
             self._widget.btn_effort.setIcon(self.CONTROLLER_OFF_ICON)
             self._widget.btn_effort.setChecked(False)
@@ -282,7 +283,7 @@ class SrGuiChangeControllers(Plugin):
             self._widget.btn_velocity.setChecked(False)
             rospy.loginfo("Mixed checked: " +
                           str(self._widget.btn_mixed.isChecked()))
-            self.change_ctrl( "mixed" )
+            self.change_ctrl("mixed")
         else:
             self._widget.btn_mixed.setIcon(self.CONTROLLER_OFF_ICON)
             self._widget.btn_mixed.setChecked(False)
