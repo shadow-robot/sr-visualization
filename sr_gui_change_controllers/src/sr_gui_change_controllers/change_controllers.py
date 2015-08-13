@@ -137,17 +137,15 @@ class SrGuiChangeControllers(Plugin):
         hand_parameters = hand_finder.get_hand_parameters()
 
         self._prefix = ""
-        self._widget.select_prefix.addItem("")
         for hand in hand_parameters.mapping:
             self._widget.select_prefix.addItem(hand_parameters.mapping[hand])
 
-        if len(hand_parameters.mapping) is 0:
+        if not hand_parameters.mapping:
             rospy.logerr("No hand detected")
             QMessageBox.warning(
                 self._widget, "warning", "No hand is detected")
-            self._widget.select_prefix.setCurrentIndex(0)
         else:
-            self._widget.select_prefix.setCurrentIndex(1)
+            self._widget.select_prefix.setCurrentIndex(0)
 
         self._widget.select_prefix.currentIndexChanged['QString'].connect(
             self.prefix_selected)
