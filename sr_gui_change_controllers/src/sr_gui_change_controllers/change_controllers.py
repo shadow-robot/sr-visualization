@@ -132,9 +132,8 @@ class SrGuiChangeControllers(Plugin):
         context.add_widget(self._widget)
 
         # setting the prefixes
-        self.hand_finder = HandFinder()
-        hand_finder = HandFinder()
-        hand_parameters = hand_finder.get_hand_parameters()
+        self._hand_finder = HandFinder()
+        hand_parameters = self._hand_finder.get_hand_parameters()
 
         self._prefix = ""
         for hand in hand_parameters.mapping:
@@ -146,6 +145,7 @@ class SrGuiChangeControllers(Plugin):
                 self._widget, "warning", "No hand is detected")
         else:
             self._widget.select_prefix.setCurrentIndex(0)
+            self._prefix = hand_parameters.mapping.values()[0]
 
         self._widget.select_prefix.currentIndexChanged['QString'].connect(
             self.prefix_selected)
