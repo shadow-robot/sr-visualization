@@ -68,20 +68,20 @@ class SrGuiBiotac(Plugin):
                 [12.48, 24.48, 24.48, 12.48])
 
         for n in range(len(self.sensing_electrodes_x)):
-            self.sensing_electrodes_x[n] = self.sensing_electrodes_x[n] * \
-                                           self.factor + self.x_display_offset[
-                                               0]
-            self.sensing_electrodes_y[n] = self.sensing_electrodes_y[n] * \
-                                           self.factor + self.y_display_offset[
-                                               0]
+            self.sensing_electrodes_x[n] = (
+                self.sensing_electrodes_x[n] * self.factor +
+                self.x_display_offset[0])
+            self.sensing_electrodes_y[n] = (
+                self.sensing_electrodes_y[n] * self.factor +
+                self.y_display_offset[0])
 
         for n in range(len(self.excitation_electrodes_x)):
-            self.excitation_electrodes_x[n] = self.excitation_electrodes_x[n] \
-                                              * self.factor + \
-                                              self.x_display_offset[0]
-            self.excitation_electrodes_y[n] = self.excitation_electrodes_y[n] \
-                                              * self.factor + \
-                                              self.y_display_offset[0]
+            self.excitation_electrodes_x[n] = (
+                self.excitation_electrodes_x[n] * self.factor +
+                self.x_display_offset[0])
+            self.excitation_electrodes_y[n] = (
+                self.excitation_electrodes_y[n] * self.factor +
+                self.y_display_offset[0])
 
     def tactile_cb(self, msg):
         self.latest_data = msg
