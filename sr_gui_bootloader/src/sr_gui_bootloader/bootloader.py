@@ -20,6 +20,7 @@ from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 from QtCore import QEvent, QObject, Qt, QTimer, Slot, QThread, SIGNAL, QPoint
 from QtGui import QWidget, QShortcut, QMessageBox, QFrame, QHBoxLayout, QCheckBox, QLabel, QCursor, QColor, QFileDialog
+from sr_utilities.hand_finder import HandFinder
 
 from std_srvs.srv import Empty
 from diagnostic_msgs.msg import DiagnosticArray
@@ -91,10 +92,18 @@ class SrGuiBootloader(Plugin):
         context.add_widget(self._widget)
         
         #setting the prefixes
+        self._hand_finder = HandFinder()
+        hand_parameters = self._hand_finder.get_hand_parameters()
         self._prefix = ""
-        self._widget.select_prefix.addItem("")
-        self._widget.select_prefix.addItem("rh/")
-        self._widget.select_prefix.addItem("lh/")
+        for hand in hand_parameters.mapping:
+            self._widget.select_prefix.addItem(hand_parameters.mapping[hand])
+        if not hand_parameters.mapping:
+            rospy.logerr("No hand detected")
+            QMessageBox.warning(
+                self._widget, "warning", "No hand is detected")
+        else:
+            self._widget.select_prefix.setCurrentIndex(0)
+            self._prefix = hand_parameters.mapping.values()[0]
         self._widget.select_prefix.currentIndexChanged['QString'].connect(self.prefix_selected)
 
         # motors_frame is defined in the ui file with a grid layout
