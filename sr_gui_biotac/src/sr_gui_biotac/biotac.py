@@ -178,8 +178,8 @@ class SrGuiBiotac(Plugin):
         self.y_display_offset = rospy.get_param("sr_gui_biotac/y_display_offset", [-50, 4.0, 4.0, 4.0])
         self.label_font_size = rospy.get_param("sr_gui_biotac/electrode_label_font_sizes", [24, 22]) # Font sizes for labels on sensing + excitation electrodes
         if self._hand_parameters.mapping:
-            self.default_topic = \
-                '/' + self._hand_parameters.mapping.values()[0] + '/'
+            self.default_topic = (self._hand_parameters.mapping.values()[0]
+                                  + '/')
         else:
             self.default_topic = ""
 
