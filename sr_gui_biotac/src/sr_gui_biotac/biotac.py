@@ -207,7 +207,7 @@ class SrGuiBiotac(Plugin):
         self._widget.paintEvent = self.paintEvent
 
         self.subscribe_to_topic(self.default_topic)
-        
+
         for hand in self._hand_parameters.mapping:
             self._widget.select_prefix.addItem(
                 self._hand_parameters.mapping[hand])

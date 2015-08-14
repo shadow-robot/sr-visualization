@@ -222,7 +222,7 @@ class SrGuiControllerTuner(Plugin):
     """
 
     def __init__(self, context):
-        super(SrGuiControllerTuner, self).__init__(context)
+        Plugin.__init__(self, context)
         self.setObjectName('SrGuiControllerTuner')
 
         self.controller_type = None
