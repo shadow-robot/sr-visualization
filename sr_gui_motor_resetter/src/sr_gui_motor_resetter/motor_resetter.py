@@ -29,6 +29,7 @@ from QtGui import QWidget, QMessageBox, QFrame, \
 
 from std_srvs.srv import Empty
 from diagnostic_msgs.msg import DiagnosticArray
+from sr_utilities.hand_finder import HandFinder
 
 class MotorFlasher(QThread):
 
@@ -90,12 +91,20 @@ class SrGuiMotorResetter(Plugin):
         context.add_widget(self._widget)
 
         #setting the prefixes
-        self._prefix = ""
         self.diag_sub = rospy.Subscriber("diagnostics", DiagnosticArray, self.diagnostics_callback)
 
-        self._widget.select_prefix.addItem("")
-        self._widget.select_prefix.addItem("rh/")
-        self._widget.select_prefix.addItem("lh/")
+        self._hand_finder = HandFinder()
+        hand_parameters = self._hand_finder.get_hand_parameters()
+        self._prefix = ""
+        for hand in hand_parameters.mapping:
+            self._widget.select_prefix.addItem(hand_parameters.mapping[hand])
+        if not hand_parameters.mapping:
+            rospy.logerr("No hand detected")
+            QMessageBox.warning(
+                self._widget, "warning", "No hand is detected")
+        else:
+            self._widget.select_prefix.setCurrentIndex(0)
+            self._prefix = hand_parameters.mapping.values()[0]
 
         self._widget.select_prefix.currentIndexChanged['QString'].connect(self.prefix_selected)
         # motors_frame is defined in the ui file with a grid layout

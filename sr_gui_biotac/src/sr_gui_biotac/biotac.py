@@ -39,7 +39,7 @@ from python_qt_binding import loadUi
 from QtGui import QMessageBox, QWidget, QIcon, QColor, QPainter, QFont
 from QtCore import QRectF, QTimer, SIGNAL, SLOT
 from sr_robot_msgs.msg import Biotac, BiotacAll
-
+from sr_utilities.hand_finder import HandFinder
 
 class SrGuiBiotac(Plugin):
 
@@ -165,7 +165,8 @@ class SrGuiBiotac(Plugin):
         self._widget.update()
 
     def subscribe_to_topic(self, prefix) :
-        rospy.Subscriber(prefix + "tactile", BiotacAll, self.tactile_cb)
+        if prefix:
+            rospy.Subscriber(prefix + "tactile", BiotacAll, self.tactile_cb)
 
 
     def load_params(self) :
@@ -176,17 +177,18 @@ class SrGuiBiotac(Plugin):
         self.x_display_offset = rospy.get_param("sr_gui_biotac/x_display_offset", [150, 12.5, 4.5, 3.5]) # Pixel offsets for displaying electrodes. offset[0] is applied to each electrode. 1,2 and 3 are the label offsets for displaying electrode number. 
         self.y_display_offset = rospy.get_param("sr_gui_biotac/y_display_offset", [-50, 4.0, 4.0, 4.0])
         self.label_font_size = rospy.get_param("sr_gui_biotac/electrode_label_font_sizes", [24, 22]) # Font sizes for labels on sensing + excitation electrodes
-        self.default_topic = rospy.get_param('sr_gui_biotac/default_topic', "/rh/") # sets default topic prefix for multi-hand systems. ## TODO - make this automagicaly filled by testing topics available
-
-
-
-
-
+        if self._hand_parameters.mapping:
+            self.default_topic = (self._hand_parameters.mapping.values()[0]
+                                  + '/')
+        else:
+            self.default_topic = ""
 
     def __init__(self, context):
 
         super(SrGuiBiotac, self).__init__(context)
         self.setObjectName('SrGuiBiotac')
+        self._hand_finder = HandFinder()
+        self._hand_parameters = self._hand_finder.get_hand_parameters()
         self.load_params()
 
         self._publisher = None
@@ -206,8 +208,15 @@ class SrGuiBiotac(Plugin):
 
         self.subscribe_to_topic(self.default_topic)
 
-        self._widget.select_prefix.setCurrentIndex(self._widget.select_prefix.findText(self.default_topic))
-
+        for hand in self._hand_parameters.mapping:
+            self._widget.select_prefix.addItem(
+                self._hand_parameters.mapping[hand])
+        if not self._hand_parameters.mapping:
+            rospy.logerr("No hand detected")
+            QMessageBox.warning(
+                self._widget, "warning", "No hand is detected")
+        else:
+            self._widget.select_prefix.setCurrentIndex(0)
 
         self._widget.connect(self._widget.select_prefix, SIGNAL("activated(QString)"), self.subscribe_to_topic)
 

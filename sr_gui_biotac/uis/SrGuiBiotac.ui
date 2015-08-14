@@ -511,21 +511,6 @@
            <property name="frame">
             <bool>true</bool>
            </property>
-           <item>
-            <property name="text">
-             <string>/rh/</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>/lh/</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>/</string>
-            </property>
-           </item>
           </widget>
          </item>
         </layout>

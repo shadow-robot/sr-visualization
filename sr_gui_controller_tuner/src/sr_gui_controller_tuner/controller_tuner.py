@@ -35,7 +35,7 @@ from tempfile import NamedTemporaryFile
 from sensor_msgs.msg import JointState
 
 from sr_gui_controller_tuner.sr_controller_tuner import SrControllerTunerApp
-
+from sr_utilities.hand_finder import HandFinder
 
 class PlotThread(QThread):
     def __init__(self, parent=None, joint_name="FFJ0", controller_type="Motor Force"):
@@ -222,7 +222,7 @@ class SrGuiControllerTuner(Plugin):
     """
 
     def __init__(self, context):
-        super(SrGuiControllerTuner, self).__init__(context)
+        Plugin.__init__(self, context)
         self.setObjectName('SrGuiControllerTuner')
 
         self.controller_type = None
@@ -238,11 +238,18 @@ class SrGuiControllerTuner(Plugin):
         context.add_widget(self._widget)
 
         # setting the prefixes
+        self._hand_finder = HandFinder()
+        hand_parameters = self._hand_finder.get_hand_parameters()
         self._prefix = ""
-
-        self._widget.select_prefix.addItem("")
-        self._widget.select_prefix.addItem("rh/")
-        self._widget.select_prefix.addItem("lh/")
+        for hand in hand_parameters.mapping:
+            self._widget.select_prefix.addItem(hand_parameters.mapping[hand])
+        if not hand_parameters.mapping:
+            rospy.logerr("No hand detected")
+            QMessageBox.warning(
+                self._widget, "warning", "No hand is detected")
+        else:
+            self._widget.select_prefix.setCurrentIndex(0)
+            self._prefix = hand_parameters.mapping.values()[0]
 
         self._widget.select_prefix.currentIndexChanged['QString'].connect(self.prefix_selected)
 
