@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-#Disabling E1002 check since it complains about super for no reason - inheriting from QObject
-#pylint: disable=E1002
+# Disabling E1002 check since it complains about super for no reason - inheriting from QObject
+# pylint: disable=E1002
 
 # Copyright 2011 Shadow Robot Company Ltd.
 #
@@ -31,8 +31,8 @@ from std_srvs.srv import Empty
 from diagnostic_msgs.msg import DiagnosticArray
 from sr_utilities.hand_finder import HandFinder
 
-class MotorFlasher(QThread):
 
+class MotorFlasher(QThread):
     def __init__(self, parent, nb_motors_to_program, prefix):
         QThread.__init__(self, None)
         self.parent = parent
@@ -44,16 +44,22 @@ class MotorFlasher(QThread):
         for motor in self.parent.motors:
             if motor.checkbox.checkState() == Qt.Checked:
                 try:
-                    print("resetting: realtime_loop/" + self.prefix + "reset_motor_"+motor.motor_name)
-                    self.flasher_service = rospy.ServiceProxy('realtime_loop/' + self.prefix + 'reset_motor_'+motor.motor_name, Empty)
+                    print(
+                    "resetting: realtime_loop/" + self.prefix + "reset_motor_"
+                        + motor.motor_name)
+                    self.flasher_service = rospy.ServiceProxy(
+                        'realtime_loop/' + self.prefix + 'reset_motor_'
+                        + motor.motor_name, Empty)
                     self.flasher_service()
                 except rospy.ServiceException, e:
-                    self.emit( SIGNAL("failed(QString)"),
-                               "Service did not process request: %s"%str(e) )
+                    self.emit(SIGNAL("failed(QString)"),
+                              "Service did not process request: %s" % str(e))
                     return
 
                 programmed_motors += 1
-                self.emit( SIGNAL("motor_finished(QPoint)"), QPoint( programmed_motors, 0.0 ) )
+                self.emit(SIGNAL("motor_finished(QPoint)"),
+                          QPoint(programmed_motors, 0.0))
+
 
 class Motor(QFrame):
     def __init__(self, parent, motor_name, motor_index):
@@ -64,10 +70,11 @@ class Motor(QFrame):
 
         self.layout = QHBoxLayout()
 
-        self.checkbox = QCheckBox(motor_name + " [" + str(motor_index) +"]", self)
+        self.checkbox = QCheckBox(motor_name + " [" + str(motor_index) + "]",
+                                  self)
         self.layout.addWidget(self.checkbox)
 
-        self.revision_label = QLabel( "" )
+        self.revision_label = QLabel("")
         self.revision_label.setToolTip("Svn Revision")
         self.layout.addWidget(self.revision_label)
 
@@ -78,6 +85,7 @@ class SrGuiMotorResetter(Plugin):
     """
     A gui plugin for resetting motors on the shadow hand.
     """
+
     def __init__(self, context):
         super(SrGuiMotorResetter, self).__init__(context)
         self.setObjectName('SrGuiMotorResetter')
@@ -85,13 +93,16 @@ class SrGuiMotorResetter(Plugin):
         self._publisher = None
         self._widget = QWidget()
 
-        ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_motor_resetter'), 'uis', 'SrGuiMotorResetter.ui')
+        ui_file = os.path.join(
+            rospkg.RosPack().get_path('sr_gui_motor_resetter'), 'uis',
+            'SrGuiMotorResetter.ui')
         loadUi(ui_file, self._widget)
         self._widget.setObjectName('SrMotorResetterUi')
         context.add_widget(self._widget)
 
-        #setting the prefixes
-        self.diag_sub = rospy.Subscriber("diagnostics", DiagnosticArray, self.diagnostics_callback)
+        # setting the prefixes
+        self.diag_sub = rospy.Subscriber("diagnostics", DiagnosticArray,
+                                         self.diagnostics_callback)
 
         self._hand_finder = HandFinder()
         hand_parameters = self._hand_finder.get_hand_parameters()
@@ -106,7 +117,8 @@ class SrGuiMotorResetter(Plugin):
             self._widget.select_prefix.setCurrentIndex(0)
             self._prefix = hand_parameters.mapping.values()[0]
 
-        self._widget.select_prefix.currentIndexChanged['QString'].connect(self.prefix_selected)
+        self._widget.select_prefix.currentIndexChanged['QString'].connect(
+            self.prefix_selected)
         # motors_frame is defined in the ui file with a grid layout
         self.motors = []
         self.motors_frame = self._widget.motors_frame
@@ -118,9 +130,10 @@ class SrGuiMotorResetter(Plugin):
 
         # Bind button clicks
         self._widget.btn_select_all.pressed.connect(self.on_select_all_pressed)
-        self._widget.btn_select_none.pressed.connect(self.on_select_none_pressed)
-        self._widget.btn_reset_motors.pressed.connect(self.on_reset_motors_pressed)
-
+        self._widget.btn_select_none.pressed.connect(
+            self.on_select_none_pressed)
+        self._widget.btn_reset_motors.pressed.connect(
+            self.on_reset_motors_pressed)
 
     def populate_motors(self):
 
@@ -129,20 +142,23 @@ class SrGuiMotorResetter(Plugin):
         self.motors = []
 
         if rospy.has_param(self._prefix + "joint_to_motor_mapping"):
-            joint_to_motor_mapping = rospy.get_param(self._prefix + "joint_to_motor_mapping")
+            joint_to_motor_mapping = rospy.get_param(
+                self._prefix + "joint_to_motor_mapping")
         else:
-            QMessageBox.warning(self.motors_frame, "Warning",
-                                "Couldn't find the " + self._prefix + "joint_to_motor_mapping parameter. Make sure the etherCAT Hand node is running")
+            QMessageBox.warning(
+                self.motors_frame, "Warning", "Couldn't find the " +
+                self._prefix + "joint_to_motor_mapping parameter."
+                               " Make sure the etherCAT Hand node is running")
             return
 
         joint_names = [
-                ["FFJ0", "FFJ1", "FFJ2", "FFJ3", "FFJ4"],
-                ["MFJ0", "MFJ1", "MFJ2", "MFJ3", "MFJ4"],
-                ["RFJ0", "RFJ1", "RFJ2", "RFJ3", "RFJ4"],
-                ["LFJ0", "LFJ1", "LFJ2", "LFJ3", "LFJ4", "LFJ5"],
-                ["THJ1", "THJ2", "THJ3", "THJ4","THJ5"],
-                ["WRJ1", "WRJ2"]
-            ]
+            ["FFJ0", "FFJ1", "FFJ2", "FFJ3", "FFJ4"],
+            ["MFJ0", "MFJ1", "MFJ2", "MFJ3", "MFJ4"],
+            ["RFJ0", "RFJ1", "RFJ2", "RFJ3", "RFJ4"],
+            ["LFJ0", "LFJ1", "LFJ2", "LFJ3", "LFJ4", "LFJ5"],
+            ["THJ1", "THJ2", "THJ3", "THJ4", "THJ5"],
+            ["WRJ1", "WRJ2"]
+        ]
 
         row = 0
         col = 0
@@ -162,35 +178,49 @@ class SrGuiMotorResetter(Plugin):
     def diagnostics_callback(self, msg):
         for status in msg.status:
             for motor in self.motors:
-                if motor.motor_name in status.name and self._prefix.replace("/", "") in status.name:
+                if motor.motor_name in status.name and self._prefix.replace(
+                        "/", "") in status.name:
                     for key_values in status.values:
                         if "Firmware svn revision" in key_values.key:
-                            server_current_modified = key_values.value.split(" / ")
+                            server_current_modified = key_values.value.split(
+                                " / ")
 
-                            if server_current_modified[0] > self.server_revision:
-                                self.server_revision = int( server_current_modified[0].strip() )
+                            if server_current_modified[0] \
+                                    > self.server_revision:
+                                self.server_revision = int(
+                                    server_current_modified[0].strip())
 
-                            palette = motor.revision_label.palette();
-                            palette.setColor(motor.revision_label.foregroundRole(), Qt.green)
-                            if server_current_modified[0].strip() != server_current_modified[1].strip():
-                                palette.setColor(motor.revision_label.foregroundRole(), QColor(255, 170, 23) )
-                                motor.revision_label.setPalette(palette);
+                            palette = motor.revision_label.palette()
+                            palette.setColor(
+                                motor.revision_label.foregroundRole(),
+                                Qt.green)
+                            if server_current_modified[0].strip() != \
+                                    server_current_modified[1].strip():
+                                palette.setColor(
+                                    motor.revision_label.foregroundRole(),
+                                    QColor(255, 170, 23))
+                                motor.revision_label.setPalette(palette)
 
                             if "True" in server_current_modified[2]:
-                                palette.setColor(motor.revision_label.foregroundRole(), Qt.red)
-                                motor.revision_label.setText( "svn: "+ server_current_modified[1] + " [M]" )
-                                motor.revision_label.setPalette(palette);
+                                palette.setColor(
+                                    motor.revision_label.foregroundRole(),
+                                    Qt.red)
+                                motor.revision_label.setText(
+                                    "svn: " + server_current_modified[
+                                        1] + " [M]")
+                                motor.revision_label.setPalette(palette)
                             else:
-                                motor.revision_label.setText( " svn: " + server_current_modified[1] )
-                                motor.revision_label.setPalette(palette);
+                                motor.revision_label.setText(
+                                    " svn: " + server_current_modified[1])
+                                motor.revision_label.setPalette(palette)
 
     def on_select_all_pressed(self):
         for motor in self.motors:
-            motor.checkbox.setCheckState( Qt.Checked )
+            motor.checkbox.setCheckState(Qt.Checked)
 
     def on_select_none_pressed(self):
         for motor in self.motors:
-            motor.checkbox.setCheckState( Qt.Unchecked )
+            motor.checkbox.setCheckState(Qt.Unchecked)
 
     def on_reset_motors_pressed(self):
         print("Reset motors pressed");
@@ -200,14 +230,20 @@ class SrGuiMotorResetter(Plugin):
             if motor.checkbox.checkState() == Qt.Checked:
                 nb_motors_to_program += 1
         if nb_motors_to_program == 0:
-            QMessageBox.warning(self._widget, "Warning", "No motors selected for resetting.")
+            QMessageBox.warning(self._widget, "Warning",
+                                "No motors selected for resetting.")
             return
         self.progress_bar.setMaximum(nb_motors_to_program)
 
-        self.motor_flasher = MotorFlasher(self, nb_motors_to_program, self._prefix)
-        self._widget.connect(self.motor_flasher, SIGNAL("finished()"), self.finished_programming_motors)
-        self._widget.connect(self.motor_flasher, SIGNAL("motor_finished(QPoint)"), self.one_motor_finished)
-        self._widget.connect(self.motor_flasher, SIGNAL("failed(QString)"), self.failed_programming_motors)
+        self.motor_flasher = MotorFlasher(self, nb_motors_to_program,
+                                          self._prefix)
+        self._widget.connect(self.motor_flasher, SIGNAL("finished()"),
+                             self.finished_programming_motors)
+        self._widget.connect(self.motor_flasher,
+                             SIGNAL("motor_finished(QPoint)"),
+                             self.one_motor_finished)
+        self._widget.connect(self.motor_flasher, SIGNAL("failed(QString)"),
+                             self.failed_programming_motors)
 
         self._widget.setCursor(Qt.WaitCursor)
         self.motors_frame.setEnabled(False)
@@ -219,7 +255,7 @@ class SrGuiMotorResetter(Plugin):
         self.motor_flasher.start()
 
     def one_motor_finished(self, point):
-        self.progress_bar.setValue( int(point.x()) )
+        self.progress_bar.setValue(int(point.x()))
 
     def finished_programming_motors(self):
         self.motors_frame.setEnabled(True)
