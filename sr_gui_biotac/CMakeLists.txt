@@ -31,4 +31,4 @@ catkin_package(
 
 )
 install( DIRECTORY uis DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION} )
-install( FILES sr_change_controllers_plugin.xml DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION} )
+install( FILES sr_gui_biotac_plugin.xml DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION} )
