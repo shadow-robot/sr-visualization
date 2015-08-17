@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-# Disabling E1002 check since it complains about super for no reason - inheriting from QObject
-# pylint: disable=E1002
+# Disabling E1002 check since it complains about super for no reason -
+# inheriting from QObject
+#
 
 # Copyright 2011 Shadow Robot Company Ltd.
 #
@@ -18,7 +19,9 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os, rospkg, rospy
+import os
+import rospkg
+import rospy
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
@@ -45,8 +48,8 @@ class MotorFlasher(QThread):
             if motor.checkbox.checkState() == Qt.Checked:
                 try:
                     print(
-                    "resetting: realtime_loop/" + self.prefix + "reset_motor_"
-                        + motor.motor_name)
+                        "resetting: realtime_loop/" + self.prefix +
+                        "reset_motor_" + motor.motor_name)
                     self.flasher_service = rospy.ServiceProxy(
                         'realtime_loop/' + self.prefix + 'reset_motor_'
                         + motor.motor_name, Empty)
@@ -223,7 +226,7 @@ class SrGuiMotorResetter(Plugin):
             motor.checkbox.setCheckState(Qt.Unchecked)
 
     def on_reset_motors_pressed(self):
-        print("Reset motors pressed");
+        print("Reset motors pressed")
         self.progress_bar.reset()
         nb_motors_to_program = 0
         for motor in self.motors:
