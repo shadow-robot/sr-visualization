@@ -251,41 +251,43 @@ class SrGuiControllerTuner(Plugin):
             self._widget.select_prefix.setCurrentIndex(0)
             self._prefix = hand_parameters.mapping.values()[0]
 
-        self._widget.select_prefix.currentIndexChanged['QString'].connect(self.prefix_selected)
+            self._widget.select_prefix.currentIndexChanged['QString'].connect(self.prefix_selected)
 
-        # stores the movements threads to be able to stop them
-        self.move_threads = []
+            # stores the movements threads to be able to stop them
+            self.move_threads = []
 
-        # stores the controllers in the same order as the dropdown
-        self.controllers_in_dropdown = []
+            # stores the controllers in the same order as the dropdown
+            self.controllers_in_dropdown = []
 
-        # stores a dictionary of the widgets containing the data for
-        # the different controllers.
-        self.ctrl_widgets = {}
+            # stores a dictionary of the widgets containing the data for
+            # the different controllers.
+            self.ctrl_widgets = {}
 
-        # a library which helps us doing the real work.
-        self.sr_controller_tuner_app_ = SrControllerTunerApp(os.path.join(rospkg.RosPack().get_path('sr_gui_controller_tuner'),
-                                                                          'data', 'controller_settings.xml'))
+            # a library which helps us doing the real work.
+            self.sr_controller_tuner_app_ = SrControllerTunerApp(os.path.join(rospkg.RosPack().get_path('sr_gui_controller_tuner'),
+                                                                              'data', 'controller_settings.xml'))
 
-        self.sr_controller_tuner_app_.prefix = self._prefix
-        self.sr_controller_tuner_app_.selected_prefix = self._prefix
-        # check the prefix once
-        self.sr_controller_tuner_app_.check_prefix()
-        # refresh the controllers once
-        self.on_btn_refresh_ctrl_clicked_()
-        # attach the button pressed to its action
-        self._widget.btn_refresh_ctrl.pressed.connect(self.on_btn_refresh_ctrl_clicked_)
-        self._widget.dropdown_ctrl.currentIndexChanged.connect(self.on_changed_controller_type_)
+            self.sr_controller_tuner_app_.prefix = self._prefix
+            self.sr_controller_tuner_app_.selected_prefix = self._prefix
+            # check the prefix once
+            self.sr_controller_tuner_app_.check_prefix()
+            # refresh the controllers once
+            self.on_btn_refresh_ctrl_clicked_()
+            # attach the button pressed to its action
+            self._widget.btn_refresh_ctrl.pressed.connect(self.on_btn_refresh_ctrl_clicked_)
+            self._widget.dropdown_ctrl.currentIndexChanged.connect(self.on_changed_controller_type_)
 
-        self._widget.btn_save_selected.pressed.connect(self.on_btn_save_selected_clicked_)
-        self._widget.btn_save_all.pressed.connect(self.on_btn_save_all_clicked_)
-        self._widget.btn_select_file_path.pressed.connect(self.on_btn_select_file_path_clicked_)
+            self._widget.btn_save_selected.pressed.connect(self.on_btn_save_selected_clicked_)
+            self._widget.btn_save_all.pressed.connect(self.on_btn_save_all_clicked_)
+            self._widget.btn_select_file_path.pressed.connect(self.on_btn_select_file_path_clicked_)
 
-        self._widget.btn_set_selected.pressed.connect(self.on_btn_set_selected_clicked_)
-        self._widget.btn_set_all.pressed.connect(self.on_btn_set_all_clicked_)
+            self._widget.btn_set_selected.pressed.connect(self.on_btn_set_selected_clicked_)
+            self._widget.btn_set_all.pressed.connect(self.on_btn_set_all_clicked_)
 
-        self._widget.btn_load.pressed.connect(self.on_btn_load_clicked_)
-        self._widget.btn_stop_mvts.pressed.connect(self.on_btn_stop_mvts_clicked_)
+            self._widget.btn_load.pressed.connect(self.on_btn_load_clicked_)
+            self._widget.btn_stop_mvts.pressed.connect(self.on_btn_stop_mvts_clicked_)
+
+            self.prefix_selected(self._prefix)
 
     def on_btn_plot_pressed_(self, joint_name, btn):
         plot_thread = PlotThread(btn, joint_name, self.controller_type)
@@ -450,7 +452,7 @@ class SrGuiControllerTuner(Plugin):
         Refreshes the controllers
         """
         self._prefix = prefix
-        self.sr_controller_tuner_app_.selected_prefix = self._prefix
+        self.sr_controller_tuner_app_.selected_prefix = self._prefix + "/"
         self.sr_controller_tuner_app_.check_prefix()
         self.on_btn_refresh_ctrl_clicked_()
 
