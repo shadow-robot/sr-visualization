@@ -1,16 +1,19 @@
 <library path="src">
   <class name="Self Test" type="sr_gui_self_test.self_test.SrGuiSelfTest" base_class_type="rqt_gui_py::Plugin">
     <description>
-	A plugin for running self tests on a given node. Will call the self_test service and display the results.
+      A plugin for running self tests on a given node. Will call the self_test service and display the results.
     </description>
     <qtgui>
       <group>
-	<label>Shadow Robot</label>
+        <label>Shadow Robot</label>
+      </group>
+      <group>
+        <label>Advanced</label>
       </group>
       <label>Self Test</label>
       <icon type="file">../sr_visualization_icons/icons/hand.png</icon>
       <statustip>
-	A plugin for running self tests on a given node. Will call the self_test service and display the results.
+        A plugin for running self tests on a given node. Will call the self_test service and display the results.
       </statustip>
     </qtgui>
   </class>

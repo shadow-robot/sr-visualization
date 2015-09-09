@@ -8,7 +8,7 @@
         <label>Shadow Robot</label>
       </group>
       <group>
-        <label>Tactile Sensors</label>
+        <label>Advanced</label>
       </group>
       <label>Biotacs</label>
       <icon type="theme">../sr_visualization_icons/hand.png</icon>

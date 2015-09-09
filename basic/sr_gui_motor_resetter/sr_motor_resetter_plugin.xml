@@ -1,14 +1,15 @@
 <library path="src">
-  <class name="SrGuiMotorResetter" type="sr_gui_motor_resetter.motor_resetter.SrGuiMotorResetter" base_class_type="rqt_gui_py::Plugin">
+  <class name="SrGuiMotorResetter" type="sr_gui_motor_resetter.motor_resetter.SrGuiMotorResetter"
+         base_class_type="rqt_gui_py::Plugin">
     <description>
-	A plugin for resetting shadow hand motors.
+      A plugin for resetting shadow hand motors.
     </description>
     <qtgui>
       <group>
-	<label>Shadow Robot</label>
+        <label>Shadow Robot</label>
       </group>
       <group>
-	<label>EtherCAT</label>
+        <label>Basic</label>
       </group>
       <icon type="file">../sr_visualization_icons/icons/hand.png</icon>
       <label>Motor Resetter</label>

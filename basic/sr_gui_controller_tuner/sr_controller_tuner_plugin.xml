@@ -1,14 +1,15 @@
 <library path="src">
-  <class name="Controller Tuner" type="sr_gui_controller_tuner.controller_tuner.SrGuiControllerTuner" base_class_type="rqt_gui_py::Plugin">
+  <class name="Controller Tuner" type="sr_gui_controller_tuner.controller_tuner.SrGuiControllerTuner"
+         base_class_type="rqt_gui_py::Plugin">
     <description>
-	A plugin for tuning the sr_mechanism_controllers.
+      A plugin for tuning the sr_mechanism_controllers.
     </description>
     <qtgui>
       <group>
-	<label>Shadow Robot</label>
+        <label>Shadow Robot</label>
       </group>
       <group>
-	<label>Controllers</label>
+        <label>Basic</label>
       </group>
       <label>Controller Tuner</label>
       <icon type="file">../sr_visualization_icons/icons/hand.png</icon>

@@ -1,14 +1,15 @@
 <library path="src">
-  <class name="Bootloader" type="sr_gui_muscle_driver_bootloader.bootloader.SrGuiBootloader" base_class_type="rqt_gui_py::Plugin">
+  <class name="Bootloader" type="sr_gui_muscle_driver_bootloader.bootloader.SrGuiBootloader"
+         base_class_type="rqt_gui_py::Plugin">
     <description>
-	A plugin for bootloading the muscle drivers on the etherCAT muscle shadow hand.
+      A plugin for bootloading the muscle drivers on the etherCAT muscle shadow hand.
     </description>
     <qtgui>
       <group>
-	<label>Shadow Robot</label>
+        <label>Shadow Robot</label>
       </group>
       <group>
-	<label>EtherCAT</label>
+        <label>Advanced</label>
       </group>
       <icon type="file">../sr_visualization_icons/icons/hand.png</icon>
       <label>Muscle Driver Bootloader</label>

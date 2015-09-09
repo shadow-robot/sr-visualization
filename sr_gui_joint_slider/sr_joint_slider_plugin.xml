@@ -1,11 +1,12 @@
 <library path="src">
-  <class name="SrGuiJointSlider" type="sr_gui_joint_slider.joint_slider.SrGuiJointSlider" base_class_type="rqt_gui_py::Plugin">
+  <class name="SrGuiJointSlider" type="sr_gui_joint_slider.joint_slider.SrGuiJointSlider"
+         base_class_type="rqt_gui_py::Plugin">
     <description>
-	A plugin to change the position of the different joints.
+      A plugin to change the position of the different joints.
     </description>
     <qtgui>
       <group>
-	<label>Shadow Robot</label>
+        <label>Shadow Robot</label>
       </group>
       <icon type="file">../sr_visualization_icons/icons/hand.png</icon>
       <label>Joint Slider</label>
