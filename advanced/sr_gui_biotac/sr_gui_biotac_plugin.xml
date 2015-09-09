@@ -11,7 +11,7 @@
         <label>Advanced</label>
       </group>
       <label>Biotacs</label>
-      <icon type="theme">../sr_visualization_icons/hand.png</icon>
+      <icon type="theme">../../sr_visualization_icons/hand.png</icon>
       <statustip>A plugin for visualising data from Syntouch Biotac finger tip sensors</statustip>
     </qtgui>
   </class>
