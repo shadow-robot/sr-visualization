@@ -1,0 +1,19 @@
+<library path="src">
+  <class name="SrGuiMovementRecorder" type="sr_gui_movement_recorder.movement_recorder.SrGuiMovementRecorder"
+         base_class_type="rqt_gui_py::Plugin">
+    <description>
+      A plugin for playing and saving movements.
+    </description>
+    <qtgui>
+      <group>
+        <label>Shadow Robot</label>
+      </group>
+      <group>
+        <label>Advanced</label>
+      </group>
+      <icon type="file">../../sr_visualization_icons/icons/hand.png</icon>
+      <label>Shadow Movement Recorder</label>
+      <statustip>A plugin for playing and saving movements.</statustip>
+    </qtgui>
+  </class>
+</library>

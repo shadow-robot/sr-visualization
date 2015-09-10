@@ -8,10 +8,10 @@
         <label>Shadow Robot</label>
       </group>
       <group>
-        <label>Tactile Sensors</label>
+        <label>Advanced</label>
       </group>
       <label>Biotacs</label>
-      <icon type="theme">../sr_visualization_icons/hand.png</icon>
+      <icon type="file">../../sr_visualization_icons/icons/biotac.png</icon>
       <statustip>A plugin for visualising data from Syntouch Biotac finger tip sensors</statustip>
     </qtgui>
   </class>
