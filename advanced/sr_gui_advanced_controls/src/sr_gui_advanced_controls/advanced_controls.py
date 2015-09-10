@@ -46,7 +46,7 @@ from sr_robot_msgs.msg import ControlType
 from sr_utilities.hand_finder import HandFinder
 
 
-class SrGuiChangeControllers(Plugin):
+class SrGuiAdvancedControls(Plugin):
     """
     A rosgui plugin for loading the different controllers
     """
@@ -117,18 +117,18 @@ class SrGuiChangeControllers(Plugin):
             for cont in type_conts]
 
     def __init__(self, context):
-        super(SrGuiChangeControllers, self).__init__(context)
-        self.setObjectName('SrGuiChangeControllers')
+        super(SrGuiAdvancedControls, self).__init__(context)
+        self.setObjectName('SrGuiAdvancedControls')
 
         self._publisher = None
 
         self._widget = QWidget()
 
         ui_file = os.path.join(
-            rospkg.RosPack().get_path('sr_gui_change_controllers'), 'uis',
-            'SrChangeControllers.ui')
+            rospkg.RosPack().get_path('sr_gui_advanced_controls'), 'uis',
+            'SrAdvancedControls.ui')
         loadUi(ui_file, self._widget)
-        self._widget.setObjectName('SrChangeControllersUi')
+        self._widget.setObjectName('SrAdvancedControlsUI')
         context.add_widget(self._widget)
 
         # setting the prefixes

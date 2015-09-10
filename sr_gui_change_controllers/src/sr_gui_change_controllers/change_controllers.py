@@ -12,21 +12,21 @@ import rospkg
 from sr_robot_msgs.srv import RobotTeachMode, RobotTeachModeRequest, RobotTeachModeResponse
 
 
-class SrGuiTeachMode(Plugin):
+class SrGuiChangeControllers(Plugin):
     """
     A rosgui plugin for loading the different controllers
     """
 
     def __init__(self, context):
-        super(SrGuiTeachMode, self).__init__(context)
+        super(SrGuiChangeControllers, self).__init__(context)
         self.setObjectName('SrGuiTeachMode')
 
         self._publisher = None
         self._widget = QWidget()
 
-        ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_teach_mode'), 'uis', 'SrTeachMode.ui')
+        ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_change_controllers'), 'uis', 'SrChangeControllers.ui')
         loadUi(ui_file, self._widget)
-        self._widget.setObjectName('SrTeachModeUi')
+        self._widget.setObjectName('SrChangeControllersUI')
         context.add_widget(self._widget)
 
         self._rh_teach_buttons = []
