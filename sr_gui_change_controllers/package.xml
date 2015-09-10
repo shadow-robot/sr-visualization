@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>sr_gui_teach_mode</name>
+  <name>sr_gui_change_controllers</name>
   <version>0.0.1</version>
   <description>A GUI plugin to set the UR10 arm and SR hand to teach mode </description>
   <maintainer email="software@shadowrobot.com">Shadow Robot's software team</maintainer>
@@ -12,7 +12,7 @@
   <url type="bugtracker">https://github.com/shadow-robot/sr-visualization/issues</url>
 
   <author>Toni Oliver</author>
-  
+
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>rospy</build_depend>
   <build_depend>rqt_gui</build_depend>
@@ -25,6 +25,6 @@
 
 
   <export>
-    <rqt_gui plugin="${prefix}/sr_teach_mode_plugin.xml" />
+    <rqt_gui plugin="${prefix}/sr_change_controllers_plugin.xml" />
   </export>
 </package>

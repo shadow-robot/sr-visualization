@@ -1,8 +1,8 @@
 <library path="src">
-  <class name="Change Controllers" type="sr_gui_change_controllers.change_controllers.SrGuiChangeControllers"
+  <class name="Advanced Controls" type="sr_gui_advanced_controls.advanced_controls.SrGuiAdvancedControls"
          base_class_type="rqt_gui_py::Plugin">
     <description>
-      A plugin for loading the different controllers. It allows to load the desired type of controllers for all the
+      A GUI plugin for a more advanced way of loading the different motor controllers. It allows to load the desired type of controllers for all the
       joints in the Shadow Robot Hand (all the same type).
       The plugin does not read the current state of the controllers, so if the controllers are loaded from outside the
       plugin, the initial state
@@ -17,10 +17,10 @@
       <group>
         <label>Advanced</label>
       </group>
-      <label>Change Controllers</label>
+      <label>Advanced Controls</label>
       <icon type="file">../../sr_visualization_icons/icons/hand.png</icon>
       <statustip>
-        A plugin for loading the desired type of controller for all the joints in the Shadow Robot Hand.
+        A GUI plugin for a more advanced way of loading the different motor controllers.
       </statustip>
     </qtgui>
   </class>

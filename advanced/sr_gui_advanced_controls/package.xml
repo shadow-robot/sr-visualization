@@ -1,7 +1,7 @@
 <package>
-  <name>sr_gui_change_controllers</name>
+  <name>sr_gui_advanced_controls</name>
   <version>1.3.1</version>
-  <description>A GUI plugin for loading the different motor controllers.</description>
+  <description>A GUI plugin for a more advanced way of loading the different motor controllers.</description>
   <maintainer email="software@shadowrobot.com">Shadow Robot's software team</maintainer>
 
   <license>GPL</license>
@@ -12,28 +12,28 @@
 
   <author email="software@shadowrobot.com">Ugo Cupcic </author>
 
-  
+
   <buildtool_depend>catkin</buildtool_depend>
 
-  
+
   <build_depend>rospy</build_depend>
   <build_depend>rqt_gui</build_depend>
   <build_depend>rqt_gui_py</build_depend>
   <build_depend>controller_manager_msgs</build_depend>
   <build_depend>sr_robot_msgs</build_depend>
   <build_depend>sr_visualization_icons</build_depend>
-  
-  
+
+
   <run_depend>rospy</run_depend>
   <run_depend>rqt_gui</run_depend>
   <run_depend>rqt_gui_py</run_depend>
   <run_depend>controller_manager_msgs</run_depend>
   <run_depend>sr_robot_msgs</run_depend>
   <run_depend>sr_visualization_icons</run_depend>
-  
+
 
 <export>
-    <rqt_gui plugin="${prefix}/sr_change_controllers_plugin.xml" />
+    <rqt_gui plugin="${prefix}/sr_advanced_controls_plugin.xml" />
 </export>
 
 </package>
