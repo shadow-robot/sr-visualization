@@ -3,7 +3,7 @@
          type="sr_gui_cyberglove_calibrator.cyberglove_calibrator.SrGuiCybergloveCalibrator"
          base_class_type="rqt_gui_py::Plugin">
     <description>
-      A plugin for .
+      A plugin for calibrating the cyberglove.
     </description>
     <qtgui>
       <group>
