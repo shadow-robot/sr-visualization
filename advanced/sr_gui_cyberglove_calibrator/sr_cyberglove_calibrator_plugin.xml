@@ -3,7 +3,7 @@
          type="sr_gui_cyberglove_calibrator.cyberglove_calibrator.SrGuiCybergloveCalibrator"
          base_class_type="rqt_gui_py::Plugin">
     <description>
-      A plugin for .
+      A plugin for calibrating the cyberglove.
     </description>
     <qtgui>
       <group>
@@ -14,7 +14,7 @@
       </group>
       <icon type="file">../../sr_visualization_icons/icons/hand.png</icon>
       <label>Glove calibrator</label>
-      <statustip>A plugin for .</statustip>
+      <statustip>A plugin for calibrating the cyberglove.</statustip>
     </qtgui>
   </class>
 </library>

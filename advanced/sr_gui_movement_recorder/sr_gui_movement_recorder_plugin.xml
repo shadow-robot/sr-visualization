@@ -13,7 +13,7 @@
       </group>
       <icon type="file">../../sr_visualization_icons/icons/hand.png</icon>
       <label>Shadow Movement Recorder</label>
-      <statustip>A plugin for loading the different controllers.</statustip>
+      <statustip>A plugin for playing and saving movements.</statustip>
     </qtgui>
   </class>
 </library>
