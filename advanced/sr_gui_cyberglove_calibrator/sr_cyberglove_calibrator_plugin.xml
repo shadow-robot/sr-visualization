@@ -14,7 +14,7 @@
       </group>
       <icon type="file">../../sr_visualization_icons/icons/hand.png</icon>
       <label>Glove calibrator</label>
-      <statustip>A plugin for .</statustip>
+      <statustip>A plugin for calibrating the cyberglove.</statustip>
     </qtgui>
   </class>
 </library>
