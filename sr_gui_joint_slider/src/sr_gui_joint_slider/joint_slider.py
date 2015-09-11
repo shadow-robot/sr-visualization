@@ -35,7 +35,8 @@ from sr_robot_msgs.msg import JointMusclePositionControllerState
 from control_msgs.msg import JointTrajectoryControllerState
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
-from sr_gui_joint_slider.sliders import JointController, Joint, EtherCATHandSlider, EtherCATHandTrajectorySlider, EtherCATSelectionSlider
+from sr_gui_joint_slider.sliders import JointController, Joint, EtherCATHandSlider,
+from sr_gui_joint_slider.sliders import EtherCATHandTrajectorySlider, EtherCATSelectionSlider
 
 
 class SrGuiJointSlider(Plugin):
@@ -44,7 +45,8 @@ class SrGuiJointSlider(Plugin):
     A rosgui plugin to change the position of the different joints
     """
 
-    # For each controller type this defines the category of controller it belongs to (position, velocity, effort, position_trajectory)
+    # For each controller type this defines the category of controller it belongs to
+    # (position, velocity, effort, position_trajectory)
     # and the msg type of the controller state topic
     controller_state_types = {
         "sr_mechanism_controllers/SrhJointPositionController": ("position", JointControllerState),
@@ -184,7 +186,7 @@ class SrGuiJointSlider(Plugin):
             except Exception, e:
                 rospy.loginfo(e)
 
-            if slider != None:
+            if slider is not None:
                 slider.setMaximumWidth(100)
                 # Load the new slider
                 self._widget.horizontalLayout.addWidget(slider)
@@ -247,7 +249,9 @@ class SrGuiJointSlider(Plugin):
                 limit = root.findall(
                     ".//joint[@name='" + jname.upper() + "']/limit")
             if limit is not None and len(limit) > 0:
-                return (float(limit[0].attrib['lower']), float(limit[0].attrib['upper']), float(limit[0].attrib['velocity']))
+                return (float(limit[0].attrib['lower']),
+                        float(limit[0].attrib['upper']),
+                        float(limit[0].attrib['velocity']))
             else:
                 rospy.logerr("Limit not found for joint %s", jname)
         else:
@@ -288,11 +292,14 @@ class SrGuiJointSlider(Plugin):
                     controller_category = self.controller_state_types[
                         controller_type][0]
 
-                    if controller_category == "position_trajectory":  # for a trajectory controller we will load a slider for every resource it manages
-
+                    if controller_category == "position_trajectory":
+                        # for a trajectory controller we will load a slider for every resource it manages
                         self.trajectory_target.append(JointTrajectory())
                         self.trajectory_state_sub.append(
-                            rospy.Subscriber(controller.name + "/state", controller_state_type, self._trajectory_state_cb, callback_args=len(self.trajectory_state_sub)))
+                            rospy.Subscriber(controller.name + "/state", controller_state_type,
+                                             self._trajectory_state_cb,
+                                             callback_args=len(self.trajectory_state_sub)))
+
                         self.trajectory_state_slider_cb.append([])
                         self.trajectory_pub.append(
                             rospy.Publisher(controller.name + "/command", JointTrajectory, queue_size=1, latch=True))
@@ -317,7 +324,8 @@ class SrGuiJointSlider(Plugin):
                             joints.append(joint)
                     else:
                         joint_name = ctrl_params["joint"]
-                        if joint_name in trajectory_ctrl_joint_names:  # These joints are controlled by the trajectory controller
+                        if joint_name in trajectory_ctrl_joint_names:
+                            # These joints are controlled by the trajectory controller
                             continue
 
                         if "J0" in joint_name:  # xxJ0 are controlled by the by the trajectory controller xxJ1 and xxJ2

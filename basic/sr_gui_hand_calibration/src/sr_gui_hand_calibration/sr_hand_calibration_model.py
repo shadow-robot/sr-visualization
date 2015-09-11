@@ -124,9 +124,7 @@ class JointCalibration(QTreeWidgetItem):
 
         for calibration in calibrations:
             self.calibrations.append(IndividualCalibration(joint_name,
-                                                           calibration[
-                                                           0], calibration[
-                                                           1],
+                                                           calibration[0], calibration[1],
                                                            self, tree_widget, robot_lib))
 
         # display the current joint position in the GUI
@@ -181,7 +179,7 @@ class JointCalibration(QTreeWidgetItem):
                 if data != last_data:
                     all_equal = False
                     break
-            if all_equal == True:
+            if all_equal:
                 self.setIcon(
                     0, QIcon(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../icons/warn.gif')))
                 self.setToolTip(0, "No noise on the data for the last " + str(
@@ -363,7 +361,8 @@ class HandCalibration(QTreeWidgetItem):
         self.robot_lib = EtherCAT_Hand_Lib()
         if not self.robot_lib.activate():
             btn_pressed = QMessageBox.warning(
-                tree_widget, "Warning", "The EtherCAT Hand node doesn't seem to be running, or the debug topic is not being published. Do you still want to continue? The calibration will be useless.",
+                tree_widget, "Warning", "The EtherCAT Hand node doesn't seem to be running, or the debug topic is not"
+                " being published. Do you still want to continue? The calibration will be useless.",
                 buttons=QMessageBox.Ok | QMessageBox.Cancel)
 
             if btn_pressed == QMessageBox.Cancel:
@@ -432,7 +431,8 @@ class HandCalibration(QTreeWidgetItem):
 
         # updating the btn text
         btn_joint_0s.setText(
-            "Save all Joint 0s (angle = " + str(self.joint_map["First Finger"][0][1][self.joint_0_calibration_index][1]) + ")")
+            "Save all Joint 0s (angle = " +
+            str(self.joint_map["First Finger"][0][1][self.joint_0_calibration_index][1]) + ")")
 
         self.progress()
 

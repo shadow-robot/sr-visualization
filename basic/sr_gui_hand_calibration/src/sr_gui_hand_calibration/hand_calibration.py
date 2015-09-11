@@ -105,7 +105,8 @@ class SrHandCalibration(Plugin):
 
         if not self.hand_model.is_calibration_complete():
             btn_pressed = QMessageBox.warning(
-                self._widget.tree_calibration, "Warning", "Are you sure you want to save this incomplete calibration? The uncalibrated values will be saved as a flat map (the calibrated value will always be 0)",
+                self._widget.tree_calibration, "Warning", "Are you sure you want to save this incomplete calibration?"
+                " The uncalibrated values will be saved as a flat map (the calibrated value will always be 0)",
                 buttons=QMessageBox.Ok | QMessageBox.Cancel)
 
             if btn_pressed == QMessageBox.Cancel:
@@ -123,17 +124,16 @@ class SrHandCalibration(Plugin):
         # is for a left hand)
         config_dir = rospy.get_param('config_dir', '')
         try:
-            path_to_config = os.path.join(rospkg.RosPack().get_path(
-                'sr_ethercat_hand_config'), 'calibrations', config_dir)
+            path_to_config = os.path.join(rospkg.RosPack().get_path('sr_ethercat_hand_config'),
+                                          'calibrations', config_dir)
         except:
             rospy.logwarn("couldn't find the sr_ethercat_hand_config package")
 
         filter_files = "*.yaml"
-        filename, _ = QFileDialog.getOpenFileName(
-            self._widget.tree_calibration, self._widget.tr('Load Calibration'),
-            self._widget.tr(
-                path_to_config),
-            self._widget.tr(filter_files))
+        filename, _ = QFileDialog.getOpenFileName(self._widget.tree_calibration,
+                                                  self._widget.tr('Load Calibration'),
+                                                  self._widget.tr(path_to_config),
+                                                  self._widget.tr(filter_files))
 
         if filename == "":
             return

@@ -293,7 +293,7 @@ class GraspChooser(QtGui.QWidget):
         grasps.sort()
         for grasp_name in grasps:
             item = QtGui.QListWidgetItem(grasp_name)
-            if first_item == None:
+            if first_item is None:
                 first_item = item
             self.list.addItem(item)
         return first_item
@@ -461,7 +461,9 @@ class SrGuiGraspController(Plugin):
 
             if self.current_grasp.joints_and_positions is None:
                 QMessageBox.warning(
-                    self._widget, "Warning", "Could not read current grasp.\nCheck that the hand controllers are running.\nThen click \"Set Reference\"")
+                    self._widget, "Warning", "Could not read current grasp.\n"
+                    "Check that the hand controllers are running.\n"
+                    "Then click \"Set Reference\"")
                 return
 
         self.grasp_interpoler_1 = GraspInterpoler(
@@ -481,7 +483,9 @@ class SrGuiGraspController(Plugin):
 
         if self.current_grasp.joints_and_positions is None:
             QMessageBox.warning(
-                self._widget, "Warning", "Could not read current grasp.\nCheck that the hand controllers are running.\nThen click \"Set Reference\"")
+                self._widget, "Warning", "Could not read current grasp.\n"
+                "Check that the hand controllers are running.\n"
+                "Then click \"Set Reference\"")
             return
 
         self.grasp_interpoler_1 = GraspInterpoler(
@@ -498,7 +502,9 @@ class SrGuiGraspController(Plugin):
         if self.grasp_interpoler_1 is None \
                 or self.grasp_interpoler_2 is None:
             QMessageBox.warning(
-                self._widget, "Warning", "Could not read current grasp.\nCheck that the hand controllers are running.\nThen click \"Set Reference\"")
+                self._widget, "Warning", "Could not read current grasp.\n"
+                "Check that the hand controllers are running.\n"
+                "Then click \"Set Reference\"")
             return
         # from -> current
         if value < 0:

@@ -24,7 +24,8 @@ from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
 from QtCore import QEvent, QObject, Qt, QTimer, Slot, SIGNAL, pyqtSignal
-from QtGui import QDockWidget, QShortcut, QMessageBox, QWidget, QFrame, QColor, QLabel, QComboBox, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout, QIcon, QFileDialog
+from QtGui import QDockWidget, QShortcut, QMessageBox, QWidget, QFrame, QColor
+from QtGui import QLabel, QComboBox, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout, QIcon, QFileDialog
 from PyQt4.Qt import QTimer, QLayout, QPalette, QDoubleValidator, QIntValidator
 from controller_manager_msgs.srv import ListControllers, SwitchController, LoadController
 

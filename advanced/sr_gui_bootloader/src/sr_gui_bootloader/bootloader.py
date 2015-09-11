@@ -173,7 +173,8 @@ class SrGuiBootloader(Plugin):
                 self._prefix + "joint_to_motor_mapping")
         else:
             QMessageBox.warning(self.motors_frame, "Warning",
-                                "Couldn't find the " + self._prefix + "joint_to_motor_mapping parameter. Make sure the etherCAT Hand node is running")
+                                "Couldn't find the " + self._prefix + \
+                                "joint_to_motor_mapping parameter. Make sure the etherCAT Hand node is running")
             return
 
         joint_names = [

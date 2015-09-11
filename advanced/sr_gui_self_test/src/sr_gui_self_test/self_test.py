@@ -43,7 +43,8 @@ from python_qt_binding import loadUi
 from sr_robot_msgs.srv import ManualSelfTest, ManualSelfTestResponse
 from diagnostic_msgs.srv import SelfTest
 
-from QtGui import QWidget, QTreeWidgetItem, QColor, QPixmap, QMessageBox, QInputDialog, QDialog, QSplitter, QLabel, QSizePolicy, QResizeEvent
+from QtGui import QWidget, QTreeWidgetItem, QColor, QPixmap, QMessageBox,
+from QtGui import QInputDialog, QDialog, QSplitter, QLabel, QSizePolicy, QResizeEvent
 from QtCore import QThread, SIGNAL, QPoint
 from QtCore import Qt
 
@@ -92,7 +93,7 @@ class AsyncService(QThread):
 
         self.emit(SIGNAL("manual_test(QPoint)"), QPoint(self.index, 0))
 
-        while self.manual_test_res_ == None:
+        while self.manual_test_res_ is None:
             time.sleep(0.01)
 
         self.waiting_for_manual_test_ = False
@@ -108,7 +109,7 @@ class AsyncService(QThread):
         except rospy.ServiceException, e:
             rospy.logerr(
                 "Failed to called " + self.service_name + " %s" % str(e))
-        if self.resp == None:
+        if self.resp is None:
             rospy.logerr(
                 "Failed to called " + self.service_name + " %s" % str(e))
             return
@@ -119,7 +120,7 @@ class AsyncService(QThread):
         """
         Save the test results in a file at $HOME/.ros/log/self_tests/node/results.txt
         """
-        if self.resp != None:
+        if self.resp is not None:
             path = self.path_to_data + "self_tests/" + self.node_name
             if not os.path.exists(path):
                 os.makedirs(path)
@@ -144,7 +145,7 @@ class ResizeableQPlot(QLabel):
         self.plot_pixmap = None
 
     def resizeEvent(self, event):
-        if self.plot_pixmap != None:
+        if self.plot_pixmap is not None:
             pixmap = self.plot_pixmap
             size = event.size()
             self.setPixmap(
@@ -391,8 +392,9 @@ class SrGuiSelfTest(Plugin):
         Refresh the pic being displayed
         """
         if len(self.list_of_pics) > 0:
-            self.plot_widget_.label_node.setText(self.list_of_pics_tests[
-                                                 self.index_picture] + " [" + str(self.index_picture + 1) + "/" + str(len(self.list_of_pics)) + "]")
+            self.plot_widget_.label_node.setText(self.list_of_pics_tests[self.index_picture] + \
+                                                 " [" + str(self.index_picture + 1) + "/" + \
+                                                 str(len(self.list_of_pics)) + "]")
 
             self.resizeable_plot.plot_pixmap = QPixmap(
                 self.list_of_pics[self.index_picture])
@@ -447,7 +449,7 @@ class SrGuiSelfTest(Plugin):
         """
         self.selected_node_ = self.nodes[index]
 
-        if index != None:
+        if index is not None:
             self._widget.btn_test.setEnabled(True)
         else:
             self._widget.btn_test.setEnabled(False)

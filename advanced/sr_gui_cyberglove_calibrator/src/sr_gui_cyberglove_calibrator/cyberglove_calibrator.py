@@ -160,7 +160,7 @@ class StepSelector(QtGui.QWidget):
         base_image_path = rootPath + '/images/step'
         for step in steps:
             item = QtGui.QListWidgetItem(step.step_name)
-            if first_item == None:
+            if first_item is None:
                 first_item = item
             self.list.addItem(item)
             self.steps[step.step_name] = step

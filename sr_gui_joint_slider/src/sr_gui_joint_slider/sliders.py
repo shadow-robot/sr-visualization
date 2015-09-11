@@ -36,7 +36,9 @@ class JointController():
     Contains the min and the max and the command and state topics for the joint controller.
     """
 
-    def __init__(self, name, controller_type, controller_state_type, controller_category, subscribe_status_cb_list=None, cmd_publisher=None, traj_target=None):
+    def __init__(self, name, controller_type, controller_state_type,
+                 controller_category, subscribe_status_cb_list=None,
+                 cmd_publisher=None, traj_target=None):
         self.name = name
         self.controller_type = controller_type
         self.controller_state_type = controller_state_type
@@ -117,19 +119,19 @@ class ExtendedSlider(QFrame):
         self.sendupdate(value)
 
     def sendupdate(self, value):
-        raise NotImplementedError, "Virtual method, please implement."
+        raise NotImplementedError("Virtual method, please implement.")
 
     def update(self):
-        raise NotImplementedError, "Virtual method, please implement."
+        raise NotImplementedError("Virtual method, please implement.")
 
     def refresh(self):
-        raise NotImplementedError, "Virtual method, please implement."
+        raise NotImplementedError("Virtual method, please implement.")
 
     def checkbox_click(self, value):
         self.is_selected = value
 
     def set_slider_behaviour(self):
-        raise NotImplementedError, "Virtual method, please implement."
+        raise NotImplementedError("Virtual method, please implement.")
 
     def set_new_slider_behaviour(self, tracking):
         if tracking:
@@ -185,7 +187,8 @@ class EtherCATHandSlider(ExtendedSlider):
             elif (self.joint.controller.controller_category == "effort"):
                 self.current_value = round(self.state.process_value, 1)
             self.value.setText("Val: " + str(self.current_value))
-            if self.first_update_done == False:
+
+            if not self.first_update_done:
                 if (self.joint.controller.controller_category == "position"):
                     self.slider.setSliderPosition(self.current_value)
                     self.slider.setValue(self.current_value)
@@ -267,7 +270,8 @@ class EtherCATHandTrajectorySlider(ExtendedSlider):
         try:
             self.current_value = round(degrees(self.state), 1)
             self.value.setText("Val: " + str(self.current_value))
-            if self.first_update_done == False:
+
+            if not self.first_update_done:
                 self.slider.setSliderPosition(self.current_value)
                 self.slider.setValue(self.current_value)
                 self.target.setText("Tgt: " + str(self.current_value))
@@ -329,7 +333,7 @@ class SelectionSlider(QFrame):
             'stateChanged(int)'), self.checkbox_click)
 
     def changeValue(self, value):
-        raise NotImplementedError, "Virtual method, please implement."
+        raise NotImplementedError("Virtual method, please implement.")
 
     def checkbox_click(self, value):
         self.is_selected = value
@@ -354,8 +358,10 @@ class EtherCATSelectionSlider(SelectionSlider):
         """
         Set the behaviour of the slider according to controller type
         Currently we set the tracking to true for all the slide types
-        If any of the controllers is an effort or velocity controller we will activate the slider released signal detection
-        And set the slider halfway (50) as that is the position of the 0 for effort and velocity controllers
+        If any of the controllers is an effort or velocity controller
+        we will activate the slider released signal detection
+        And set the slider halfway (50) as that is the position of the 0
+        for effort and velocity controllers
         """
         self.slider.setTracking(True)
         for slider in self.plugin_parent.sliders:

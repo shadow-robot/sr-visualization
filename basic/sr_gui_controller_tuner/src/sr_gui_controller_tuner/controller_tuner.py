@@ -28,7 +28,8 @@ from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
 from QtCore import Qt, QThread
-from QtGui import QWidget, QTreeWidgetItem, QCheckBox, QSpinBox, QDoubleSpinBox, QFileDialog, QMessageBox, QPushButton, QFrame, QHBoxLayout
+from QtGui import QWidget, QTreeWidgetItem, QCheckBox, QSpinBox, QDoubleSpinBox,
+from QtGui import QFileDialog, QMessageBox, QPushButton, QFrame, QHBoxLayout
 from functools import partial
 from tempfile import NamedTemporaryFile
 
@@ -90,29 +91,29 @@ class PlotThread(QThread):
                     self.joint_index_in_joint_state_) + "]"
 
         elif self.controller_type_ == "Position":
-            rxplot_str += "sh_" + self.joint_name_.lower() + "_position_controller/state/set_point,sh_" + self.joint_name_.lower() + \
-                          "_position_controller/state/process_value sh_" + \
-                self.joint_name_.lower() + "_position_controller/state/command"
+            rxplot_str += "sh_" + self.joint_name_.lower() + "_position_controller/state/set_point,sh_" + \
+                          self.joint_name_.lower() + "_position_controller/state/process_value sh_" + \
+                          self.joint_name_.lower() + "_position_controller/state/command"
         elif self.controller_type_ == "Muscle Position":
-            rxplot_str += "sh_" + self.joint_name_.lower() + "_muscle_position_controller/state/set_point,sh_" + self.joint_name_.lower() + \
-                          "_muscle_position_controller/state/process_value sh_" + self.joint_name_.lower() + \
-                          "_muscle_position_controller/state/pseudo_command sh_" + self.joint_name_.lower() + \
-                          "_muscle_position_controller/state/valve_muscle_0,sh_" + self.joint_name_.lower() + \
-                          "_muscle_position_controller/state/valve_muscle_1"
+            rxplot_str += "sh_" + self.joint_name_.lower() + "_muscle_position_controller/state/set_point,sh_" + \
+                          self.joint_name_.lower() + "_muscle_position_controller/state/process_value sh_" + \
+                          self.joint_name_.lower() + "_muscle_position_controller/state/pseudo_command sh_" + \
+                          self.joint_name_.lower() + "_muscle_position_controller/state/valve_muscle_0,sh_" + \
+                          self.joint_name_.lower() + "_muscle_position_controller/state/valve_muscle_1"
         elif self.controller_type_ == "Velocity":
-            rxplot_str += "sh_" + self.joint_name_.lower() + "_velocity_controller/state/set_point,sh_" + self.joint_name_.lower() + \
-                          "_velocity_controller/state/process_value"
+            rxplot_str += "sh_" + self.joint_name_.lower() + "_velocity_controller/state/set_point,sh_" + \
+                          self.joint_name_.lower() + "_velocity_controller/state/process_value"
         elif self.controller_type_ == "Mixed Position/Velocity":
             rxplot_str += "sh_" + self.joint_name_.lower() + "_mixed_position_velocity_controller/state/set_point,sh_" + \
-                          self.joint_name_.lower() + "_mixed_position_velocity_controller/state/process_value sh_" + self.joint_name_.lower() + \
-                          "_mixed_position_velocity_controller/state/process_value_dot,sh_" + self.joint_name_.lower() + \
-                          "_mixed_position_velocity_controller/state/commanded_velocity sh_" + self.joint_name_.lower() + \
-                          "_mixed_position_velocity_controller/state/command,sh_" + self.joint_name_.lower() + \
-                          "_mixed_position_velocity_controller/state/measured_effort,sh_" + self.joint_name_.lower() + \
-                          "_mixed_position_velocity_controller/state/friction_compensation"
+                          self.joint_name_.lower() + "_mixed_position_velocity_controller/state/process_value sh_" + \
+                          self.joint_name_.lower() + "_mixed_position_velocity_controller/state/process_value_dot,sh_" + \
+                          self.joint_name_.lower() + "_mixed_position_velocity_controller/state/commanded_velocity sh_" + \
+                          self.joint_name_.lower() + "_mixed_position_velocity_controller/state/command,sh_" + \
+                          self.joint_name_.lower() + "_mixed_position_velocity_controller/state/measured_effort,sh_" + \
+                          self.joint_name_.lower() + "_mixed_position_velocity_controller/state/friction_compensation"
         elif self.controller_type_ == "Effort":
-            rxplot_str += "sh_" + self.joint_name_.lower() + "_effort_controller/state/set_point,sh_" + self.joint_name_.lower() + \
-                          "_effort_controller/state/process_value"
+            rxplot_str += "sh_" + self.joint_name_.lower() + "_effort_controller/state/set_point,sh_" + \
+                          self.joint_name_.lower() + "_effort_controller/state/process_value"
 
         self.subprocess_.append(subprocess.Popen(rxplot_str.split()))
 
@@ -528,7 +529,8 @@ class SrGuiControllerTuner(Plugin):
             joint_name, self.controller_type, settings)
         if success is False:
             if self.controller_type == "Motor Force":
-                QMessageBox.warning(self._widget.tree_ctrl_settings, "Warning", "Failed to set the PID values for joint " + joint_name +
+                QMessageBox.warning(self._widget.tree_ctrl_settings, "Warning",
+                                    "Failed to set the PID values for joint " + joint_name +
                                     ". This won't work for Gazebo controllers as there are no force controllers yet.")
             else:
                 QMessageBox.warning(self._widget.tree_ctrl_settings, "Warning",
@@ -631,8 +633,8 @@ class SrGuiControllerTuner(Plugin):
                             param_val = parameter_values[param_name]
                             check_box.setChecked(param_val)
                             if param_name == "sign":
-                                check_box.setToolTip(
-                                    "Check if you want a negative sign\n(if the motor is being driven\n the wrong way around).")
+                                check_box.setToolTip("Check if you want a negative sign\n"
+                                                     "(if the motor is being driven\n the wrong way around).")
 
                             self._widget.tree_ctrl_settings.setItemWidget(
                                 motor_item, index_item, check_box)

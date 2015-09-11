@@ -288,9 +288,10 @@ class SrControllerTunerApp(object):
             param_name = prefix + self.controller_prefix + \
                 joint_name.lower() + "_velocity_controller/pid"
         elif controller_type == "Mixed Position/Velocity":
-            param_name = [prefix + self.controller_prefix + joint_name.lower(
-            ) + "_mixed_position_velocity_controller/position_pid",
-                prefix + self.controller_prefix + joint_name.lower() + "_mixed_position_velocity_controller/velocity_pid"]
+            param_name = [prefix + self.controller_prefix + joint_name.lower() +
+                          "_mixed_position_velocity_controller/position_pid",
+                          prefix + self.controller_prefix + joint_name.lower() +
+                          "_mixed_position_velocity_controller/velocity_pid"]
         elif controller_type == "Effort":
             param_name = prefix + self.controller_prefix + \
                 joint_name.lower() + "_effort_controller"
