@@ -392,8 +392,8 @@ class SrGuiSelfTest(Plugin):
         Refresh the pic being displayed
         """
         if len(self.list_of_pics) > 0:
-            self.plot_widget_.label_node.setText(self.list_of_pics_tests[self.index_picture] + \
-                                                 " [" + str(self.index_picture + 1) + "/" + \
+            self.plot_widget_.label_node.setText(self.list_of_pics_tests[self.index_picture] +
+                                                 " [" + str(self.index_picture + 1) + "/" +
                                                  str(len(self.list_of_pics)) + "]")
 
             self.resizeable_plot.plot_pixmap = QPixmap(

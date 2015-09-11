@@ -104,12 +104,17 @@ class PlotThread(QThread):
             rxplot_str += "sh_" + self.joint_name_.lower() + "_velocity_controller/state/set_point,sh_" + \
                           self.joint_name_.lower() + "_velocity_controller/state/process_value"
         elif self.controller_type_ == "Mixed Position/Velocity":
-            rxplot_str += "sh_" + self.joint_name_.lower() + "_mixed_position_velocity_controller/state/set_point,sh_" + \
+            rxplot_str += "sh_" + \
+                          self.joint_name_.lower() + "_mixed_position_velocity_controller/state/set_point,sh_" + \
                           self.joint_name_.lower() + "_mixed_position_velocity_controller/state/process_value sh_" + \
-                          self.joint_name_.lower() + "_mixed_position_velocity_controller/state/process_value_dot,sh_" + \
-                          self.joint_name_.lower() + "_mixed_position_velocity_controller/state/commanded_velocity sh_" + \
+                          self.joint_name_.lower() + "_mixed_position_velocity_controller/state/process_value_dot," + \
+                          "sh_" + \
+                          self.joint_name_.lower() + \
+                          "_mixed_position_velocity_controller/state/commanded_velocity " + \
+                          "sh_" + \
                           self.joint_name_.lower() + "_mixed_position_velocity_controller/state/command,sh_" + \
-                          self.joint_name_.lower() + "_mixed_position_velocity_controller/state/measured_effort,sh_" + \
+                          self.joint_name_.lower() + \
+                          "_mixed_position_velocity_controller/state/measured_effort,sh_" + \
                           self.joint_name_.lower() + "_mixed_position_velocity_controller/state/friction_compensation"
         elif self.controller_type_ == "Effort":
             rxplot_str += "sh_" + self.joint_name_.lower() + "_effort_controller/state/set_point,sh_" + \
