@@ -20,7 +20,9 @@ from PyQt4 import QtCore, QtGui, Qt
 from plugin_manager import Plugin
 from config import *
 
+
 class MyMdiSubWindow(QtGui.QMdiSubWindow):
+
     def __init__(self, parent):
         """
         This MdiSubWindow removes itself from the MdiArea when it closes. It can then be reopened.
@@ -35,9 +37,11 @@ class MyMdiSubWindow(QtGui.QMdiSubWindow):
     def closeEvent(self, event):
         self.parent.on_close()
         self.container.removeSubWindow(self)
-        #self.container.closeActiveSubWindow()
+        # self.container.closeActiveSubWindow()
+
 
 class GenericPlugin(Plugin):
+
     """
     A generic plugin from which all the plugins inherit.
     Opens a subwindow in the MainWidget.
@@ -50,7 +54,7 @@ class GenericPlugin(Plugin):
         self.id = 0
         self.parent = 0
         self.window = MyMdiSubWindow(self)
-        #self.window.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        # self.window.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.window.widget()
         self.window.setWindowTitle(self.name)
         self.is_window_opened = False
@@ -66,7 +70,6 @@ class GenericPlugin(Plugin):
             self.is_window_opened = True
         else:
             self.parent.container.setActiveSubWindow(self.window)
-
 
     def set_icon(self, path):
         self.window.setWindowIcon(QtGui.QIcon(path))

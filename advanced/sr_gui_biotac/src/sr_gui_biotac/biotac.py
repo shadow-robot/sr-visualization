@@ -43,6 +43,7 @@ from sr_utilities.hand_finder import HandFinder
 
 
 class SrGuiBiotac(Plugin):
+
     def define_electrodes(self):
 
         self.sensing_electrodes_x = \
@@ -210,7 +211,7 @@ class SrGuiBiotac(Plugin):
             "sr_gui_biotac/electrode_label_font_sizes", [24,
                                                          22])  # Font sizes
         # for labels on sensing + excitation electrodes
-        
+
         if self._hand_parameters.mapping:
             self.default_topic = (self._hand_parameters.mapping.values()[0]
                                   + '/')

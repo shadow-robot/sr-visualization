@@ -16,7 +16,7 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import roslib #;  roslib.load_manifest('sr_control_gui')
+import roslib  # ;  roslib.load_manifest('sr_control_gui')
 import rospy
 
 from cyberglove_library import Cyberglove
@@ -25,7 +25,9 @@ from PyQt4 import QtCore, QtGui, Qt
 from generic_plugin import GenericPlugin
 from config import *
 
+
 class CybergloveGenericPlugin(GenericPlugin):
+
     """
     The mother of all plugins using the cyberglove ROS interface.
     """
@@ -57,4 +59,3 @@ class CybergloveGenericPlugin(GenericPlugin):
 
     def on_close(self):
         GenericPlugin.on_close(self)
-

@@ -47,6 +47,7 @@ from sr_utilities.hand_finder import HandFinder
 
 
 class SrGuiAdvancedControls(Plugin):
+
     """
     A rosgui plugin for loading the different controllers
     """
@@ -79,7 +80,7 @@ class SrGuiAdvancedControls(Plugin):
                     hand_joint_prefixes.append(value)
             if len(hand_joint_prefixes) == 0:
                 QMessageBox.warning(self._widget, "Warning",
-                                    "No hand found with prefix :"+self._prefix)
+                                    "No hand found with prefix :" + self._prefix)
                 hand_joint_prefixes.append("")
         else:
             rospy.loginfo("no joint prefix found, not appending prefix")
@@ -212,7 +213,7 @@ class SrGuiAdvancedControls(Plugin):
         self._widget.btn_position.setChecked(False)
         self._widget.btn_velocity.setIcon(self.CONTROLLER_OFF_ICON)
         self._widget.btn_velocity.setChecked(False)
-        self.change_ctrl( "stop" )
+        self.change_ctrl("stop")
         self._widget.btn_stop.setEnabled(True)
 
     def on_effort_ctrl_clicked_(self):

@@ -16,7 +16,9 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import os, rospy, rospkg
+import os
+import rospy
+import rospkg
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
@@ -26,7 +28,9 @@ from QtGui import QWidget, QShortcut, QColor, QTreeWidgetItem, QFileDialog, QMes
 from QtCore import QVariant
 from sr_gui_hand_calibration.sr_hand_calibration_model import HandCalibration
 
+
 class SrHandCalibration(Plugin):
+
     """
     A rosgui plugin for calibrating the Shadow EtherCAT Hand
     """
@@ -38,13 +42,15 @@ class SrHandCalibration(Plugin):
         self._publisher = None
         self._widget = QWidget()
 
-        ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_hand_calibration'), 'uis', 'SrHandCalibration.ui')
+        ui_file = os.path.join(rospkg.RosPack().get_path(
+            'sr_gui_hand_calibration'), 'uis', 'SrHandCalibration.ui')
         loadUi(ui_file, self._widget)
         self._widget.setObjectName('SrHandCalibrationUi')
         context.add_widget(self._widget)
 
         self._widget.tree_calibration.setColumnCount(4)
-        self._widget.tree_calibration.setHeaderLabels(["Finger", "Joint", "Raw Value", "Calibrated Value"])
+        self._widget.tree_calibration.setHeaderLabels(
+            ["Finger", "Joint", "Raw Value", "Calibrated Value"])
 
         self.hand_model = None
 
@@ -60,7 +66,8 @@ class SrHandCalibration(Plugin):
         """
         self._widget.tree_calibration.clear()
 
-        self.hand_model = HandCalibration( tree_widget = self._widget.tree_calibration, progress_bar = self._widget.progress )
+        self.hand_model = HandCalibration(
+            tree_widget=self._widget.tree_calibration, progress_bar=self._widget.progress)
         if not self.hand_model.is_active:
             self.close_plugin()
             return
@@ -76,28 +83,34 @@ class SrHandCalibration(Plugin):
         sr_ethercat_hand_config package must be installed
         """
         path_to_config = "~"
-        #Reading the param that contains the config_dir suffix that we should use for this hand (e.g. '' normally for a right hand  or 'lh' if this is for a left hand)
+        # Reading the param that contains the config_dir suffix that we should
+        # use for this hand (e.g. '' normally for a right hand  or 'lh' if this
+        # is for a left hand)
         config_dir = rospy.get_param('config_dir', '')
         try:
-            path_to_config = os.path.join(rospkg.RosPack().get_path('sr_ethercat_hand_config'), 'calibrations', config_dir)
+            path_to_config = os.path.join(rospkg.RosPack().get_path(
+                'sr_ethercat_hand_config'), 'calibrations', config_dir)
         except:
             rospy.logwarn("couldnt find the sr_ethercat_hand_config package")
 
         filter_files = "*.yaml"
-        filename, _ = QFileDialog.getOpenFileName(self._widget.tree_calibration, self._widget.tr('Save Calibration'),
-                                                  self._widget.tr(path_to_config),
-                                                  self._widget.tr(filter_files))
+        filename, _ = QFileDialog.getOpenFileName(
+            self._widget.tree_calibration, self._widget.tr('Save Calibration'),
+            self._widget.tr(
+                path_to_config),
+            self._widget.tr(filter_files))
 
         if filename == "":
             return
 
         if not self.hand_model.is_calibration_complete():
-            btn_pressed = QMessageBox.warning(self._widget.tree_calibration, "Warning", "Are you sure you want to save this incomplete calibration? The uncalibrated values will be saved as a flat map (the calibrated value will always be 0)",
-                                              buttons = QMessageBox.Ok |  QMessageBox.Cancel)
+            btn_pressed = QMessageBox.warning(
+                self._widget.tree_calibration, "Warning", "Are you sure you want to save this incomplete calibration? The uncalibrated values will be saved as a flat map (the calibrated value will always be 0)",
+                buttons=QMessageBox.Ok | QMessageBox.Cancel)
 
             if btn_pressed == QMessageBox.Cancel:
                 return
-        self.hand_model.save( filename )
+        self.hand_model.save(filename)
 
     def btn_load_clicked_(self):
         """
@@ -105,28 +118,33 @@ class SrHandCalibration(Plugin):
         sr_ethercat_hand_config package must be installed
         """
         path_to_config = "~"
-        #Reading the param that contains the config_dir suffix that we should use for this hand (e.g. '' normally for a right hand  or 'lh' if this is for a left hand)
+        # Reading the param that contains the config_dir suffix that we should
+        # use for this hand (e.g. '' normally for a right hand  or 'lh' if this
+        # is for a left hand)
         config_dir = rospy.get_param('config_dir', '')
         try:
-            path_to_config = os.path.join(rospkg.RosPack().get_path('sr_ethercat_hand_config'), 'calibrations', config_dir)
+            path_to_config = os.path.join(rospkg.RosPack().get_path(
+                'sr_ethercat_hand_config'), 'calibrations', config_dir)
         except:
             rospy.logwarn("couldn't find the sr_ethercat_hand_config package")
 
         filter_files = "*.yaml"
-        filename, _ = QFileDialog.getOpenFileName(self._widget.tree_calibration, self._widget.tr('Load Calibration'),
-                                                  self._widget.tr(path_to_config),
-                                                  self._widget.tr(filter_files))
+        filename, _ = QFileDialog.getOpenFileName(
+            self._widget.tree_calibration, self._widget.tr('Load Calibration'),
+            self._widget.tr(
+                path_to_config),
+            self._widget.tr(filter_files))
 
         if filename == "":
             return
 
-        self.hand_model.load( filename )
+        self.hand_model.load(filename)
 
     def btn_joint_0s_clicked_(self):
         """
         calibrate the first joint of each finger
         """
-        self.hand_model.calibrate_joint0s( self._widget.btn_joint_0s )
+        self.hand_model.calibrate_joint0s(self._widget.btn_joint_0s)
 
     def _unregisterPublisher(self):
         if self._publisher is not None:

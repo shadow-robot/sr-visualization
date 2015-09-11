@@ -28,9 +28,11 @@ except ImportError:
 
 
 class PidLoader(object):
+
     """
     Loads pid parameters of each controller in parameters_dict from a yaml file
     """
+
     def __init__(self):
         pass
 
@@ -42,14 +44,14 @@ class PidLoader(object):
             except KeyError:
                 return -1
             for item in tmp_dict.items():
-                param_dict["pos/"+item[0]] = item[1]
+                param_dict["pos/" + item[0]] = item[1]
 
             try:
                 tmp_dict = rospy.get_param(param_name[1])
             except KeyError:
                 return -1
             for item in tmp_dict.items():
-                param_dict["vel/"+item[0]] = item[1]
+                param_dict["vel/" + item[0]] = item[1]
         else:
             try:
                 param_dict = rospy.get_param(param_name)
@@ -59,9 +61,11 @@ class PidLoader(object):
 
 
 class PidSaver(object):
+
     """
     Saves pid parameters of each controller in parameters_dict in a yaml file
     """
+
     def __init__(self, file_path):
         self.path = file_path
 
@@ -76,9 +80,11 @@ class PidSaver(object):
 
         for item in parameters_dict.items():
             if "pos/" in item[0]:
-                yaml_config[param_path[0]]["position_pid"][item[0].split("pos/")[1]] = item[1]
+                yaml_config[param_path[0]]["position_pid"][
+                    item[0].split("pos/")[1]] = item[1]
             elif "vel/" in item[0]:
-                yaml_config[param_path[0]]["velocity_pid"][item[0].split("vel/")[1]] = item[1]
+                yaml_config[param_path[0]]["velocity_pid"][
+                    item[0].split("vel/")[1]] = item[1]
             else:
                 yaml_config[param_path[0]][param_path[1]][item[0]] = item[1]
 
@@ -91,9 +97,13 @@ class PidSaver(object):
 if __name__ == '__main__':
     path_to_config = "~"
     try:
-        path_to_config = os.path.join(rospkg.RosPack().get_path("sr_edc_controller_configuration"))
+        path_to_config = os.path.join(
+            rospkg.RosPack().get_path("sr_edc_controller_configuration"))
 
-        pid_saver = PidSaver(path_to_config+"/sr_edc_mixed_position_velocity_joint_controllers.yaml")
-        pid_saver.save_settings(["sh_wrj2_mixed_position_velocity_controller", "pid"], {"d": 1.0})
+        pid_saver = PidSaver(
+            path_to_config + "/sr_edc_mixed_position_velocity_joint_controllers.yaml")
+        pid_saver.save_settings(
+            ["sh_wrj2_mixed_position_velocity_controller", "pid"], {"d": 1.0})
     except:
-        rospy.logwarn("couldnt find the sr_edc_controller_configuration package")
+        rospy.logwarn(
+            "couldnt find the sr_edc_controller_configuration package")

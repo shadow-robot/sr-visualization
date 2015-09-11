@@ -27,6 +27,7 @@ from sr_gui_controller_tuner.pid_loader_and_saver import PidLoader, PidSaver
 
 
 class CtrlSettings(object):
+
     """
     Parses xml file and reads controller settings
     Creates lists for headers, fingers, motors
@@ -49,7 +50,8 @@ class CtrlSettings(object):
                 break
 
         if ctrl_tree is None:
-            rospy.logerr("Couldn't find the settings for the controller " + controller_type)
+            rospy.logerr(
+                "Couldn't find the settings for the controller " + controller_type)
 
         # read the headers settings
         xml_headers = ctrl_tree.find("headers")
@@ -59,7 +61,7 @@ class CtrlSettings(object):
         self.nb_columns = len(self.headers)
 
         self.hand_item = ["Hand"]
-        self.hand_item.extend((self.nb_columns - 1)*[""])
+        self.hand_item.extend((self.nb_columns - 1) * [""])
 
         # read the fingers and the motors from the xml file
         self.fingers = []
@@ -67,19 +69,20 @@ class CtrlSettings(object):
         all_fingers = xml_tree.find("fingers")
         for finger in all_fingers.findall("finger"):
             finger_row = [finger.attrib['name']]
-            finger_row.extend((self.nb_columns - 1)*[""])
+            finger_row.extend((self.nb_columns - 1) * [""])
             self.fingers.append(finger_row)
 
             motors_for_finger = []
             for motor in finger.findall("motor"):
-                motor_row = ["", joint_prefix+motor.attrib['name']]
-                motor_row.extend((self.nb_columns - 1)*[""])
+                motor_row = ["", joint_prefix + motor.attrib['name']]
+                motor_row.extend((self.nb_columns - 1) * [""])
                 motors_for_finger.append(motor_row)
 
             self.motors.append(motors_for_finger)
 
 
 class SrControllerTunerApp(object):
+
     """
     Handles loading, saving and setting of controller settings
     """
@@ -125,7 +128,8 @@ class SrControllerTunerApp(object):
         if rospy.has_param("/hand/mapping"):
             hand_mapping = rospy.get_param("/hand/mapping")
             for _, value in hand_mapping.items():
-                # if prefix matches the mapping, add this hand (empty prefix means both hands)
+                # if prefix matches the mapping, add this hand (empty prefix
+                # means both hands)
                 if value.startswith(prefix):
                     hand_ids.append(value)
         if len(hand_ids) == 0:
@@ -140,7 +144,8 @@ class SrControllerTunerApp(object):
 
         if len(hand_ids) > 1:
             # the plugin cannot handle more than one hand
-            rospy.logwarn("More than one hand found with prefix :" + prefix + " !\n Not loading controllers")
+            rospy.logwarn(
+                "More than one hand found with prefix :" + prefix + " !\n Not loading controllers")
             return False
 
         # joint_prefix always in global ns
@@ -153,7 +158,8 @@ class SrControllerTunerApp(object):
 
         if len(hand_joint_prefixes) > 1:
             # the plugin cannot handle more than one hand
-            rospy.logwarn("More than one hand found with prefix :" + prefix + " !\n Not loading controllers")
+            rospy.logwarn(
+                "More than one hand found with prefix :" + prefix + " !\n Not loading controllers")
             return False
 
         if len(hand_joint_prefixes) == 0:
@@ -176,18 +182,22 @@ class SrControllerTunerApp(object):
 
         ctrl_srv_name = self.prefix + 'controller_manager/list_controllers'
         try:
-            rospy.wait_for_service(ctrl_srv_name, self.CONTROLLER_MANAGER_DETECTION_TIMEOUT)
+            rospy.wait_for_service(
+                ctrl_srv_name, self.CONTROLLER_MANAGER_DETECTION_TIMEOUT)
 
         except rospy.ROSException:
-            # try at root namespace (only in case bimanual setup in a single loop and only if no GUI ns)
+            # try at root namespace (only in case bimanual setup in a single
+            # loop and only if no GUI ns)
             if self.namespace == "/":
                 ctrl_srv_name = 'controller_manager/list_controllers'
                 try:
-                    rospy.wait_for_service(ctrl_srv_name, self.CONTROLLER_MANAGER_DETECTION_TIMEOUT)
+                    rospy.wait_for_service(
+                        ctrl_srv_name, self.CONTROLLER_MANAGER_DETECTION_TIMEOUT)
                     self.single_loop = True
                     rospy.loginfo("Detected single loop")
                 except rospy.ROSException, e:
-                    rospy.loginfo("Controller manager not running: %s"%str(e))
+                    rospy.loginfo(
+                        "Controller manager not running: %s" % str(e))
                     rospy.loginfo("Running controller tuner in edit-only mode")
                     return self.set_edit_only(running_ctrls)
             else:
@@ -199,15 +209,17 @@ class SrControllerTunerApp(object):
         try:
             resp = controllers()
         except rospy.ServiceException, e:
-            rospy.logerr("Service did not process request: %s"%str(e))
+            rospy.logerr("Service did not process request: %s" % str(e))
 
         running_ctrls.append("Motor Force")
         if resp is not None:
             for controller in resp.controller:
                 if controller.state == "running":
                     # find at the specific pattern of the controller
-                    splitted = re.split('[tfmrlw][fhr]j[0-5]_', controller.name)
-                    # only consider shadow (prefix sh_) controllers (drop js ctrl and others)
+                    splitted = re.split(
+                        '[tfmrlw][fhr]j[0-5]_', controller.name)
+                    # only consider shadow (prefix sh_) controllers (drop js
+                    # ctrl and others)
                     if self.controller_prefix in splitted[0]:
                         ctrl_type_tmp = ""
                         # only consider joint controllers (containing _xxjy_)
@@ -240,14 +252,16 @@ class SrControllerTunerApp(object):
         """
         Effectively change control mode on the realtime loop
         """
-        self.control_mode = rospy.get_param('realtime_loop/' + self.prefix + 'default_control_mode', 'FORCE')
+        self.control_mode = rospy.get_param(
+            'realtime_loop/' + self.prefix + 'default_control_mode', 'FORCE')
 
     def get_controller_settings(self, controller_type):
         """
         Parses a file containing the controller settings
         and their min and max values, and returns them.
         """
-        ctrl_settings = CtrlSettings(self.xml_path, controller_type, self.joint_prefix)
+        ctrl_settings = CtrlSettings(
+            self.xml_path, controller_type, self.joint_prefix)
 
         return ctrl_settings
 
@@ -259,19 +273,27 @@ class SrControllerTunerApp(object):
         prefix = self.prefix if self.single_loop is not True else ""
         if controller_type == "Motor Force":
             # currently the motor_board topics use non-prefixed joint names
-            # no matter if single or dual loops there is always a prefix for motors
-            param_name = self.prefix + joint_name.strip(self.joint_prefix.rstrip("/") + "_").lower() + "/pid"
+            # no matter if single or dual loops there is always a prefix for
+            # motors
+            param_name = self.prefix + \
+                joint_name.strip(
+                    self.joint_prefix.rstrip("/") + "_").lower() + "/pid"
         elif controller_type == "Position":
-            param_name = prefix + self.controller_prefix+joint_name.lower() + "_position_controller/pid"
+            param_name = prefix + self.controller_prefix + \
+                joint_name.lower() + "_position_controller/pid"
         elif controller_type == "Muscle Position":
-            param_name = prefix + self.controller_prefix+joint_name.lower() + "_muscle_position_controller/pid"
+            param_name = prefix + self.controller_prefix + \
+                joint_name.lower() + "_muscle_position_controller/pid"
         elif controller_type == "Velocity":
-            param_name = prefix + self.controller_prefix+joint_name.lower() + "_velocity_controller/pid"
+            param_name = prefix + self.controller_prefix + \
+                joint_name.lower() + "_velocity_controller/pid"
         elif controller_type == "Mixed Position/Velocity":
-            param_name = [prefix + self.controller_prefix+joint_name.lower() + "_mixed_position_velocity_controller/position_pid",
-                          prefix + self.controller_prefix+joint_name.lower() + "_mixed_position_velocity_controller/velocity_pid"]
+            param_name = [prefix + self.controller_prefix + joint_name.lower(
+            ) + "_mixed_position_velocity_controller/position_pid",
+                prefix + self.controller_prefix + joint_name.lower() + "_mixed_position_velocity_controller/velocity_pid"]
         elif controller_type == "Effort":
-            param_name = prefix + self.controller_prefix+joint_name.lower() + "_effort_controller"
+            param_name = prefix + self.controller_prefix + \
+                joint_name.lower() + "_effort_controller"
 
         return self.pid_loader.get_settings(param_name)
 
@@ -286,37 +308,48 @@ class SrControllerTunerApp(object):
         if controller_type == "Motor Force":
             # /realtime_loop/change_force_PID_FFJ0
             # currently use non-prefixed joint names but adds prefix in the middle
-            # no matter if single or dual loops there is always a prefix for motors
-            service_name = "realtime_loop/"+self.prefix+"change_force_PID_"+joint_name[-4:].upper()
+            # no matter if single or dual loops there is always a prefix for
+            # motors
+            service_name = "realtime_loop/" + self.prefix + \
+                "change_force_PID_" + joint_name[-4:].upper()
             pid_service = rospy.ServiceProxy(service_name, ForceController)
 
         elif controller_type == "Position":
             # /sh_ffj3_position_controller/set_gains
-            service_name = prefix+self.controller_prefix+joint_name.lower()+"_position_controller/set_gains"
+            service_name = prefix + self.controller_prefix + \
+                joint_name.lower() + "_position_controller/set_gains"
             pid_service = rospy.ServiceProxy(service_name, SetPidGains)
 
         elif controller_type == "Muscle Position":
             # /sh_ffj3_position_controller/set_gains
-            service_name = prefix+self.controller_prefix+joint_name.lower()+"_muscle_position_controller/set_gains"
+            service_name = prefix + self.controller_prefix + \
+                joint_name.lower() + "_muscle_position_controller/set_gains"
             pid_service = rospy.ServiceProxy(service_name, SetPidGains)
 
         elif controller_type == "Velocity":
             # /sh_ffj3_velocity_controller/set_gains
-            service_name = prefix+self.controller_prefix+joint_name.lower()+"_velocity_controller/set_gains"
+            service_name = prefix + self.controller_prefix + \
+                joint_name.lower() + "_velocity_controller/set_gains"
             pid_service = rospy.ServiceProxy(service_name, SetPidGains)
 
         elif controller_type == "Mixed Position/Velocity":
             # /sh_ffj3_mixed_position_velocity_controller/set_gains
-            service_name = prefix+self.controller_prefix+joint_name.lower()+"_mixed_position_velocity_controller/set_gains"
-            pid_service = rospy.ServiceProxy(service_name, SetMixedPositionVelocityPidGains)
+            service_name = prefix + self.controller_prefix + \
+                joint_name.lower() + \
+                "_mixed_position_velocity_controller/set_gains"
+            pid_service = rospy.ServiceProxy(
+                service_name, SetMixedPositionVelocityPidGains)
 
         elif controller_type == "Effort":
             # /sh_ffj3_effort_controller/set_gains
-            service_name = prefix+self.controller_prefix+joint_name.lower()+"_effort_controller/set_gains"
-            pid_service = rospy.ServiceProxy(service_name, SetEffortControllerGains)
+            service_name = prefix + self.controller_prefix + \
+                joint_name.lower() + "_effort_controller/set_gains"
+            pid_service = rospy.ServiceProxy(
+                service_name, SetEffortControllerGains)
 
         else:
-            rospy.logerr("", controller_type, " is not a recognized controller type.")
+            rospy.logerr(
+                "", controller_type, " is not a recognized controller type.")
 
         contrlr_settings_converted = {}
         for param in controller_settings.items():
@@ -328,59 +361,86 @@ class SrControllerTunerApp(object):
                             int(contrlr_settings_converted["sgleftref"]),
                             int(contrlr_settings_converted["sgrightref"]),
                             int(contrlr_settings_converted["f"]),
-                            int(contrlr_settings_converted["p"]), int(contrlr_settings_converted["i"]),
-                            int(contrlr_settings_converted["d"]), int(contrlr_settings_converted["imax"]),
+                            int(contrlr_settings_converted["p"]), int(
+                                contrlr_settings_converted["i"]),
+                            int(contrlr_settings_converted["d"]), int(
+                                contrlr_settings_converted["imax"]),
                             int(contrlr_settings_converted["deadband"]), int(contrlr_settings_converted["sign"]))
             except rospy.ServiceException:
                 return False
 
         elif controller_type == "Position":
             try:
-                pid_service(float(contrlr_settings_converted["p"]), float(contrlr_settings_converted["i"]),
-                            float(contrlr_settings_converted["d"]), float(contrlr_settings_converted["i_clamp"]),
-                            float(contrlr_settings_converted["max_force"]), float(contrlr_settings_converted["position_deadband"]),
-                            int(contrlr_settings_converted["friction_deadband"]))
+                pid_service(
+                    float(contrlr_settings_converted["p"]), float(
+                        contrlr_settings_converted["i"]),
+                    float(contrlr_settings_converted["d"]), float(
+                        contrlr_settings_converted["i_clamp"]),
+                    float(contrlr_settings_converted["max_force"]), float(
+                        contrlr_settings_converted[
+                            "position_deadband"]),
+                    int(contrlr_settings_converted["friction_deadband"]))
             except rospy.ServiceException:
                 return False
 
         elif controller_type == "Muscle Position":
             try:
-                pid_service(float(contrlr_settings_converted["p"]), float(contrlr_settings_converted["i"]),
-                            float(contrlr_settings_converted["d"]), float(contrlr_settings_converted["i_clamp"]),
-                            float(contrlr_settings_converted["max_force"]), float(contrlr_settings_converted["position_deadband"]),
-                            int(contrlr_settings_converted["friction_deadband"]))
+                pid_service(
+                    float(contrlr_settings_converted["p"]), float(
+                        contrlr_settings_converted["i"]),
+                    float(contrlr_settings_converted["d"]), float(
+                        contrlr_settings_converted["i_clamp"]),
+                    float(contrlr_settings_converted["max_force"]), float(
+                        contrlr_settings_converted[
+                            "position_deadband"]),
+                    int(contrlr_settings_converted["friction_deadband"]))
             except rospy.ServiceException:
                 return False
 
         elif controller_type == "Velocity":
             try:
-                pid_service(float(contrlr_settings_converted["p"]), float(contrlr_settings_converted["i"]),
-                            float(contrlr_settings_converted["d"]), float(contrlr_settings_converted["i_clamp"]),
-                            float(contrlr_settings_converted["max_force"]), float(contrlr_settings_converted["velocity_deadband"]),
-                            int(contrlr_settings_converted["friction_deadband"]))
+                pid_service(
+                    float(contrlr_settings_converted["p"]), float(
+                        contrlr_settings_converted["i"]),
+                    float(contrlr_settings_converted["d"]), float(
+                        contrlr_settings_converted["i_clamp"]),
+                    float(contrlr_settings_converted["max_force"]), float(
+                        contrlr_settings_converted[
+                            "velocity_deadband"]),
+                    int(contrlr_settings_converted["friction_deadband"]))
             except rospy.ServiceException:
                 return False
 
         elif controller_type == "Mixed Position/Velocity":
             try:
-                pid_service(float(contrlr_settings_converted["pos/p"]), float(contrlr_settings_converted["pos/i"]),
-                            float(contrlr_settings_converted["pos/d"]), float(contrlr_settings_converted["pos/i_clamp"]),
-                            float(contrlr_settings_converted["pos/min_velocity"]), float(contrlr_settings_converted["pos/max_velocity"]),
-                            float(contrlr_settings_converted["pos/position_deadband"]),
-                            float(contrlr_settings_converted["vel/p"]), float(contrlr_settings_converted["vel/i"]),
-                            float(contrlr_settings_converted["vel/d"]), float(contrlr_settings_converted["vel/i_clamp"]),
-                            float(contrlr_settings_converted["vel/max_force"]),
-                            int(contrlr_settings_converted["vel/friction_deadband"]))
+                pid_service(
+                    float(contrlr_settings_converted["pos/p"]), float(
+                        contrlr_settings_converted["pos/i"]),
+                    float(contrlr_settings_converted["pos/d"]), float(
+                        contrlr_settings_converted["pos/i_clamp"]),
+                    float(contrlr_settings_converted["pos/min_velocity"]), float(
+                        contrlr_settings_converted[
+                            "pos/max_velocity"]),
+                    float(contrlr_settings_converted[
+                          "pos/position_deadband"]),
+                    float(contrlr_settings_converted["vel/p"]), float(
+                        contrlr_settings_converted["vel/i"]),
+                    float(contrlr_settings_converted["vel/d"]), float(
+                        contrlr_settings_converted["vel/i_clamp"]),
+                    float(contrlr_settings_converted["vel/max_force"]),
+                    int(contrlr_settings_converted["vel/friction_deadband"]))
             except rospy.ServiceException:
                 return False
 
         elif controller_type == "Effort":
             try:
-                pid_service(int(contrlr_settings_converted["max_force"]), int(contrlr_settings_converted["friction_deadband"]))
+                pid_service(int(contrlr_settings_converted["max_force"]), int(
+                    contrlr_settings_converted["friction_deadband"]))
             except rospy.ServiceException:
                 return False
         else:
-            rospy.logerr("", controller_type, " is not a recognized controller type.")
+            rospy.logerr(
+                "", controller_type, " is not a recognized controller type.")
             return False
         return True
 
@@ -393,14 +453,19 @@ class SrControllerTunerApp(object):
         if controller_type == "Motor Force":
             param_name = ["" + joint_name[-4:].lower(), "pid"]
         elif controller_type == "Position":
-            param_name = [prefix + self.controller_prefix + joint_name.lower() + "_position_controller", "pid"]
+            param_name = [prefix + self.controller_prefix +
+                          joint_name.lower() + "_position_controller", "pid"]
         elif controller_type == "Muscle Position":
-            param_name = [prefix + self.controller_prefix + joint_name.lower() + "_muscle_position_controller", "pid"]
+            param_name = [prefix + self.controller_prefix +
+                          joint_name.lower() + "_muscle_position_controller", "pid"]
         elif controller_type == "Velocity":
-            param_name = [prefix + self.controller_prefix + joint_name.lower() + "_velocity_controller", "pid"]
+            param_name = [prefix + self.controller_prefix +
+                          joint_name.lower() + "_velocity_controller", "pid"]
         elif controller_type == "Mixed Position/Velocity":
-            param_name = [prefix + self.controller_prefix + joint_name.lower() + "_mixed_position_velocity_controller", "pid"]
+            param_name = [prefix + self.controller_prefix +
+                          joint_name.lower() + "_mixed_position_velocity_controller", "pid"]
         elif controller_type == "Effort":
-            param_name = [prefix + self.controller_prefix + joint_name.lower() + "_effort_controller"]
+            param_name = [prefix + self.controller_prefix +
+                          joint_name.lower() + "_effort_controller"]
         pid_saver = PidSaver(filename)
         pid_saver.save_settings(param_name, controller_settings)

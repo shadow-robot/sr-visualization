@@ -16,14 +16,18 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import roslib#; roslib.load_manifest('sr_control_gui')
-import os, sys, imp
+import roslib  # ; roslib.load_manifest('sr_control_gui')
+import os
+import sys
+import imp
+
 
 class Plugin(object):
+
     """
     A Plugin.
     """
-    #plugin name
+    # plugin name
     plugin_name = None
     category = "Default"
     class_name = None
@@ -32,7 +36,7 @@ class Plugin(object):
     # the dependencies are loaded in the children
     dependencies = None
 
-    def __init__( self ):
+    def __init__(self):
         """
         Reads the given file, init the plugin and return its category.
         """
@@ -49,7 +53,9 @@ class Plugin(object):
     def depends(self):
         return self.dependencies
 
+
 class PluginManager(object):
+
     """
     Loads the available plugins.
     """
@@ -84,14 +90,17 @@ class PluginManager(object):
 
         nb_plugins_found = 0
         for path in self.list_of_paths:
-            #add the path to the sys path in order to be able to load the modules
+            # add the path to the sys path in order to be able to load the
+            # modules
             sys.path.append(path)
 
-            dirList=os.listdir(path)
+            dirList = os.listdir(path)
             for fname in dirList:
                 if fname.split(".")[-1] == "sr_plugin":
-                    plugin_name, category, class_name, description = self.parse_file( path + fname )
-                    plugin_tmp = self.load_plugin(plugin_name, class_name, description, category)
+                    plugin_name, category, class_name, description = self.parse_file(
+                        path + fname)
+                    plugin_tmp = self.load_plugin(
+                        plugin_name, class_name, description, category)
 
                     if not self.dict_plugins.has_key(category):
                         self.dict_plugins[category] = []
@@ -111,10 +120,9 @@ class PluginManager(object):
             if tmp_plugins != None:
                 plugins_to_return += tmp_plugins
             else:
-                print "WARNING: couldn't find a category named ",name
+                print "WARNING: couldn't find a category named ", name
 
         return plugins_to_return
-
 
     def parse_file(self, full_path_to_plugin_file):
         plugin_name = ""
@@ -143,8 +151,8 @@ class PluginManager(object):
     def load_plugin(self, plugin_name, class_name, description, category):
         plugin_tmp = None
         if class_name != None:
-            #import the module
-            #try:
+            # import the module
+            # try:
             exec "from %s import %s" % (plugin_name, class_name)
             class_tmp_str = class_name + "()"
             plugin_tmp = eval(class_tmp_str)
@@ -153,15 +161,16 @@ class PluginManager(object):
             plugin_tmp.class_name = class_name
             plugin_tmp.description = description
             plugin_tmp.category = category
-            #except:
+            # except:
             #    print "[", plugin_name, "]: not imported: ", sys.exc_info()[0]
 
         else:
-            print "[",plugin_name ,"]", "The Module name was not defined in the config file. Aborting."
+            print "[", plugin_name, "]", "The Module name was not defined in the config file. Aborting."
         return plugin_tmp
 
 
 if __name__ == "__main__":
     pm = PluginManager()
-    pm.setPluginPlaces(["/home/ugo/Projects/ROS_interfaces/sr-ros-interface/trunk/shadow_robot/sr_control_gui/src/sr_control_gui/plugins"])
+    pm.setPluginPlaces(
+        ["/home/ugo/Projects/ROS_interfaces/sr-ros-interface/trunk/shadow_robot/sr_control_gui/src/sr_control_gui/plugins"])
     pm.loadPlugins()

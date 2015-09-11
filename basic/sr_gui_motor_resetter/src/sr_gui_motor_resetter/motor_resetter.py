@@ -36,6 +36,7 @@ from sr_utilities.hand_finder import HandFinder
 
 
 class MotorFlasher(QThread):
+
     def __init__(self, parent, nb_motors_to_program, prefix):
         QThread.__init__(self, None)
         self.parent = parent
@@ -65,6 +66,7 @@ class MotorFlasher(QThread):
 
 
 class Motor(QFrame):
+
     def __init__(self, parent, motor_name, motor_index):
         QFrame.__init__(self, parent)
 
@@ -85,6 +87,7 @@ class Motor(QFrame):
 
 
 class SrGuiMotorResetter(Plugin):
+
     """
     A gui plugin for resetting motors on the shadow hand.
     """

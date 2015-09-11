@@ -16,7 +16,9 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import os, rospy, rospkg
+import os
+import rospy
+import rospkg
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
@@ -28,18 +30,22 @@ from controller_manager_msgs.srv import ListControllers, SwitchController, LoadC
 
 
 import xml.etree.ElementTree as ET
-import time, threading
+import time
+import threading
 
 from sr_hand.shadowhand_ros import ShadowHand_ROS
 
+
 class Step(QWidget):
+
     """
     A step in a sequence of steps which compose a full movement.
     Contains add / remove steps buttons, loop control, pause / interpolation time,
     grasp type.
     """
+
     def __init__(self, parent, step_index, plugin_parent):
-        QWidget.__init__(self, parent = parent)
+        QWidget.__init__(self, parent=parent)
         self.step_index = step_index
         self.parent = plugin_parent
         self.grasp = 0
@@ -61,14 +67,14 @@ class Step(QWidget):
 
         self.grasp = self.parent.library.grasp_parser.grasps.values()[0]
         label_grasp = QLabel(self.frame)
-        label_grasp.setText("Grasp:  ")# + str(self.step_index + 1) + ":")
+        label_grasp.setText("Grasp:  ")  # + str(self.step_index + 1) + ":")
         self.widgets.append(label_grasp)
 
         self.list_grasp = QComboBox(self.frame)
         self.refresh_list()
-        self.frame.connect(self.list_grasp, SIGNAL('activated(QString)'), self.grasp_choosed)
+        self.frame.connect(self.list_grasp, SIGNAL(
+            'activated(QString)'), self.grasp_choosed)
         self.widgets.append(self.list_grasp)
-
 
         label_pause = QLabel(self.frame)
         label_pause.setText(" Pause Time:")
@@ -79,7 +85,8 @@ class Step(QWidget):
         self.pause_input.setText("0.0")
         self.pause_input.setFixedWidth(35)
         self.pause_input.setAlignment(Qt.AlignRight)
-        self.frame.connect(self.pause_input, SIGNAL('textChanged(QString)'), self.pause_changed)
+        self.frame.connect(self.pause_input, SIGNAL(
+            'textChanged(QString)'), self.pause_changed)
         self.widgets.append(self.pause_input)
 
         label_interp = QLabel(self.frame)
@@ -91,7 +98,8 @@ class Step(QWidget):
         self.interp_input.setText("1.0")
         self.interp_input.setAlignment(Qt.AlignRight)
         self.interp_input.setFixedWidth(35)
-        self.frame.connect(self.interp_input, SIGNAL('textChanged(QString)'), self.interp_changed)
+        self.frame.connect(self.interp_input, SIGNAL(
+            'textChanged(QString)'), self.interp_changed)
         self.widgets.append(self.interp_input)
 
         label_looping = QLabel(self.frame)
@@ -104,7 +112,8 @@ class Step(QWidget):
                 self.loop_input.addItem("None")
             else:
                 self.loop_input.addItem(str(i))
-        self.frame.connect(self.loop_input, SIGNAL('activated(QString)'), self.choose_looping)
+        self.frame.connect(self.loop_input, SIGNAL(
+            'activated(QString)'), self.choose_looping)
         self.widgets.append(self.loop_input)
 
         self.number_loops = QLineEdit(self.frame)
@@ -113,9 +122,11 @@ class Step(QWidget):
         self.number_loops.setText("0")
         self.number_loops.setAlignment(Qt.AlignRight)
         self.number_loops.setFixedWidth(35)
-        #self.number_loops.setReadOnly(True)
-        #self.number_loops.setStyleSheet("QWidget { background-color: lightgrey }")
-        self.frame.connect(self.number_loops, SIGNAL('textChanged(QString)'), self.number_loops_changed)
+        # self.number_loops.setReadOnly(True)
+        # self.number_loops.setStyleSheet("QWidget { background-color:
+        # lightgrey }")
+        self.frame.connect(self.number_loops, SIGNAL(
+            'textChanged(QString)'), self.number_loops_changed)
         self.widgets.append(self.number_loops)
 
         label_times = QLabel(self.frame)
@@ -125,13 +136,15 @@ class Step(QWidget):
         self.new_step_button = QPushButton(self.frame)
         self.new_step_button.setText("+")
         self.new_step_button.setFixedWidth(20)
-        self.frame.connect(self.new_step_button, SIGNAL('clicked()'), self.add_step)
+        self.frame.connect(
+            self.new_step_button, SIGNAL('clicked()'), self.add_step)
         self.widgets.append(self.new_step_button)
 
         self.remove_step_button = QPushButton(self.frame)
         self.remove_step_button.setText("-")
         self.remove_step_button.setFixedWidth(20)
-        self.frame.connect(self.remove_step_button, SIGNAL('clicked()'), self.remove_step)
+        self.frame.connect(
+            self.remove_step_button, SIGNAL('clicked()'), self.remove_step)
         self.widgets.append(self.remove_step_button)
 
         self.layout = QHBoxLayout()
@@ -156,7 +169,7 @@ class Step(QWidget):
         layout.addWidget(self.frame)
         self.frame.show()
         self.setLayout(layout)
-        #self.setWidget(self.frame)
+        # self.setWidget(self.frame)
         self.show()
 
     def grasp_choosed(self, grasp_name):
@@ -252,7 +265,7 @@ class Step(QWidget):
                 self.number_loops.setText(subelement.text)
         self.grasp_slider = None
 
-    def refresh_list(self, value = 0):
+    def refresh_list(self, value=0):
         self.list_grasp.clear()
         self.parent.library.grasp_parser.refresh()
         list_grasps = self.parent.library.grasp_parser.grasps.keys()
@@ -260,7 +273,9 @@ class Step(QWidget):
         for grasp_name in list_grasps:
             self.list_grasp.addItem(grasp_name)
 
+
 class SignalWidget(QWidget):
+
     """
     Qt Signal used to state when a step is playing / stopped.
     """
@@ -270,10 +285,13 @@ class SignalWidget(QWidget):
     def __init__(self, parent=None):
         super(SignalWidget, self).__init__(parent)
 
+
 class SrGuiMovementRecorder(Plugin):
+
     """
     A rosgui plugin for recording and replaying movements
     """
+
     def __init__(self, context):
         super(SrGuiMovementRecorder, self).__init__(context)
         self.setObjectName('SrGuiMovementRecorder')
@@ -281,7 +299,8 @@ class SrGuiMovementRecorder(Plugin):
         self._publisher = None
         self._widget = QWidget()
 
-        ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_movement_recorder'), 'uis', 'SrGuiMovementRecorder.ui')
+        ui_file = os.path.join(rospkg.RosPack().get_path(
+            'sr_gui_movement_recorder'), 'uis', 'SrGuiMovementRecorder.ui')
         loadUi(ui_file, self._widget)
         self._widget.setObjectName('SrGuiMovementRecorderUi')
         context.add_widget(self._widget)
@@ -303,12 +322,14 @@ class SrGuiMovementRecorder(Plugin):
         self.play_btn = QPushButton()
         self.play_btn.setText("Play")
         self.play_btn.setFixedWidth(80)
-        self.command_frame.connect(self.play_btn, SIGNAL('clicked()'), self.button_play_clicked)
+        self.command_frame.connect(
+            self.play_btn, SIGNAL('clicked()'), self.button_play_clicked)
         self.sublayout.addWidget(self.play_btn, 0, 0)
 
         self.signal_widget = SignalWidget(self.frame)
         self.signal_widget.isPlayingSig['int'].connect(self.started_playing)
-        self.signal_widget.stoppedPlayingSig['int'].connect(self.stopped_playing)
+        self.signal_widget.stoppedPlayingSig[
+            'int'].connect(self.stopped_playing)
 
         self.mutex = threading.Lock()
         self.stopped = True
@@ -318,7 +339,8 @@ class SrGuiMovementRecorder(Plugin):
         self.stop_btn = QPushButton()
         self.stop_btn.setText("Stop")
         self.stop_btn.setFixedWidth(80)
-        self.command_frame.connect(self.stop_btn, SIGNAL('clicked()'), self.stop)
+        self.command_frame.connect(
+            self.stop_btn, SIGNAL('clicked()'), self.stop)
         self.sublayout.addWidget(self.stop_btn, 0, 1)
 
         self.sublayout.addWidget(QLabel(''), 0, 2)
@@ -326,13 +348,15 @@ class SrGuiMovementRecorder(Plugin):
         self.save_btn = QPushButton()
         self.save_btn.setText("Save")
         self.save_btn.setFixedWidth(80)
-        self.command_frame.connect(self.save_btn, SIGNAL('clicked()'), self.save)
+        self.command_frame.connect(
+            self.save_btn, SIGNAL('clicked()'), self.save)
         self.sublayout.addWidget(self.save_btn, 0, 3)
 
         self.load_btn = QPushButton()
         self.load_btn.setText("Load")
         self.load_btn.setFixedWidth(80)
-        self.command_frame.connect(self.load_btn, SIGNAL('clicked()'), self.load)
+        self.command_frame.connect(
+            self.load_btn, SIGNAL('clicked()'), self.load)
         self.sublayout.addWidget(self.load_btn, 0, 4)
 
         self.command_frame.setLayout(self.sublayout)
@@ -340,11 +364,12 @@ class SrGuiMovementRecorder(Plugin):
 
         self.frame.setLayout(self.layout)
 
-        path_to_icons = os.path.join( rospkg.RosPack().get_path('sr_visualization_icons'), 'icons')
-        self.load_btn.setIcon( QIcon( os.path.join( path_to_icons, 'load.png' )))
-        self.save_btn.setIcon( QIcon( os.path.join( path_to_icons, 'save.png' )))
-        self.stop_btn.setIcon( QIcon( os.path.join( path_to_icons, 'stop.png' )))
-        self.play_btn.setIcon( QIcon( os.path.join( path_to_icons, 'play.png' )))
+        path_to_icons = os.path.join(
+            rospkg.RosPack().get_path('sr_visualization_icons'), 'icons')
+        self.load_btn.setIcon(QIcon(os.path.join(path_to_icons, 'load.png')))
+        self.save_btn.setIcon(QIcon(os.path.join(path_to_icons, 'save.png')))
+        self.stop_btn.setIcon(QIcon(os.path.join(path_to_icons, 'stop.png')))
+        self.play_btn.setIcon(QIcon(os.path.join(path_to_icons, 'play.png')))
 
         self.steps = []
         self.add_step()
@@ -475,7 +500,7 @@ class SrGuiMovementRecorder(Plugin):
 
         self.current_step = next_step
 
-        #looping?
+        # looping?
         if step.loop_to_step != -1:
             if step.remaining_loops > 0:
                 step.remaining_loops = step.remaining_loops - 1
@@ -483,18 +508,21 @@ class SrGuiMovementRecorder(Plugin):
         return index + 1
 
     def move_step(self, next_step):
-        interpoler = self.library.create_grasp_interpoler(self.current_step.grasp, next_step.grasp)
+        interpoler = self.library.create_grasp_interpoler(
+            self.current_step.grasp, next_step.grasp)
         if self.current_step.interpolation_time == 0.0:
-            self.library.sendupdate_from_dict(next_step.grasp.joints_and_positions)
+            self.library.sendupdate_from_dict(
+                next_step.grasp.joints_and_positions)
         else:
-            for interpolation in range (0, 10 * int(self.current_step.interpolation_time)):
+            for interpolation in range(0, 10 * int(self.current_step.interpolation_time)):
                 self.mutex.acquire()
                 if self.stopped:
                     self.mutex.release()
                     return
                 self.mutex.release()
 
-                targets_to_send = self.library.grasp_interpoler.interpolate(100.0 * interpolation / (10 * self.current_step.interpolation_time))
+                targets_to_send = self.library.grasp_interpoler.interpolate(
+                    100.0 * interpolation / (10 * self.current_step.interpolation_time))
                 self.library.sendupdate_from_dict(targets_to_send)
                 time.sleep(0.1)
 

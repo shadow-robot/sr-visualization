@@ -19,20 +19,23 @@
 File containing all the configuration parameters.
 """
 
+
 class OpenGLGenericPluginConfig(object):
     number_of_points = 1000000
-    colors = [["red", [1.0,0,0]],
-              ["green", [0,1.0,0]],
-              ["blue", [0,0,1.0]],
-              ["light_blue", [0.51,0.75,1.]],
-              ["orange", [1.,0.66,0]],
-              ["yellow", [1.,0.92,0.06]],
-              ["purple", [0.85,0.13,0.82]],
-              ["pink", [1.,0.51,0.80]]
+    colors = [["red", [1.0, 0, 0]],
+              ["green", [0, 1.0, 0]],
+              ["blue", [0, 0, 1.0]],
+              ["light_blue", [0.51, 0.75, 1.]],
+              ["orange", [1., 0.66, 0]],
+              ["yellow", [1., 0.92, 0.06]],
+              ["purple", [0.85, 0.13, 0.82]],
+              ["pink", [1., 0.51, 0.80]]
               ]
+
 
 class GenericPluginConfig(object):
     dependencies = []
+
 
 class GenericRosNodeConfig(object):
     name = ""
@@ -41,6 +44,7 @@ class GenericRosNodeConfig(object):
     stop_cmd = "rosnode kill " + " ".join(list_of_nodes)
     status_cmd = "rosnode list"
 
+
 class ShadowHandConfig(GenericRosNodeConfig):
     name = "Shadow Hand"
     list_of_nodes = ["/shadowhand"]
@@ -48,42 +52,48 @@ class ShadowHandConfig(GenericRosNodeConfig):
     stop_cmd = "rosnode kill " + " ".join(list_of_nodes)
     status_cmd = "rosnode list"
 
+
 class ShadowHandPluginConfig(GenericPluginConfig):
     dependencies = ["Shadow Hand"]
+
 
 class ShadowArmHandConfig(GenericRosNodeConfig):
     name = "Shadow Hand and Arm"
     list_of_nodes = ["/shadowarm",
-                      "/shadowhand",
-                      "/srh_robot_state_publisher_pos",
-                      "/srh_robot_state_publisher_target",
-                      "/fixed_frame_pos_pub_arm",
-                      "/fixed_frame_target_pub_arm",
-                      "/link_hand_arm_pos",
-                      "/link_hand_arm_target",
-                      "/robot_state_publisher_pos_arm",
-                      "/robot_state_publisher_target_arm"]
+                     "/shadowhand",
+                     "/srh_robot_state_publisher_pos",
+                     "/srh_robot_state_publisher_target",
+                     "/fixed_frame_pos_pub_arm",
+                     "/fixed_frame_target_pub_arm",
+                     "/link_hand_arm_pos",
+                     "/link_hand_arm_target",
+                     "/robot_state_publisher_pos_arm",
+                     "/robot_state_publisher_target_arm"]
     start_cmd = "roslaunch sr_hand sr_arm_motor.launch"
     stop_cmd = "rosnode kill " + " ".join(list_of_nodes)
     status_cmd = "rosnode list"
+
 
 class ShadowArmConfig(GenericRosNodeConfig):
     name = "Shadow Arm"
     list_of_nodes = ["/shadowarm",
                      "/fixed_frame_pos_pub_arm",
-                      "/fixed_frame_target_pub_arm",
-                      "/robot_state_publisher_pos_arm",
-                      "/robot_state_publisher_target_arm"]
+                     "/fixed_frame_target_pub_arm",
+                     "/robot_state_publisher_pos_arm",
+                     "/robot_state_publisher_target_arm"]
     start_cmd = "roslaunch sr_hand real_arm_motor.launch"
     stop_cmd = "rosnode kill " + " ".join(list_of_nodes)
     status_cmd = "rosnode list"
 
+
 class ShadowArmPluginConfig(GenericPluginConfig):
     dependencies = ["Shadow Arm"]
+
 
 class SrObjectSelectionConfig(GenericPluginConfig):
     name = "Object Selection Plugin"
     list_of_nodes = ["/tabletop_node"]
+
 
 class CybergloveConfig(GenericRosNodeConfig):
     name = "Cyberglove"
@@ -92,6 +102,7 @@ class CybergloveConfig(GenericRosNodeConfig):
     stop_cmd = "rosnode kill " + " ".join(list_of_nodes)
     status_cmd = "rosnode list"
 
+
 class CybergloveRemapperConfig(GenericRosNodeConfig):
     name = "Glove Remapper"
     list_of_nodes = ["/cyberglove_remapper"]
@@ -99,8 +110,10 @@ class CybergloveRemapperConfig(GenericRosNodeConfig):
     stop_cmd = "rosnode kill " + " ".join(list_of_nodes)
     status_cmd = "rosnode list"
 
+
 class CybergloveGenericPluginConfig(GenericPluginConfig):
     dependencies = ["Cyberglove"]
+
 
 class RobotCodeConfig(object):
     name = "Robot Hand"
@@ -111,7 +124,7 @@ class RobotCodeConfig(object):
 
 class Config(object):
 
-    #ROS nodes config
+    # ROS nodes config
     library_refresh_rate = 0.5
     library_timeout = 10
     library_shadowhand = ShadowHandConfig()
@@ -120,18 +133,18 @@ class Config(object):
     library_cyberglove = CybergloveConfig()
     library_cyberglove_remapper = CybergloveRemapperConfig()
 
-    #Robot code config
+    # Robot code config
     robot_code = RobotCodeConfig()
 
-    #Plugins config
+    # Plugins config
     generic_plugin_config = GenericPluginConfig()
     shadowhand_plugin_config = ShadowHandPluginConfig()
     cyberglove_generic_plugin_config = CybergloveGenericPluginConfig()
     shadow_arm_plugin_config = ShadowArmPluginConfig()
     sr_object_selection_config = SrObjectSelectionConfig()
 
-    #Other GUI config
+    # Other GUI config
     main_widget_refresh_rate = 0.5
 
-    #Open GL plugins
+    # Open GL plugins
     open_gl_generic_plugin_config = OpenGLGenericPluginConfig()
