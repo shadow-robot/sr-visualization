@@ -16,8 +16,10 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-#import roslib; roslib.load_manifest('sr_control_gui')
-import os, rospy, rospkg
+# import roslib; roslib.load_manifest('sr_control_gui')
+import os
+import rospy
+import rospkg
 
 import traceback
 import sys
@@ -29,31 +31,38 @@ from QtCore import Qt, QEvent, QObject
 import QtGui
 from QtGui import *
 
-#from cyberglove_generic_plugin import CybergloveGenericPlugin
+# from cyberglove_generic_plugin import CybergloveGenericPlugin
 
 from cyberglove_calibrer import *
 from cyberglove_mapper import *
-#from cyberglove_library import Cyberglove
+# from cyberglove_library import Cyberglove
 
-rootPath = os.path.join(rospkg.RosPack().get_path('sr_gui_cyberglove_calibrator'))
+rootPath = os.path.join(
+    rospkg.RosPack().get_path('sr_gui_cyberglove_calibrator'))
 noimage_path = rootPath + '/images/image-missing.png'
 
+
 class StepDescription():
+
     """
     Stores the description / images path for a given step.
     """
+
     def __init__(self):
         self.text = ""
-        self.image_path = [noimage_path,noimage_path]
+        self.image_path = [noimage_path, noimage_path]
         self.current_substep = 0
 
+
 class StepDescriber(QtGui.QWidget):
+
     """
     Displays the description / images for the current step.
     """
+
     def __init__(self, parent):
         QtGui.QWidget.__init__(self, parent=parent)
-	
+
         self.description = StepDescription
         self.frame = QtGui.QFrame()
         self.layout = QtGui.QVBoxLayout()
@@ -75,16 +84,18 @@ class StepDescriber(QtGui.QWidget):
     def set_description(self, description):
         self.text_description.setText(description.text)
         index = description.current_substep
-        self.image_description.setPixmap(QtGui.QPixmap(description.image_path[index]))
+        self.image_description.setPixmap(
+            QtGui.QPixmap(description.image_path[index]))
         self.image_description.repaint()
         self.repaint()
 
 
-
 class StepSelector(QtGui.QWidget):
+
     """
     The user can select the step to calibrate through this widget.
     """
+
     def __init__(self, parent, calibrer):
         QtGui.QWidget.__init__(self, parent=parent)
 
@@ -105,14 +116,15 @@ class StepSelector(QtGui.QWidget):
 
         self.list = QtGui.QListWidget()
         first_item = self.refresh_list()
-        self.connect(self.list, QtCore.SIGNAL('itemClicked(QListWidgetItem*)'), self.step_choosed)
+        self.connect(self.list, QtCore.SIGNAL(
+            'itemClicked(QListWidgetItem*)'), self.step_choosed)
         self.list.setViewMode(QtGui.QListView.ListMode)
         self.list.setResizeMode(QtGui.QListView.Adjust)
 
         self.list.setCurrentRow(0)
         first_item = self.list.item(0)
         self.list.setItemSelected(first_item, True)
-        self.step_choosed(first_item, second_substep = True)
+        self.step_choosed(first_item, second_substep=True)
 
         self.layout.addWidget(self.title)
         self.layout.addWidget(self.list)
@@ -137,8 +149,8 @@ class StepSelector(QtGui.QWidget):
 
         description = self.steps[name].step_description[index]
         self.steps_description[self.current_step_name].text = description
-        self.step_describer.set_description(self.steps_description[self.current_step_name])
-
+        self.step_describer.set_description(
+            self.steps_description[self.current_step_name])
 
     def refresh_list(self, value=0):
         self.list.clear()
@@ -148,39 +160,43 @@ class StepSelector(QtGui.QWidget):
         base_image_path = rootPath + '/images/step'
         for step in steps:
             item = QtGui.QListWidgetItem(step.step_name)
-            if first_item == None:
+            if first_item is None:
                 first_item = item
             self.list.addItem(item)
             self.steps[step.step_name] = step
 
             description = StepDescription()
-            description.image_path = [base_image_path+str(index)+"-a.jpeg", base_image_path+str(index)+"-b.jpeg"]
+            description.image_path = [
+                base_image_path + str(index) + "-a.jpeg", base_image_path + str(index) + "-b.jpeg"]
             self.steps_description[step.step_name] = description
             index = index + 1
         return first_item
-
 
     def calibrate_current_step(self):
         if self.steps_description[self.current_step_name].current_substep == 0:
             self.steps_description[self.current_step_name].current_substep = 1
             self.calibrer.do_step_min(self.current_row)
 
-            description = self.steps[self.current_step_name].step_description[1]
+            description = self.steps[
+                self.current_step_name].step_description[1]
             self.steps_description[self.current_step_name].text = description
-            self.step_describer.set_description(self.steps_description[self.current_step_name])
+            self.step_describer.set_description(
+                self.steps_description[self.current_step_name])
 
         elif self.steps_description[self.current_step_name].current_substep == 1:
             self.calibrer.do_step_max(self.current_row)
             if self.current_row < len(self.steps) - 1:
                 self.list.setCurrentRow(self.current_row + 1)
                 next_item = self.list.item(self.current_row + 1)
-                self.step_choosed(next_item, second_substep = True)
+                self.step_choosed(next_item, second_substep=True)
 
 
 class GloveCalibratingWidget(QtGui.QWidget):
+
     """
     Displays which joints have been calibrated.
     """
+
     def __init__(self, parent, joint_names):
         QtGui.QWidget.__init__(self, parent=parent)
         self.frame = QtGui.QFrame()
@@ -201,7 +217,7 @@ class GloveCalibratingWidget(QtGui.QWidget):
         self.orange_palette.setBrush(QtGui.QPalette.Window, orange)
 
         col = 0
-        #vectors to set the correct row in the layout for each col
+        # vectors to set the correct row in the layout for each col
         rows = [0, 0, 0, 0, 0, 0]
 
         self.joints_frames = {}
@@ -262,69 +278,80 @@ class GloveCalibratingWidget(QtGui.QWidget):
             self.joints_frames[joint].setPalette(self.green_palette)
             self.frame.repaint()
 
-#class CybergloveCalibratorPlugin(CybergloveGenericPlugin):
+# class CybergloveCalibratorPlugin(CybergloveGenericPlugin):
+
+
 class SrGuiCybergloveCalibrator(Plugin):
+
     """
     The plugin used to calibrate the glove.
     """
     name = "Cyberglove Calibrator"
-    def __init__(self, context):
-		super(SrGuiCybergloveCalibrator, self).__init__(context)
-		self.setObjectName('SrGuiCybergloveCalibrator')
-		self.icon_dir = os.path.join(rospkg.RosPack().get_path('sr_visualization_icons'), '/icons')
-		
-		ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_cyberglove_calibrator'), 'uis', 'SrGuiCybergloveCalibrator.ui')
-		self._widget = QWidget()
-		loadUi(ui_file, self._widget)
-		context.add_widget(self._widget)
-		
-		#self.frame = QtGui.QFrame()
-		#self.layout = QtGui.QVBoxLayout()
-		#self.frame.setLayout(self.layout)
-		#self.window.setWidget(self.frame)
 
-		self.calibrer = CybergloveCalibrer(description_function = None)
-		self.joint_names = self.calibrer.cyberglove.joints.keys()
-		self.joint_names.sort()
-		
-		self.layout = self._widget.layout
-		subframe = QtGui.QFrame()
-		sublayout = QtGui.QHBoxLayout()
-		
-		self.glove_calibrating_widget = GloveCalibratingWidget(self._widget, self.joint_names)
-		self.layout.addWidget(self.glove_calibrating_widget)
-		
-		self.step_selector = StepSelector(self._widget, self.calibrer)
-		sublayout.addWidget(self.step_selector)
-		
-		btn_frame = QtGui.QFrame()
-		btn_layout = QtGui.QVBoxLayout()
-		btn_layout.setSpacing(25)
-		btn_calibrate = QtGui.QPushButton()
-		btn_calibrate.setText("Calibrate")
-		btn_calibrate.setToolTip("Calibrate the current selected step")
-		btn_calibrate.setIcon(QtGui.QIcon(rootPath + '/images/icons/calibrate.png'))
-		btn_layout.addWidget(btn_calibrate)
-		btn_frame.connect(btn_calibrate, QtCore.SIGNAL('clicked()'), self.calibrate_current_step)
-		self.btn_save = QtGui.QPushButton()
-		self.btn_save.setText("Save")
-		self.btn_save.setToolTip("Save the current calibration")
-		self.btn_save.setIcon(QtGui.QIcon(rootPath + '/images/icons/save.png'))
-		self.btn_save.setDisabled(True)
-		btn_layout.addWidget(self.btn_save)
-		btn_frame.connect(self.btn_save, QtCore.SIGNAL('clicked()'), self.save_calib)
-		btn_load = QtGui.QPushButton()
-		btn_load.setText("Load")
-		btn_load.setToolTip("Load a Glove calibration")
-		btn_load.setIcon(QtGui.QIcon(rootPath + '/images/icons/load.png'))
-		btn_layout.addWidget(btn_load)
-		btn_frame.connect(btn_load, QtCore.SIGNAL('clicked()'), self.load_calib)
-		btn_frame.setLayout(btn_layout)
-		sublayout.addWidget(btn_frame)
-		subframe.setLayout(sublayout)
-		self.layout.addWidget(subframe)
-	
-	#	QtCore.QTimer.singleShot(0, self.window.adjustSize)
+    def __init__(self, context):
+        super(SrGuiCybergloveCalibrator, self).__init__(context)
+        self.setObjectName('SrGuiCybergloveCalibrator')
+        self.icon_dir = os.path.join(
+            rospkg.RosPack().get_path('sr_visualization_icons'), '/icons')
+
+        ui_file = os.path.join(rospkg.RosPack().get_path(
+            'sr_gui_cyberglove_calibrator'), 'uis', 'SrGuiCybergloveCalibrator.ui')
+        self._widget = QWidget()
+        loadUi(ui_file, self._widget)
+        context.add_widget(self._widget)
+
+        # self.frame = QtGui.QFrame()
+        # self.layout = QtGui.QVBoxLayout()
+        # self.frame.setLayout(self.layout)
+        # self.window.setWidget(self.frame)
+
+        self.calibrer = CybergloveCalibrer(description_function=None)
+        self.joint_names = self.calibrer.cyberglove.joints.keys()
+        self.joint_names.sort()
+
+        self.layout = self._widget.layout
+        subframe = QtGui.QFrame()
+        sublayout = QtGui.QHBoxLayout()
+
+        self.glove_calibrating_widget = GloveCalibratingWidget(
+            self._widget, self.joint_names)
+        self.layout.addWidget(self.glove_calibrating_widget)
+
+        self.step_selector = StepSelector(self._widget, self.calibrer)
+        sublayout.addWidget(self.step_selector)
+
+        btn_frame = QtGui.QFrame()
+        btn_layout = QtGui.QVBoxLayout()
+        btn_layout.setSpacing(25)
+        btn_calibrate = QtGui.QPushButton()
+        btn_calibrate.setText("Calibrate")
+        btn_calibrate.setToolTip("Calibrate the current selected step")
+        btn_calibrate.setIcon(
+            QtGui.QIcon(rootPath + '/images/icons/calibrate.png'))
+        btn_layout.addWidget(btn_calibrate)
+        btn_frame.connect(btn_calibrate, QtCore.SIGNAL(
+            'clicked()'), self.calibrate_current_step)
+        self.btn_save = QtGui.QPushButton()
+        self.btn_save.setText("Save")
+        self.btn_save.setToolTip("Save the current calibration")
+        self.btn_save.setIcon(QtGui.QIcon(rootPath + '/images/icons/save.png'))
+        self.btn_save.setDisabled(True)
+        btn_layout.addWidget(self.btn_save)
+        btn_frame.connect(
+            self.btn_save, QtCore.SIGNAL('clicked()'), self.save_calib)
+        btn_load = QtGui.QPushButton()
+        btn_load.setText("Load")
+        btn_load.setToolTip("Load a Glove calibration")
+        btn_load.setIcon(QtGui.QIcon(rootPath + '/images/icons/load.png'))
+        btn_layout.addWidget(btn_load)
+        btn_frame.connect(
+            btn_load, QtCore.SIGNAL('clicked()'), self.load_calib)
+        btn_frame.setLayout(btn_layout)
+        sublayout.addWidget(btn_frame)
+        subframe.setLayout(sublayout)
+        self.layout.addWidget(subframe)
+
+        #	QtCore.QTimer.singleShot(0, self.window.adjustSize)
 
     def calibrate_current_step(self):
         self.step_selector.calibrate_current_step()
@@ -339,10 +366,11 @@ class SrGuiCybergloveCalibrator(Plugin):
             self.btn_save.setEnabled(True)
 
     def save_calib(self):
-        filename = QtGui.QFileDialog.getSaveFileName(self._widget, 'Save Calibration', '')
+        filename = QtGui.QFileDialog.getSaveFileName(
+            self._widget, 'Save Calibration', '')
         if filename == "":
             return
-       
+
         self.calibrer.write_calibration_file(filename)
 
         # QMessageBox returns 0 for yes
@@ -353,15 +381,14 @@ class SrGuiCybergloveCalibrator(Plugin):
                                          "no") == 0:
             self.load_calib(filename)
 
-
-
-    def load_calib(self, filename = ""):
-        if filename == "":
-            filename = QtGui.QFileDialog.getOpenFileName(self._widget, 'Open Calibration', '')
-            if filename == "":
+    def load_calib(self, filename=""):
+        if "" == filename:
+            filename = QtGui.QFileDialog.getOpenFileName(
+                self._widget, 'Open Calibration', '')
+            if "" == filename:
                 return
 
         self.calibrer.load_calib(str(filename))
 
         self.emit(QtCore.SIGNAL("messageToStatusbar(QString)"),
-                         "New Cyberglove Calibration Loaded.")
+                  "New Cyberglove Calibration Loaded.")
