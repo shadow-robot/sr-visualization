@@ -17,7 +17,6 @@
 #
 
 import roslib
-# roslib.load_manifest('cyberglove')
 
 import time
 import os

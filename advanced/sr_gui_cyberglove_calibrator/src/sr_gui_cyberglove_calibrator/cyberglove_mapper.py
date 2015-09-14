@@ -23,7 +23,7 @@ Minimizes the mapping matrix using a simplex algorithm
 """
 
 import roslib
-# roslib.load_manifest('sr_control_gui')
+
 import rospy
 from scipy.optimize import fmin
 from cyberglove_library import Cyberglove

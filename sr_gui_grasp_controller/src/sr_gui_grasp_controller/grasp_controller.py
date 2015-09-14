@@ -456,8 +456,7 @@ class SrGuiGraspController(Plugin):
             self.sr_lib.activate_etherCAT_hand()
             # Some time to start receiving data
             rospy.sleep(0.5)
-            self.current_grasp.joints_and_positions = self.sr_lib.read_all_current_positions(
-            )
+            self.current_grasp.joints_and_positions = self.sr_lib.read_all_current_positions()
 
             if self.current_grasp.joints_and_positions is None:
                 QMessageBox.warning(
@@ -478,8 +477,7 @@ class SrGuiGraspController(Plugin):
         interpolate grasps from chosen to current one and from current to chosen
         hand controllers must be running and reference must be set
         """
-        self.current_grasp.joints_and_positions = self.sr_lib.read_all_current_positions(
-        )
+        self.current_grasp.joints_and_positions = self.sr_lib.read_all_current_positions()
 
         if self.current_grasp.joints_and_positions is None:
             QMessageBox.warning(

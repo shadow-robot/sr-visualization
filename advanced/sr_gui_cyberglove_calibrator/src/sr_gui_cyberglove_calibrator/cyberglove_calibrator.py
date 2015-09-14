@@ -382,10 +382,10 @@ class SrGuiCybergloveCalibrator(Plugin):
             self.load_calib(filename)
 
     def load_calib(self, filename=""):
-        if filename == "":
+        if "" == filename:
             filename = QtGui.QFileDialog.getOpenFileName(
                 self._widget, 'Open Calibration', '')
-            if filename == "":
+            if "" == filename:
                 return
 
         self.calibrer.load_calib(str(filename))
