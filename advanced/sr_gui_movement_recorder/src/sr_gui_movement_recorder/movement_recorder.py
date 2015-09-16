@@ -316,12 +316,12 @@ class SrGuiMovementRecorder(Plugin):
 
         # setting up the hand selection
         hand_finder = HandFinder()
-        hand_parameters = hand_finder.get_hand_parameters()
+        self.hand_parameters = hand_finder.get_hand_parameters()
 
         self.sublayout.addWidget(QLabel("Select Hand"), 0, 0)
         self.hand_combo_box = QComboBox()
 
-        for hand_serial in hand_parameters.mapping.keys():
+        for hand_serial in self.hand_parameters.mapping.keys():
             self.hand_combo_box.addItem(hand_serial)
 
         self.sublayout.addWidget(self.hand_combo_box, 0, 1)
@@ -382,11 +382,11 @@ class SrGuiMovementRecorder(Plugin):
         self.library = None
         self.steps = None
 
-        #selecting the first available hand
-        self.hand_selected(hand_parameters.mapping.keys()[0])
+        # selecting the first available hand
+        self.hand_selected(self.hand_parameters.mapping.keys()[0])
 
     def hand_selected(self, serial):
-        self.library = SrHandCommander(hand_parameters=hand_parameters,
+        self.library = SrHandCommander(hand_parameters=self.hand_parameters,
                                        hand_serial=serial)
 
         self.steps = []
