@@ -14,7 +14,7 @@
    <string>Shadow Movement Recorder</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
+   <item row="3" column="0">
     <layout class="QVBoxLayout" name="verticalLayout" stretch="0">
      <item>
       <widget class="QScrollArea" name="frame">
@@ -35,6 +35,12 @@
           <width>541</width>
           <height>236</height>
          </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
        </widget>
       </widget>

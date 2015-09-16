@@ -17,24 +17,20 @@
 #
 
 import os
-import rospy
 import rospkg
-
-from qt_gui.plugin import Plugin
-from python_qt_binding import loadUi
-
-from QtCore import QEvent, QObject, Qt, QTimer, Slot, SIGNAL, pyqtSignal
-from QtGui import QDockWidget, QShortcut, QMessageBox, QWidget, QFrame, QColor
-from QtGui import QLabel, QComboBox, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout, QIcon, QFileDialog
-from PyQt4.Qt import QTimer, QLayout, QPalette, QDoubleValidator, QIntValidator
-from controller_manager_msgs.srv import ListControllers, SwitchController, LoadController
-
-
 import xml.etree.ElementTree as ET
 import time
 import threading
 
-from sr_hand.shadowhand_ros import ShadowHand_ROS
+from qt_gui.plugin import Plugin
+from python_qt_binding import loadUi
+from PyQt4.Qt import QTimer, QLayout, QPalette, QDoubleValidator, QIntValidator
+from sr_robot_commander.sr_hand_commander import SrHandCommander
+from sr_utilities.hand_finder import HandFinder
+
+from QtCore import Qt, SIGNAL, pyqtSignal
+from QtGui import QWidget, QFrame, QColor
+from QtGui import QLabel, QComboBox, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout, QIcon, QFileDialog
 
 
 class Step(QWidget):
@@ -306,8 +302,6 @@ class SrGuiMovementRecorder(Plugin):
         self._widget.setObjectName('SrGuiMovementRecorderUi')
         context.add_widget(self._widget)
 
-        self.library = ShadowHand_ROS()
-
         self.frame = self._widget.frame
         self.timer = QTimer(self.frame)
 
@@ -320,17 +314,32 @@ class SrGuiMovementRecorder(Plugin):
         self.sublayout = QGridLayout()
         self.command_frame = QFrame()
 
+        # setting up the hand selection
+        hand_finder = HandFinder()
+        hand_parameters = hand_finder.get_hand_parameters()
+
+        self.sublayout.addWidget(QLabel("Select Hand"), 0, 0)
+        self.hand_combo_box = QComboBox()
+
+        for hand_serial in hand_parameters.mapping.keys():
+            self.hand_combo_box.addItem(hand_serial)
+
+        self.sublayout.addWidget(self.hand_combo_box, 0, 1)
+
+
+        self.library = SrHandCommander(hand_parameters=hand_parameters,
+                                       hand_serial=hand_parameters.mapping.keys()[0])
+
         self.play_btn = QPushButton()
         self.play_btn.setText("Play")
         self.play_btn.setFixedWidth(80)
         self.command_frame.connect(
             self.play_btn, SIGNAL('clicked()'), self.button_play_clicked)
-        self.sublayout.addWidget(self.play_btn, 0, 0)
+        self.sublayout.addWidget(self.play_btn, 0, 2)
 
         self.signal_widget = SignalWidget(self.frame)
         self.signal_widget.isPlayingSig['int'].connect(self.started_playing)
-        self.signal_widget.stoppedPlayingSig[
-            'int'].connect(self.stopped_playing)
+        self.signal_widget.stoppedPlayingSig['int'].connect(self.stopped_playing)
 
         self.mutex = threading.Lock()
         self.stopped = True
@@ -342,23 +351,23 @@ class SrGuiMovementRecorder(Plugin):
         self.stop_btn.setFixedWidth(80)
         self.command_frame.connect(
             self.stop_btn, SIGNAL('clicked()'), self.stop)
-        self.sublayout.addWidget(self.stop_btn, 0, 1)
+        self.sublayout.addWidget(self.stop_btn, 0, 3)
 
-        self.sublayout.addWidget(QLabel(''), 0, 2)
+        self.sublayout.addWidget(QLabel(''), 0, 4)
 
         self.save_btn = QPushButton()
         self.save_btn.setText("Save")
         self.save_btn.setFixedWidth(80)
         self.command_frame.connect(
             self.save_btn, SIGNAL('clicked()'), self.save)
-        self.sublayout.addWidget(self.save_btn, 0, 3)
+        self.sublayout.addWidget(self.save_btn, 0, 5)
 
         self.load_btn = QPushButton()
         self.load_btn.setText("Load")
         self.load_btn.setFixedWidth(80)
         self.command_frame.connect(
             self.load_btn, SIGNAL('clicked()'), self.load)
-        self.sublayout.addWidget(self.load_btn, 0, 4)
+        self.sublayout.addWidget(self.load_btn, 0, 6)
 
         self.command_frame.setLayout(self.sublayout)
         self.layout.addWidget(self.command_frame)
@@ -373,7 +382,7 @@ class SrGuiMovementRecorder(Plugin):
         self.play_btn.setIcon(QIcon(os.path.join(path_to_icons, 'play.png')))
 
         self.steps = []
-        self.add_step()
+        #self.add_step()
 
     def save(self):
         filename = QFileDialog.getSaveFileName(self.frame, 'Save Script', '')

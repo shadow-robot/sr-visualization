@@ -4,7 +4,7 @@ find_package(catkin REQUIRED COMPONENTS rospy rqt_gui rqt_gui_py sr_hand control
 
 catkin_package(
     DEPENDS
-    CATKIN_DEPENDS rospy rqt_gui rqt_gui_py sr_hand controller_manager_msgs sr_visualization_icons
+    CATKIN_DEPENDS rospy rqt_gui rqt_gui_py sr_robot_commander sr_utilities sr_visualization_icons
     INCLUDE_DIRS
     LIBRARIES
 )
