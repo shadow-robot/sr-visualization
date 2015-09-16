@@ -326,9 +326,7 @@ class SrGuiMovementRecorder(Plugin):
 
         self.sublayout.addWidget(self.hand_combo_box, 0, 1)
 
-
-        self.library = SrHandCommander(hand_parameters=hand_parameters,
-                                       hand_serial=hand_parameters.mapping.keys()[0])
+        self.frame.connect(self.hand_combo_box, SIGNAL('activated(QString)'), self.hand_selected)
 
         self.play_btn = QPushButton()
         self.play_btn.setText("Play")
@@ -380,6 +378,16 @@ class SrGuiMovementRecorder(Plugin):
         self.save_btn.setIcon(QIcon(os.path.join(path_to_icons, 'save.png')))
         self.stop_btn.setIcon(QIcon(os.path.join(path_to_icons, 'stop.png')))
         self.play_btn.setIcon(QIcon(os.path.join(path_to_icons, 'play.png')))
+
+        self.library = None
+        self.steps = None
+
+        #selecting the first available hand
+        self.hand_selected(hand_parameters.mapping.keys()[0])
+
+    def hand_selected(self, serial):
+        self.library = SrHandCommander(hand_parameters=hand_parameters,
+                                       hand_serial=serial)
 
         self.steps = []
         #self.add_step()
