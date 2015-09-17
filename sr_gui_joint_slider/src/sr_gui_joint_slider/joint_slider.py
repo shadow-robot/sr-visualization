@@ -35,7 +35,7 @@ from sr_robot_msgs.msg import JointMusclePositionControllerState
 from control_msgs.msg import JointTrajectoryControllerState
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
-from sr_gui_joint_slider.sliders import JointController, Joint, EtherCATHandSlider,
+from sr_gui_joint_slider.sliders import JointController, Joint, EtherCATHandSlider
 from sr_gui_joint_slider.sliders import EtherCATHandTrajectorySlider, EtherCATSelectionSlider
 
 
