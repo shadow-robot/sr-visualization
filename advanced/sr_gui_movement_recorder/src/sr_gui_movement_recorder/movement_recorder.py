@@ -62,7 +62,7 @@ class Step(QWidget):
         green_palette.setBrush(QPalette.Window, self.green)
         self.frame.setPalette(green_palette)
 
-        self.grasp = self.parent.library.grasp_parser.grasps.values()[0]
+        self.grasp = self.parent.hand_commander.get_named_targets()
         label_grasp = QLabel(self.frame)
         label_grasp.setText("Grasp:  ")  # + str(self.step_index + 1) + ":")
         self.widgets.append(label_grasp)
@@ -170,7 +170,7 @@ class Step(QWidget):
         self.show()
 
     def grasp_choosed(self, grasp_name):
-        self.grasp = self.parent.library.grasp_parser.grasps[str(grasp_name)]
+        self.grasp = grasp_name
 
     def pause_changed(self, pause_time):
         self.pause_time = float(pause_time)
@@ -235,7 +235,7 @@ class Step(QWidget):
             if subelement.tag == "grasp":
                 grasp_name = subelement.attrib.get("name")
                 self.grasp_choosed(grasp_name)
-                list_grasps = self.parent.library.grasp_parser.grasps.keys()
+                list_grasps = self.parent.hand_commander.get_named_targets()
                 list_grasps.sort()
                 for index, grasp_name_ref in zip(range(0, len(list_grasps)), list_grasps):
                     if grasp_name == grasp_name_ref:
@@ -264,8 +264,7 @@ class Step(QWidget):
 
     def refresh_list(self, value=0):
         self.list_grasp.clear()
-        self.parent.library.grasp_parser.refresh()
-        list_grasps = self.parent.library.grasp_parser.grasps.keys()
+        list_grasps = self.parent.hand_commander.get_named_targets()
         list_grasps.sort()
         for grasp_name in list_grasps:
             self.list_grasp.addItem(grasp_name)
@@ -379,18 +378,18 @@ class SrGuiMovementRecorder(Plugin):
         self.stop_btn.setIcon(QIcon(os.path.join(path_to_icons, 'stop.png')))
         self.play_btn.setIcon(QIcon(os.path.join(path_to_icons, 'play.png')))
 
-        self.library = None
+        self.hand_commander = None
         self.steps = None
 
         # selecting the first available hand
         self.hand_selected(self.hand_parameters.mapping.keys()[0])
 
     def hand_selected(self, serial):
-        self.library = SrHandCommander(hand_parameters=self.hand_parameters,
-                                       hand_serial=serial)
+        self.hand_commander = SrHandCommander(hand_parameters=self.hand_parameters,
+                                              hand_serial=serial)
 
         self.steps = []
-        #self.add_step()
+        self.add_step()
 
     def save(self):
         filename = QFileDialog.getSaveFileName(self.frame, 'Save Script', '')
@@ -526,10 +525,10 @@ class SrGuiMovementRecorder(Plugin):
         return index + 1
 
     def move_step(self, next_step):
-        interpoler = self.library.create_grasp_interpoler(
+        interpoler = self.hand_commander.create_grasp_interpoler(
             self.current_step.grasp, next_step.grasp)
         if self.current_step.interpolation_time == 0.0:
-            self.library.sendupdate_from_dict(
+            self.hand_commander.sendupdate_from_dict(
                 next_step.grasp.joints_and_positions)
         else:
             for interpolation in range(0, 10 * int(self.current_step.interpolation_time)):
@@ -539,9 +538,9 @@ class SrGuiMovementRecorder(Plugin):
                     return
                 self.mutex.release()
 
-                targets_to_send = self.library.grasp_interpoler.interpolate(
+                targets_to_send = self.hand_commander.grasp_interpoler.interpolate(
                     100.0 * interpolation / (10 * self.current_step.interpolation_time))
-                self.library.sendupdate_from_dict(targets_to_send)
+                self.hand_commander.sendupdate_from_dict(targets_to_send)
                 time.sleep(0.1)
 
         time.sleep(self.current_step.pause_time)
