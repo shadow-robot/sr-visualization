@@ -30,10 +30,11 @@ from QtGui import *
 
 from sr_hand.Grasp import Grasp
 from sr_hand.grasps_interpoler import GraspInterpoler
-from sr_hand.grasps_parser import GraspParser
+from sr_robot_commander import SrHandCommander
+from sr_uitilities.hand_finder import HandFinder
+
 
 from sr_hand.shadowhand_ros import ShadowHand_ROS
-
 
 class JointSelecter(QtGui.QWidget):
 
@@ -46,6 +47,15 @@ class JointSelecter(QtGui.QWidget):
         self.frame = QtGui.QFrame()
         self.layout = QtGui.QGridLayout()
         self.checkboxes = []
+
+        hand_finder = HandFinder()
+
+        hand_parameters = hand_finder.get_hand_parameters()
+        hand_serial = get_hand_parameters.mapping.keys()[0]
+
+        self.hand_commander = SrHandCommander(
+            hand_parameters=hand_parameters,
+            hand_serial=hand_serial)
 
         col = 0
         # vectors to set the correct row in the layout for each col
