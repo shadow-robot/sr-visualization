@@ -129,10 +129,10 @@ class SrGuiBiotac(Plugin):
                 self.y_display_offset[0])
 
     def tactile_cb(self, msg):
-        self.latest_data = msg
-        if len(self.latest_data.tactiles[0].electrodes) != self._nb_electrodes:
-            self._nb_electrodes = len(self.latest_data.tactiles[0].electrodes)
+        if len(msg.tactiles[0].electrodes) != self._nb_electrodes:
+            self._nb_electrodes = len(msg.tactiles[0].electrodes)
             self.assign_electrodes(self._nb_electrodes)
+        self.latest_data = msg
 
     def get_electrode_colour_from_value(self, value):
         r = 0.0
