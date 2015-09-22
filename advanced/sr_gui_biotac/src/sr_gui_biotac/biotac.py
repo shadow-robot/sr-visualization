@@ -85,7 +85,7 @@ class SrGuiBiotac(Plugin):
         self.excitation_electrodes_v2_x = \
             rospy.get_param(
                 "sr_gui_biotac/excitation_electrodes_x_locations",
-                [5.30, 6.00, -3.75, -5.30])
+                [5.30, 6.00, -5.30, -6.00])
         self.excitation_electrodes_v2_y = \
             rospy.get_param(
                 "sr_gui_biotac/excitation_electrodes_y_locations",
@@ -97,11 +97,16 @@ class SrGuiBiotac(Plugin):
             self.sensing_electrodes_y = self.sensing_electrodes_v1_y
             self.excitation_electrodes_x = self.excitation_electrodes_v1_x
             self.excitation_electrodes_y = self.excitation_electrodes_v1_y
+            self.factor = rospy.get_param(
+                "sr_gui_biotac/display_location_scale_factor",
+                17.5)  # Sets the multiplier to go from physical electrode
+        # location on the sensor in mm to display location in pixels
         elif nb_electrodes == self._nb_electrodes_biotac_sp:
             self.sensing_electrodes_x = self.sensing_electrodes_v2_x
             self.sensing_electrodes_y = self.sensing_electrodes_v2_y
             self.excitation_electrodes_x = self.excitation_electrodes_v2_x
             self.excitation_electrodes_y = self.excitation_electrodes_v2_y
+            self.factor = 25.0
         else:
             rospy.logerr("Number of electrodes %d not matching known biotac models. expected: %d or %d",
                          nb_electrodes, self._nb_electrodes_biotac, self._nb_electrodes_biotac_sp)
@@ -243,7 +248,7 @@ class SrGuiBiotac(Plugin):
             17.5)  # Sets the multiplier to go from physical electrode
         # location on the sensor in mm to display location in pixels
         self.x_display_offset = rospy.get_param(
-            "sr_gui_biotac/x_display_offset", [150, 12.5, 4.5,
+            "sr_gui_biotac/x_display_offset", [200, 12.5, 4.5,
                                                3.5])  # Pixel offsets for
         # displaying electrodes. offset[0] is applied to each electrode.
         # 1,2 and 3 are the label offsets for displaying electrode number.
