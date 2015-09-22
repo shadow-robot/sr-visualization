@@ -48,14 +48,6 @@ class JointSelecter(QtGui.QWidget):
         self.layout = QtGui.QGridLayout()
         self.checkboxes = []
 
-        hand_finder = HandFinder()
-
-        hand_parameters = hand_finder.get_hand_parameters()
-        hand_serial = get_hand_parameters.mapping.keys()[0]
-
-        self.hand_commander = SrHandCommander(
-            hand_parameters=hand_parameters,
-            hand_serial=hand_serial)
 
         col = 0
         # vectors to set the correct row in the layout for each col
@@ -277,18 +269,17 @@ class GraspChooser(QtGui.QWidget):
         """
         Sends new targets to the hand from a dictionary mapping the name of the joint to the value of its target
         """
-        self.grasp = self.plugin_parent.sr_lib.grasp_parser.grasps[
-            str(item.text())]
-        self.plugin_parent.sr_lib.sendupdate_from_dict(
-            self.grasp.joints_and_positions)
+        self.grasp_name = item.text()
+        self.plugin_parent.hand_commander.move_to_named_target(self.grasp_name)
         self.plugin_parent.set_reference_grasp()
 
     def grasp_selected(self, item, first_time=False):
         """
         grasp has been selected with a single click
         """
-        self.grasp = self.plugin_parent.sr_lib.grasp_parser.grasps[
-            str(item.text())]
+        self.grasp_name = item.text()
+        self.grasp = self.plugin_parent.hand_commander.get_named_target_joint_values(self.grasp_name)
+
         if not first_time:
             self.plugin_parent.grasp_changed()
             self.plugin_parent.set_reference_grasp()
@@ -299,7 +290,7 @@ class GraspChooser(QtGui.QWidget):
         """
         self.list.clear()
         first_item = None
-        grasps = self.plugin_parent.sr_lib.grasp_parser.grasps.keys()
+        grasps = self.plugin_parent.hand_commander.get_named_targets()
         grasps.sort()
         for grasp_name in grasps:
             item = QtGui.QListWidgetItem(grasp_name)
@@ -391,8 +382,17 @@ class SrGuiGraspController(Plugin):
         loadUi(ui_file, self._widget)
         context.add_widget(self._widget)
 
-        self.current_grasp = Grasp()
-        self.current_grasp.name = 'CURRENT_UNSAVED'
+
+        hand_finder = HandFinder()
+        hand_parameters = hand_finder.get_hand_parameters()
+        hand_serial = hand_parameters.mapping.keys()[0]
+        self.hand_commander = SrHandCommander(
+            hand_parameters=hand_parameters,
+            hand_serial=hand_serial)
+
+
+        self.current_grasp = list()
+
         self.grasp_interpoler_1 = None
         self.grasp_interpoler_2 = None
 
@@ -457,44 +457,28 @@ class SrGuiGraspController(Plugin):
         """
         Set the current grasp as a reference for interpolation
         """
-        self.current_grasp.joints_and_positions = self.sr_lib.read_all_current_positions(
-        )
 
-        if self.current_grasp.joints_and_positions is None:
-            # We try to activate ethercat hand again (detect if any controllers
-            # are running, and listen to them to extract the current position)
-            self.sr_lib.activate_etherCAT_hand()
-            # Some time to start receiving data
-            rospy.sleep(0.5)
-            self.current_grasp.joints_and_positions = self.sr_lib.read_all_current_positions()
+        self.current_grasp = self.hand_commander.get_current_pose()
 
-            if self.current_grasp.joints_and_positions is None:
-                QMessageBox.warning(
-                    self._widget, "Warning", "Could not read current grasp.\n"
-                    "Check that the hand controllers are running.\n"
-                    "Then click \"Set Reference\"")
-                return
+        rospy.logwarn(self.current_grasp)
+        rospy.logwarn(self.grasp_from_chooser.grasp)
+        rospy.logwarn(self.grasp_to_chooser.grasp)
+
+        self.grasp_slider.slider.setValue(0)
+
+        return
 
         self.grasp_interpoler_1 = GraspInterpoler(
             self.grasp_from_chooser.grasp, self.current_grasp)
         self.grasp_interpoler_2 = GraspInterpoler(
             self.current_grasp, self.grasp_to_chooser.grasp)
 
-        self.grasp_slider.slider.setValue(0)
-
     def grasp_changed(self):
         """
         interpolate grasps from chosen to current one and from current to chosen
         hand controllers must be running and reference must be set
         """
-        self.current_grasp.joints_and_positions = self.sr_lib.read_all_current_positions()
-
-        if self.current_grasp.joints_and_positions is None:
-            QMessageBox.warning(
-                self._widget, "Warning", "Could not read current grasp.\n"
-                "Check that the hand controllers are running.\n"
-                "Then click \"Set Reference\"")
-            return
+        self.current_grasp = self.hand_commander.get_current_pose()
 
         self.grasp_interpoler_1 = GraspInterpoler(
             self.grasp_from_chooser.grasp, self.current_grasp)
@@ -515,9 +499,9 @@ class SrGuiGraspController(Plugin):
                 "Then click \"Set Reference\"")
             return
         # from -> current
+        targets_to_send = dict()
         if value < 0:
             targets_to_send = self.grasp_interpoler_1.interpolate(100 + value)
-            self.sr_lib.sendupdate_from_dict(targets_to_send)
         else:  # current -> to
             targets_to_send = self.grasp_interpoler_2.interpolate(value)
-            self.sr_lib.sendupdate_from_dict(targets_to_send)
+        self.hand_commander.move_to_joint_value_target(targets_to_send)
