@@ -31,7 +31,7 @@ from QtGui import *
 from sr_hand.Grasp import Grasp
 from sr_hand.grasps_interpoler import GraspInterpoler
 from sr_robot_commander.sr_hand_commander import SrHandCommander
-from sr_uitilities.hand_finder import HandFinder
+from sr_utilities.hand_finder import HandFinder
 
 
 from sr_hand.shadowhand_ros import ShadowHand_ROS
