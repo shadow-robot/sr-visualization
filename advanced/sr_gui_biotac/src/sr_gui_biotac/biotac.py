@@ -43,30 +43,69 @@ from sr_utilities.hand_finder import HandFinder
 
 
 class SrGuiBiotac(Plugin):
+    _nb_electrodes_biotac = 19
+    _nb_electrodes_biotac_sp = 24
 
     def define_electrodes(self):
-
-        self.sensing_electrodes_x = \
+        self.sensing_electrodes_v1_x = \
             rospy.get_param(
                 "sr_gui_biotac/sensing_electrodes_x_locations",
                 [6.45, 3.65, 3.65, 6.45, 3.65, 6.45, 0.00, 1.95, -1.95,
                  0.00, -6.45, - 3.65, -3.65, -6.45, -3.65, -6.45, 0.00,
                  0.00, 0.00])  # Physical electrode locations on the sensor
-        self.sensing_electrodes_y = \
+        self.sensing_electrodes_v1_y = \
             rospy.get_param(
                 "sr_gui_biotac/sensing_electrodes_y_locations",
                 [7.58, 11.28, 14.78, 16.58, 19.08, 21.98, 4.38, 6.38, 6.38,
                  8.38, 7.58, 11.28, 14.78, 16.58, 19.08, 21.98, 11.38,
                  18.38, 22.18])
 
-        self.excitation_electrodes_x = \
+        self.excitation_electrodes_v1_x = \
             rospy.get_param(
                 "sr_gui_biotac/excitation_electrodes_x_locations",
                 [6.45, 3.75, -3.75, -6.45])
-        self.excitation_electrodes_y = \
+        self.excitation_electrodes_v1_y = \
             rospy.get_param(
                 "sr_gui_biotac/excitation_electrodes_y_locations",
                 [12.48, 24.48, 24.48, 12.48])
+
+        self.sensing_electrodes_v2_x = \
+            rospy.get_param(
+                "sr_gui_biotac/sensing_electrodes_x_locations",
+                [5.00, 3.65, 6.45, 4.40, 2.70, 6.45, 4.40, 1.50, 4.00, 4.50,
+                 -5.00, - 3.65, -6.45, -4.40, -2.70, -6.45, -4.40, -1.50, -4.00, -4.50,
+                 0.00, 1.95, -1.95, 0.00])  # Physical electrode locations on the sensor
+        self.sensing_electrodes_v2_y = \
+            rospy.get_param(
+                "sr_gui_biotac/sensing_electrodes_y_locations",
+                [4.38, 6.38, 14.78, 15.50, 18.50, 19.08, 20.00, 21.00, 23.00, 25.00,
+                 4.38, 6.38, 14.78, 15.50, 18.50, 19.08, 20.00, 21.00, 23.00, 25.00,
+                 7.38, 11.50, 11.50, 15.20])
+
+        self.excitation_electrodes_v2_x = \
+            rospy.get_param(
+                "sr_gui_biotac/excitation_electrodes_x_locations",
+                [5.30, 6.00, -3.75, -5.30])
+        self.excitation_electrodes_v2_y = \
+            rospy.get_param(
+                "sr_gui_biotac/excitation_electrodes_y_locations",
+                [9.00, 22.00, 9.00, 22.00])
+
+    def assign_electrodes(self, nb_electrodes):
+        if nb_electrodes == self._nb_electrodes_biotac:
+            self.sensing_electrodes_x = self.sensing_electrodes_v1_x
+            self.sensing_electrodes_y = self.sensing_electrodes_v1_y
+            self.excitation_electrodes_x = self.excitation_electrodes_v1_x
+            self.excitation_electrodes_y = self.excitation_electrodes_v1_y
+        elif nb_electrodes == self._nb_electrodes_biotac_sp:
+            self.sensing_electrodes_x = self.sensing_electrodes_v2_x
+            self.sensing_electrodes_y = self.sensing_electrodes_v2_y
+            self.excitation_electrodes_x = self.excitation_electrodes_v2_x
+            self.excitation_electrodes_y = self.excitation_electrodes_v2_y
+        else:
+            rospy.logerr("Number of electrodes %d not matching known biotac models. expected: %d or %d",
+                         nb_electrodes, self._nb_electrodes_biotac, self._nb_electrodes_biotac_sp)
+            return
 
         for n in range(len(self.sensing_electrodes_x)):
             self.sensing_electrodes_x[n] = (
@@ -86,6 +125,9 @@ class SrGuiBiotac(Plugin):
 
     def tactile_cb(self, msg):
         self.latest_data = msg
+        if len(self.latest_data.tactiles[0].electrodes) != self._nb_electrodes:
+            self._nb_electrodes = len(self.latest_data.tactiles[0].electrodes)
+            self.assign_electrodes(self._nb_electrodes)
 
     def get_electrode_colour_from_value(self, value):
         r = 0.0
@@ -232,6 +274,8 @@ class SrGuiBiotac(Plugin):
         self.latest_data = BiotacAll()
 
         self.define_electrodes()
+        self._nb_electrodes = self._nb_electrodes_biotac
+        self.assign_electrodes(self._nb_electrodes)
 
         ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_biotac'),
                                'uis', 'SrGuiBiotac.ui')
