@@ -111,13 +111,12 @@ class SrGuiBootloader(Plugin):
             self._widget.select_prefix.addItem(hand_parameters.mapping[hand])
         if not hand_parameters.mapping:
             rospy.logerr("No hand detected")
-            QMessageBox.warning(
-                self._widget, "warning", "No hand is detected")
+            QMessageBox.warning(self._widget, "warning", "No hand is detected")
+            return
         else:
             self._widget.select_prefix.setCurrentIndex(0)
             self._prefix = hand_parameters.mapping.values()[0]
-        self._widget.select_prefix.currentIndexChanged[
-            'QString'].connect(self.prefix_selected)
+        self._widget.select_prefix.currentIndexChanged['QString'].connect(self.prefix_selected)
 
         # motors_frame is defined in the ui file with a grid layout
         self.motors = []
@@ -126,16 +125,16 @@ class SrGuiBootloader(Plugin):
         self.progress_bar.hide()
 
         self.server_revision = 0
-        self.diag_sub = rospy.Subscriber(
-            "/diagnostics", DiagnosticArray, self.diagnostics_callback)
+        self.diag_sub = rospy.Subscriber("/diagnostics", DiagnosticArray, self.diagnostics_callback)
 
         # Bind button clicks
-        self._widget.btn_select_bootloader.pressed.connect(
-            self.on_select_bootloader_pressed)
+        self._widget.btn_select_bootloader.pressed.connect(self.on_select_bootloader_pressed)
         self._widget.btn_select_all.pressed.connect(self.on_select_all_pressed)
-        self._widget.btn_select_none.pressed.connect(
-            self.on_select_none_pressed)
+        self._widget.btn_select_none.pressed.connect(self.on_select_none_pressed)
         self._widget.btn_bootload.pressed.connect(self.on_bootload_pressed)
+
+        #select the first available hand
+        self.prefix_selected(hand_parameters.mapping.values()[0])
 
     def on_select_bootloader_pressed(self):
         """
@@ -168,13 +167,13 @@ class SrGuiBootloader(Plugin):
         Find motors according to joint_to_motor_mapping mapping that must exist on the parameter server
         and add to the list of Motor objects etherCAT hand node must be running
         """
-        if rospy.has_param(self._prefix + "joint_to_motor_mapping"):
+        if rospy.has_param(self._prefix + "/joint_to_motor_mapping"):
             joint_to_motor_mapping = rospy.get_param(
-                self._prefix + "joint_to_motor_mapping")
+                self._prefix + "/joint_to_motor_mapping")
         else:
             QMessageBox.warning(self.motors_frame, "Warning",
                                 "Couldn't find the " + self._prefix +
-                                "joint_to_motor_mapping parameter. Make sure the etherCAT Hand node is running")
+                                "/joint_to_motor_mapping parameter. Make sure the etherCAT Hand node is running")
             return
 
         joint_names = [
@@ -210,26 +209,20 @@ class SrGuiBootloader(Plugin):
                             server_current_modified = key_values.value.split(" / ")
 
                             if server_current_modified[0] > self.server_revision:
-                                self.server_revision = int(
-                                    server_current_modified[0].strip())
+                                self.server_revision = int(server_current_modified[0].strip())
 
                             palette = motor.revision_label.palette()
-                            palette.setColor(
-                                motor.revision_label.foregroundRole(), Qt.green)
+                            palette.setColor(motor.revision_label.foregroundRole(), Qt.green)
                             if server_current_modified[0].strip() != server_current_modified[1].strip():
-                                palette.setColor(
-                                    motor.revision_label.foregroundRole(), QColor(255, 170, 23))
+                                palette.setColor(motor.revision_label.foregroundRole(), QColor(255, 170, 23))
                                 motor.revision_label.setPalette(palette)
 
                             if "True" in server_current_modified[2]:
-                                palette.setColor(
-                                    motor.revision_label.foregroundRole(), Qt.red)
-                                motor.revision_label.setText(
-                                    "svn: " + server_current_modified[1] + " [M]")
+                                palette.setColor(motor.revision_label.foregroundRole(), Qt.red)
+                                motor.revision_label.setText("svn: " + server_current_modified[1] + " [M]")
                                 motor.revision_label.setPalette(palette)
                             else:
-                                motor.revision_label.setText(
-                                    " svn: " + server_current_modified[1])
+                                motor.revision_label.setText(" svn: " + server_current_modified[1])
                                 motor.revision_label.setPalette(palette)
 
     def on_select_all_pressed(self):
@@ -256,19 +249,15 @@ class SrGuiBootloader(Plugin):
             if motor.checkbox.checkState() == Qt.Checked:
                 nb_motors_to_program += 1
         if nb_motors_to_program == 0:
-            QMessageBox.warning(
-                self._widget, "Warning", "No motors selected for resetting.")
+            QMessageBox.warning(self._widget, "Warning", "No motors selected for resetting.")
             return
         self.progress_bar.setMaximum(nb_motors_to_program)
 
         self.motor_bootloader = MotorBootloader(
             self, nb_motors_to_program, self._prefix)
-        self._widget.connect(self.motor_bootloader, SIGNAL(
-            "finished()"), self.finished_programming_motors)
-        self._widget.connect(self.motor_bootloader, SIGNAL(
-            "motor_finished(QPoint)"), self.one_motor_finished)
-        self._widget.connect(self.motor_bootloader, SIGNAL(
-            "failed(QString)"), self.failed_programming_motors)
+        self._widget.connect(self.motor_bootloader, SIGNAL("finished()"), self.finished_programming_motors)
+        self._widget.connect(self.motor_bootloader, SIGNAL("motor_finished(QPoint)"), self.one_motor_finished)
+        self._widget.connect(self.motor_bootloader, SIGNAL("failed(QString)"), self.failed_programming_motors)
 
         self._widget.setCursor(Qt.WaitCursor)
         self.motors_frame.setEnabled(False)
