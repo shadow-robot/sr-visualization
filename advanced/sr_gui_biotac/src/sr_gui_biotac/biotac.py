@@ -197,24 +197,25 @@ class SrGuiBiotac(Plugin):
 
         painter.setFont(QFont("Arial", self.label_font_size[0]))
 
-        for n in range(len(self.sensing_electrodes_x)):
-            value = self.latest_data.tactiles[which_tactile].electrodes[n]
-            eval("self._widget.lcdE%02d.display(%d)" % (n + 1, value))
-            colour = self.get_electrode_colour_from_value(value)
+        if len(self.sensing_electrodes_x) == len(self.latest_data.tactiles[which_tactile].electrodes):
+            for n in range(len(self.sensing_electrodes_x)):
+                value = self.latest_data.tactiles[which_tactile].electrodes[n]
+                eval("self._widget.lcdE%02d.display(%d)" % (n + 1, value))
+                colour = self.get_electrode_colour_from_value(value)
 
-            elipse_x = self.sensing_electrodes_x[n]
-            elipse_y = self.sensing_electrodes_y[n]
+                elipse_x = self.sensing_electrodes_x[n]
+                elipse_y = self.sensing_electrodes_y[n]
 
-            if n < 9:
-                text_x = elipse_x + self.x_display_offset[1]
-                text_y = elipse_y + self.y_display_offset[1]
+                if n < 9:
+                    text_x = elipse_x + self.x_display_offset[1]
+                    text_y = elipse_y + self.y_display_offset[1]
 
-            else:
-                text_x = elipse_x + self.x_display_offset[2]
-                text_y = elipse_y + self.y_display_offset[2]
+                else:
+                    text_x = elipse_x + self.x_display_offset[2]
+                    text_y = elipse_y + self.y_display_offset[2]
 
-            self.draw_electrode(painter, elipse_x, elipse_y, text_x, text_y,
-                                colour, str(n + 1))
+                self.draw_electrode(painter, elipse_x, elipse_y, text_x, text_y,
+                                    colour, str(n + 1))
 
         painter.setFont(QFont("Arial", self.label_font_size[1]))
 
