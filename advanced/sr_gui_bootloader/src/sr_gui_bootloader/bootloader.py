@@ -46,21 +46,18 @@ class MotorBootloader(QThread):
         for motor in self.parent.motors:
             if motor.checkbox.checkState() == Qt.Checked:
                 try:
-                    self.bootloader_service = rospy.ServiceProxy(
-                        self.prefix + 'SimpleMotorFlasher', SimpleMotorFlasher)
-                    resp = self.bootloader_service(
-                        firmware_path.encode('ascii', 'ignore'), motor.motor_index)
+                    self.bootloader_service = rospy.ServiceProxy(self.prefix + '/SimpleMotorFlasher',
+                                                                 SimpleMotorFlasher)
+                    resp = self.bootloader_service(firmware_path.encode('ascii', 'ignore'), motor.motor_index)
                 except rospy.ServiceException, e:
-                    self.emit(SIGNAL("failed(QString)"),
-                              "Service did not process request: %s" % str(e))
+                    self.emit(SIGNAL("failed(QString)"), "Service did not process request: %s" % str(e))
                     return
 
                 if resp == SimpleMotorFlasherResponse.FAIL:
                     self.emit(SIGNAL("failed(QString)"),
                               "Bootloading motor {} failed".format(bootloaded_motors))
                 bootloaded_motors += 1
-                self.emit(
-                    SIGNAL("motor_finished(QPoint)"), QPoint(bootloaded_motors, 0.0))
+                self.emit(SIGNAL("motor_finished(QPoint)"), QPoint(bootloaded_motors, 0.0))
 
 
 class Motor(QFrame):
