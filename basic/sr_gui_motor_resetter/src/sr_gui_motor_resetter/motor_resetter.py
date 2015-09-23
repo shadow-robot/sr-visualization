@@ -52,8 +52,8 @@ class MotorFlasher(QThread):
                         "resetting: realtime_loop/" + self.prefix +
                         "/reset_motor_" + motor.motor_name)
                     self.flasher_service = rospy.ServiceProxy(
-                        'realtime_loop/' + self.prefix + '/reset_motor_'
-                        + motor.motor_name, Empty)
+                        'realtime_loop/' + self.prefix + '/reset_motor_' +
+                        motor.motor_name, Empty)
                     self.flasher_service()
                 except rospy.ServiceException, e:
                     self.emit(SIGNAL("failed(QString)"),
