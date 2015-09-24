@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>480</width>
-    <height>660</height>
+    <width>578</width>
+    <height>812</height>
    </rect>
   </property>
   <property name="font">
@@ -23,17 +23,17 @@
     <rect>
      <x>10</x>
      <y>40</y>
-     <width>476</width>
-     <height>586</height>
+     <width>561</width>
+     <height>761</height>
     </rect>
    </property>
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>360</x>
+      <x>450</x>
       <y>0</y>
       <width>106</width>
-      <height>585</height>
+      <height>740</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="formLayout">
@@ -422,13 +422,103 @@
        </item>
       </layout>
      </item>
+     <item row="19" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_21">
+       <item>
+        <widget class="QLabel" name="label_20">
+         <property name="text">
+          <string>E20</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLCDNumber" name="lcdE20">
+         <property name="intValue" stdset="0">
+          <number>4095</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="20" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_22">
+       <item>
+        <widget class="QLabel" name="label_21">
+         <property name="text">
+          <string>E21</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLCDNumber" name="lcdE21">
+         <property name="intValue" stdset="0">
+          <number>4095</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="21" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_23">
+       <item>
+        <widget class="QLabel" name="label_22">
+         <property name="text">
+          <string>E22</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLCDNumber" name="lcdE22">
+         <property name="intValue" stdset="0">
+          <number>4095</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="22" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_24">
+       <item>
+        <widget class="QLabel" name="label_23">
+         <property name="text">
+          <string>E23</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLCDNumber" name="lcdE23">
+         <property name="intValue" stdset="0">
+          <number>4095</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="23" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_25">
+       <item>
+        <widget class="QLabel" name="label_24">
+         <property name="text">
+          <string>E24</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLCDNumber" name="lcdE24">
+         <property name="intValue" stdset="0">
+          <number>4095</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
     </layout>
    </widget>
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>11</x>
-      <y>551</y>
+      <x>10</x>
+      <y>710</y>
       <width>332</width>
       <height>35</height>
      </rect>
@@ -437,7 +527,7 @@
      <item row="0" column="0">
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="0">
-        <widget class="QLabel" name="label_20">
+        <widget class="QLabel" name="label_25">
          <property name="text">
           <string>BioTac ID:</string>
          </property>
@@ -491,7 +581,7 @@
        <item row="0" column="0">
         <layout class="QHBoxLayout" name="horizontalLayout_20">
          <item>
-          <widget class="QLabel" name="label_21">
+          <widget class="QLabel" name="label_26">
            <property name="text">
             <string>Topic Prefix</string>
            </property>
