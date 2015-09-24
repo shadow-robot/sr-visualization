@@ -186,9 +186,15 @@ class GraspSaver(QtGui.QDialog):
         self.save_state = rospy.ServiceProxy("save_robot_state",
                                              SaveState)
         self.robot_name = self.plugin_parent.hand_commander.get_robot_name()
-        rospy.logwarn(self.robot_name)
         
-        # TODO - wait for services
+        try:
+            rospy.wait_for_service("has_robot_state", 1)
+        except:
+             QMessageBox.warning(
+                self, "Warning", "Could not connect to warehouse services."\
+                "Please make sure they're running before saving grasps.")
+             rospy.logerr("Tried to save, but warehouse services aren't running")
+             self.reject()
 
 
     def select_all(self):
@@ -480,10 +486,9 @@ class SrGuiGraspController(Plugin):
 
     def save_grasp(self):
         all_joints = self.hand_commander.get_current_pose()
-
-        for k in all_joints:
+        for k in all_joints.keys():
             if k not in self.hand_commander._move_group_commander._g.get_joints():
-                del(all_joints[k])
+                del(g.joints_and_positions[k])
 
         GraspSaver(self._widget, all_joints, self)
 
@@ -499,7 +504,7 @@ class SrGuiGraspController(Plugin):
         grasp_from = self.grasp_from_chooser.grasp
 
         for g in [grasp_to, grasp_from]:
-            for k in g.joints_and_positions:
+            for k in g.joints_and_positions.keys():
                 if k not in self.hand_commander._move_group_commander._g.get_joints():
                     del(g.joints_and_positions[k])
 
