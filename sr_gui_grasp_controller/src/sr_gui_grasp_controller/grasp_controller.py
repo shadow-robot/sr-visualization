@@ -33,6 +33,10 @@ from sr_hand.grasps_interpoler import GraspInterpoler
 from sr_robot_commander.sr_hand_commander import SrHandCommander
 from sr_utilities.hand_finder import HandFinder
 
+from moveit_msgs.srv import SaveRobotStateToWarehouse as SaveState
+from moveit_msgs.srv import CheckIfRobotStateExistsInWarehouse as HasState
+
+from moveit_msgs.msg import RobotState
 
 from sr_hand.shadowhand_ros import ShadowHand_ROS
 
@@ -177,6 +181,16 @@ class GraspSaver(QtGui.QDialog):
         self.setLayout(self.layout)
         self.show()
 
+        self.has_state = rospy.ServiceProxy("has_robot_state",
+                                            HasState)
+        self.save_state = rospy.ServiceProxy("save_robot_state",
+                                             SaveState)
+        self.robot_name = self.plugin_parent.hand_commander.get_robot_name()
+        rospy.logwarn(self.robot_name)
+        
+        # TODO - wait for services
+
+
     def select_all(self):
         """
         Select all joints
@@ -200,18 +214,28 @@ class GraspSaver(QtGui.QDialog):
         """
         Save grasp for the selected joints
         """
-        grasp = Grasp()
-        grasp.grasp_name = self.grasp_name
+
+        robot_state = RobotState()
+
 
         joints_to_save = self.joint_selecter.get_selected()
         if len(joints_to_save) == 0:
             joints_to_save = self.all_joints.keys()
-        for joint_to_save in joints_to_save:
-            grasp.joints_and_positions[
-                joint_to_save] = self.all_joints[joint_to_save]
 
-        self.plugin_parent.sr_lib.grasp_parser.write_grasp_to_file(grasp)
-        self.plugin_parent.sr_lib.grasp_parser.refresh()
+        robot_state.joint_state.name = joints_to_save
+        robot_state.joint_state.position = [
+            self.all_joints[j] for j in joints_to_save]
+
+        if self.has_state(self.grasp_name, self.robot_name).exists:
+            ret = QtGui.QMessageBox.question(self, "State already in warehouse!",
+                "There is already a pose named %s in the warehouse. Overwrite?"\
+                % self.grasp_name, QtGui.QMessageBox.Yes | QtGui.QMessageBox.No,
+                QtGui.QMessageBox.No)
+
+            if QtGui.QMessageBox.No == ret:
+                return
+
+        self.save_state(self.grasp_name, self.robot_name, robot_state)
 
         self.plugin_parent.reloadGraspSig['int'].emit(1)
 
@@ -293,6 +317,7 @@ class GraspChooser(QtGui.QWidget):
         """
         self.list.clear()
         first_item = None
+        self.plugin_parent.hand_commander.refresh_named_targets()
         grasps = self.plugin_parent.hand_commander.get_named_targets()
         grasps.sort()
         for grasp_name in grasps:
@@ -454,7 +479,12 @@ class SrGuiGraspController(Plugin):
         pass
 
     def save_grasp(self):
-        all_joints = self.sr_lib.read_all_current_positions()
+        all_joints = self.hand_commander.get_current_pose()
+
+        for k in all_joints:
+            if k not in self.hand_commander._move_group_commander._g.get_joints():
+                del(all_joints[k])
+
         GraspSaver(self._widget, all_joints, self)
 
     def set_reference_grasp(self, argument = None):
@@ -463,7 +493,6 @@ class SrGuiGraspController(Plugin):
         """
 
         self.current_grasp.joints_and_positions = self.last_target
-        rospy.logwarn(self.current_grasp.joints_and_positions)
         self.grasp_slider.slider.setValue(0)
 
         grasp_to = self.grasp_to_chooser.grasp
