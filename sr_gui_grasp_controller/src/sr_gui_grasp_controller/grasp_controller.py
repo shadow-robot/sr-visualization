@@ -269,8 +269,10 @@ class GraspChooser(QtGui.QWidget):
         """
         Sends new targets to the hand from a dictionary mapping the name of the joint to the value of its target
         """
-        self.grasp_name = item.text()
-        self.plugin_parent.hand_commander.move_to_named_target(str(self.grasp_name))
+        self.grasp_name = str(item.text())
+        self.plugin_parent.hand_commander.move_to_named_target(self.grasp_name)
+        self.plugin_parent.last_target = self.plugin_parent.hand_commander.get_named_target_joint_values(self.grasp_name)
+
         self.plugin_parent.set_reference_grasp()
 
     def grasp_selected(self, item, first_time=False):
@@ -278,12 +280,11 @@ class GraspChooser(QtGui.QWidget):
         grasp has been selected with a single click
         """
         self.grasp = Grasp()
-        self.grasp.grasp_name = item.text()
+        self.grasp.grasp_name = str(item.text())
         self.grasp.joints_and_positions = self.plugin_parent.\
           hand_commander.get_named_target_joint_values(item.text())
 
         if not first_time:
-            self.plugin_parent.grasp_changed()
             self.plugin_parent.set_reference_grasp()
 
     def refresh_list(self, value=0):
@@ -439,6 +440,7 @@ class SrGuiGraspController(Plugin):
         self.grasp_from_chooser.draw()
 
         time.sleep(0.2)
+        self.last_target = self.hand_commander.get_current_pose()
         self.set_reference_grasp()
 
     def shutdown_plugin(self):
@@ -455,35 +457,28 @@ class SrGuiGraspController(Plugin):
         all_joints = self.sr_lib.read_all_current_positions()
         GraspSaver(self._widget, all_joints, self)
 
-    def set_reference_grasp(self):
+    def set_reference_grasp(self, argument = None):
         """
-        Set the current grasp as a reference for interpolation
+        Set the last commander target reference for interpolation
         """
 
-        self.current_grasp.joints_and_positions = self.hand_commander.get_current_pose()
-
+        self.current_grasp.joints_and_positions = self.last_target
         rospy.logwarn(self.current_grasp.joints_and_positions)
-        rospy.logwarn(self.grasp_from_chooser.grasp.joints_and_positions)
-        rospy.logwarn(self.grasp_to_chooser.grasp.joints_and_positions)
-
         self.grasp_slider.slider.setValue(0)
 
-        self.grasp_interpoler_1 = GraspInterpoler(
-            self.grasp_from_chooser.grasp, self.current_grasp)
-        self.grasp_interpoler_2 = GraspInterpoler(
-            self.current_grasp, self.grasp_to_chooser.grasp)
+        grasp_to = self.grasp_to_chooser.grasp
+        grasp_from = self.grasp_from_chooser.grasp
 
-    def grasp_changed(self):
-        """
-        interpolate grasps from chosen to current one and from current to chosen
-        hand controllers must be running and reference must be set
-        """
-        self.current_grasp.joints_and_positions = self.hand_commander.get_current_pose()
+        for g in [grasp_to, grasp_from]:
+            for k in g.joints_and_positions:
+                if k not in self.hand_commander._move_group_commander._g.get_joints():
+                    del(g.joints_and_positions[k])
 
         self.grasp_interpoler_1 = GraspInterpoler(
             self.grasp_from_chooser.grasp, self.current_grasp)
         self.grasp_interpoler_2 = GraspInterpoler(
             self.current_grasp, self.grasp_to_chooser.grasp)
+
 
     def interpolate_grasps(self, value):
         """
@@ -504,4 +499,8 @@ class SrGuiGraspController(Plugin):
             targets_to_send = self.grasp_interpoler_1.interpolate(100 + value)
         else:  # current -> to
             targets_to_send = self.grasp_interpoler_2.interpolate(value)
-        self.hand_commander.move_to_joint_value_target(targets_to_send)
+
+
+        self.hand_commander.move_to_joint_value_target_unsafe(targets_to_send)
+        self.last_target = targets_to_send
+
