@@ -290,7 +290,7 @@ class SrGuiBiotac(Plugin):
 
         self.timer = QTimer(self._widget)
         self._widget.connect(self.timer, SIGNAL("timeout()"),
-                             self._widget.update)
+                             self._widget.scrollAreaWidgetContents.update)
         self._widget.scrollAreaWidgetContents.paintEvent = self.paintEvent
 
         self.subscribe_to_topic(self.default_topic)
