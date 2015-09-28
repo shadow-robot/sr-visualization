@@ -360,7 +360,7 @@ class MappingMinimizer:
                 # update matrix
                 mapping_matrix[final_index_glove][
                     final_index_hand] = mapping_value
-               # write the matrix to a file
+                # write the matrix to a file
         file = open(output_path, "w")
         for line in mapping_matrix:
             for col in line:

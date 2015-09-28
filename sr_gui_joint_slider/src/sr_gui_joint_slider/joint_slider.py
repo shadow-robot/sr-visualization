@@ -363,10 +363,7 @@ class SrGuiJointSlider(Plugin):
         if not self.trajectory_target[index].joint_names:  # Initialize the targets with the current position
             self.trajectory_target[index].joint_names = msg.joint_names
             point = JointTrajectoryPoint()
-            point.positions = list(msg.actual.positions)
-                                   # For some unexpected reason,
-                                   # msg.actual.positions appears to be a tuple
-                                   # instead of a list)
+            point.positions = list(msg.actual.positions)  # This is a list for some reason? Should be tuple..
             point.velocities = [0] * len(msg.joint_names)
             point.time_from_start = rospy.Duration.from_sec(0.005)
             self.trajectory_target[index].points = [point]
