@@ -351,7 +351,7 @@ class SrGuiCybergloveCalibrator(Plugin):
         subframe.setLayout(sublayout)
         self.layout.addWidget(subframe)
 
-        #	QtCore.QTimer.singleShot(0, self.window.adjustSize)
+        #  QtCore.QTimer.singleShot(0, self.window.adjustSize)
 
     def calibrate_current_step(self):
         self.step_selector.calibrate_current_step()
