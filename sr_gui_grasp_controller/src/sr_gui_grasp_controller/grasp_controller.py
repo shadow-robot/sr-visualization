@@ -191,7 +191,7 @@ class GraspSaver(QtGui.QDialog):
             rospy.wait_for_service("has_robot_state", 1)
         except:
             QMessageBox.warning(
-                self, "Warning", "Could not connect to warehouse services."\
+                self, "Warning", "Could not connect to warehouse services."
                 "Please make sure they're running before saving grasps.")
             rospy.logerr("Tried to save, but warehouse services aren't running")
             self.reject()
@@ -525,7 +525,6 @@ class SrGuiGraspController(Plugin):
             targets_to_send = self.grasp_interpoler_1.interpolate(100 + value)
         else:  # current -> to
             targets_to_send = self.grasp_interpoler_2.interpolate(value)
-
 
         self.hand_commander.move_to_joint_value_target_unsafe(targets_to_send)
         self.last_target = targets_to_send
