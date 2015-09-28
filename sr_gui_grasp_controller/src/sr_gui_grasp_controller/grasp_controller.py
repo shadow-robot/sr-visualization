@@ -59,10 +59,10 @@ class JointSelecter(QtGui.QWidget):
         joint_names = all_joints.keys()
         joint_names.sort()
         for joint in joint_names:
-            if "fj1" in joint.lower():
-                continue
-            if "fj2" in joint.lower():
-                continue
+            # if "fj1" in joint.lower():
+            #     continue
+            # if "fj2" in joint.lower():
+            #     continue
             if "ff" in joint.lower():
                 col = 0
             elif "mf" in joint.lower():
@@ -485,11 +485,7 @@ class SrGuiGraspController(Plugin):
         pass
 
     def save_grasp(self):
-        all_joints = self.hand_commander.get_current_pose()
-        for k in all_joints.keys():
-            if k not in self.hand_commander._move_group_commander._g.get_joints():
-                del(g.joints_and_positions[k])
-
+        all_joints = self.hand_commander.get_current_pose_bounded()
         GraspSaver(self._widget, all_joints, self)
 
     def set_reference_grasp(self, argument = None):
@@ -497,7 +493,7 @@ class SrGuiGraspController(Plugin):
         Set the last commander target reference for interpolation
         """
 
-        self.current_grasp.joints_and_positions = self.last_target
+        self.current_grasp.joints_and_positions = self.hand_commander.get_current_pose()
         self.grasp_slider.slider.setValue(0)
 
         grasp_to = self.grasp_to_chooser.grasp
