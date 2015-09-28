@@ -35,6 +35,7 @@ from sr_utilities.hand_finder import HandFinder
 
 from moveit_msgs.srv import SaveRobotStateToWarehouse as SaveState
 from moveit_msgs.srv import CheckIfRobotStateExistsInWarehouse as HasState
+from moveit_msgs.srv import DeleteRobotStateFromWarehouse as DelState
 
 from moveit_msgs.msg import RobotState
 
@@ -309,6 +310,7 @@ class GraspChooser(QtGui.QWidget):
         """
         grasp has been selected with a single click
         """
+
         self.grasp = Grasp()
         self.grasp.grasp_name = str(item.text())
         self.grasp.joints_and_positions = self.plugin_parent.\
@@ -316,6 +318,8 @@ class GraspChooser(QtGui.QWidget):
 
         if not first_time:
             self.plugin_parent.set_reference_grasp()
+
+        self.plugin_parent.to_delete = self.grasp.grasp_name
 
     def refresh_list(self, value=0):
         """
@@ -438,6 +442,7 @@ class SrGuiGraspController(Plugin):
 
         btn_frame = QtGui.QFrame()
         btn_layout = QtGui.QHBoxLayout()
+
         self.btn_save = QtGui.QPushButton()
         self.btn_save.setText("Save")
         self.btn_save.setFixedWidth(130)
@@ -445,6 +450,17 @@ class SrGuiGraspController(Plugin):
         btn_frame.connect(
             self.btn_save, QtCore.SIGNAL('clicked()'), self.save_grasp)
         btn_layout.addWidget(self.btn_save)
+
+
+        self.btn_del = QtGui.QPushButton()
+        self.btn_del.setText("Delete")
+        self.btn_del.setFixedWidth(130)
+        btn_frame.connect(
+            self.btn_del, QtCore.SIGNAL('clicked()'), self.delete_grasp)
+        btn_layout.addWidget(self.btn_del)
+
+
+
         btn_set_ref = QtGui.QPushButton()
         btn_set_ref.setText("Set Reference")
         btn_set_ref.setFixedWidth(130)
@@ -471,6 +487,34 @@ class SrGuiGraspController(Plugin):
         time.sleep(0.2)
         self.last_target = self.hand_commander.get_current_pose()
         self.set_reference_grasp()
+
+        self.to_delete = None
+
+    def delete_grasp(self):
+        if self.to_delete is None:
+            QMessageBox.warning(
+                self._widget, "No grasp selected!",
+                "Please click a grasp name in either grasp chooser to delete.")
+        else:
+            ret = QtGui.QMessageBox.question(
+                self._widget, "Delete Grasp?",
+                "Are you sure you wish to delete grasp %s?"
+                % self.to_delete, QtGui.QMessageBox.Yes | QtGui.QMessageBox.No,
+                QtGui.QMessageBox.No)
+
+            if ret:
+                del_state = rospy.ServiceProxy("delete_robot_state", DelState)
+                robot_name = self.hand_commander.get_robot_name()
+                try:
+                    del_state(self.to_delete, robot_name)
+                except:
+                    QMessageBox.warning(
+                        self._widget, "Coudn't delete",
+                        "Please check warehouse services are running.")
+                    rospy.logwarn("Couldn't delete state - maybe warehouse not running?")
+            self.grasp_from_chooser.refresh_list()
+            self.grasp_to_chooser.refresh_list()
+                            
 
     def shutdown_plugin(self):
         self._widget.close()
