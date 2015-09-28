@@ -261,8 +261,8 @@ class SrGuiBiotac(Plugin):
         # for labels on sensing + excitation electrodes
 
         if self._hand_parameters.mapping:
-            self.default_topic = (self._hand_parameters.mapping.values()[0]
-                                  + '/')
+            self.default_topic = (
+                self._hand_parameters.mapping.values()[0] + '/')
         else:
             self.default_topic = ""
 
