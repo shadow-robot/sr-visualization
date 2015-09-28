@@ -40,6 +40,7 @@ from moveit_msgs.msg import RobotState
 
 from sr_hand.shadowhand_ros import ShadowHand_ROS
 
+
 class JointSelecter(QtGui.QWidget):
 
     """
@@ -51,7 +52,6 @@ class JointSelecter(QtGui.QWidget):
         self.frame = QtGui.QFrame()
         self.layout = QtGui.QGridLayout()
         self.checkboxes = []
-
 
         col = 0
         # vectors to set the correct row in the layout for each col
@@ -186,16 +186,15 @@ class GraspSaver(QtGui.QDialog):
         self.save_state = rospy.ServiceProxy("save_robot_state",
                                              SaveState)
         self.robot_name = self.plugin_parent.hand_commander.get_robot_name()
-        
+
         try:
             rospy.wait_for_service("has_robot_state", 1)
         except:
-             QMessageBox.warning(
+            QMessageBox.warning(
                 self, "Warning", "Could not connect to warehouse services."\
                 "Please make sure they're running before saving grasps.")
-             rospy.logerr("Tried to save, but warehouse services aren't running")
-             self.reject()
-
+            rospy.logerr("Tried to save, but warehouse services aren't running")
+            self.reject()
 
     def select_all(self):
         """
@@ -223,7 +222,6 @@ class GraspSaver(QtGui.QDialog):
 
         robot_state = RobotState()
 
-
         joints_to_save = self.joint_selecter.get_selected()
         if len(joints_to_save) == 0:
             joints_to_save = self.all_joints.keys()
@@ -233,8 +231,9 @@ class GraspSaver(QtGui.QDialog):
             self.all_joints[j] for j in joints_to_save]
 
         if self.has_state(self.grasp_name, self.robot_name).exists:
-            ret = QtGui.QMessageBox.question(self, "State already in warehouse!",
-                "There is already a pose named %s in the warehouse. Overwrite?"\
+            ret = QtGui.QMessageBox.question(
+                self, "State already in warehouse!",
+                "There is already a pose named %s in the warehouse. Overwrite?"
                 % self.grasp_name, QtGui.QMessageBox.Yes | QtGui.QMessageBox.No,
                 QtGui.QMessageBox.No)
 
@@ -301,7 +300,8 @@ class GraspChooser(QtGui.QWidget):
         """
         self.grasp_name = str(item.text())
         self.plugin_parent.hand_commander.move_to_named_target(self.grasp_name)
-        self.plugin_parent.last_target = self.plugin_parent.hand_commander.get_named_target_joint_values(self.grasp_name)
+        self.plugin_parent.last_target =\
+            self.plugin_parent.hand_commander.get_named_target_joint_values(self.grasp_name)
 
         self.plugin_parent.set_reference_grasp()
 
@@ -312,7 +312,7 @@ class GraspChooser(QtGui.QWidget):
         self.grasp = Grasp()
         self.grasp.grasp_name = str(item.text())
         self.grasp.joints_and_positions = self.plugin_parent.\
-          hand_commander.get_named_target_joint_values(item.text())
+            hand_commander.get_named_target_joint_values(item.text())
 
         if not first_time:
             self.plugin_parent.set_reference_grasp()
@@ -416,14 +416,12 @@ class SrGuiGraspController(Plugin):
         loadUi(ui_file, self._widget)
         context.add_widget(self._widget)
 
-
         hand_finder = HandFinder()
         hand_parameters = hand_finder.get_hand_parameters()
         hand_serial = hand_parameters.mapping.keys()[0]
         self.hand_commander = SrHandCommander(
             hand_parameters=hand_parameters,
             hand_serial=hand_serial)
-
 
         self.current_grasp = Grasp()
 
@@ -488,11 +486,10 @@ class SrGuiGraspController(Plugin):
         all_joints = self.hand_commander.get_current_pose_bounded()
         GraspSaver(self._widget, all_joints, self)
 
-    def set_reference_grasp(self, argument = None):
+    def set_reference_grasp(self, argument=None):
         """
         Set the last commander target reference for interpolation
         """
-
         self.current_grasp.joints_and_positions = self.hand_commander.get_current_pose()
         self.grasp_slider.slider.setValue(0)
 
@@ -508,7 +505,6 @@ class SrGuiGraspController(Plugin):
             self.grasp_from_chooser.grasp, self.current_grasp)
         self.grasp_interpoler_2 = GraspInterpoler(
             self.current_grasp, self.grasp_to_chooser.grasp)
-
 
     def interpolate_grasps(self, value):
         """
@@ -533,4 +529,3 @@ class SrGuiGraspController(Plugin):
 
         self.hand_commander.move_to_joint_value_target_unsafe(targets_to_send)
         self.last_target = targets_to_send
-
