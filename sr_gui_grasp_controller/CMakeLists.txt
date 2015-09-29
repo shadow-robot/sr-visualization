@@ -3,7 +3,7 @@ project(sr_gui_grasp_controller)
 find_package(catkin REQUIRED COMPONENTS rospy rqt_gui rqt_gui_py sr_hand sr_visualization_icons sr_robot_commander)
 
 catkin_package(
-    DEPENDS sr_robot_commander
+    DEPENDS
     CATKIN_DEPENDS rospy rqt_gui rqt_gui_py sr_hand sr_visualization_icons sr_robot_commander
     INCLUDE_DIRS
     LIBRARIES

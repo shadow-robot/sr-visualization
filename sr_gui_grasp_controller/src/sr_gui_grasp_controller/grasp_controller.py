@@ -39,8 +39,6 @@ from moveit_msgs.srv import DeleteRobotStateFromWarehouse as DelState
 
 from moveit_msgs.msg import RobotState
 
-from sr_hand.shadowhand_ros import ShadowHand_ROS
-
 
 class JointSelecter(QtGui.QWidget):
 
@@ -60,10 +58,6 @@ class JointSelecter(QtGui.QWidget):
         joint_names = all_joints.keys()
         joint_names.sort()
         for joint in joint_names:
-            # if "fj1" in joint.lower():
-            #     continue
-            # if "fj2" in joint.lower():
-            #     continue
             if "ff" in joint.lower():
                 col = 0
             elif "mf" in joint.lower():
@@ -182,20 +176,22 @@ class GraspSaver(QtGui.QDialog):
         self.setLayout(self.layout)
         self.show()
 
+        try:
+            rospy.wait_for_service("has_robot_state", 1)
+        except rospy.ServiceException as e:
+            QMessageBox.warning(
+                self, "Warning", "Could not connect to warehouse services."
+                "Please make sure they're running before saving grasps.")
+            rospy.logerr("Tried to save, but couldn't connecto to warehouse service: %s" % str(e))
+            self.reject()
+
         self.has_state = rospy.ServiceProxy("has_robot_state",
                                             HasState)
         self.save_state = rospy.ServiceProxy("save_robot_state",
                                              SaveState)
         self.robot_name = self.plugin_parent.hand_commander.get_robot_name()
 
-        try:
-            rospy.wait_for_service("has_robot_state", 1)
-        except:
-            QMessageBox.warning(
-                self, "Warning", "Could not connect to warehouse services."
-                "Please make sure they're running before saving grasps.")
-            rospy.logerr("Tried to save, but warehouse services aren't running")
-            self.reject()
+
 
     def select_all(self):
         """
@@ -412,8 +408,6 @@ class SrGuiGraspController(Plugin):
         self.icon_dir = os.path.join(
             rospkg.RosPack().get_path('sr_visualization_icons'), '/icons')
 
-        self.sr_lib = ShadowHand_ROS()
-
         ui_file = os.path.join(rospkg.RosPack().get_path(
             'sr_gui_grasp_controller'), 'uis', 'SrGuiGraspController.ui')
         self._widget = QWidget()
@@ -458,8 +452,6 @@ class SrGuiGraspController(Plugin):
         btn_frame.connect(
             self.btn_del, QtCore.SIGNAL('clicked()'), self.delete_grasp)
         btn_layout.addWidget(self.btn_del)
-
-
 
         btn_set_ref = QtGui.QPushButton()
         btn_set_ref.setText("Set Reference")
@@ -507,14 +499,13 @@ class SrGuiGraspController(Plugin):
                 robot_name = self.hand_commander.get_robot_name()
                 try:
                     del_state(self.to_delete, robot_name)
-                except:
+                except rospy.ServiceException as e:
                     QMessageBox.warning(
                         self._widget, "Coudn't delete",
                         "Please check warehouse services are running.")
-                    rospy.logwarn("Couldn't delete state - maybe warehouse not running?")
+                    rospy.logwarn("Couldn't delete state: %s" % str(e))
             self.grasp_from_chooser.refresh_list()
             self.grasp_to_chooser.refresh_list()
-                            
 
     def shutdown_plugin(self):
         self._widget.close()
