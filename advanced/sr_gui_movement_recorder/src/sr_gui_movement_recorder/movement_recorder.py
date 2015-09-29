@@ -21,6 +21,7 @@ import rospkg
 import xml.etree.ElementTree as ET
 import time
 import threading
+import rospy
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
@@ -179,7 +180,7 @@ class Step(QWidget):
         self.interpolation_time = float(interp_time)
 
     def add_step(self):
-        self.parent.add_step()
+        self.parent.add_step(self.step_index)
 
     def number_loops_changed(self, number_loops):
         self.number_of_loops = int(number_loops)
@@ -381,6 +382,12 @@ class SrGuiMovementRecorder(Plugin):
         self.hand_commander = None
         self.steps = []
 
+        self.steps_frame = QFrame()
+        self.steps_layout = QVBoxLayout()
+        self.steps_frame.setLayout(self.steps_layout)
+
+        self.layout.addWidget(self.steps_frame)
+
         # selecting the first available hand
         self.__selected_hand = None
         self.hand_selected(self.hand_parameters.mapping.keys()[0])
@@ -460,13 +467,26 @@ class SrGuiMovementRecorder(Plugin):
     def stopped_playing(self, index):
         self.steps[index].stopped_playing()
 
-    def add_step(self):
-        step_tmp = Step(self.frame, len(self.steps), self)
-        self.steps.append(step_tmp)
-        self.layout.addWidget(step_tmp)
-        step_tmp.draw()
-        for step, index in zip(self.steps, range(0, len(self.steps))):
+    def add_step(self, step_index=None):
+        rospy.logwarn(step_index)
+
+        if step_index is None:
+            step_index = len(self.steps)
+        else:
+            step_index += 1
+
+        step_tmp = Step(self.frame, step_index, self)
+        self.steps.insert(step_index,step_tmp)
+
+        for i in reversed(range(self.steps_layout.count())):
+            self.steps_layout.itemAt(i).widget().deleteLater()
+
+        for index, step in enumerate(self.steps):
             step.set_step_id(index)
+
+        for step in self.steps:
+            self.steps_layout.addWidget(step)
+            step.draw()
 
     def button_play_clicked(self):
         if len(self.steps) < 1:
