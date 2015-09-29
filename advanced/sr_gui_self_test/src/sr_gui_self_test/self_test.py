@@ -43,7 +43,7 @@ from python_qt_binding import loadUi
 from sr_robot_msgs.srv import ManualSelfTest, ManualSelfTestResponse
 from diagnostic_msgs.srv import SelfTest
 
-from QtGui import QWidget, QTreeWidgetItem, QColor, QPixmap, QMessageBox,
+from QtGui import QWidget, QTreeWidgetItem, QColor, QPixmap, QMessageBox
 from QtGui import QInputDialog, QDialog, QSplitter, QLabel, QSizePolicy, QResizeEvent
 from QtCore import QThread, SIGNAL, QPoint
 from QtCore import Qt
