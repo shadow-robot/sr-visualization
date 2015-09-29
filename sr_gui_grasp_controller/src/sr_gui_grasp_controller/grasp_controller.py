@@ -191,8 +191,6 @@ class GraspSaver(QtGui.QDialog):
                                              SaveState)
         self.robot_name = self.plugin_parent.hand_commander.get_robot_name()
 
-
-
     def select_all(self):
         """
         Select all joints
@@ -422,12 +420,11 @@ class SrGuiGraspController(Plugin):
         subframe = QtGui.QFrame()
         sublayout = QtGui.QVBoxLayout()
 
-
         self.hand_finder = HandFinder()
         self.hand_parameters = self.hand_finder.get_hand_parameters()
 
-        self.hand_commander = SrHandCommander( 
-           hand_parameters=self.hand_parameters,
+        self.hand_commander = SrHandCommander(
+            hand_parameters=self.hand_parameters,
             hand_serial=self.hand_parameters.mapping.keys()[0])
 
         self.grasp_slider = GraspSlider(self._widget, self)
@@ -443,7 +440,6 @@ class SrGuiGraspController(Plugin):
         btn_frame.connect(
             self.btn_save, QtCore.SIGNAL('clicked()'), self.save_grasp)
         btn_layout.addWidget(self.btn_save)
-
 
         self.btn_del = QtGui.QPushButton()
         self.btn_del.setText("Delete")
@@ -502,8 +498,8 @@ class SrGuiGraspController(Plugin):
         self.to_delete = None
 
     def hand_selected(self, serial):
-        self.hand_commander = SrHandCommander( 
-           hand_parameters=self.hand_parameters,
+        self.hand_commander = SrHandCommander(
+            hand_parameters=self.hand_parameters,
             hand_serial=serial)
         self.refresh_grasp_lists()
 
