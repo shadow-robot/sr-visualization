@@ -379,17 +379,23 @@ class SrGuiMovementRecorder(Plugin):
         self.play_btn.setIcon(QIcon(os.path.join(path_to_icons, 'play.png')))
 
         self.hand_commander = None
-        self.steps = None
+        self.steps = []
 
         # selecting the first available hand
+        self.__selected_hand = None
         self.hand_selected(self.hand_parameters.mapping.keys()[0])
 
     def hand_selected(self, serial):
         self.hand_commander = SrHandCommander(hand_parameters=self.hand_parameters,
                                               hand_serial=serial)
 
-        self.steps = []
+        if self.__selected_hand == serial:
+            return
+
+        self.remove_all_steps()
         self.add_step()
+        self.__selected_hand = serial
+
 
     def save(self):
         filename = QFileDialog.getSaveFileName(self.frame, 'Save Script', '')
