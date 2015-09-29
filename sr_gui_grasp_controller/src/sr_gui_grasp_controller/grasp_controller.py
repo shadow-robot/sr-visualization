@@ -297,8 +297,6 @@ class GraspChooser(QtGui.QWidget):
         """
         self.grasp_name = str(item.text())
         self.plugin_parent.hand_commander.move_to_named_target(self.grasp_name)
-        self.plugin_parent.last_target =\
-            self.plugin_parent.hand_commander.get_named_target_joint_values(self.grasp_name)
 
         self.plugin_parent.set_reference_grasp()
 
@@ -414,13 +412,6 @@ class SrGuiGraspController(Plugin):
         loadUi(ui_file, self._widget)
         context.add_widget(self._widget)
 
-        hand_finder = HandFinder()
-        hand_parameters = hand_finder.get_hand_parameters()
-        hand_serial = hand_parameters.mapping.keys()[0]
-        self.hand_commander = SrHandCommander(
-            hand_parameters=hand_parameters,
-            hand_serial=hand_serial)
-
         self.current_grasp = Grasp()
 
         self.grasp_interpoler_1 = None
@@ -430,6 +421,14 @@ class SrGuiGraspController(Plugin):
 
         subframe = QtGui.QFrame()
         sublayout = QtGui.QVBoxLayout()
+
+
+        self.hand_finder = HandFinder()
+        self.hand_parameters = self.hand_finder.get_hand_parameters()
+
+        self.hand_commander = SrHandCommander( 
+           hand_parameters=self.hand_parameters,
+            hand_serial=self.hand_parameters.mapping.keys()[0])
 
         self.grasp_slider = GraspSlider(self._widget, self)
         sublayout.addWidget(self.grasp_slider)
@@ -465,6 +464,26 @@ class SrGuiGraspController(Plugin):
         sublayout.addWidget(btn_frame)
         subframe.setLayout(sublayout)
 
+        selector_layout = QtGui.QHBoxLayout()
+        selector_frame = QtGui.QFrame()
+
+        selector_layout.addWidget(QLabel("Select Hand"))
+
+        self.hand_combo_box = QComboBox()
+
+        for hand_serial in self.hand_parameters.mapping.keys():
+            self.hand_combo_box.addItem(hand_serial)
+
+        selector_layout.addWidget(self.hand_combo_box)
+
+        selector_frame.setLayout(selector_layout)
+        sublayout.addWidget(selector_frame)
+
+        selector_frame.connect(
+            self.hand_combo_box,
+            QtCore.SIGNAL('activated(QString)'),
+            self.hand_selected)
+
         self.grasp_from_chooser = GraspChooser(self._widget, self, "From: ")
         self.layout.addWidget(self.grasp_from_chooser)
         self.layout.addWidget(subframe)
@@ -477,10 +496,16 @@ class SrGuiGraspController(Plugin):
         self.grasp_from_chooser.draw()
 
         time.sleep(0.2)
-        self.last_target = self.hand_commander.get_current_pose()
+
         self.set_reference_grasp()
 
         self.to_delete = None
+
+    def hand_selected(self, serial):
+        self.hand_commander = SrHandCommander( 
+           hand_parameters=self.hand_parameters,
+            hand_serial=serial)
+        self.refresh_grasp_lists()
 
     def delete_grasp(self):
         if self.to_delete is None:
@@ -504,8 +529,11 @@ class SrGuiGraspController(Plugin):
                         self._widget, "Coudn't delete",
                         "Please check warehouse services are running.")
                     rospy.logwarn("Couldn't delete state: %s" % str(e))
-            self.grasp_from_chooser.refresh_list()
-            self.grasp_to_chooser.refresh_list()
+            self.refresh_grasp_lists()
+
+    def refresh_grasp_lists(self):
+        self.grasp_from_chooser.refresh_list()
+        self.grasp_to_chooser.refresh_list()
 
     def shutdown_plugin(self):
         self._widget.close()
@@ -562,4 +590,3 @@ class SrGuiGraspController(Plugin):
             targets_to_send = self.grasp_interpoler_2.interpolate(value)
 
         self.hand_commander.move_to_joint_value_target_unsafe(targets_to_send)
-        self.last_target = targets_to_send
