@@ -63,9 +63,8 @@ class Step(QWidget):
         green_palette.setBrush(QPalette.Window, self.green)
         self.frame.setPalette(green_palette)
 
-        self.grasp = self.parent.hand_commander.get_named_targets()
         label_grasp = QLabel(self.frame)
-        label_grasp.setText("Grasp:  ")  # + str(self.step_index + 1) + ":")
+        label_grasp.setText("Grasp:  ")
         self.widgets.append(label_grasp)
 
         self.list_grasp = QComboBox(self.frame)
@@ -101,7 +100,7 @@ class Step(QWidget):
         self.widgets.append(self.interp_input)
 
         label_looping = QLabel(self.frame)
-        label_looping.setText("s.   Looping from step:")
+        label_looping.setText("s.   Loop to step:")
         self.widgets.append(label_looping)
 
         self.loop_input = QComboBox(self.frame)
@@ -171,7 +170,7 @@ class Step(QWidget):
         self.show()
 
     def grasp_choosed(self, grasp_name):
-        self.grasp = grasp_name
+        self.grasp = str(grasp_name)
 
     def pause_changed(self, pause_time):
         self.pause_time = float(pause_time)
@@ -193,6 +192,7 @@ class Step(QWidget):
         else:
             self.number_loops.setEnabled(True)
             self.number_loops.setText("1")
+            self.number_of_loops = 1
             self.loop_to_step = int(looping) - 1
 
     def remove_step(self, delete_first=False):
@@ -267,6 +267,9 @@ class Step(QWidget):
         self.list_grasp.clear()
         list_grasps = self.parent.hand_commander.get_named_targets()
         list_grasps.sort()
+
+        self.grasp = list_grasps[0]
+
         for grasp_name in list_grasps:
             self.list_grasp.addItem(grasp_name)
 
@@ -496,8 +499,37 @@ class SrGuiMovementRecorder(Plugin):
             step.new_step_button.setDisabled(True)
             step.remaining_loops = step.number_of_loops
 
+        self.fill_trajectory()
+
+        return
+
         self.thread = threading.Thread(None, self.play)
         self.thread.start()
+
+    def fill_trajectory(self, step_index=None):
+        if step_index is None:
+            self.trajectory = []
+            step_index = 0
+        elif step_index >= len(self.steps):
+            return
+
+        step = self.steps[step_index]
+
+        self.trajectory.append(
+            {
+                'name': step.grasp,
+                'interpolate_time': step.interpolation_time,
+                'pause_time': step.pause_time
+            }
+        )
+
+        if step.loop_to_step != -1 and step.remaining_loops > 0:
+            step.remaining_loops -= 1
+            next_step = step.loop_to_step
+        else:
+            next_step = step_index + 1
+        self.fill_trajectory(next_step)
+
 
     def play(self):
         self.stopped = False
