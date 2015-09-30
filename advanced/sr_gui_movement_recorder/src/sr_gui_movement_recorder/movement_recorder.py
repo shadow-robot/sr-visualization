@@ -220,7 +220,7 @@ class Step(QWidget):
     def save_to_xml(self):
         xml_step = ET.Element("step")
         grasp = ET.SubElement(xml_step, "grasp")
-        grasp.set("name", self.grasp.grasp_name)
+        grasp.set("name", self.grasp)
         pause = ET.SubElement(xml_step, "pause_time")
         pause.text = str(self.pause_time)
         interpolation = ET.SubElement(xml_step, "interpolation_time")
@@ -471,8 +471,6 @@ class SrGuiMovementRecorder(Plugin):
         self.steps[index].stopped_playing()
 
     def add_step(self, step_index=None):
-        rospy.logwarn(step_index)
-
         if step_index is None:
             step_index = len(self.steps)
         else:
