@@ -478,15 +478,11 @@ class SrGuiMovementRecorder(Plugin):
         step_tmp = Step(self.frame, step_index, self)
         self.steps.insert(step_index,step_tmp)
 
-        for i in reversed(range(self.steps_layout.count())):
-            self.steps_layout.itemAt(i).widget().deleteLater()
-
         for index, step in enumerate(self.steps):
             step.set_step_id(index)
 
-        for step in self.steps:
-            self.steps_layout.addWidget(step)
-            step.draw()
+        self.steps_layout.insertWidget(step_index, step_tmp)
+        step_tmp.draw()
 
     def button_play_clicked(self):
         if len(self.steps) < 1:
