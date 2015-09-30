@@ -499,8 +499,6 @@ class SrGuiMovementRecorder(Plugin):
 
         self.fill_trajectory()
 
-        return
-
         self.thread = threading.Thread(None, self.play)
         self.thread.start()
 
@@ -534,16 +532,22 @@ class SrGuiMovementRecorder(Plugin):
         first_time = True
         index = 0
 
-        while index < len(self.steps):
+        run = True
+        in_progress = False
+        while run:
             self.mutex.acquire()
             if self.stopped:
                 self.mutex.release()
+                #stop_traj
                 return
             self.mutex.release()
 
-            step = self.steps[index]
-            index = self.play_step(step, first_time, index)
-            first_time = False
+            if not in_progress:
+                self.hand_commander.run_named_trajectory_unsafe(self.trajectory)
+                in_progress = True
+            else:
+                rospy.sleep(0.1)
+                run = self.hand_commander.action_is_running()
 
         self.stop()
 
