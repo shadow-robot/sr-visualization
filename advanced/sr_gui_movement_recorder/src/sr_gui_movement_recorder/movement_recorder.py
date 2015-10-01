@@ -390,7 +390,6 @@ class SrGuiMovementRecorder(Plugin):
         self.add_step()
         self.__selected_hand = serial
 
-
     def save(self):
         filename = QFileDialog.getSaveFileName(self.frame, 'Save Script', '')
         filename = filename[0]
@@ -448,7 +447,6 @@ class SrGuiMovementRecorder(Plugin):
         while len(self.steps) != 0:
             self.steps[0].remove_step(delete_first=True)
 
-
     def add_step(self, step_index=None):
         if step_index is None:
             step_index = len(self.steps)
@@ -456,7 +454,7 @@ class SrGuiMovementRecorder(Plugin):
             step_index += 1
 
         step_tmp = Step(self.frame, step_index, self)
-        self.steps.insert(step_index,step_tmp)
+        self.steps.insert(step_index, step_tmp)
 
         for index, step in enumerate(self.steps):
             step.set_step_id(index)
@@ -504,7 +502,6 @@ class SrGuiMovementRecorder(Plugin):
         else:
             next_step = step_index + 1
         self.fill_trajectory(next_step)
-
 
     def play(self):
         self.stopped = False
