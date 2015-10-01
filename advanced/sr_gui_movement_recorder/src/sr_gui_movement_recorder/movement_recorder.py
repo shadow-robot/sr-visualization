@@ -48,7 +48,7 @@ class Step(QWidget):
         self.parent = plugin_parent
         self.grasp = 0
         self.pause_time = 0
-        self.interpolation_time = 1
+        self.interpolation_time = 2
         self.loop_to_step = -1
         self.number_of_loops = 0
         self.remaining_loops = 0
@@ -92,7 +92,7 @@ class Step(QWidget):
 
         self.interp_input = QLineEdit(self.frame)
         self.interp_input.setValidator(QDoubleValidator(self))
-        self.interp_input.setText("1.0")
+        self.interp_input.setText("2.0")
         self.interp_input.setAlignment(Qt.AlignRight)
         self.interp_input.setFixedWidth(35)
         self.frame.connect(self.interp_input, SIGNAL(
