@@ -538,7 +538,6 @@ class SrGuiMovementRecorder(Plugin):
             self.mutex.acquire()
             if self.stopped:
                 self.mutex.release()
-                #stop_traj
                 return
             self.mutex.release()
 
@@ -552,6 +551,7 @@ class SrGuiMovementRecorder(Plugin):
         self.stop()
 
     def stop(self):
+        self.hand_commander.send_stop_trajectory_unsafe()
         for step in self.steps:
             step.new_step_button.setEnabled(True)
             step.remove_step_button.setEnabled(True)
