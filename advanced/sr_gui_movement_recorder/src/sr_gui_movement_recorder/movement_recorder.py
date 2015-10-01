@@ -274,18 +274,6 @@ class Step(QWidget):
             self.list_grasp.addItem(grasp_name)
 
 
-class SignalWidget(QWidget):
-
-    """
-    Qt Signal used to state when a step is playing / stopped.
-    """
-    isPlayingSig = pyqtSignal(int)
-    stoppedPlayingSig = pyqtSignal(int)
-
-    def __init__(self, parent=None):
-        super(SignalWidget, self).__init__(parent)
-
-
 class SrGuiMovementRecorder(Plugin):
 
     """
@@ -337,10 +325,6 @@ class SrGuiMovementRecorder(Plugin):
         self.command_frame.connect(
             self.play_btn, SIGNAL('clicked()'), self.button_play_clicked)
         self.sublayout.addWidget(self.play_btn, 0, 2)
-
-        self.signal_widget = SignalWidget(self.frame)
-        self.signal_widget.isPlayingSig['int'].connect(self.started_playing)
-        self.signal_widget.stoppedPlayingSig['int'].connect(self.stopped_playing)
 
         self.mutex = threading.Lock()
         self.stopped = True
@@ -464,11 +448,6 @@ class SrGuiMovementRecorder(Plugin):
         while len(self.steps) != 0:
             self.steps[0].remove_step(delete_first=True)
 
-    def started_playing(self, index):
-        self.steps[index].is_playing()
-
-    def stopped_playing(self, index):
-        self.steps[index].stopped_playing()
 
     def add_step(self, step_index=None):
         if step_index is None:
@@ -560,46 +539,6 @@ class SrGuiMovementRecorder(Plugin):
         self.mutex.release()
         self.play_btn.setEnabled(True)
         self.load_btn.setEnabled(True)
-
-    def play_step(self, step, first_time, index):
-        if first_time:
-            self.current_step = step
-            return index + 1
-        next_step = step
-
-        self.signal_widget.isPlayingSig['int'].emit(index)
-        self.move_step(next_step)
-        self.signal_widget.stoppedPlayingSig['int'].emit(index)
-
-        self.current_step = next_step
-
-        # looping?
-        if step.loop_to_step != -1:
-            if step.remaining_loops > 0:
-                step.remaining_loops = step.remaining_loops - 1
-                return step.loop_to_step
-        return index + 1
-
-    def move_step(self, next_step):
-        interpoler = self.hand_commander.create_grasp_interpoler(
-            self.current_step.grasp, next_step.grasp)
-        if self.current_step.interpolation_time == 0.0:
-            self.hand_commander.sendupdate_from_dict(
-                next_step.grasp.joints_and_positions)
-        else:
-            for interpolation in range(0, 10 * int(self.current_step.interpolation_time)):
-                self.mutex.acquire()
-                if self.stopped:
-                    self.mutex.release()
-                    return
-                self.mutex.release()
-
-                targets_to_send = self.hand_commander.grasp_interpoler.interpolate(
-                    100.0 * interpolation / (10 * self.current_step.interpolation_time))
-                self.hand_commander.sendupdate_from_dict(targets_to_send)
-                time.sleep(0.1)
-
-        time.sleep(self.current_step.pause_time)
 
     def _unregisterPublisher(self):
         if self._publisher is not None:
