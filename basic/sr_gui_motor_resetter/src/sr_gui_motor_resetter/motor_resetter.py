@@ -121,7 +121,7 @@ class SrGuiMotorResetter(Plugin):
                 self._widget, "warning", "No hand is detected")
         else:
             self._widget.select_prefix.setCurrentIndex(0)
-            self._prefix = hand_parameters.mapping.values()[0]
+            self._prefix = hand_parameters.mapping.values()[0] + "/"
 
         self._widget.select_prefix.currentIndexChanged['QString'].connect(
             self.prefix_selected)
@@ -289,5 +289,5 @@ class SrGuiMotorResetter(Plugin):
         pass
 
     def prefix_selected(self, prefix):
-        self._prefix = prefix
+        self._prefix = str(prefix) + "/"
         self.populate_motors()
