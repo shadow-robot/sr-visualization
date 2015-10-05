@@ -130,7 +130,7 @@ class SrGuiBootloader(Plugin):
         self._widget.btn_select_none.pressed.connect(self.on_select_none_pressed)
         self._widget.btn_bootload.pressed.connect(self.on_bootload_pressed)
 
-        #select the first available hand
+        # select the first available hand
         self.prefix_selected(hand_parameters.mapping.values()[0])
 
     def on_select_bootloader_pressed(self):
