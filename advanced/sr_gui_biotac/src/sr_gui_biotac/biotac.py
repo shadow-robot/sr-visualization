@@ -192,7 +192,7 @@ class SrGuiBiotac(Plugin):
         painter.drawText(rect, text)
 
     def paintEvent(self, paintEvent):
-        painter = QPainter(self._widget)
+        painter = QPainter(self._widget.scrollAreaWidgetContents)
         which_tactile = self.biotac_id_from_dropdown()
 
         painter.setFont(QFont("Arial", self.label_font_size[0]))
@@ -261,8 +261,8 @@ class SrGuiBiotac(Plugin):
         # for labels on sensing + excitation electrodes
 
         if self._hand_parameters.mapping:
-            self.default_topic = (self._hand_parameters.mapping.values()[0]
-                                  + '/')
+            self.default_topic = (
+                self._hand_parameters.mapping.values()[0] + '/')
         else:
             self.default_topic = ""
 
@@ -290,8 +290,8 @@ class SrGuiBiotac(Plugin):
 
         self.timer = QTimer(self._widget)
         self._widget.connect(self.timer, SIGNAL("timeout()"),
-                             self._widget.update)
-        self._widget.paintEvent = self.paintEvent
+                             self._widget.scrollAreaWidgetContents.update)
+        self._widget.scrollAreaWidgetContents.paintEvent = self.paintEvent
 
         self.subscribe_to_topic(self.default_topic)
 

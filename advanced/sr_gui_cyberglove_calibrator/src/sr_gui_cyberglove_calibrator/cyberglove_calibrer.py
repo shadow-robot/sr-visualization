@@ -301,14 +301,14 @@ class CybergloveCalibrer:
 
             cal = self.joints[name]
             # min value
-            text.append("<calib raw_value=\"" + str(cal.raw_min)
-                        + "\" calibrated_value=\""
-                        + str(cal.calibrated_min) + "\"/>")
+            text.append("<calib raw_value=\"" + str(cal.raw_min) +
+                        "\" calibrated_value=\"" +
+                        str(cal.calibrated_min) + "\"/>")
 
             # max value
-            text.append("<calib raw_value=\"" + str(cal.raw_max)
-                        + "\" calibrated_value=\""
-                        + str(cal.calibrated_max) + "\"/>")
+            text.append("<calib raw_value=\"" + str(cal.raw_max) +
+                        "\" calibrated_value=\"" +
+                        str(cal.calibrated_max) + "\"/>")
 
             text.append("</Joint>")
 
@@ -359,7 +359,6 @@ def main():
     print error
 
     return 0
-
 
 # start the script
 if __name__ == "__main__":
