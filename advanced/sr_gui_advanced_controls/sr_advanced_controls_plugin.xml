@@ -18,7 +18,7 @@
         <label>Advanced</label>
       </group>
       <label>Advanced Controls</label>
-      <icon type="file">../../sr_visualization_icons/icons/hand.png</icon>
+      <icon type="file">resource/hand.png</icon>
       <statustip>
         A GUI plugin for a more advanced way of loading the different motor controllers.
       </statustip>

@@ -10,6 +10,6 @@ catkin_package(
 )
 catkin_python_setup()
 
-install( DIRECTORY uis DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION} )
+install( DIRECTORY uis resource DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION} )
 
 install( FILES sr_advanced_controls_plugin.xml DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION} )
