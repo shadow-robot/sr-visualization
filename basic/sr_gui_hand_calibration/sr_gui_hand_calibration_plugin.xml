@@ -11,7 +11,7 @@
       <group>
         <label>Basic</label>
       </group>
-      <icon type="file">../../sr_visualization_icons/icons/hand.png</icon>
+      <icon type="file">resource/hand.png</icon>
       <label>Shadow Hand Calibration</label>
       <statustip>A plugin for calibrating the Shadow EtherCAT Hand.</statustip>
     </qtgui>
