@@ -202,7 +202,7 @@ class SrGuiBootloader(Plugin):
             for motor in self.motors:
                 if motor.motor_name in status.name and self._prefix.replace("/", "") in status.name:
                     for key_values in status.values:
-                        if "Firmware git revision (server / pic / modified)" in key_values.key:
+                        if key_values.key.startswith("Firmware git revision"):
                             server_current_modified = key_values.value.split(" / ")
 
                             if server_current_modified[0] > self.server_revision:
