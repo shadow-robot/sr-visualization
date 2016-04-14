@@ -515,7 +515,7 @@ class SrGuiGraspController(Plugin):
                 % self.to_delete, QtGui.QMessageBox.Yes | QtGui.QMessageBox.No,
                 QtGui.QMessageBox.No)
 
-            if ret:
+            if ret == QtGui.QMessageBox.Yes:
                 del_state = rospy.ServiceProxy("delete_robot_state", DelState)
                 robot_name = self.hand_commander.get_robot_name()
                 try:
@@ -542,14 +542,14 @@ class SrGuiGraspController(Plugin):
         pass
 
     def save_grasp(self):
-        all_joints = self.hand_commander.get_current_pose_bounded()
+        all_joints = self.hand_commander.get_current_state_bounded()
         GraspSaver(self._widget, all_joints, self)
 
     def set_reference_grasp(self, argument=None):
         """
         Set the last commander target reference for interpolation
         """
-        self.current_grasp.joints_and_positions = self.hand_commander.get_current_pose()
+        self.current_grasp.joints_and_positions = self.hand_commander.get_current_state()
         self.grasp_slider.slider.setValue(0)
 
         grasp_to = self.grasp_to_chooser.grasp
