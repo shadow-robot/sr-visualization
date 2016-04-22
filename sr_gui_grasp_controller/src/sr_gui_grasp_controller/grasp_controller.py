@@ -238,7 +238,7 @@ class GraspSaver(QtGui.QDialog):
         self.save_state(self.grasp_name, self.robot_name, robot_state)
 
         try:
-            self.plugin_parent.newPoseSavedSignal['str'].emit(self.grasp_name)
+            self.plugin_parent.newPoseSavedSignal['QString'].emit(self.grasp_name)
         except NameError:
             pass
 
@@ -284,7 +284,7 @@ class GraspChooser(QtGui.QWidget):
         # SIGNALS
         #
 
-        self.plugin_parent.newPoseSavedSignal['str'].connect(self.refresh_list)
+        self.plugin_parent.newPoseSavedSignal['QString'].connect(self.refresh_list)
 
         self.frame.setLayout(self.layout)
         layout = QtGui.QVBoxLayout()
