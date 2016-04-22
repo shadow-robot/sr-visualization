@@ -237,7 +237,10 @@ class GraspSaver(QtGui.QDialog):
 
         self.save_state(self.grasp_name, self.robot_name, robot_state)
 
-        self.plugin_parent.reloadGraspSig['int'].emit(1)
+        try:
+            self.plugin_parent.newPoseSavedSignal['str'].emit(self.grasp_name)
+        except NameError:
+            pass
 
         QtGui.QDialog.accept(self)
 
@@ -280,7 +283,8 @@ class GraspChooser(QtGui.QWidget):
         #
         # SIGNALS
         #
-        self.plugin_parent.reloadGraspSig['int'].connect(self.refresh_list)
+
+        self.plugin_parent.newPoseSavedSignal['str'].connect(self.refresh_list)
 
         self.frame.setLayout(self.layout)
         layout = QtGui.QVBoxLayout()
@@ -394,7 +398,7 @@ class SrGuiGraspController(Plugin):
     Main GraspController plugin Dock window.
     """
 
-    reloadGraspSig = QtCore.pyqtSignal(int)
+    newPoseSavedSignal = QtCore.pyqtSignal(str)
 
     def __init__(self, context):
         super(SrGuiGraspController, self).__init__(context)
