@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Copyright 2011 Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
@@ -17,6 +18,7 @@ import os
 import time
 import rospy
 import rospkg
+import sys
 
 from rospy import loginfo, logerr, logdebug
 
@@ -117,6 +119,7 @@ class GraspSaver(QtGui.QDialog):
     """
 
     def __init__(self, parent, all_joints, plugin_parent):
+
         QtGui.QDialog.__init__(self, parent)
         self.plugin_parent = plugin_parent
         self.all_joints = all_joints
@@ -408,8 +411,9 @@ class SrGuiGraspController(Plugin):
             'sr_gui_grasp_controller'), 'uis', 'SrGuiGraspController.ui')
         self._widget = QWidget()
         loadUi(ui_file, self._widget)
-        context.add_widget(self._widget)
-
+        if context is not None:
+            context.add_widget(self._widget)
+        rospy.logwarn("ello")
         self.current_grasp = Grasp()
 
         self.grasp_interpoler_1 = None
@@ -496,6 +500,7 @@ class SrGuiGraspController(Plugin):
         self.set_reference_grasp()
 
         self.to_delete = None
+        rospy.logwarn("bye")
 
     def hand_selected(self, serial):
         self.hand_commander = SrHandCommander(
@@ -586,3 +591,11 @@ class SrGuiGraspController(Plugin):
             targets_to_send = self.grasp_interpoler_2.interpolate(value)
 
         self.hand_commander.move_to_joint_value_target_unsafe(targets_to_send)
+
+
+if __name__ == "__main__":
+    rospy.init_node("grasp_controller")
+    app = QApplication(sys.argv)
+    ctrl = SrGuiGraspController(None)
+    ctrl._widget.show()
+    app.exec_()
