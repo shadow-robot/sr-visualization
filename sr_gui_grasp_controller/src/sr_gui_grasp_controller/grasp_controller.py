@@ -119,7 +119,6 @@ class GraspSaver(QtGui.QDialog):
     """
 
     def __init__(self, parent, all_joints, plugin_parent):
-
         QtGui.QDialog.__init__(self, parent)
         self.plugin_parent = plugin_parent
         self.all_joints = all_joints
@@ -413,7 +412,6 @@ class SrGuiGraspController(Plugin):
         loadUi(ui_file, self._widget)
         if context is not None:
             context.add_widget(self._widget)
-        rospy.logwarn("ello")
         self.current_grasp = Grasp()
 
         self.grasp_interpoler_1 = None
@@ -500,7 +498,6 @@ class SrGuiGraspController(Plugin):
         self.set_reference_grasp()
 
         self.to_delete = None
-        rospy.logwarn("bye")
 
     def hand_selected(self, serial):
         self.hand_commander = SrHandCommander(
