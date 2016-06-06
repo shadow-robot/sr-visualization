@@ -279,7 +279,7 @@ class SrGuiJointSlider(Plugin):
 
         for controller in controllers:
             if controller.type == "position_controllers/JointTrajectoryController":
-                for j_name in controller.resources:
+                for j_name in controller.claimed_resources[0].resources:
                     trajectory_ctrl_joint_names.append(j_name)
 
         for controller in controllers:
@@ -303,7 +303,7 @@ class SrGuiJointSlider(Plugin):
                         self.trajectory_state_slider_cb.append([])
                         self.trajectory_pub.append(
                             rospy.Publisher(controller.name + "/command", JointTrajectory, queue_size=1, latch=True))
-                        for j_name in controller.resources:
+                        for j_name in controller.claimed_resources[0].resources:
                             joint_controller = JointController(
                                 controller.name, controller_type, controller_state_type, controller_category,
                                 self.trajectory_state_slider_cb[
