@@ -54,8 +54,12 @@ class SrGuiJointSlider(Plugin):
         "sr_mechanism_controllers/SrhJointVelocityController": ("velocity", JointControllerState),
         "sr_mechanism_controllers/SrhMixedPositionVelocityJointController": ("position", SrJointControllerState),
         "sr_mechanism_controllers/SrhMuscleJointPositionController": ("position", JointMusclePositionControllerState),
+        "effort_controllers/JointEffortController": ("effort", JointControllerState),
+        "effort_controllers/JointPositionController": ("position", JointControllerState),
         "position_controllers/JointTrajectoryController": ("position_trajectory", JointTrajectoryControllerState),
-        "effort_controllers/JointTrajectoryController": ("position_trajectory", JointTrajectoryControllerState)}
+        "effort_controllers/JointTrajectoryController": ("position_trajectory", JointTrajectoryControllerState),
+        "effort_controllers/GravityCompensatedJointTrajectoryController": ("position_trajectory",
+                                                                           JointTrajectoryControllerState)}
 
     def __init__(self, context):
         super(SrGuiJointSlider, self).__init__(context)
