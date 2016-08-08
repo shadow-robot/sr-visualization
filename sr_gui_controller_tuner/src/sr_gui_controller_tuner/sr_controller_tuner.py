@@ -19,7 +19,7 @@
 import rospy
 
 from xml.etree import ElementTree as ET
-from pr2_mechanism_msgs.srv import ListControllers
+from controller_manager_msgs.srv import ListControllers
 
 from sr_robot_msgs.srv import ForceController, SetEffortControllerGains, SetMixedPositionVelocityPidGains, SetPidGains
 from sr_gui_controller_tuner.pid_loader_and_saver import PidLoader, PidSaver
@@ -106,9 +106,9 @@ class SrControllerTunerApp(object):
         running_ctrls = []
 
         try:
-            rospy.wait_for_service('pr2_controller_manager/list_controllers', self.CONTROLLER_MANAGER_DETECTION_TIMEOUT)
+            rospy.wait_for_service('controller_manager/list_controllers', self.CONTROLLER_MANAGER_DETECTION_TIMEOUT)
         
-            controllers = rospy.ServiceProxy('pr2_controller_manager/list_controllers', ListControllers)
+            controllers = rospy.ServiceProxy('controller_manager/list_controllers', ListControllers)
             resp = None
             try:
                 resp = controllers()
@@ -117,10 +117,10 @@ class SrControllerTunerApp(object):
             
             running_ctrls.append("Motor Force")
             if resp != None:
-                for state,controller in zip(resp.state, resp.controllers):
-                    if state == "running":
-                        split = controller.split("_")
-                        ctrl_type_tmp = split[2]
+                for controller in resp.controller:
+                    if controller.state == "running":
+                        splitted = controller.name.split("_")
+                        ctrl_type_tmp = splitted[2]
                         for defined_ctrl_type in self.all_controller_types:
                             if ctrl_type_tmp.lower() in defined_ctrl_type.lower():
                                 running_ctrls.append(defined_ctrl_type)

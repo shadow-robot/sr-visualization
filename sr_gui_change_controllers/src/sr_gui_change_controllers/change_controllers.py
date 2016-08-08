@@ -38,7 +38,7 @@ from python_qt_binding import loadUi
 
 from QtCore import QEvent, QObject, Qt, QTimer, Slot
 from QtGui import QShortcut, QMessageBox, QWidget, QIcon
-from pr2_mechanism_msgs.srv import ListControllers, SwitchController, LoadController
+from controller_manager_msgs.srv import ListControllers, SwitchController, LoadController
 from sr_robot_msgs.srv import ChangeControlType
 from sr_robot_msgs.msg import ControlType
 
@@ -228,22 +228,20 @@ class SrGuiChangeControllers(Plugin):
         Switch the current controller
         """
         success = True
-        list_controllers = rospy.ServiceProxy('pr2_controller_manager/list_controllers', ListControllers)
+        list_controllers = rospy.ServiceProxy('controller_manager/list_controllers', ListControllers)
         try:
             resp1 = list_controllers()
         except rospy.ServiceException:
             success = False
 
         if success:
-            current_controllers = []
-            all_loaded_controllers = resp1.controllers
-            for state,tmp_contrl in zip(resp1.state,resp1.controllers):
-                if state == "running":
-                    current_controllers.append(tmp_contrl)
+            current_controllers = [c.name for c in resp1.controller if c.state == "running"]
+            all_loaded_controllers = [c.name for c in resp1.controller]
 
             controllers_to_start = self.controllers[controller]
+            controllers_to_start.append('joint_state_controller')
 
-            load_controllers = rospy.ServiceProxy('pr2_controller_manager/load_controller', LoadController)
+            load_controllers = rospy.ServiceProxy('controller_manager/load_controller', LoadController)
             for load_control in controllers_to_start:
                 if load_control not in all_loaded_controllers:
                     try:
@@ -253,7 +251,7 @@ class SrGuiChangeControllers(Plugin):
                     if not resp1.ok:
                         success = False
 
-            switch_controllers = rospy.ServiceProxy('pr2_controller_manager/switch_controller', SwitchController)
+            switch_controllers = rospy.ServiceProxy('controller_manager/switch_controller', SwitchController)
             try:
                 resp1 = switch_controllers(controllers_to_start, current_controllers, SwitchController._request_class.BEST_EFFORT)
             except rospy.ServiceException:

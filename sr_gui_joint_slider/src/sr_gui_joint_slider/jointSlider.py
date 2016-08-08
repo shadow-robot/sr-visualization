@@ -30,7 +30,7 @@ from xml.etree import ElementTree as ET
 
 from PyQt4 import QtCore, QtGui, Qt
 from QtGui import QShortcut, QMessageBox, QFrame
-from pr2_mechanism_msgs.srv import ListControllers, SwitchController, LoadController
+from controller_manager_msgs.srv import ListControllers
 from sr_robot_msgs.msg import sendupdate, joint
 from std_msgs.msg import Float64
 from math import radians, degrees
@@ -163,23 +163,17 @@ class EtherCATHandSlider(ExtendedSlider):
         @return: list of current controllers
         """
         success = True
-        list_controllers = rospy.ServiceProxy('pr2_controller_manager/list_controllers', ListControllers)
+        list_controllers = rospy.ServiceProxy('controller_manager/list_controllers', ListControllers)
         try:
             resp1 = list_controllers()
         except rospy.ServiceException:
-            success = False
-
-        current_controllers = []
+            success = False 
 
         if success:
-            all_loaded_controllers = resp1.controllers
-            for state,tmp_contrl in zip(resp1.state,resp1.controllers):
-                if state == "running":
-                    current_controllers.append(tmp_contrl)
+            return [c.name for c in resp1.controller if c.state == "running"]
         else:
-            rospy.loginfo("Couldn't get list of controllers from pr2_controller_manager/list_controllers service")
-
-        return current_controllers
+            rospy.loginfo("Couldn't get list of controllers from controller_manager/list_controllers service")
+            return []
 
     def sendupdate(self, value):
         if (self.current_controller_index == -1):

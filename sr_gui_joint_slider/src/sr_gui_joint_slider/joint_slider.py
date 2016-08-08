@@ -25,7 +25,6 @@ from python_qt_binding import loadUi
 
 from QtCore import QEvent, QObject, Qt, QTimer, Slot
 from QtGui import QWidget, QShortcut, QMessageBox, QFrame
-from pr2_mechanism_msgs.srv import ListControllers, SwitchController, LoadController
 
 from sr_gui_joint_slider.jointSlider import JointController, Joint, CANHandSlider, EtherCATHandSlider, ArmSlider, CANHandSelectionSlider, EtherCATSelectionSlider, ArmSelectionSlider
 from sr_robot_lib.etherCAT_hand_lib import EtherCAT_Hand_Lib

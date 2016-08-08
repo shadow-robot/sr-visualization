@@ -24,7 +24,7 @@ from python_qt_binding import loadUi
 from QtCore import QEvent, QObject, Qt, QTimer, Slot, SIGNAL, pyqtSignal
 from QtGui import QDockWidget, QShortcut, QMessageBox, QWidget, QFrame, QColor, QLabel, QComboBox, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout, QIcon, QFileDialog
 from PyQt4.Qt import QTimer, QLayout, QPalette, QDoubleValidator, QIntValidator
-from pr2_mechanism_msgs.srv import ListControllers, SwitchController, LoadController
+from controller_manager_msgs.srv import ListControllers, SwitchController, LoadController
 
 
 import xml.etree.ElementTree as ET
