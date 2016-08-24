@@ -37,7 +37,6 @@ from sr_utilities.hand_finder import HandFinder
 from sr_robot_commander.sr_robot_state_saver import SrStateSaverUnsafe
 
 
-
 class SrGuiStateSaver(Plugin):
 
     """
@@ -60,7 +59,6 @@ class SrGuiStateSaver(Plugin):
 
         QtCore.QObject.connect(self._widget.button_save, QtCore.SIGNAL("clicked()"), self._button_pressed)
 
-
     def _button_pressed(self):
         name = self._widget.edit_name.text()
 
@@ -76,7 +74,8 @@ class SrGuiStateSaver(Plugin):
         elif self._widget.radio_both.isChecked():
             which = "both"
         else:
-            QMessageBox.warning(self._widget, "Choose what to save!", "You must choose which part of the robot you are saving for.")
+            QMessageBox.warning(self._widget, "Choose what to save!",
+                                "You must choose which part of the robot you are saving for.")
             return
 
         SrStateSaverUnsafe(name, which)
