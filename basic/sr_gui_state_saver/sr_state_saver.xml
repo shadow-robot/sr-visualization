@@ -1,0 +1,19 @@
+<library path="src">
+  <class name="SrGuiStateSaver" type="sr_gui_state_saver.state_saver.SrGuiStateSaver"
+         base_class_type="rqt_gui_py::Plugin">
+    <description>
+      A plugin for saving the current robot state.
+    </description>
+    <qtgui>
+      <group>
+        <label>Shadow Robot</label>
+      </group>
+      <group>
+        <label>Basic</label>
+      </group>
+      <icon type="file">resource/hand.png</icon>
+      <label>State Saver</label>
+      <statustip>A plugin for saving the current robot state.</statustip>
+    </qtgui>
+  </class>
+</library>
