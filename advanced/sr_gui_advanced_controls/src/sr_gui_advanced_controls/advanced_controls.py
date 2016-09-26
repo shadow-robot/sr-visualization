@@ -38,7 +38,8 @@ from time import sleep
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
-from QtGui import QMessageBox, QWidget, QIcon
+from QtWidgets import QMessageBox, QWidget
+from QtGui import QIcon
 from controller_manager_msgs.srv import ListControllers
 from controller_manager_msgs.srv import SwitchController, LoadController
 from sr_robot_msgs.srv import ChangeControlType
