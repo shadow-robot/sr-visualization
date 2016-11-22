@@ -28,8 +28,8 @@ from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
 from QtCore import Qt, QThread
-from QtGui import QWidget, QTreeWidgetItem, QCheckBox, QSpinBox, QDoubleSpinBox
-from QtGui import QFileDialog, QMessageBox, QPushButton, QFrame, QHBoxLayout
+from QtWidgets import QMessageBox, QWidget, QTreeWidgetItem, QCheckBox,\
+    QSpinBox, QDoubleSpinBox, QFileDialog, QFrame, QPushButton, QHBoxLayout
 from functools import partial
 from tempfile import NamedTemporaryFile
 
