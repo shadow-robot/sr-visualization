@@ -56,6 +56,7 @@ class SrGuiJointSlider(Plugin):
         "sr_mechanism_controllers/SrhMuscleJointPositionController": ("position", JointMusclePositionControllerState),
         "effort_controllers/JointEffortController": ("effort", JointControllerState),
         "effort_controllers/JointPositionController": ("position", JointControllerState),
+        "fh_controllers/FhClaimlessEffortPositionController": ("position", JointControllerState),
         "position_controllers/JointTrajectoryController": ("position_trajectory", JointTrajectoryControllerState),
         "effort_controllers/JointTrajectoryController": ("position_trajectory", JointTrajectoryControllerState),
         "effort_controllers/GravityCompensatedJointTrajectoryController": ("position_trajectory",
