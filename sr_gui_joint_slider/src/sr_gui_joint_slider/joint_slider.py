@@ -19,6 +19,7 @@
 import os
 import rospkg
 import rospy
+import math
 
 from xml.etree import ElementTree as ET
 
@@ -246,18 +247,30 @@ class SrGuiJointSlider(Plugin):
         """Get the min and max from the robot description for a given joint."""
         root = self._robot_description_xml_root
         if root is not None:
-            limit = root.findall(".//joint[@name='" + jname + "']/limit")
-            if limit is None or len(limit) == 0:
-                # Handles upper case joint names in the model. e.g. the E1
-                # shadowhand
-                limit = root.findall(
-                    ".//joint[@name='" + jname.upper() + "']/limit")
-            if limit is not None and len(limit) > 0:
-                return (float(limit[0].attrib['lower']),
-                        float(limit[0].attrib['upper']),
-                        float(limit[0].attrib['velocity']))
+            joint_type = root.findall(".joint[@name='" + jname + "']")[0].attrib['type']
+            if joint_type == "continuous":
+                limit = root.findall(".//joint[@name='" + jname + "']/limit")
+                if limit is None or len(limit) == 0:
+                    return (-math.pi,
+                            math.pi,
+                            3.0)  # A default speed
+                else:
+                    return (-math.pi,
+                            math.pi,
+                            float(limit[0].attrib['velocity']))
             else:
-                rospy.logerr("Limit not found for joint %s", jname)
+                limit = root.findall(".//joint[@name='" + jname + "']/limit")
+                if limit is None or len(limit) == 0:
+                    # Handles upper case joint names in the model. e.g. the E1
+                    # shadowhand
+                    limit = root.findall(
+                        ".//joint[@name='" + jname.upper() + "']/limit")
+                if limit is not None and len(limit) > 0:
+                    return (float(limit[0].attrib['lower']),
+                            float(limit[0].attrib['upper']),
+                            float(limit[0].attrib['velocity']))
+                else:
+                    rospy.logerr("Limit not found for joint %s", jname)
         else:
             rospy.logerr("robot_description_xml_root == None")
         return (None, None, None)
