@@ -41,7 +41,7 @@ from moveit_msgs.srv import DeleteRobotStateFromWarehouse as DelState
 
 from moveit_msgs.msg import RobotState
 from control_msgs.msg import JointTrajectoryControllerState as ControllerState
-from Thread import Lock
+from threading import Lock
 
 
 class JointSelecter(QtGui.QWidget):
@@ -258,7 +258,7 @@ class GraspSaver(QtGui.QDialog):
             source_values = self._position_targets
             self._target_mutex.release()
         else:
-            source_values self.all_joints
+            source_values = self.all_joints
 
         robot_state.joint_state.position = [
             source_values[j] for j in joints_to_save]
