@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(sr_gui_grasp_controller)
-find_package(catkin REQUIRED COMPONENTS rospy rqt_gui rqt_gui_py sr_hand sr_visualization_icons sr_robot_commander)
+find_package(catkin REQUIRED COMPONENTS rospy rqt_gui rqt_gui_py sr_hand sr_visualization_icons sr_robot_commander moveit_msgs control_msgs)
 
 catkin_package(
     DEPENDS
-    CATKIN_DEPENDS rospy rqt_gui rqt_gui_py sr_hand sr_visualization_icons sr_robot_commander
+    CATKIN_DEPENDS rospy rqt_gui rqt_gui_py sr_hand sr_visualization_icons sr_robot_commander moveit_msgs control_msgs
     INCLUDE_DIRS
     LIBRARIES
 )

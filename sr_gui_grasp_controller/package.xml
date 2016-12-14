@@ -22,6 +22,8 @@
   <build_depend>sr_hand</build_depend>
   <build_depend>sr_visualization_icons</build_depend>
   <build_depend>sr_robot_commander</build_depend>
+  <build_depend>moveit_msgs</build_depend>
+  <build_depend>control_msgs</build_depend>
 
   <run_depend>rospy</run_depend>
   <run_depend>rqt_gui</run_depend>
@@ -29,6 +31,8 @@
   <run_depend>sr_hand</run_depend>
   <run_depend>sr_visualization_icons</run_depend>
   <run_depend>sr_robot_commander</run_depend>
+  <run_depend>moveit_msgs</run_depend>
+  <run_depend>control_msgs</run_depend>
 
 <export>
     <rqt_gui plugin="${prefix}/sr_grasp_controller_plugin.xml" />
