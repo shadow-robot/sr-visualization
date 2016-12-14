@@ -264,8 +264,9 @@ class GraspSaver(QtGui.QDialog):
         else:
             source_values = self.all_joints
 
-        robot_state.joint_state.position = [
-            source_values[j] for j in joints_to_save]
+        for j in joints_to_save:
+            if j in source_values:
+                robot_state.joint_state.position.append(source_values[j])
 
         if self.has_state(self.grasp_name, self.robot_name).exists:
             ret = QtGui.QMessageBox.question(
