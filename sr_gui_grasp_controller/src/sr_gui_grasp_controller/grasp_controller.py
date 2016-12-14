@@ -168,7 +168,7 @@ class GraspSaver(QtGui.QDialog):
             btn_deselect_all, QtCore.SIGNAL("clicked()"), self.deselect_all)
         select_all_frame.setLayout(select_all_layout)
 
-        self.joint_selecter = JointSelecter(self, self.all_joints)
+        self.joint_selecter = JointSelecter(self, self.all_joints, status_topic)
 
         btn_frame = QtGui.QFrame()
         self.btn_ok = QtGui.QPushButton(btn_frame)
@@ -207,9 +207,11 @@ class GraspSaver(QtGui.QDialog):
         self.save_state = rospy.ServiceProxy("save_robot_state",
                                              SaveState)
         self.robot_name = self.plugin_parent.hand_commander.get_robot_name()
+        rospy.logwarn("here")
 
         if self._status_topic is not None:
-            self._controller_state_subscriber = rospy.Subscriber(self.status_topic,
+            rospy.logwarn(self._status_topic)
+            self._controller_state_subscriber = rospy.Subscriber(self._status_topic,
                                                                  ControllerState, self._controller_state_cb)
             self._position_targets = {}
             self._target_mutex = Lock()
@@ -246,16 +248,18 @@ class GraspSaver(QtGui.QDialog):
         robot_state = RobotState()
 
         joints_to_save = self.joint_selecter.get_selected()
-        save_targets = self.joint_selector.use_target()
+        save_targets = self.joint_selecter.use_target()
 
         if len(joints_to_save) == 0:
             joints_to_save = self.all_joints.keys()
 
         robot_state.joint_state.name = joints_to_save
-        source_values = None
+        source_values = {}
         if save_targets:
             self._target_mutex.acquire()
-            source_values = self._position_targets
+            for k,v in self._position_targets.iteritems():
+                if k in joints_to_save:
+                    source_values[k] = v
             self._target_mutex.release()
         else:
             source_values = self.all_joints
