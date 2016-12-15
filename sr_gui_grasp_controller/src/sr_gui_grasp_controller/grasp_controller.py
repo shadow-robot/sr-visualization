@@ -247,26 +247,26 @@ class GraspSaver(QtGui.QDialog):
 
         robot_state = RobotState()
 
-        joints_to_save = self.joint_selecter.get_selected()
-        save_targets = self.joint_selecter.use_target()
+        joint_names_to_save = self.joint_selecter.get_selected()
+        use_target_values = self.joint_selecter.use_target()
 
-        if len(joints_to_save) == 0:
-            joints_to_save = self.all_joints.keys()
+        if len(joint_names_to_save) == 0:
+            joint_names_to_save = self.all_joints.keys()
 
-        robot_state.joint_state.name = joints_to_save
-        source_values = {}
-        if save_targets:
-            self._target_mutex.acquire()
-            for k,v in self._position_targets.iteritems():
-                if k in joints_to_save:
-                    source_values[k] = v
-            self._target_mutex.release()
-        else:
-            source_values = self.all_joints
+        joint_values_to_save = []
 
-        for j in joints_to_save:
-            if j in source_values:
-                robot_state.joint_state.position.append(source_values[j])
+        self._target_mutex.acquire()
+
+        for joint in joint_names_to_save:
+            if use_target_values and (joint in self._position_targets):
+                joint_values_to_save.append(self._position_targets[joint])
+            else:
+                joint_values_to_save.append(self.all_joints[joint])
+
+        self._target_mutex.release()
+
+        robot_state.joint_state.name = joint_names_to_save
+        robot_state.joint_state.position = joint_values_to_save
 
         if self.has_state(self.grasp_name, self.robot_name).exists:
             ret = QtGui.QMessageBox.question(
