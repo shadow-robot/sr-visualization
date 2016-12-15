@@ -261,6 +261,7 @@ class GraspSaver(QtGui.QDialog):
             if use_target_values and (joint in self._position_targets):
                 joint_values_to_save.append(self._position_targets[joint])
             else:
+
                 joint_values_to_save.append(self.all_joints[joint])
 
         self._target_mutex.release()
