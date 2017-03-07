@@ -21,8 +21,8 @@ import rospy
 
 from python_qt_binding import loadUi
 
-from PyQt4 import QtCore, Qt
-from QtGui import QFrame
+from PyQt5 import QtCore, Qt
+from QtWidgets import QFrame
 from controller_manager_msgs.srv import ListControllers
 from sr_robot_msgs.msg import sendupdate, joint
 from std_msgs.msg import Float64
