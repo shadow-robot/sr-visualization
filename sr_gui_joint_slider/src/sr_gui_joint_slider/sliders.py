@@ -74,7 +74,6 @@ class Joint():
 
 
 class ExtendedSlider(QFrame):
-
     """
     This slider displays the current position and the target as well.
     """
@@ -105,13 +104,10 @@ class ExtendedSlider(QFrame):
         self.min_label.setText(str(joint.min))
         self.max_label.setText(str(joint.max))
 
-        self.connect(self.selected, QtCore.SIGNAL(
-            'stateChanged(int)'), self.checkbox_click)
-        self.connect(self.slider, QtCore.SIGNAL(
-            'valueChanged(int)'), self.changeValue)
-
+        self.selected.stateChanged.connect(self.checkbox_click)
+        self.slider.valueChanged.connect(self.changeValue)
         self.timer = Qt.QTimer(self)
-        self.connect(self.timer, QtCore.SIGNAL('timeout()'), self.update)
+        self.timer.timeout.connect(self.update)
         self.timer.start(200)
 
     def changeValue(self, value):
@@ -219,12 +215,10 @@ class EtherCATHandSlider(ExtendedSlider):
                 self.slider.setTracking(False)
         elif (self.joint.controller.controller_category == "velocity"):
             self.slider.setTracking(True)
-            self.connect(self.slider, QtCore.SIGNAL(
-                'sliderReleased()'), self.on_slider_released)
+            self.connect(self.slider, QtCore.SIGNAL('sliderReleased()'), self.on_slider_released)
         elif (self.joint.controller.controller_category == "effort"):
             self.slider.setTracking(True)
-            self.connect(self.slider, QtCore.SIGNAL(
-                'sliderReleased()'), self.on_slider_released)
+            self.connect(self.slider, QtCore.SIGNAL('sliderReleased()'), self.on_slider_released)
 
     def on_slider_released(self):
         if (self.joint.controller.controller_category == "effort")\
@@ -326,11 +320,8 @@ class SelectionSlider(QFrame):
         self.min_label.setText(str(min))
         self.max_label.setText(str(max))
 
-        self.connect(self.slider, QtCore.SIGNAL(
-            'valueChanged(int)'), self.changeValue)
-
-        self.connect(self.selected, QtCore.SIGNAL(
-            'stateChanged(int)'), self.checkbox_click)
+        self.slider.valueChanged.connect(self.changeValue)
+        self.selected.stateChanged.connect(self.checkbox_click)
 
     def changeValue(self, value):
         raise NotImplementedError("Virtual method, please implement.")
