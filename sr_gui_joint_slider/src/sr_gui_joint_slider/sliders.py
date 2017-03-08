@@ -21,8 +21,8 @@ import rospy
 
 from python_qt_binding import loadUi
 
-from PyQt4 import QtCore, Qt
-from QtGui import QFrame
+from PyQt5 import QtCore, Qt
+from QtWidgets import QFrame
 from controller_manager_msgs.srv import ListControllers
 from sr_robot_msgs.msg import sendupdate, joint
 from std_msgs.msg import Float64
@@ -105,13 +105,11 @@ class ExtendedSlider(QFrame):
         self.min_label.setText(str(joint.min))
         self.max_label.setText(str(joint.max))
 
-        self.connect(self.selected, QtCore.SIGNAL(
-            'stateChanged(int)'), self.checkbox_click)
-        self.connect(self.slider, QtCore.SIGNAL(
-            'valueChanged(int)'), self.changeValue)
+        self.selected.stateChanged.connect(self.checkbox_click)
+        self.slider.valueChanged.connect(self.changeValue)
 
         self.timer = Qt.QTimer(self)
-        self.connect(self.timer, QtCore.SIGNAL('timeout()'), self.update)
+        self.timer.timeout.connect(self.update)
         self.timer.start(200)
 
     def changeValue(self, value):
@@ -326,11 +324,8 @@ class SelectionSlider(QFrame):
         self.min_label.setText(str(min))
         self.max_label.setText(str(max))
 
-        self.connect(self.slider, QtCore.SIGNAL(
-            'valueChanged(int)'), self.changeValue)
-
-        self.connect(self.selected, QtCore.SIGNAL(
-            'stateChanged(int)'), self.checkbox_click)
+        self.slider.valueChanged.connect(self.changeValue)
+        self.selected.stateChanged.connect(self.checkbox_click)
 
     def changeValue(self, value):
         raise NotImplementedError("Virtual method, please implement.")
