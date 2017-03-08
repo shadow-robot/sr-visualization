@@ -27,7 +27,7 @@ from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
 from QtCore import Qt
-from QtGui import QWidget, QMessageBox
+from QtWidgets import QWidget, QMessageBox
 
 from controller_manager_msgs.srv import ListControllers
 from control_msgs.msg import JointControllerState
