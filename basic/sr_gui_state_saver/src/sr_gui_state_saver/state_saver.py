@@ -26,10 +26,10 @@ import rospy
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
-from QtCore import Qt, QThread, SIGNAL, QPoint
+from QtCore import Qt, QThread, QPoint # , SIGNAL
 import QtCore
-from QtGui import QWidget, QMessageBox, QFrame, \
-    QHBoxLayout, QCheckBox, QLabel, QColor
+from QtWidgets import QWidget, QMessageBox, QFrame, \
+    QHBoxLayout, QCheckBox, QLabel # , QColor
 
 from std_srvs.srv import Empty
 from diagnostic_msgs.msg import DiagnosticArray
@@ -57,7 +57,10 @@ class SrGuiStateSaver(Plugin):
         self._widget.setObjectName('SrStateSaverUi')
         context.add_widget(self._widget)
 
+        """
         QtCore.QObject.connect(self._widget.button_save, QtCore.SIGNAL("clicked()"), self._button_pressed)
+        """
+        self._widget.button_save.clicked.connect(self._button_pressed)
 
     def _button_pressed(self):
         name = self._widget.edit_name.text()
