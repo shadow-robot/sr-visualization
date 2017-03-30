@@ -29,6 +29,8 @@ import QtCore
 from QtCore import Qt, QEvent, QObject
 import QtGui
 from QtGui import *
+import QtWidgets
+from QtWidgets import *
 
 from sr_hand.Grasp import Grasp
 from sr_hand.grasps_interpoler import GraspInterpoler
@@ -42,16 +44,16 @@ from moveit_msgs.srv import DeleteRobotStateFromWarehouse as DelState
 from moveit_msgs.msg import RobotState
 
 
-class JointSelecter(QtGui.QWidget):
+class JointSelecter(QtWidgets.QWidget):
 
     """
     Select which joints to save in a new grasp
     """
 
     def __init__(self, parent, all_joints):
-        QtGui.QWidget.__init__(self, parent=parent)
-        self.frame = QtGui.QFrame()
-        self.layout = QtGui.QGridLayout()
+        QtWidgets.QWidget.__init__(self, parent=parent)
+        self.frame = QtWidgets.QFrame()
+        self.layout = QtWidgets.QGridLayout()
         self.checkboxes = []
 
         col = 0
@@ -75,12 +77,12 @@ class JointSelecter(QtGui.QWidget):
 
             row = rows[col]
             rows[col] = row + 1
-            cb = QtGui.QCheckBox(str(joint), self.frame)
+            cb = QtWidgets.QCheckBox(str(joint), self.frame)
             self.checkboxes.append(cb)
             self.layout.addWidget(cb, row, col)
 
         self.frame.setLayout(self.layout)
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.frame)
         self.frame.show()
         self.setLayout(layout)
@@ -112,14 +114,14 @@ class JointSelecter(QtGui.QWidget):
             cb.setChecked(False)
 
 
-class GraspSaver(QtGui.QDialog):
+class GraspSaver(QtWidgets.QDialog):
 
     """
     Save a new grasp from the current joints positions.
     """
 
     def __init__(self, parent, all_joints, plugin_parent):
-        QtGui.QDialog.__init__(self, parent)
+        QtWidgets.QDialog.__init__(self, parent)
         self.plugin_parent = plugin_parent
         self.all_joints = all_joints
         self.setModal(True)
@@ -127,49 +129,46 @@ class GraspSaver(QtGui.QDialog):
 
         self.grasp_name = ""
 
-        self.upper_frame = QtGui.QFrame()
-        self.upper_layout = QtGui.QHBoxLayout()
-        label_name = QtGui.QLabel()
+        self.upper_frame = QtWidgets.QFrame()
+        self.upper_layout = QtWidgets.QHBoxLayout()
+        label_name = QtWidgets.QLabel()
         label_name.setText("Grasp Name: ")
-        name_widget = QtGui.QLineEdit()
-        self.upper_frame.connect(
-            name_widget, QtCore.SIGNAL('textChanged(QString)'), self.name_changed)
+        name_widget = QtWidgets.QLineEdit()
+        name_widget.textChanged['QString'].connect(self.name_changed)
 
         self.upper_layout.addWidget(label_name)
         self.upper_layout.addWidget(name_widget)
         self.upper_frame.setLayout(self.upper_layout)
 
-        select_all_frame = QtGui.QFrame()
-        select_all_layout = QtGui.QHBoxLayout()
-        btn_select_all = QtGui.QPushButton(select_all_frame)
+        select_all_frame = QtWidgets.QFrame()
+        select_all_layout = QtWidgets.QHBoxLayout()
+        btn_select_all = QtWidgets.QPushButton(select_all_frame)
         btn_select_all.setText("Select All")
         select_all_layout.addWidget(btn_select_all)
-        self.connect(
-            btn_select_all, QtCore.SIGNAL("clicked()"), self.select_all)
-        btn_deselect_all = QtGui.QPushButton(select_all_frame)
+        btn_select_all.clicked.connect(self.select_all)
+        btn_deselect_all = QtWidgets.QPushButton(select_all_frame)
         btn_deselect_all.setText("Deselect All")
         select_all_layout.addWidget(btn_deselect_all)
-        self.connect(
-            btn_deselect_all, QtCore.SIGNAL("clicked()"), self.deselect_all)
+        btn_deselect_all.clicked.connect(self.deselect_all)
         select_all_frame.setLayout(select_all_layout)
 
         self.joint_selecter = JointSelecter(self, self.all_joints)
 
-        btn_frame = QtGui.QFrame()
-        self.btn_ok = QtGui.QPushButton(btn_frame)
+        btn_frame = QtWidgets.QFrame()
+        self.btn_ok = QtWidgets.QPushButton(btn_frame)
         self.btn_ok.setText("OK")
         self.btn_ok.setDisabled(True)
-        self.connect(self.btn_ok, QtCore.SIGNAL("clicked()"), self.accept)
-        btn_cancel = QtGui.QPushButton(btn_frame)
+        self.btn_ok.clicked.connect(self.accept)
+        btn_cancel = QtWidgets.QPushButton(btn_frame)
         btn_cancel.setText("Cancel")
-        self.connect(btn_cancel, QtCore.SIGNAL("clicked()"), self.reject)
+        btn_cancel.clicked.connect(self.reject)
 
-        btn_layout = QtGui.QHBoxLayout()
+        btn_layout = QtWidgets.QHBoxLayout()
         btn_layout.addWidget(self.btn_ok)
         btn_layout.addWidget(btn_cancel)
         btn_frame.setLayout(btn_layout)
 
-        self.layout = QtGui.QVBoxLayout()
+        self.layout = QtWidgets.QVBoxLayout()
         self.layout.addWidget(self.upper_frame)
         self.layout.addWidget(select_all_frame)
         self.layout.addWidget(self.joint_selecter)
@@ -181,7 +180,7 @@ class GraspSaver(QtGui.QDialog):
         try:
             rospy.wait_for_service("has_robot_state", 1)
         except rospy.ServiceException as e:
-            QMessageBox.warning(
+            QtWidgets.QMessageBox.warning(
                 self, "Warning", "Could not connect to warehouse services."
                 "Please make sure they're running before saving grasps.")
             rospy.logerr("Tried to save, but couldn't connecto to warehouse service: %s" % str(e))
@@ -228,13 +227,13 @@ class GraspSaver(QtGui.QDialog):
             self.all_joints[j] for j in joints_to_save]
 
         if self.has_state(self.grasp_name, self.robot_name).exists:
-            ret = QtGui.QMessageBox.question(
+            ret = QtWidgets.QMessageBox.question(
                 self, "State already in warehouse!",
                 "There is already a pose named %s in the warehouse. Overwrite?"
-                % self.grasp_name, QtGui.QMessageBox.Yes | QtGui.QMessageBox.No,
-                QtGui.QMessageBox.No)
+                % self.grasp_name, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+                QtWidgets.QMessageBox.No)
 
-            if QtGui.QMessageBox.No == ret:
+            if QtWidgets.QMessageBox.No == ret:
                 return
 
         self.save_state(self.grasp_name, self.robot_name, robot_state)
@@ -244,41 +243,39 @@ class GraspSaver(QtGui.QDialog):
         except NameError:
             pass
 
-        QtGui.QDialog.accept(self)
+            QtWidgets.QDialog.accept(self)
 
 
-class GraspChooser(QtGui.QWidget):
+class GraspChooser(QtWidgets.QWidget):
 
     """
     Choose a grasp from a list of grasps.
     """
 
     def __init__(self, parent, plugin_parent, title):
-        QtGui.QWidget.__init__(self)
+        QtWidgets.QWidget.__init__(self)
         self.plugin_parent = plugin_parent
         self.grasp = None
-        self.title = QtGui.QLabel()
+        self.title = QtWidgets.QLabel()
         self.title.setText(title)
 
     def draw(self):
         """
         Draw the gui and connect signals
         """
-        self.frame = QtGui.QFrame(self)
+        self.frame = QtWidgets.QFrame(self)
 
-        self.list = QtGui.QListWidget()
+        self.list = QtWidgets.QListWidget()
         first_item = self.refresh_list()
-        self.connect(self.list, QtCore.SIGNAL(
-            'itemClicked(QListWidgetItem*)'), self.grasp_selected)
+        self.list.itemClicked['QListWidgetItem*'].connect(self.grasp_selected)
 
-        self.connect(self.list, QtCore.SIGNAL(
-            'itemDoubleClicked(QListWidgetItem*)'), self.double_click)
-        self.list.setViewMode(QtGui.QListView.ListMode)
-        self.list.setResizeMode(QtGui.QListView.Adjust)
-        self.list.setItemSelected(first_item, True)
+        self.list.itemDoubleClicked['QListWidgetItem*'].connect(self.double_click)
+        self.list.setViewMode(QtWidgets.QListView.ListMode)
+        self.list.setResizeMode(QtWidgets.QListView.Adjust)
+        self.list.setCurrentItem(first_item)
         self.grasp_selected(first_item, first_time=True)
 
-        self.layout = QtGui.QVBoxLayout()
+        self.layout = QtWidgets.QVBoxLayout()
         self.layout.addWidget(self.title)
         self.layout.addWidget(self.list)
 
@@ -289,7 +286,7 @@ class GraspChooser(QtGui.QWidget):
         self.plugin_parent.newPoseSavedSignal['QString'].connect(self.refresh_list)
 
         self.frame.setLayout(self.layout)
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.frame)
         self.frame.show()
         self.setLayout(layout)
@@ -329,59 +326,57 @@ class GraspChooser(QtGui.QWidget):
         grasps = self.plugin_parent.hand_commander.get_named_targets()
         grasps.sort()
         for grasp_name in grasps:
-            item = QtGui.QListWidgetItem(grasp_name)
+            item = QtWidgets.QListWidgetItem(grasp_name)
             if first_item is None:
                 first_item = item
             self.list.addItem(item)
         return first_item
 
 
-class GraspSlider(QtGui.QWidget):
+class GraspSlider(QtWidgets.QWidget):
 
     """
     Slide from one grasp to another.
     """
 
     def __init__(self, parent, plugin_parent):
-        QtGui.QWidget.__init__(self, parent)
+        QtWidgets.QWidget.__init__(self, parent)
         self.plugin_parent = plugin_parent
 
     def draw(self):
         """
         Draw the gui and connect signals
         """
-        self.frame = QtGui.QFrame(self)
-        label_frame = QtGui.QFrame(self.frame)
-        from_label = QtGui.QLabel()
+        self.frame = QtWidgets.QFrame(self)
+        label_frame = QtWidgets.QFrame(self.frame)
+        from_label = QtWidgets.QLabel()
         from_label.setText("From")
-        ref_label = QtGui.QLabel()
+        ref_label = QtWidgets.QLabel()
         ref_label.setText("Reference")
-        to_label = QtGui.QLabel()
+        to_label = QtWidgets.QLabel()
         to_label.setText("To")
-        label_layout = QtGui.QHBoxLayout()
+        label_layout = QtWidgets.QHBoxLayout()
         label_layout.addWidget(from_label)
         label_layout.addWidget(ref_label)
         label_layout.addWidget(to_label)
 
         label_frame.setLayout(label_layout)
 
-        self.slider = QtGui.QSlider()
+        self.slider = QtWidgets.QSlider()
         self.slider.setOrientation(QtCore.Qt.Horizontal)
         self.slider.setFocusPolicy(QtCore.Qt.NoFocus)
         self.slider.setTickInterval(100)
-        self.slider.setTickPosition(QSlider.TicksAbove)
+        self.slider.setTickPosition(QtWidgets.QSlider.TicksAbove)
         self.slider.setMinimum(-100)
         self.slider.setMaximum(100)
+        self.slider.valueChanged.connect(self.changeValue)
 
-        self.connect(self.slider, QtCore.SIGNAL(
-            'valueChanged(int)'), self.changeValue)
-
-        self.layout = QtGui.QVBoxLayout()
+        self.layout = QtWidgets.QVBoxLayout()
         self.layout.addWidget(label_frame)
         self.layout.addWidget(self.slider)
 
         self.frame.setLayout(self.layout)
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.frame)
         self.frame.show()
         self.setLayout(layout)
@@ -412,7 +407,7 @@ class SrGuiGraspController(Plugin):
 
         ui_file = os.path.join(rospkg.RosPack().get_path(
             'sr_gui_grasp_controller'), 'uis', 'SrGuiGraspController.ui')
-        self._widget = QWidget()
+        self._widget = QtWidgets.QWidget()
         loadUi(ui_file, self._widget)
         if context is not None:
             context.add_widget(self._widget)
@@ -423,8 +418,8 @@ class SrGuiGraspController(Plugin):
 
         self.layout = self._widget.layout
 
-        subframe = QtGui.QFrame()
-        sublayout = QtGui.QVBoxLayout()
+        subframe = QtWidgets.QFrame()
+        sublayout = QtWidgets.QVBoxLayout()
 
         self.hand_finder = HandFinder()
         self.hand_parameters = self.hand_finder.get_hand_parameters()
@@ -436,42 +431,39 @@ class SrGuiGraspController(Plugin):
         self.grasp_slider = GraspSlider(self._widget, self)
         sublayout.addWidget(self.grasp_slider)
 
-        btn_frame = QtGui.QFrame()
-        btn_layout = QtGui.QHBoxLayout()
+        btn_frame = QtWidgets.QFrame()
+        btn_layout = QtWidgets.QHBoxLayout()
 
-        self.btn_save = QtGui.QPushButton()
+        self.btn_save = QtWidgets.QPushButton()
         self.btn_save.setText("Save")
         self.btn_save.setFixedWidth(130)
         self.btn_save.setIcon(QtGui.QIcon(self.icon_dir + '/save.png'))
-        btn_frame.connect(
-            self.btn_save, QtCore.SIGNAL('clicked()'), self.save_grasp)
+        self.btn_save.clicked.connect(self.save_grasp)
         btn_layout.addWidget(self.btn_save)
 
-        self.btn_del = QtGui.QPushButton()
+        self.btn_del = QtWidgets.QPushButton()
         self.btn_del.setText("Delete")
         self.btn_del.setFixedWidth(130)
-        btn_frame.connect(
-            self.btn_del, QtCore.SIGNAL('clicked()'), self.delete_grasp)
+        self.btn_del.clicked.connect(self.delete_grasp)
         btn_layout.addWidget(self.btn_del)
 
-        btn_set_ref = QtGui.QPushButton()
+        btn_set_ref = QtWidgets.QPushButton()
         btn_set_ref.setText("Set Reference")
         btn_set_ref.setFixedWidth(130)
         btn_set_ref.setIcon(QtGui.QIcon(self.icon_dir + '/iconHand.png'))
-        btn_frame.connect(btn_set_ref, QtCore.SIGNAL(
-            'clicked()'), self.set_reference_grasp)
+        btn_set_ref.clicked.connect(self.set_reference_grasp)
         btn_layout.addWidget(btn_set_ref)
 
         btn_frame.setLayout(btn_layout)
         sublayout.addWidget(btn_frame)
         subframe.setLayout(sublayout)
 
-        selector_layout = QtGui.QHBoxLayout()
-        selector_frame = QtGui.QFrame()
+        selector_layout = QtWidgets.QHBoxLayout()
+        selector_frame = QtWidgets.QFrame()
 
-        selector_layout.addWidget(QLabel("Select Hand"))
+        selector_layout.addWidget(QtWidgets.QLabel("Select Hand"))
 
-        self.hand_combo_box = QComboBox()
+        self.hand_combo_box = QtWidgets.QComboBox()
 
         for hand_serial in self.hand_parameters.mapping.keys():
             self.hand_combo_box.addItem(hand_serial)
@@ -481,10 +473,7 @@ class SrGuiGraspController(Plugin):
         selector_frame.setLayout(selector_layout)
         sublayout.addWidget(selector_frame)
 
-        selector_frame.connect(
-            self.hand_combo_box,
-            QtCore.SIGNAL('activated(QString)'),
-            self.hand_selected)
+        self.hand_combo_box.activated.connect(self.hand_selected)
 
         self.grasp_from_chooser = GraspChooser(self._widget, self, "From: ")
         self.layout.addWidget(self.grasp_from_chooser)
@@ -511,23 +500,23 @@ class SrGuiGraspController(Plugin):
 
     def delete_grasp(self):
         if self.to_delete is None:
-            QMessageBox.warning(
+            QtWidgets.QMessageBox.warning(
                 self._widget, "No grasp selected!",
                 "Please click a grasp name in either grasp chooser to delete.")
         else:
-            ret = QtGui.QMessageBox.question(
+            ret = QtWidgets.QMessageBox.question(
                 self._widget, "Delete Grasp?",
                 "Are you sure you wish to delete grasp %s?"
-                % self.to_delete, QtGui.QMessageBox.Yes | QtGui.QMessageBox.No,
-                QtGui.QMessageBox.No)
+                % self.to_delete, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+                QtWidgets.QMessageBox.No)
 
-            if ret == QtGui.QMessageBox.Yes:
+            if ret == QtWidgets.QMessageBox.Yes:
                 del_state = rospy.ServiceProxy("delete_robot_state", DelState)
                 robot_name = self.hand_commander.get_robot_name()
                 try:
                     del_state(self.to_delete, robot_name)
                 except rospy.ServiceException as e:
-                    QMessageBox.warning(
+                    QtWidgets.QMessageBox.warning(
                         self._widget, "Coudn't delete",
                         "Please check warehouse services are running.")
                     rospy.logwarn("Couldn't delete state: %s" % str(e))
@@ -579,7 +568,7 @@ class SrGuiGraspController(Plugin):
         """
         if self.grasp_interpoler_1 is None \
                 or self.grasp_interpoler_2 is None:
-            QMessageBox.warning(
+            QtWidgets.QMessageBox.warning(
                 self._widget, "Warning", "Could not read current grasp.\n"
                 "Check that the hand controllers are running.\n"
                 "Then click \"Set Reference\"")
@@ -596,7 +585,7 @@ class SrGuiGraspController(Plugin):
 
 if __name__ == "__main__":
     rospy.init_node("grasp_controller")
-    app = QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     ctrl = SrGuiGraspController(None)
     ctrl._widget.show()
     app.exec_()
