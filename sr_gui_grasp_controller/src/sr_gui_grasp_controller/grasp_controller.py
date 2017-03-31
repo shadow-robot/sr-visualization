@@ -26,9 +26,9 @@ from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
 import QtCore
-from QtCore import Qt, QEvent, QObject
+from QtCore import Qt
 import QtGui
-from QtGui import *
+from QtGui import QIcon
 import QtWidgets
 from QtWidgets import *
 
