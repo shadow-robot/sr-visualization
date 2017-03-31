@@ -51,9 +51,6 @@ class SrGuiStateSaver(Plugin):
         self._widget.setObjectName('SrStateSaverUi')
         context.add_widget(self._widget)
 
-        """
-        QtCore.QObject.connect(self._widget.button_save, QtCore.SIGNAL("clicked()"), self._button_pressed)
-        """
         self._widget.button_save.clicked.connect(self._button_pressed)
 
     def _button_pressed(self):
