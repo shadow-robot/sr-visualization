@@ -21,19 +21,13 @@
 
 import os
 import rospkg
-import rospy
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
-from QtCore import Qt, QThread, QPoint # , SIGNAL
-import QtCore
 from QtWidgets import QWidget, QMessageBox, QFrame, \
-    QHBoxLayout, QCheckBox, QLabel # , QColor
+    QHBoxLayout, QCheckBox, QLabel
 
-from std_srvs.srv import Empty
-from diagnostic_msgs.msg import DiagnosticArray
-from sr_utilities.hand_finder import HandFinder
 from sr_robot_commander.sr_robot_state_saver import SrStateSaverUnsafe
 
 
