@@ -6,7 +6,7 @@
 import os
 from python_qt_binding import loadUi
 from qt_gui.plugin import Plugin
-from QtGui import QWidget
+from QtWidgets import QWidget
 import rospy
 import rospkg
 from sr_robot_msgs.srv import RobotTeachMode, RobotTeachModeRequest, RobotTeachModeResponse
