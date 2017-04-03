@@ -45,9 +45,7 @@ from diagnostic_msgs.srv import SelfTest
 
 from QtWidgets import QWidget, QTreeWidgetItem, QMessageBox, QInputDialog, QDialog, QSplitter, QLabel, QSizePolicy
 from QtGui import QResizeEvent, QColor, QPixmap
-
-from QtCore import QThread, QPoint # , SIGNAL
-from QtCore import Qt
+from QtCore import Qt, QThread, QPoint  # , SIGNAL
 
 from time import sleep
 
@@ -93,10 +91,7 @@ class AsyncService(QThread):
         self.manual_test_req_ = req
 
         # self.emit(SIGNAL("manual_test(QPoint)"), QPoint(self.index, 0))
-
         self.manual_test['QPoint'].emit(QPoint(self.index, 0.0))
-
-        # self.manual_test(QPoint).QPoint(self.index, 0).emit()
 
         while self.manual_test_res_ is None:
             time.sleep(0.01)
@@ -120,10 +115,7 @@ class AsyncService(QThread):
             return
 
         # self.emit(SIGNAL("test_finished(QPoint)"), QPoint(self.index, 0))
-
         self.test_finished['QPoint'].emit(QPoint(self.index, 0.0))
-
-        # self.test_finished(QPoint).QPoint(self.index, 0).emit()
 
     def save(self):
         """
