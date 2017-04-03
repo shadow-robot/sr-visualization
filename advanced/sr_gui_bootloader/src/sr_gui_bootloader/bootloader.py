@@ -51,14 +51,13 @@ class MotorBootloader(QThread):
                                                                  SimpleMotorFlasher)
                     resp = self.bootloader_service(firmware_path.encode('ascii', 'ignore'), motor.motor_index)
                 except rospy.ServiceException, e:
-                    self.emit(SIGNAL("failed(QString)"), "Service did not process request: %s" % str(e))
+                    self.failed['QString'].emit("Service did not process request: %s" % str(e))
                     return
 
                 if resp == SimpleMotorFlasherResponse.FAIL:
-                    self.emit(SIGNAL("failed(QString)"),
-                              "Bootloading motor {} failed".format(bootloaded_motors))
+                    self.failed['QString'].emit("Bootloading motor {} failed".format(bootloaded_motors))
                 bootloaded_motors += 1
-                self.emit(SIGNAL("motor_finished(QPoint)"), QPoint(bootloaded_motors, 0.0))
+                self.motor_finished['QPoint'].emit(QPoint(bootloaded_motors, 0.0))
 
 
 class Motor(QFrame):
@@ -253,7 +252,7 @@ class SrGuiBootloader(Plugin):
 
         self.motor_bootloader = MotorBootloader(
             self, nb_motors_to_program, self._prefix)
-   
+
         self._widget.motor_bootloader.finished.connect(self.finished_programming_motors)
         self._widget.motor_bootloader.motor_finished['QPoint'].connect(self.one_motor_finished)
         self._widget.motor_bootloader.failed['QString'].connect(self.failed_programming_motors)
