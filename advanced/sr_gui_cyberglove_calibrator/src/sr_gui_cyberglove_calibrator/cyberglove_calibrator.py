@@ -31,8 +31,8 @@ from QtCore import Qt, QEvent, QObject
 import QtGui
 from QtGui import QPixmap, QColor, QPalette, QIcon
 import QtWidgets
-from QtWidgets import QWidget, QFrame, QVBoxLayout, QTextEdit, QLabel, \
-    QHBoxLayout, QPushButton, QFileDialog, QMessageBox
+# from QtWidgets import QWidget, QFrame, QVBoxLayout, QTextEdit, QLabel, QHBoxLayout, QPushButton, QFileDialog, QMessageBox
+from QtWidgets import *
 
 # from cyberglove_generic_plugin import CybergloveGenericPlugin
 
@@ -298,7 +298,7 @@ class SrGuiCybergloveCalibrator(Plugin):
 
         ui_file = os.path.join(rospkg.RosPack().get_path(
             'sr_gui_cyberglove_calibrator'), 'uis', 'SrGuiCybergloveCalibrator.ui')
-        self._widget = QWidget()
+        self._widget = QtWidgets.QWidget()
         loadUi(ui_file, self._widget)
         context.add_widget(self._widget)
 
