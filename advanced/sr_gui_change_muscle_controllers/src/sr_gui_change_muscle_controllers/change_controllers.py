@@ -37,7 +37,8 @@ from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
 from QtCore import QEvent, QObject, Qt, QTimer, Slot
-from QtGui import QShortcut, QMessageBox, QWidget, QIcon
+from QtGui import QIcon
+from QtWidgets import QShortcut, QMessageBox, QWidget
 from controller_manager_msgs.srv import ListControllers, SwitchController, LoadController
 from sr_robot_msgs.srv import ChangeControlType
 from sr_robot_msgs.msg import ControlType
