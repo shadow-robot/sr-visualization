@@ -19,8 +19,9 @@ import rospkg
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
-from QtCore import QEvent, QObject, Qt, QTimer, Slot, QThread, SIGNAL, QPoint
-from QtGui import QWidget, QShortcut, QMessageBox, QFrame, QHBoxLayout, QCheckBox, QLabel, QCursor, QColor, QFileDialog
+from QtCore import QEvent, QObject, Qt, QTimer, Slot, QThread, QPoint
+from QtGui import QCursor, QColor
+from QtWidgets import QWidget, QShortcut, QMessageBox, QFrame, QHBoxLayout, QCheckBox, QLabel, QFileDialog
 from sr_utilities.hand_finder import HandFinder
 
 from std_srvs.srv import Empty
@@ -252,9 +253,10 @@ class SrGuiBootloader(Plugin):
 
         self.motor_bootloader = MotorBootloader(
             self, nb_motors_to_program, self._prefix)
-        self._widget.connect(self.motor_bootloader, SIGNAL("finished()"), self.finished_programming_motors)
-        self._widget.connect(self.motor_bootloader, SIGNAL("motor_finished(QPoint)"), self.one_motor_finished)
-        self._widget.connect(self.motor_bootloader, SIGNAL("failed(QString)"), self.failed_programming_motors)
+   
+        self._widget.motor_bootloader.finished.connect(self.finished_programming_motors)
+        self._widget.motor_bootloader.motor_finished['QPoint'].connect(self.one_motor_finished)
+        self._widget.motor_bootloader.failed['QString'].connect(self.failed_programming_motors)
 
         self._widget.setCursor(Qt.WaitCursor)
         self.motors_frame.setEnabled(False)
