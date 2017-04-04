@@ -31,7 +31,8 @@ from QtCore import Qt, QEvent, QObject
 import QtGui
 from QtGui import QPixmap, QColor, QPalette, QIcon
 import QtWidgets
-# from QtWidgets import QWidget, QFrame, QVBoxLayout, QTextEdit, QLabel, QHBoxLayout, QPushButton, QFileDialog, QMessageBox
+# from QtWidgets import QWidget, QFrame, QVBoxLayout, QTextEdit, QLabel, \
+# QHBoxLayout, QPushButton, QFileDialog, QMessageBox
 from QtWidgets import *
 
 # from cyberglove_generic_plugin import CybergloveGenericPlugin
