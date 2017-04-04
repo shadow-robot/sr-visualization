@@ -25,13 +25,15 @@ import rospy
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
-from PyQt4.Qt import QTimer, QLayout, QPalette, QDoubleValidator, QIntValidator
+from PyQt5.Qt import QTimer, QLayout, QPalette, QDoubleValidator, QIntValidator
+
+from QtCore import Qt, pyqtSignal  # , SIGNAL
+from QtWidgets import QWidget, QFrame  # , QColor
+from QtWidgets import QLabel, QComboBox, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, \
+    QGridLayout, QFileDialog  # , QIcon
+
 from sr_robot_commander.sr_hand_commander import SrHandCommander
 from sr_utilities.hand_finder import HandFinder
-
-from QtCore import Qt, SIGNAL, pyqtSignal
-from QtGui import QWidget, QFrame, QColor
-from QtGui import QLabel, QComboBox, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout, QIcon, QFileDialog
 
 
 class Step(QWidget):
