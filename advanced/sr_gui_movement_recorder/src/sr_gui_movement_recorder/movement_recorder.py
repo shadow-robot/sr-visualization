@@ -28,9 +28,11 @@ from python_qt_binding import loadUi
 from PyQt5.Qt import QTimer, QLayout, QPalette, QDoubleValidator, QIntValidator
 
 from QtCore import Qt, pyqtSignal  # , SIGNAL
+from QtGui import QIcon, QColor
 from QtWidgets import QWidget, QFrame  # , QColor
 from QtWidgets import QLabel, QComboBox, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, \
     QGridLayout, QFileDialog  # , QIcon
+
 
 from sr_robot_commander.sr_hand_commander import SrHandCommander
 from sr_utilities.hand_finder import HandFinder
