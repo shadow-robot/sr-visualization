@@ -319,13 +319,14 @@ class SrGuiMovementRecorder(Plugin):
 
         self.sublayout.addWidget(self.hand_combo_box, 0, 1)
 
-        self.frame.connect(self.hand_combo_box, SIGNAL('activated(QString)'), self.hand_selected)
+        # self.frame.connect(self.hand_combo_box, SIGNAL('activated(QString)'), self.hand_selected)
+        self.hand_combo_box.activated['QString'].frame.connect(self.hand_selected)
 
         self.play_btn = QPushButton()
         self.play_btn.setText("Play")
         self.play_btn.setFixedWidth(80)
-        self.command_frame.connect(
-            self.play_btn, SIGNAL('clicked()'), self.button_play_clicked)
+        # self.command_frame.connect(self.play_btn, SIGNAL('clicked()'), self.button_play_clicked)
+        self.play_btn.clicked.command_frame.connect(self.button_play_clicked)
         self.sublayout.addWidget(self.play_btn, 0, 2)
 
         self.mutex = threading.Lock()
