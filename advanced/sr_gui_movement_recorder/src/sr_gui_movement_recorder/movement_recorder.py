@@ -27,10 +27,10 @@ from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 from PyQt5.Qt import QTimer, QLayout, QPalette, QDoubleValidator, QIntValidator
 
-from QtCore import Qt, pyqtSignal  # , SIGNAL
+from QtCore import Qt, pyqtSignal
 from QtGui import QIcon, QColor
 from QtWidgets import QWidget, QFrame, QLabel, QComboBox, QLineEdit, QPushButton, \
-    QHBoxLayout, QVBoxLayout, QGridLayout, QFileDialog  # , QIcon, QColor
+    QHBoxLayout, QVBoxLayout, QGridLayout, QFileDialog
 
 
 from sr_robot_commander.sr_hand_commander import SrHandCommander
@@ -72,8 +72,7 @@ class Step(QWidget):
 
         self.list_grasp = QComboBox(self.frame)
         self.refresh_list()
-        # self.frame.connect(self.list_grasp, SIGNAL('activated(QString)'), self.grasp_choosed)
-        self.list_grasp.activated['QString'].connect(self.grasp_choosed)  # frame.
+        self.list_grasp.activated['QString'].connect(self.grasp_choosed)
         self.widgets.append(self.list_grasp)
 
         label_pause = QLabel(self.frame)
@@ -85,8 +84,7 @@ class Step(QWidget):
         self.pause_input.setText("0.0")
         self.pause_input.setFixedWidth(35)
         self.pause_input.setAlignment(Qt.AlignRight)
-        # self.frame.connect(self.pause_input, SIGNAL('textChanged(QString)'), self.pause_changed)
-        self.pause_input.textChanged['QString'].connect(self.pause_changed)  # frame.
+        self.pause_input.textChanged['QString'].connect(self.pause_changed)
         self.widgets.append(self.pause_input)
 
         label_interp = QLabel(self.frame)
@@ -98,8 +96,7 @@ class Step(QWidget):
         self.interp_input.setText("2.0")
         self.interp_input.setAlignment(Qt.AlignRight)
         self.interp_input.setFixedWidth(35)
-        # self.frame.connect(self.interp_input, SIGNAL('textChanged(QString)'), self.interp_changed)
-        self.interp_input.textChanged['QString'].connect(self.interp_changed)  # frame.
+        self.interp_input.textChanged['QString'].connect(self.interp_changed)
         self.widgets.append(self.interp_input)
 
         label_looping = QLabel(self.frame)
@@ -112,8 +109,7 @@ class Step(QWidget):
                 self.loop_input.addItem("None")
             else:
                 self.loop_input.addItem(str(i))
-        # self.frame.connect(self.loop_input, SIGNAL('activated(QString)'), self.choose_looping)
-        self.loop_input.activated['QString'].connect(self.choose_looping)  # frame.
+        self.loop_input.activated['QString'].connect(self.choose_looping)
         self.widgets.append(self.loop_input)
 
         self.number_loops = QLineEdit(self.frame)
@@ -125,8 +121,7 @@ class Step(QWidget):
         # self.number_loops.setReadOnly(True)
         # self.number_loops.setStyleSheet("QWidget { background-color:
         # lightgrey }")
-        # self.frame.connect(self.number_loops, SIGNAL('textChanged(QString)'), self.number_loops_changed)
-        self.number_loops.textChanged['QString'].connect(self.number_loops_changed)  # frame.
+        self.number_loops.textChanged['QString'].connect(self.number_loops_changed)
         self.widgets.append(self.number_loops)
 
         label_times = QLabel(self.frame)
@@ -136,15 +131,13 @@ class Step(QWidget):
         self.new_step_button = QPushButton(self.frame)
         self.new_step_button.setText("+")
         self.new_step_button.setFixedWidth(20)
-        # self.frame.connect(self.new_step_button, SIGNAL('clicked()'), self.add_step)
-        self.new_step_button.clicked.connect(self.add_step)  # frame.
+        self.new_step_button.clicked.connect(self.add_step)
         self.widgets.append(self.new_step_button)
 
         self.remove_step_button = QPushButton(self.frame)
         self.remove_step_button.setText("-")
         self.remove_step_button.setFixedWidth(20)
-        # self.frame.connect(self.remove_step_button, SIGNAL('clicked()'), self.remove_step)
-        self.remove_step_button.clicked.connect(self.remove_step)  # frame.
+        self.remove_step_button.clicked.connect(self.remove_step)
         self.widgets.append(self.remove_step_button)
 
         self.layout = QHBoxLayout()
@@ -320,14 +313,12 @@ class SrGuiMovementRecorder(Plugin):
 
         self.sublayout.addWidget(self.hand_combo_box, 0, 1)
 
-        # self.frame.connect(self.hand_combo_box, SIGNAL('activated(QString)'), self.hand_selected)
-        self.hand_combo_box.activated['QString'].connect(self.hand_selected)  # frame.
+        self.hand_combo_box.activated['QString'].connect(self.hand_selected)
 
         self.play_btn = QPushButton()
         self.play_btn.setText("Play")
         self.play_btn.setFixedWidth(80)
-        # self.command_frame.connect(self.play_btn, SIGNAL('clicked()'), self.button_play_clicked)
-        self.play_btn.clicked.connect(self.button_play_clicked)  # command_frame.
+        self.play_btn.clicked.connect(self.button_play_clicked)
         self.sublayout.addWidget(self.play_btn, 0, 2)
 
         self.mutex = threading.Lock()
@@ -338,8 +329,7 @@ class SrGuiMovementRecorder(Plugin):
         self.stop_btn = QPushButton()
         self.stop_btn.setText("Stop")
         self.stop_btn.setFixedWidth(80)
-        # self.command_frame.connect(self.stop_btn, SIGNAL('clicked()'), self.stop)
-        self.stop_btn.clicked.connect(self.stop)  # command_frame.
+        self.stop_btn.clicked.connect(self.stop)
         self.sublayout.addWidget(self.stop_btn, 0, 3)
 
         self.sublayout.addWidget(QLabel(''), 0, 4)
@@ -347,15 +337,13 @@ class SrGuiMovementRecorder(Plugin):
         self.save_btn = QPushButton()
         self.save_btn.setText("Save")
         self.save_btn.setFixedWidth(80)
-        # self.command_frame.connect(self.save_btn, SIGNAL('clicked()'), self.save)
-        self.save_btn.clicked.connect(self.save)  # command_frame.
+        self.save_btn.clicked.connect(self.save)
         self.sublayout.addWidget(self.save_btn, 0, 5)
 
         self.load_btn = QPushButton()
         self.load_btn.setText("Load")
         self.load_btn.setFixedWidth(80)
-        # self.command_frame.connect(self.load_btn, SIGNAL('clicked()'), self.load)
-        self.load_btn.clicked.connect(self.load)  # command_frame.
+        self.load_btn.clicked.connect(self.load)
         self.sublayout.addWidget(self.load_btn, 0, 6)
 
         self.command_frame.setLayout(self.sublayout)
