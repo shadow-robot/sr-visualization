@@ -227,14 +227,7 @@ class SrGuiBootloader(Plugin):
         self.progress_bar.setMaximum(nb_motors_to_program)
 
         self.motor_bootloader = MotorBootloader(self, nb_motors_to_program)
-        '''
-        self._widget.connect(self.motor_bootloader, SIGNAL(
-            "finished()"), self.finished_programming_motors)
-        self._widget.connect(self.motor_bootloader, SIGNAL(
-            "motor_finished(QPoint)"), self.one_motor_finished)
-        self._widget.connect(self.motor_bootloader, SIGNAL(
-            "failed(QString)"), self.failed_programming_motors)
-        '''
+
         self._widget.motor_bootloader.finished.connect(self.finished_programming_motors)
         self._widget.motor_bootloader.motor_finished['QPoint'].connect(self.one_motor_finished)
         self._widget.motor_bootloader.failed['QString'].connect(self.failed_programming_motors)
