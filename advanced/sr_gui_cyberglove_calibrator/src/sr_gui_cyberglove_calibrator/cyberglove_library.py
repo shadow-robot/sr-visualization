@@ -44,29 +44,53 @@ class Cyberglove:
     Interface to the Cyberglove publisher.
     """
 
-    def __init__(self, max_values=2):
-        self.joints = {"G_ThumbRotate": Joint(),
-                       "G_ThumbMPJ": Joint(),
-                       "G_ThumbIJ": Joint(),
-                       "G_ThumbAb": Joint(),
-                       "G_IndexMPJ": Joint(),
-                       "G_IndexPIJ": Joint(),
-                       "G_IndexDIJ": Joint(),
-                       "G_MiddleMPJ": Joint(),
-                       "G_MiddlePIJ": Joint(),
-                       "G_MiddleDIJ": Joint(),
-                       "G_MiddleIndexAb": Joint(),
-                       "G_RingMPJ": Joint(),
-                       "G_RingPIJ": Joint(),
-                       "G_RingDIJ": Joint(),
-                       "G_RingMiddleAb": Joint(),
-                       "G_PinkieMPJ": Joint(),
-                       "G_PinkiePIJ": Joint(),
-                       "G_PinkieDIJ": Joint(),
-                       "G_PinkieRingAb": Joint(),
-                       "G_PalmArch": Joint(),
-                       "G_WristPitch": Joint(),
-                       "G_WristYaw": Joint()}
+    def __init__(self, max_values=2, nb_sensors=22):
+        if nb_sensors == 22:
+            self.joints = {"G_ThumbRotate": Joint(),
+                           "G_ThumbMPJ": Joint(),
+                           "G_ThumbIJ": Joint(),
+                           "G_ThumbAb": Joint(),
+                           "G_IndexMPJ": Joint(),
+                           "G_IndexPIJ": Joint(),
+                           "G_IndexDIJ": Joint(),
+                           "G_MiddleMPJ": Joint(),
+                           "G_MiddlePIJ": Joint(),
+                           "G_MiddleDIJ": Joint(),
+                           "G_MiddleIndexAb": Joint(),
+                           "G_RingMPJ": Joint(),
+                           "G_RingPIJ": Joint(),
+                           "G_RingDIJ": Joint(),
+                           "G_RingMiddleAb": Joint(),
+                           "G_PinkieMPJ": Joint(),
+                           "G_PinkiePIJ": Joint(),
+                           "G_PinkieDIJ": Joint(),
+                           "G_PinkieRingAb": Joint(),
+                           "G_PalmArch": Joint(),
+                           "G_WristPitch": Joint(),
+                           "G_WristYaw": Joint()}
+        if nb_sensors == 18:
+            self.joints = {"G_ThumbRotate": Joint(),
+                           "G_ThumbMPJ": Joint(),
+                           "G_ThumbIJ": Joint(),
+                           "G_ThumbAb": Joint(),
+                           "G_IndexMPJ": Joint(),
+                           "G_IndexPIJ": Joint(),
+                           
+                           "G_MiddleMPJ": Joint(),
+                           "G_MiddlePIJ": Joint(),
+                           
+                           "G_MiddleIndexAb": Joint(),
+                           "G_RingMPJ": Joint(),
+                           "G_RingPIJ": Joint(),
+                           
+                           "G_RingMiddleAb": Joint(),
+                           "G_PinkieMPJ": Joint(),
+                           "G_PinkiePIJ": Joint(),
+                           
+                           "G_PinkieRingAb": Joint(),
+                           "G_PalmArch": Joint(),
+                           "G_WristPitch": Joint(),
+                           "G_WristYaw": Joint()}
 
         self.raw_messages = []
         self.calibrated_messages = []

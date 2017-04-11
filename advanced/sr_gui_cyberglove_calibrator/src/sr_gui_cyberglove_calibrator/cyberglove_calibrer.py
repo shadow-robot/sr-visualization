@@ -109,7 +109,7 @@ class CybergloveCalibrer:
     A utility to calibrate the cyberglove.
     """
 
-    def __init__(self, description_function=default_description):
+    def __init__(self, description_function=default_description, nb_sensors=22):
         """
         Initialize some class variables: a table containing the calibration steps, a connection to the cyberglove
         library and a description function for the calibration steps
@@ -118,8 +118,11 @@ class CybergloveCalibrer:
         pictures / animation / ... ). Must take a joint name as parameter.
         """
         self.calibration_steps = []
-
-        self.cyberglove = Cyberglove()
+        if nb_sensors == 18:
+          self.nb_sensors = nb_sensors
+        else:
+          self.nb_sensors = 22
+        self.cyberglove = Cyberglove(nb_sensors=self.nb_sensors)
 
         # fill the table containing all the joints
         self.joints = {}
@@ -140,15 +143,22 @@ class CybergloveCalibrer:
         """
 
         # first step: calibrate 0s, 3s and TH4
-        joints1 = [Joint(
-            "G_IndexMPJ", 0, 90), Joint("G_IndexPIJ", 0, 90), Joint("G_IndexDIJ", 0, 90),
-            Joint("G_MiddleMPJ", 0, 90), Joint(
-                "G_MiddlePIJ", 0, 90), Joint("G_MiddleDIJ", 0, 90),
-            Joint("G_RingMPJ", 0, 90), Joint(
-                "G_RingPIJ", 0, 90), Joint("G_RingDIJ", 0, 90),
-            Joint("G_PinkieMPJ", 0, 90), Joint(
-                "G_PinkiePIJ", 0, 90), Joint("G_PinkieDIJ", 0, 90),
-            Joint("G_ThumbAb", 50, 0)]
+        if self.nb_sensors == 18:
+          joints1 = [Joint("G_IndexMPJ", 0, 90), Joint("G_IndexPIJ", 0, 90), 
+              Joint("G_MiddleMPJ", 0, 90), Joint("G_MiddlePIJ", 0, 90),
+              Joint("G_RingMPJ", 0, 90), Joint("G_RingPIJ", 0, 90),
+              Joint("G_PinkieMPJ", 0, 90), Joint("G_PinkiePIJ", 0, 90), 
+              Joint("G_ThumbAb", 50, 0)]
+        else:
+          joints1 = [Joint(
+              "G_IndexMPJ", 0, 90), Joint("G_IndexPIJ", 0, 90), Joint("G_IndexDIJ", 0, 90),
+              Joint("G_MiddleMPJ", 0, 90), Joint(
+                  "G_MiddlePIJ", 0, 90), Joint("G_MiddleDIJ", 0, 90),
+              Joint("G_RingMPJ", 0, 90), Joint(
+                  "G_RingPIJ", 0, 90), Joint("G_RingDIJ", 0, 90),
+              Joint("G_PinkieMPJ", 0, 90), Joint(
+                  "G_PinkiePIJ", 0, 90), Joint("G_PinkieDIJ", 0, 90),
+              Joint("G_ThumbAb", 50, 0)]
         self.calibration_steps.append(
             CalibrationStep(
                 step_name="Joints 0s, 3s and thumb abduction (THJ4)",

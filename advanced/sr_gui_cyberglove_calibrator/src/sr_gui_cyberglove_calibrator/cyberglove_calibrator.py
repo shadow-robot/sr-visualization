@@ -305,7 +305,13 @@ class SrGuiCybergloveCalibrator(Plugin):
         # self.frame.setLayout(self.layout)
         # self.window.setWidget(self.frame)
 
-        self.calibrer = CybergloveCalibrer(description_function=None)
+        # read nb_sensors from rosparam or fallback to 22
+        if rospy.has_param('cyberglove/cyberglove_joint_number'):
+            self.nb_sensors = rospy.get_param('cyberglove/cyberglove_joint_number')
+        else:
+            self.nb_sensors = 22
+
+        self.calibrer = CybergloveCalibrer(description_function=None, nb_sensors=self.nb_sensors)
         self.joint_names = self.calibrer.cyberglove.joints.keys()
         self.joint_names.sort()
 
