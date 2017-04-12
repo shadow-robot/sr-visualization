@@ -23,12 +23,12 @@
   <build_depend>sr_robot_msgs</build_depend>
   <build_depend>sr_visualization_icons</build_depend>
   
-  
   <run_depend>rospy</run_depend>
   <run_depend>rqt_gui</run_depend>
   <run_depend>rqt_gui_py</run_depend>
   <run_depend>std_msgs</run_depend>
   <run_depend>std_srvs</run_depend>
+  <run_depend>cyberglove</run_depend>
   <run_depend>diagnostic_msgs</run_depend>
   <run_depend>sr_robot_msgs</run_depend>
   <run_depend>sr_visualization_icons</run_depend>
