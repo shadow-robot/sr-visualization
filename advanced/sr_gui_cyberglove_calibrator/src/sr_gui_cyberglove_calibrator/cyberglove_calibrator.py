@@ -365,7 +365,8 @@ class SrGuiCybergloveCalibrator(Plugin):
             self.btn_save.setEnabled(True)
 
     def save_calib(self):
-        filename = QtWidgets.QFileDialog.getSaveFileName(
+        # since pyqt5, filters are also returned
+        (filename, dummy) = QtWidgets.QFileDialog.getSaveFileName(
             self._widget, 'Save Calibration', '')
         if filename == "":
             return
@@ -385,7 +386,7 @@ class SrGuiCybergloveCalibrator(Plugin):
         if filename is False:
             filename = ""
         if "" == filename:
-            # since pyqt5, filter are also returned
+            # since pyqt5, filters are also returned
             (filename, dummy) = QtWidgets.QFileDialog.getOpenFileName(
                 self._widget, 'Open Calibration', '')
             if "" == filename:

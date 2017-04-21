@@ -317,7 +317,7 @@ class CybergloveCalibrer:
         # write the text to a file
         try:
 
-            output = open(filepath[0], "w")
+            output = open(filepath, "w")
 
             for line in text:
                 output.write(line + "\n")
