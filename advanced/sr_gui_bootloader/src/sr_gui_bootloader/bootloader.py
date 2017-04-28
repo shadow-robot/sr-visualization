@@ -32,7 +32,7 @@ from sr_robot_msgs.srv import SimpleMotorFlasher, SimpleMotorFlasherResponse
 
 class MotorBootloader(QThread):
 
-    motor_finished = pyqtSignal('QString')
+    motor_finished = pyqtSignal('QPoint')
     failed = pyqtSignal('QString')
 
     def __init__(self, parent, nb_motors_to_program, prefix):
