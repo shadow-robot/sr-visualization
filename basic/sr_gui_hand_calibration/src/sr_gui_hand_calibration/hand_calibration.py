@@ -29,6 +29,7 @@ from PyQt5.QtWidgets import QWidget, QShortcut, QTreeWidgetItem, QFileDialog, QM
 from PyQt5.QtCore import QVariant
 from sr_gui_hand_calibration.sr_hand_calibration_model import HandCalibration
 
+
 class SrHandCalibration(Plugin):
 
     """
