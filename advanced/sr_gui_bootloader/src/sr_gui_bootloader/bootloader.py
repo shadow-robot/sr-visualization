@@ -19,8 +19,9 @@ import rospkg
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
-from QtCore import QEvent, QObject, Qt, QTimer, Slot, QThread, SIGNAL, QPoint
-from QtGui import QWidget, QShortcut, QMessageBox, QFrame, QHBoxLayout, QCheckBox, QLabel, QCursor, QColor, QFileDialog
+from QtCore import QEvent, QObject, Qt, QTimer, Slot, QThread, QPoint, pyqtSignal
+from QtGui import QCursor, QColor
+from QtWidgets import QWidget, QShortcut, QMessageBox, QFrame, QHBoxLayout, QCheckBox, QLabel, QFileDialog
 from sr_utilities.hand_finder import HandFinder
 
 from std_srvs.srv import Empty
@@ -30,6 +31,9 @@ from sr_robot_msgs.srv import SimpleMotorFlasher, SimpleMotorFlasherResponse
 
 
 class MotorBootloader(QThread):
+
+    motor_finished = pyqtSignal('QPoint')
+    failed = pyqtSignal('QString')
 
     def __init__(self, parent, nb_motors_to_program, prefix):
         QThread.__init__(self, None)
@@ -50,14 +54,13 @@ class MotorBootloader(QThread):
                                                                  SimpleMotorFlasher)
                     resp = self.bootloader_service(firmware_path.encode('ascii', 'ignore'), motor.motor_index)
                 except rospy.ServiceException, e:
-                    self.emit(SIGNAL("failed(QString)"), "Service did not process request: %s" % str(e))
+                    self.failed.emit("Service did not process request: %s" % str(e))
                     return
 
                 if resp == SimpleMotorFlasherResponse.FAIL:
-                    self.emit(SIGNAL("failed(QString)"),
-                              "Bootloading motor {} failed".format(bootloaded_motors))
+                    self.failed.emit("Bootloading motor {} failed".format(bootloaded_motors))
                 bootloaded_motors += 1
-                self.emit(SIGNAL("motor_finished(QPoint)"), QPoint(bootloaded_motors, 0.0))
+                self.motor_finished.emit(QPoint(bootloaded_motors, 0.0))
 
 
 class Motor(QFrame):
@@ -252,9 +255,10 @@ class SrGuiBootloader(Plugin):
 
         self.motor_bootloader = MotorBootloader(
             self, nb_motors_to_program, self._prefix)
-        self._widget.connect(self.motor_bootloader, SIGNAL("finished()"), self.finished_programming_motors)
-        self._widget.connect(self.motor_bootloader, SIGNAL("motor_finished(QPoint)"), self.one_motor_finished)
-        self._widget.connect(self.motor_bootloader, SIGNAL("failed(QString)"), self.failed_programming_motors)
+
+        self.motor_bootloader.finished.connect(self.finished_programming_motors)
+        self.motor_bootloader.motor_finished.connect(self.one_motor_finished)
+        self.motor_bootloader.failed['QString'].connect(self.failed_programming_motors)
 
         self._widget.setCursor(Qt.WaitCursor)
         self.motors_frame.setEnabled(False)
