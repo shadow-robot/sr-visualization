@@ -136,7 +136,6 @@ class SrGuiBootloader(Plugin):
         # select the first available hand
         self.prefix_selected(hand_parameters.mapping.values()[0])
 
-
     def on_select_bootloader_pressed(self):
         """
         Select a hex file to bootload. Hex files must exist in the released_firmaware folder
