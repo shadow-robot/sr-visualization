@@ -75,18 +75,18 @@ class Cyberglove:
                            "G_ThumbAb": Joint(),
                            "G_IndexMPJ": Joint(),
                            "G_IndexPIJ": Joint(),
-                           
+
                            "G_MiddleMPJ": Joint(),
                            "G_MiddlePIJ": Joint(),
-                           
+
                            "G_MiddleIndexAb": Joint(),
                            "G_RingMPJ": Joint(),
                            "G_RingPIJ": Joint(),
-                           
+
                            "G_RingMiddleAb": Joint(),
                            "G_PinkieMPJ": Joint(),
                            "G_PinkiePIJ": Joint(),
-                           
+
                            "G_PinkieRingAb": Joint(),
                            "G_PalmArch": Joint(),
                            "G_WristPitch": Joint(),
