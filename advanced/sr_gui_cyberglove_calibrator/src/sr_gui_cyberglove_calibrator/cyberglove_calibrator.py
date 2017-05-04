@@ -375,10 +375,10 @@ class SrGuiCybergloveCalibrator(Plugin):
 
         # QMessageBox returns 0 for yes
         if QtWidgets.QMessageBox.question(self._widget,
-                                             "Load new Calibration",
-                                             "Do you want to load the new calibration file?",
-                                             QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
-                                             QtWidgets.QMessageBox.No) == 0:
+                                          "Load new Calibration",
+                                          "Do you want to load the new calibration file?",
+                                          QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+                                          QtWidgets.QMessageBox.No) == 0:
             self.load_calib(filename)
 
     def load_calib(self, filename=""):
