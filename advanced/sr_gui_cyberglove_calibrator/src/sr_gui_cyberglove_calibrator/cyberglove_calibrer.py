@@ -119,9 +119,9 @@ class CybergloveCalibrer:
         """
         self.calibration_steps = []
         if nb_sensors == 18:
-          self.nb_sensors = nb_sensors
+            self.nb_sensors = nb_sensors
         else:
-          self.nb_sensors = 22
+            self.nb_sensors = 22
         self.cyberglove = Cyberglove(nb_sensors=self.nb_sensors)
 
         # fill the table containing all the joints
