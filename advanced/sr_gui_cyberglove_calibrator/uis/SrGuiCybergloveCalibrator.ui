@@ -1,6 +1,6 @@
 <ui version="4.0">
- <class>CyebrgloveCalibratorDockWidget</class>
- <widget class="QWidget" name="CyebrgloveCalibratorDockWidget">
+ <class>CybergloveCalibratorDockWidget</class>
+ <widget class="QWidget" name="CybergloveCalibratorDockWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -13,7 +13,7 @@
    <bool>false</bool>
   </property>
   <property name="windowTitle">
-   <string>Cyebrglove calibration</string>
+   <string>Cyberglove calibration</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">

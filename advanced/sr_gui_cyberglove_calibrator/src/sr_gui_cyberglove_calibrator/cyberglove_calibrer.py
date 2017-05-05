@@ -330,18 +330,21 @@ class CybergloveCalibrer:
     def load_calib(self, filename):
         if filename == "":
             return -1
-
-        rospy.wait_for_service('/cyberglove/calibration')
         try:
-            calib = rospy.ServiceProxy(
-                '/cyberglove/calibration', CalibrationSrv)
+            rospy.wait_for_service('/cyberglove/calibration', timeout=5)
+            try:
+                calib = rospy.ServiceProxy(
+                    '/cyberglove/calibration', CalibrationSrv)
 
-            path = filename.encode("iso-8859-1")
-            resp = calib(path)
-            return 0  # resp.state
-        except rospy.ServiceException, e:
-            print 'Failed to call start service'
-            return -2
+                path = filename.encode("iso-8859-1")
+                resp = calib(path)
+                return 0  # resp.state
+            except rospy.ServiceException, e:
+                print 'Failed to call start service'
+                return -2
+        except rospy.ROSException, e:
+            print 'Call start service not found, is the driver running ?'
+            return -3
 
 
 #
