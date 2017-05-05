@@ -21,11 +21,12 @@ import rospy
 import rospkg
 
 from qt_gui.plugin import Plugin
-from python_qt_binding import loadUi
+from PyQt5.uic import loadUi
 
-from QtCore import QEvent, QObject, Qt, QTimer, Slot
-from QtGui import QWidget, QShortcut, QColor, QTreeWidgetItem, QFileDialog, QMessageBox
-from QtCore import QVariant
+from PyQt5.QtCore import QEvent, QObject, Qt, QTimer, Slot
+from PyQt5.QtGui import QColor
+from PyQt5.QtWidgets import QWidget, QShortcut, QTreeWidgetItem, QFileDialog, QMessageBox
+from PyQt5.QtCore import QVariant
 from sr_gui_hand_calibration.sr_hand_calibration_model import HandCalibration
 
 

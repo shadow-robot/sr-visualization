@@ -19,9 +19,9 @@
 import rospy
 
 from sr_robot_lib.etherCAT_hand_lib import EtherCAT_Hand_Lib
-from QtGui import QTreeWidgetItem, QTreeWidgetItemIterator, QColor, QIcon, QMessageBox
-from PyQt4.Qt import QTimer
-from PyQt4.QtCore import SIGNAL
+from PyQt5.QtGui import QColor, QIcon
+from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QTreeWidgetItemIterator, QMessageBox
+from PyQt5.QtCore import QTimer, pyqtSignal
 
 import yaml
 try:
@@ -59,7 +59,7 @@ class IndividualCalibration(QTreeWidgetItem):
                                  "", "", str(self.raw_value), str(self.calibrated_value)])
 
         for col in xrange(self.tree_widget.columnCount()):
-            self.setBackgroundColor(col, QColor(red))
+            self.setBackground(col, QColor(red))
 
         self.tree_widget.addTopLevelItem(self)
 
@@ -79,7 +79,7 @@ class IndividualCalibration(QTreeWidgetItem):
 
         for col in xrange(self.tree_widget.columnCount()):
             if self.text(2) != "":
-                self.setBackgroundColor(col, QColor(green))
+                self.setBackground(col, QColor(green))
 
         self.is_calibrated = True
 
@@ -90,7 +90,7 @@ class IndividualCalibration(QTreeWidgetItem):
         """
         for col in xrange(self.tree_widget.columnCount()):
             if self.text(2) != "":
-                self.setBackgroundColor(col, QColor(orange))
+                self.setBackground(col, QColor(orange))
 
         self.is_calibrated = True
 
@@ -130,9 +130,9 @@ class JointCalibration(QTreeWidgetItem):
         # display the current joint position in the GUI
         self.timer = QTimer()
         self.timer.start(200)
+
         tree_widget.addTopLevelItem(self)
-        tree_widget.connect(
-            self.timer, SIGNAL('timeout()'), self.update_joint_pos)
+        self.timer.timeout.connect(self.update_joint_pos)
 
     def load_joint_calibration(self, new_calibrations):
         for calibration in self.calibrations:
@@ -407,9 +407,9 @@ class HandCalibration(QTreeWidgetItem):
         self.progress()
 
         # select the next row by default
-        self.tree_widget.setItemSelected(item, False)
+        item.setSelected(False)
         next_item = self.tree_widget.itemBelow(item)
-        self.tree_widget.setItemSelected(next_item, True)
+        next_item.setSelected(True)
         self.tree_widget.setCurrentItem(next_item)
 
     def calibrate_joint0s(self, btn_joint_0s):

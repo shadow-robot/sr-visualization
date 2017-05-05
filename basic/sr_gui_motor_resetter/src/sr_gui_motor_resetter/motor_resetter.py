@@ -26,9 +26,11 @@ import rospy
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
-from QtCore import Qt, QThread, SIGNAL, QPoint
-from QtGui import QWidget, QMessageBox, QFrame, \
-    QHBoxLayout, QCheckBox, QLabel, QColor
+import QtCore
+from QtCore import Qt, QThread, QPoint
+from QtWidgets import QWidget, QMessageBox, QFrame, \
+    QHBoxLayout, QCheckBox, QLabel
+from QtGui import QColor
 
 from std_srvs.srv import Empty
 from diagnostic_msgs.msg import DiagnosticArray
@@ -36,6 +38,9 @@ from sr_utilities.hand_finder import HandFinder
 
 
 class MotorFlasher(QThread):
+
+    motor_finished = QtCore.pyqtSignal('QPoint')
+    failed = QtCore.pyqtSignal('QString')
 
     def __init__(self, parent, nb_motors_to_program, prefix):
         QThread.__init__(self, None)
@@ -56,13 +61,11 @@ class MotorFlasher(QThread):
                         motor.motor_name, Empty)
                     self.flasher_service()
                 except rospy.ServiceException, e:
-                    self.emit(SIGNAL("failed(QString)"),
-                              "Service did not process request: %s" % str(e))
+                    self.failed['QString'].emit("Service did not process request: %s" % str(e))
                     return
 
                 programmed_motors += 1
-                self.emit(SIGNAL("motor_finished(QPoint)"),
-                          QPoint(programmed_motors, 0.0))
+                self.motor_finished['QPoint'].emit(QPoint(programmed_motors, 0.0))
 
 
 class Motor(QFrame):
@@ -243,13 +246,10 @@ class SrGuiMotorResetter(Plugin):
 
         self.motor_flasher = MotorFlasher(self, nb_motors_to_program,
                                           self._prefix)
-        self._widget.connect(self.motor_flasher, SIGNAL("finished()"),
-                             self.finished_programming_motors)
-        self._widget.connect(self.motor_flasher,
-                             SIGNAL("motor_finished(QPoint)"),
-                             self.one_motor_finished)
-        self._widget.connect(self.motor_flasher, SIGNAL("failed(QString)"),
-                             self.failed_programming_motors)
+
+        self.motor_flasher.finished.connect(self.finished_programming_motors)
+        self.motor_flasher.motor_finished['QPoint'].connect(self.one_motor_finished)
+        self.motor_flasher.failed['QString'].connect(self.failed_programming_motors)
 
         self._widget.setCursor(Qt.WaitCursor)
         self.motors_frame.setEnabled(False)
