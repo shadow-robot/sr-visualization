@@ -201,6 +201,6 @@ class Cyberglove:
 
         for topic_typ in self.liste:
             for topic in topic_typ:
-                if '/calibrated' in topic:
+                if '/raw' in topic:
                     self.hasglove = True
         return self.hasglove
