@@ -43,10 +43,9 @@ from python_qt_binding import loadUi
 from sr_robot_msgs.srv import ManualSelfTest, ManualSelfTestResponse
 from diagnostic_msgs.srv import SelfTest
 
-from QtGui import QWidget, QTreeWidgetItem, QColor, QPixmap, QMessageBox
-from QtGui import QInputDialog, QDialog, QSplitter, QLabel, QSizePolicy, QResizeEvent
-from QtCore import QThread, SIGNAL, QPoint
-from QtCore import Qt
+from QtWidgets import QWidget, QTreeWidgetItem, QMessageBox, QInputDialog, QDialog, QSplitter, QLabel, QSizePolicy
+from QtGui import QResizeEvent, QColor, QPixmap
+from QtCore import Qt, QThread, QPoint  # , SIGNAL
 
 from time import sleep
 
@@ -91,7 +90,8 @@ class AsyncService(QThread):
 
         self.manual_test_req_ = req
 
-        self.emit(SIGNAL("manual_test(QPoint)"), QPoint(self.index, 0))
+        # self.emit(SIGNAL("manual_test(QPoint)"), QPoint(self.index, 0))
+        self.manual_test['QPoint'].emit(QPoint(self.index, 0.0))
 
         while self.manual_test_res_ is None:
             time.sleep(0.01)
@@ -114,7 +114,8 @@ class AsyncService(QThread):
                 "Failed to called " + self.service_name + " %s" % str(e))
             return
 
-        self.emit(SIGNAL("test_finished(QPoint)"), QPoint(self.index, 0))
+        # self.emit(SIGNAL("test_finished(QPoint)"), QPoint(self.index, 0))
+        self.test_finished['QPoint'].emit(QPoint(self.index, 0.0))
 
     def save(self):
         """
@@ -283,10 +284,16 @@ class SrGuiSelfTest(Plugin):
         for n in nodes_to_test:
             self.test_threads.append(
                 AsyncService(self._widget, n, len(self.test_threads), self.path_to_data))
+
+            '''
             self._widget.connect(self.test_threads[-1], SIGNAL(
                 "test_finished(QPoint)"), self.on_test_finished_)
             self._widget.connect(self.test_threads[-1], SIGNAL(
                 "manual_test(QPoint)"), self.on_manual_test_)
+            '''
+
+            self.test_threads[-1].test_finished(QPoint).connect(self.on_test_finished_)
+            self.test_threads[-1].manual_test(QPoint).connect(self.on_manual_test_)
 
         for thread in self.test_threads:
             thread.start()
