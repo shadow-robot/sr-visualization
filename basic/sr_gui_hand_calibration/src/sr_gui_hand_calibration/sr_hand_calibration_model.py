@@ -466,6 +466,7 @@ class HandCalibration(QTreeWidgetItem):
                 if it.value().text(1) == joint[0]:
                     it.value().load_joint_calibration(joint[1])
                 it += 1
+        self.progress_bar.setValue(100)
 
     def save(self, filepath):
         yaml_config = {}
