@@ -358,13 +358,10 @@ class HandCalibration(QTreeWidgetItem):
         self.is_active = True
 
         QTreeWidgetItem.__init__(self, ["Hand", "", "", ""])
-        
-        
 
         if not test_only:
-            
             self.robot_lib = EtherCAT_Hand_Lib()
-            
+
             if not self.robot_lib.activate():
                 btn_pressed = QMessageBox.warning(
                     tree_widget, "Warning", "The EtherCAT Hand node doesn't seem to be running,"

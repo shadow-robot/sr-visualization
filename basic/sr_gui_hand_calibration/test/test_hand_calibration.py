@@ -37,10 +37,9 @@ class TestHandCalibration(unittest.TestCase):
         os.remove(rospy.get_param('mock_file'))
 
     def test_progress_bar(self):
-     #   self.assertEquals(self.hand_model.progress_bar.value(), 0)
-      #  self.hand_model.load(rospy.get_param('mock_file'))
-       # self.assertEquals(self.hand_model.progress_bar.value(), 100)
-       self.assertEquals(1,1)
+        self.assertEquals(self.hand_model.progress_bar.value(), 0)
+        self.hand_model.load(rospy.get_param('mock_file'))
+        self.assertEquals(self.hand_model.progress_bar.value(), 100)
 
 if __name__ == "__main__":
     rospy.init_node("test_hand_calibration")
