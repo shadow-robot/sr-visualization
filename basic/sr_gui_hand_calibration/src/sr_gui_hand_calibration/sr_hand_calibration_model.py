@@ -350,7 +350,8 @@ class HandCalibration(QTreeWidgetItem):
                  progress_bar,
                  fingers=["First Finger", "Middle Finger",
                           "Ring Finger", "Little Finger",
-                          "Thumb", "Wrist"]):
+                          "Thumb", "Wrist"],
+                 disable_gui=False):
         self.fingers = []
         # this is set to False if the user doesn't want to continue
         # when there are no EtherCAT hand node currently running.
@@ -359,14 +360,16 @@ class HandCalibration(QTreeWidgetItem):
         QTreeWidgetItem.__init__(self, ["Hand", "", "", ""])
 
         self.robot_lib = EtherCAT_Hand_Lib()
-        if not self.robot_lib.activate():
-            btn_pressed = QMessageBox.warning(
-                tree_widget, "Warning", "The EtherCAT Hand node doesn't seem to be running, or the debug topic is not"
-                " being published. Do you still want to continue? The calibration will be useless.",
-                buttons=QMessageBox.Ok | QMessageBox.Cancel)
 
-            if btn_pressed == QMessageBox.Cancel:
-                self.is_active = False
+        if not disable_gui:
+            if not self.robot_lib.activate():
+                btn_pressed = QMessageBox.warning(
+                    tree_widget, "Warning", "The EtherCAT Hand node doesn't seem to be running, or the debug topic is not"
+                    " being published. Do you still want to continue? The calibration will be useless.",
+                    buttons=QMessageBox.Ok | QMessageBox.Cancel)
+
+                if btn_pressed == QMessageBox.Cancel:
+                    self.is_active = False
 
         for finger in fingers:
             if finger in self.joint_map.keys():

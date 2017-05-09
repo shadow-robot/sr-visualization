@@ -23,8 +23,9 @@ class TestHandCalibration(unittest.TestCase):
         ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_hand_calibration'), 'uis', 'SrHandCalibration.ui')
         loadUi(ui_file, self._widget)
 
-        self.hand_model = HandCalibration(
-            tree_widget=self._widget.tree_calibration, progress_bar=self._widget.progress)
+        self.hand_model = HandCalibration(tree_widget=self._widget.tree_calibration,
+                                          progress_bar=self._widget.progress,
+                                          disable_gui=True)
 
         f = open(rospy.get_param('mock_file'), "w+")
         f.write("""{'sr_calibrations': [\n""" +
