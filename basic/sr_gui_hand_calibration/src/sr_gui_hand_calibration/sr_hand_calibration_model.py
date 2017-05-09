@@ -364,8 +364,9 @@ class HandCalibration(QTreeWidgetItem):
         if not disable_gui:
             if not self.robot_lib.activate():
                 btn_pressed = QMessageBox.warning(
-                    tree_widget, "Warning", "The EtherCAT Hand node doesn't seem to be running, or the debug topic is not"
-                    " being published. Do you still want to continue? The calibration will be useless.",
+                    tree_widget, "Warning", "The EtherCAT Hand node doesn't seem to be running,"
+                    " or the debug topic is not being published. Do you still want to continue?"
+                    "The calibration will be useless.",
                     buttons=QMessageBox.Ok | QMessageBox.Cancel)
 
                 if btn_pressed == QMessageBox.Cancel:
