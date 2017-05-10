@@ -352,7 +352,7 @@ class CybergloveCalibrer:
                 return -2
         except rospy.ROSException, e:
             print ('Call start service not found, is the driver running? If you are using cyberglove_trajectory,' +
-                  'please be adviced that following plugin does not support that package yet.')
+                   'please be adviced that following plugin does not support that package yet.')
             return -3
 
 
