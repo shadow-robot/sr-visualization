@@ -351,7 +351,8 @@ class CybergloveCalibrer:
                 print 'Failed to call start service'
                 return -2
         except rospy.ROSException, e:
-            print 'Call start service not found, is the driver running ?'
+            print ('Call start service not found, is the driver running ? If you are using cyberglove_trajectory,' +
+                  'please be adviced that calibration plugin does not support that package yet.')
             return -3
 
 
