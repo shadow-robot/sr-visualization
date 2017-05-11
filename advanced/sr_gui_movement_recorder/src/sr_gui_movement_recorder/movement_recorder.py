@@ -369,6 +369,7 @@ class SrGuiMovementRecorder(Plugin):
 
         # selecting the first available hand
         self.__selected_hand = None
+        # TODO(@dg-shadow) Fix hand finder etc to work with hand H
         self.hand_selected(self.hand_parameters.mapping.keys()[0])
 
     def hand_selected(self, serial):
