@@ -44,7 +44,7 @@ class Cyberglove:
     Interface to the Cyberglove publisher.
     """
 
-    def __init__(self, max_values=2, nb_sensors=22):
+    def __init__(self, max_values=2, nb_sensors=22, test_only=False):
         if nb_sensors == 22:
             self.joints = {"G_ThumbRotate": Joint(),
                            "G_ThumbMPJ": Joint(),
@@ -104,11 +104,12 @@ class Cyberglove:
         self.calibrated = rospy.Subscriber(
             'cyberglove/calibrated/joint_states', JointState, self.callback_calibrated)
         threading.Thread(None, rospy.spin)
-        if self.has_glove():
-            time.sleep(1.0)
-            self.createMap()
-        else:
-            raise Exception("No glove found")
+        if not test_only:
+            if self.has_glove():
+                time.sleep(1.0)
+                self.createMap()
+            else:
+                raise Exception("No glove found")
 
     def callback_raw(self, data):
         """

@@ -1,0 +1,3 @@
+<launch>
+  <test test-name="test_cyberglove_calibrator" pkg="sr_gui_cyberglove_calibrator" type="test_cyberglove_calibrator.py" />
+</launch>
