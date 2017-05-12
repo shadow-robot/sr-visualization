@@ -109,7 +109,7 @@ class CybergloveCalibrer:
     A utility to calibrate the cyberglove.
     """
 
-    def __init__(self, description_function=default_description, nb_sensors=22, test_only=False):
+    def __init__(self, description_function=default_description, nb_sensors=22):
         """
         Initialize some class variables: a table containing the calibration steps, a connection to the cyberglove
         library and a description function for the calibration steps
@@ -117,13 +117,12 @@ class CybergloveCalibrer:
         @param description_function: specify a function you want to use to describe the calibration steps ( text /
         pictures / animation / ... ). Must take a joint name as parameter.
         """
-        self.test_only = test_only
         self.calibration_steps = []
         if nb_sensors == 18:
             self.nb_sensors = nb_sensors
         else:
             self.nb_sensors = 22
-        self.cyberglove = Cyberglove(nb_sensors=self.nb_sensors, test_only=self.test_only)
+        self.cyberglove = Cyberglove(nb_sensors=self.nb_sensors)
 
         # fill the table containing all the joints
         self.joints = {}
