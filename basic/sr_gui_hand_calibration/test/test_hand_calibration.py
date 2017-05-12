@@ -40,6 +40,7 @@ class TestHandCalibration(unittest.TestCase):
         self.assertEquals(self.hand_model.progress_bar.value(), 0)
         self.hand_model.load(rospy.get_param('mock_file'))
         self.assertEquals(self.hand_model.progress_bar.value(), 100)
+        # another dummy commit
 
 if __name__ == "__main__":
     rospy.init_node("test_hand_calibration")
