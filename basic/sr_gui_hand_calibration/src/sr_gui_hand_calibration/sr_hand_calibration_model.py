@@ -64,6 +64,7 @@ class IndividualCalibration(QTreeWidgetItem):
         self.tree_widget.addTopLevelItem(self)
 
         self.is_calibrated = False
+        # dummy commit
 
     def remove(self):
         self.tree_widget.remove
