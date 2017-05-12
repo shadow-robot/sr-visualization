@@ -104,7 +104,6 @@ class Cyberglove:
         self.calibrated = rospy.Subscriber(
             'cyberglove/calibrated/joint_states', JointState, self.callback_calibrated)
         threading.Thread(None, rospy.spin)
-
         if self.has_glove():
             time.sleep(1.0)
             self.createMap()
