@@ -64,6 +64,7 @@ class IndividualCalibration(QTreeWidgetItem):
         self.tree_widget.addTopLevelItem(self)
 
         self.is_calibrated = False
+        # dummy commit
 
     def remove(self):
         self.tree_widget.remove
@@ -76,6 +77,7 @@ class IndividualCalibration(QTreeWidgetItem):
         self.raw_value = self.robot_lib.get_average_raw_value(
             self.joint_name, 100)
         self.setText(2, str(self.raw_value))
+        # one more dummy
 
         for col in xrange(self.tree_widget.columnCount()):
             if self.text(2) != "":
@@ -350,7 +352,8 @@ class HandCalibration(QTreeWidgetItem):
                  progress_bar,
                  fingers=["First Finger", "Middle Finger",
                           "Ring Finger", "Little Finger",
-                          "Thumb", "Wrist"]):
+                          "Thumb", "Wrist"],
+                 test_only=False):
         self.fingers = []
         # this is set to False if the user doesn't want to continue
         # when there are no EtherCAT hand node currently running.
@@ -358,25 +361,28 @@ class HandCalibration(QTreeWidgetItem):
 
         QTreeWidgetItem.__init__(self, ["Hand", "", "", ""])
 
-        self.robot_lib = EtherCAT_Hand_Lib()
-        if not self.robot_lib.activate():
-            btn_pressed = QMessageBox.warning(
-                tree_widget, "Warning", "The EtherCAT Hand node doesn't seem to be running, or the debug topic is not"
-                " being published. Do you still want to continue? The calibration will be useless.",
-                buttons=QMessageBox.Ok | QMessageBox.Cancel)
+        if not test_only:
+            self.robot_lib = EtherCAT_Hand_Lib()
 
-            if btn_pressed == QMessageBox.Cancel:
-                self.is_active = False
+            if not self.robot_lib.activate():
+                btn_pressed = QMessageBox.warning(
+                    tree_widget, "Warning", "The EtherCAT Hand node doesn't seem to be running,"
+                    " or the debug topic is not being published. Do you still want to continue?"
+                    "The calibration will be useless.",
+                    buttons=QMessageBox.Ok | QMessageBox.Cancel)
 
-        for finger in fingers:
-            if finger in self.joint_map.keys():
-                self.fingers.append(FingerCalibration(finger,
-                                                      self.joint_map[finger],
-                                                      self, tree_widget,
-                                                      self.robot_lib))
+                if btn_pressed == QMessageBox.Cancel:
+                    self.is_active = False
 
-            else:
-                print finger, " not found in the calibration map"
+            for finger in fingers:
+                if finger in self.joint_map.keys():
+                    self.fingers.append(FingerCalibration(finger,
+                                                          self.joint_map[finger],
+                                                          self, tree_widget,
+                                                          self.robot_lib))
+
+                else:
+                    print finger, " not found in the calibration map"
 
         self.joint_0_calibration_index = 0
 
