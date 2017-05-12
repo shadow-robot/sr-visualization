@@ -77,6 +77,7 @@ class IndividualCalibration(QTreeWidgetItem):
         self.raw_value = self.robot_lib.get_average_raw_value(
             self.joint_name, 100)
         self.setText(2, str(self.raw_value))
+        # one more dummy
 
         for col in xrange(self.tree_widget.columnCount()):
             if self.text(2) != "":
