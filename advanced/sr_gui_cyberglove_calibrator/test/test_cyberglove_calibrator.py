@@ -28,4 +28,3 @@ class TestCybergloveCalibrator(unittest.TestCase):
 if __name__ == "__main__":
     rospy.init_node("test_cyberglove_calibrator")
     rostest.rosrun(PKG, NAME, TestCybergloveCalibrator)
-    
