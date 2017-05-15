@@ -1,5 +1,0 @@
-<launch>
-  <arg name="mock_file_path" default="$(find sr_gui_hand_calibration)/test/" />
-  <param name="mock_file" value="$(arg mock_file_path)mock_calib.yaml" />
-  <test test-name="test_hand_calibration" pkg="sr_gui_hand_calibration" type="test_hand_calibration.py" />
-</launch>
