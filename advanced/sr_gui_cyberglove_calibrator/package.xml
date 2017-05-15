@@ -22,7 +22,6 @@
   <build_depend>diagnostic_msgs</build_depend>
   <build_depend>sr_robot_msgs</build_depend>
   <build_depend>sr_visualization_icons</build_depend>
-  <build_depend>python-mock</build_depend>
   
   <run_depend>rospy</run_depend>
   <run_depend>rqt_gui</run_depend>
@@ -34,7 +33,8 @@
   <run_depend>sr_robot_msgs</run_depend>
   <run_depend>sr_visualization_icons</run_depend>
   <run_depend>python-scipy</run_depend>
-  <run_depend>python-mock</run_depend>
+
+  <test_depend>python-mock</test_depend>
 
 <export>
     <rqt_gui plugin="${prefix}/sr_cyberglove_calibrator_plugin.xml" />
