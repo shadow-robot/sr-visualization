@@ -25,14 +25,14 @@ class TestHandCalibration(unittest.TestCase):
         ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_hand_calibration'), 'uis', 'SrHandCalibration.ui')
         loadUi(ui_file, self._widget)
 
-        self.mock_calibration_file = tempfile.NamedTemporaryFile()
-        self.mock_calibration_file.write("""{'sr_calibrations': [\n""" +
-                """["mock", [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]],\n""" +
-                """]}""")
-        self.mock_calibration_file.seek(0)
+        self.mock_file = tempfile.NamedTemporaryFile()
+        self.mock_file.write("""{'sr_calibrations': [\n""" +
+                             """["mock", [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]],\n""" +
+                             """]}""")
+        self.mock_file.seek(0)
 
     def tearDown(self):
-        self.mock_calibration_file.close()
+        self.mock_file.close()
 
     @patch('sr_gui_hand_calibration.sr_hand_calibration_model.EtherCAT_Hand_Lib')
     def test_progress_bar(self, EtherCAT_Hand_Lib):
@@ -40,7 +40,7 @@ class TestHandCalibration(unittest.TestCase):
                                           progress_bar=self._widget.progress)
 
         self.assertEquals(self.hand_model.progress_bar.value(), 0)
-        self.hand_model.load(self.mock_calibration_file.name)
+        self.hand_model.load(self.mock_file.name)
         self.assertEquals(self.hand_model.progress_bar.value(), 100)
 
 if __name__ == "__main__":
