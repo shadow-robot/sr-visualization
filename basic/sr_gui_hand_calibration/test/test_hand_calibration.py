@@ -25,14 +25,14 @@ class TestHandCalibration(unittest.TestCase):
         ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_hand_calibration'), 'uis', 'SrHandCalibration.ui')
         loadUi(ui_file, self._widget)
 
-        self.mock_file = tempfile.NamedTemporaryFile()
+        self.mock_file = tempfile.NamedTemporaryFile(delete=False)
         self.mock_file.write("""{'sr_calibrations': [\n""" +
                              """["mock", [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]],\n""" +
                              """]}""")
         self.mock_file.seek(0)
 
     def tearDown(self):
-        self.mock_file.close()
+        os.remove(self.mock_file.name)
 
     @patch('sr_gui_hand_calibration.sr_hand_calibration_model.EtherCAT_Hand_Lib')
     def test_progress_bar(self, EtherCAT_Hand_Lib):
