@@ -29,7 +29,7 @@ class TestHandCalibration(unittest.TestCase):
         self.mock_file.write("""{'sr_calibrations': [\n""" +
                              """["mock", [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]],\n""" +
                              """]}""")
-        self.mock_file.seek(0)
+        self.mock_file.close()
 
     def tearDown(self):
         os.remove(self.mock_file.name)
