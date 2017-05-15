@@ -5,6 +5,7 @@ import rospy
 import rospkg
 import unittest
 import rostest
+from mock import patch
 
 from sr_gui_hand_calibration.sr_hand_calibration_model import HandCalibration
 
@@ -23,10 +24,6 @@ class TestHandCalibration(unittest.TestCase):
         ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_hand_calibration'), 'uis', 'SrHandCalibration.ui')
         loadUi(ui_file, self._widget)
 
-        self.hand_model = HandCalibration(tree_widget=self._widget.tree_calibration,
-                                          progress_bar=self._widget.progress,
-                                          test_only=True)
-
         f = open(rospy.get_param('mock_file'), "w+")
         f.write("""{'sr_calibrations': [\n""" +
                 """["mock", [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]],\n""" +
@@ -36,7 +33,11 @@ class TestHandCalibration(unittest.TestCase):
     def tearDown(self):
         os.remove(rospy.get_param('mock_file'))
 
-    def test_progress_bar(self):
+    @patch('sr_gui_hand_calibration.sr_hand_calibration_model.EtherCAT_Hand_Lib')
+    def test_progress_bar(self, EtherCAT_Hand_Lib):
+        self.hand_model = HandCalibration(tree_widget=self._widget.tree_calibration,
+                                          progress_bar=self._widget.progress)
+
         self.assertEquals(self.hand_model.progress_bar.value(), 0)
         self.hand_model.load(rospy.get_param('mock_file'))
         self.assertEquals(self.hand_model.progress_bar.value(), 100)

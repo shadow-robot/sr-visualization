@@ -350,8 +350,7 @@ class HandCalibration(QTreeWidgetItem):
                  progress_bar,
                  fingers=["First Finger", "Middle Finger",
                           "Ring Finger", "Little Finger",
-                          "Thumb", "Wrist"],
-                 test_only=False):
+                          "Thumb", "Wrist"]):
         self.fingers = []
         # this is set to False if the user doesn't want to continue
         # when there are no EtherCAT hand node currently running.
@@ -359,28 +358,25 @@ class HandCalibration(QTreeWidgetItem):
 
         QTreeWidgetItem.__init__(self, ["Hand", "", "", ""])
 
-        if not test_only:
-            self.robot_lib = EtherCAT_Hand_Lib()
+        self.robot_lib = EtherCAT_Hand_Lib()
+        if not self.robot_lib.activate():
+            btn_pressed = QMessageBox.warning(
+                tree_widget, "Warning", "The EtherCAT Hand node doesn't seem to be running, or the debug topic is not"
+                                        " being published. Do you still want to continue? The calibration will be useless.",
+                buttons=QMessageBox.Ok | QMessageBox.Cancel)
 
-            if not self.robot_lib.activate():
-                btn_pressed = QMessageBox.warning(
-                    tree_widget, "Warning", "The EtherCAT Hand node doesn't seem to be running,"
-                    " or the debug topic is not being published. Do you still want to continue?"
-                    "The calibration will be useless.",
-                    buttons=QMessageBox.Ok | QMessageBox.Cancel)
+            if btn_pressed == QMessageBox.Cancel:
+                self.is_active = False
 
-                if btn_pressed == QMessageBox.Cancel:
-                    self.is_active = False
+        for finger in fingers:
+            if finger in self.joint_map.keys():
+                self.fingers.append(FingerCalibration(finger,
+                                                      self.joint_map[finger],
+                                                      self, tree_widget,
+                                                      self.robot_lib))
 
-            for finger in fingers:
-                if finger in self.joint_map.keys():
-                    self.fingers.append(FingerCalibration(finger,
-                                                          self.joint_map[finger],
-                                                          self, tree_widget,
-                                                          self.robot_lib))
-
-                else:
-                    print finger, " not found in the calibration map"
+            else:
+                 print finger, " not found in the calibration map"
 
         self.joint_0_calibration_index = 0
 
