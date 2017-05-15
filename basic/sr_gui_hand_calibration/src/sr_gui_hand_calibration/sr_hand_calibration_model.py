@@ -362,7 +362,7 @@ class HandCalibration(QTreeWidgetItem):
         if not self.robot_lib.activate():
             btn_pressed = QMessageBox.warning(
                 tree_widget, "Warning", "The EtherCAT Hand node doesn't seem to be running, or the debug topic is not"
-                                        " being published. Do you still want to continue? The calibration will be useless.",
+                " being published. Do you still want to continue? The calibration will be useless.",
                 buttons=QMessageBox.Ok | QMessageBox.Cancel)
 
             if btn_pressed == QMessageBox.Cancel:
@@ -376,7 +376,7 @@ class HandCalibration(QTreeWidgetItem):
                                                       self.robot_lib))
 
             else:
-                 print finger, " not found in the calibration map"
+                print finger, " not found in the calibration map"
 
         self.joint_0_calibration_index = 0
 
