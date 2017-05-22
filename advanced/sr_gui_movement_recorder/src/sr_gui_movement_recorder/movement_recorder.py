@@ -287,7 +287,8 @@ class SrGuiMovementRecorder(Plugin):
             'sr_gui_movement_recorder'), 'uis', 'SrGuiMovementRecorder.ui')
         loadUi(ui_file, self._widget)
         self._widget.setObjectName('SrGuiMovementRecorderUi')
-        context.add_widget(self._widget)
+        if context is not None:
+            context.add_widget(self._widget)
 
         self.frame = self._widget.frame
         self.timer = QTimer(self.frame)
@@ -303,13 +304,15 @@ class SrGuiMovementRecorder(Plugin):
 
         # setting up the hand selection
         hand_finder = HandFinder()
-        self.hand_parameters = hand_finder.get_hand_parameters()
+        if hand_finder.hand_e_available():
+            self.hand_parameters = hand_finder.get_hand_parameters()
 
         self.sublayout.addWidget(QLabel("Select Hand"), 0, 0)
         self.hand_combo_box = QComboBox()
 
-        for hand_serial in self.hand_parameters.mapping.keys():
-            self.hand_combo_box.addItem(hand_serial)
+        if hand_finder.hand_e_available():
+            for hand_serial in self.hand_parameters.mapping.keys():
+                self.hand_combo_box.addItem(hand_serial)
 
         self.sublayout.addWidget(self.hand_combo_box, 0, 1)
 
@@ -370,7 +373,8 @@ class SrGuiMovementRecorder(Plugin):
         # selecting the first available hand
         self.__selected_hand = None
         # TODO(@dg-shadow) Fix hand finder etc to work with hand H
-        self.hand_selected(self.hand_parameters.mapping.keys()[0])
+        if hand_finder.hand_e_available():
+            self.hand_selected(self.hand_parameters.mapping.keys()[0])
 
     def hand_selected(self, serial):
         self.hand_commander = SrHandCommander(hand_parameters=self.hand_parameters,
@@ -538,3 +542,12 @@ class SrGuiMovementRecorder(Plugin):
     def shutdown_plugin(self):
         self.remove_all_steps()
         self._unregisterPublisher()
+
+if __name__ == "__main__":
+    from QtWidgets import QApplication
+    import sys
+    rospy.init_node("grasp_controller")
+    app = QApplication(sys.argv)
+    ctrl = SrGuiMovementRecorder(None)
+    ctrl._widget.show()
+    app.exec_()
