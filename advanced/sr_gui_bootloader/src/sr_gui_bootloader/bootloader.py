@@ -308,7 +308,7 @@ class SrGuiBootloader(Plugin):
 if __name__ == "__main__":
     from QtWidgets import QApplication
     import sys
-    rospy.init_node("grasp_controller")
+    rospy.init_node("bootloader")
     app = QApplication(sys.argv)
     ctrl = SrGuiBootloader(None)
     ctrl._widget.show()
