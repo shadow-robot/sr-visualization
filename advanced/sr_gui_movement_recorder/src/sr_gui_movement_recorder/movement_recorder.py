@@ -302,17 +302,17 @@ class SrGuiMovementRecorder(Plugin):
         self.sublayout = QGridLayout()
         self.command_frame = QFrame()
 
+        self.hand_combo_box = QComboBox()
+        self.sublayout.addWidget(QLabel("Select Hand"), 0, 0)
+
         # setting up the hand selection
         hand_finder = HandFinder()
         if hand_finder.hand_e_available():
             self.hand_parameters = hand_finder.get_hand_parameters()
 
-        self.sublayout.addWidget(QLabel("Select Hand"), 0, 0)
-        self.hand_combo_box = QComboBox()
-
-        if hand_finder.hand_e_available():
             for hand_serial in self.hand_parameters.mapping.keys():
                 self.hand_combo_box.addItem(hand_serial)
+        # TODO(@anyone): Make so grasp controller combo box can be used to select multiple hand H
 
         self.sublayout.addWidget(self.hand_combo_box, 0, 1)
 
@@ -375,6 +375,8 @@ class SrGuiMovementRecorder(Plugin):
         # TODO(@dg-shadow) Fix hand finder etc to work with hand H
         if hand_finder.hand_e_available():
             self.hand_selected(self.hand_parameters.mapping.keys()[0])
+        else:
+            self.hand_commander = SrHandCommander()
 
     def hand_selected(self, serial):
         self.hand_commander = SrHandCommander(hand_parameters=self.hand_parameters,
@@ -546,7 +548,7 @@ class SrGuiMovementRecorder(Plugin):
 if __name__ == "__main__":
     from QtWidgets import QApplication
     import sys
-    rospy.init_node("grasp_controller")
+    rospy.init_node("movement_recorder")
     app = QApplication(sys.argv)
     ctrl = SrGuiMovementRecorder(None)
     ctrl._widget.show()
