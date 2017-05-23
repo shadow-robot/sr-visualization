@@ -377,6 +377,9 @@ class SrGuiMovementRecorder(Plugin):
             self.hand_selected(self.hand_parameters.mapping.keys()[0])
         else:
             self.hand_commander = SrHandCommander()
+            self.remove_all_steps()
+            self.add_step()
+            self.__selected_hand = self.hand_commander.get_group_name()
 
     def hand_selected(self, serial):
         self.hand_commander = SrHandCommander(hand_parameters=self.hand_parameters,
