@@ -72,4 +72,10 @@ class SrGuiStateSaver(Plugin):
                                 "You must choose which part of the robot you are saving for.")
             return
 
-        SrStateSaverUnsafe(name, which)
+        try:
+            SrStateSaverUnsafe(name, which)
+        except AttributeError as exc:
+            QMessageBox.warning(self._widget, "Choose the correct component(s)!",
+                                "Error %s: The component(s) you have selected to the save states for do not exist."
+                                % exc)
+            return
