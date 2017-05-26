@@ -75,7 +75,7 @@ class SrGuiStateSaver(Plugin):
         try:
             SrStateSaverUnsafe(name, which)
         except AttributeError as exc:
-            QMessageBox.warning(self._widget, "Choose the correct component(s)!",
-                                "Error %s: The component(s) you have selected to the save states for do not exist."
+            QMessageBox.warning(self._widget, "Choose the correct components!",
+                                "Error %s: The components you have selected to the save states for do not exist."
                                 % exc)
             return
