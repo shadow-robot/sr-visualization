@@ -453,7 +453,6 @@ class SrGuiGraspController(Plugin):
         sublayout.addWidget(btn_frame)
         subframe.setLayout(sublayout)
 
-
         hand_finder = HandFinder()
         if hand_finder.hand_e_available():
             selector_layout = QtWidgets.QHBoxLayout()
