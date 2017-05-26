@@ -36,8 +36,9 @@ import os
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
-from QtGui import QMessageBox, QWidget, QIcon, QColor, QPainter, QFont
-from QtCore import QRectF, QTimer, SIGNAL, SLOT
+from QtGui import QIcon, QColor, QPainter, QFont
+from QtWidgets import QMessageBox, QWidget
+from QtCore import QRectF, QTimer
 from sr_robot_msgs.msg import Biotac, BiotacAll
 from sr_utilities.hand_finder import HandFinder
 
@@ -289,8 +290,9 @@ class SrGuiBiotac(Plugin):
         self._widget.setObjectName('SrBiotacUi')
 
         self.timer = QTimer(self._widget)
-        self._widget.connect(self.timer, SIGNAL("timeout()"),
-                             self._widget.scrollAreaWidgetContents.update)
+        # self._widget.connect(self.timer, SIGNAL("timeout()"),
+        #                     self._widget.scrollAreaWidgetContents.update)
+        self.timer.timeout.connect(self._widget.scrollAreaWidgetContents.update)
         self._widget.scrollAreaWidgetContents.paintEvent = self.paintEvent
 
         self.subscribe_to_topic(self.default_topic)
@@ -305,9 +307,12 @@ class SrGuiBiotac(Plugin):
         else:
             self._widget.select_prefix.setCurrentIndex(0)
 
+        '''
         self._widget.connect(self._widget.select_prefix,
                              SIGNAL("activated(QString)"),
                              self.subscribe_to_topic)
+        '''
+        self._widget.select_prefix.activated['QString'].connect(self.subscribe_to_topic)
 
         self.timer.start(50)
 
