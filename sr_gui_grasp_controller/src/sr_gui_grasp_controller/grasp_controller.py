@@ -453,25 +453,25 @@ class SrGuiGraspController(Plugin):
         sublayout.addWidget(btn_frame)
         subframe.setLayout(sublayout)
 
-        selector_layout = QtWidgets.QHBoxLayout()
-        selector_frame = QtWidgets.QFrame()
-
-        selector_layout.addWidget(QtWidgets.QLabel("Select Hand"))
-
-        # TODO(@anyone): Make so grasp controller combo box can be used to select multiple hand H
-        self.hand_combo_box = QtWidgets.QComboBox()
         hand_finder = HandFinder()
         if hand_finder.hand_e_available():
+            selector_layout = QtWidgets.QHBoxLayout()
+            selector_frame = QtWidgets.QFrame()
+
+            selector_layout.addWidget(QtWidgets.QLabel("Select Hand"))
+
+            self.hand_combo_box = QtWidgets.QComboBox()
+
             hand_parameters = hand_finder.get_hand_parameters()
             for hand_serial in self.hand_parameters.mapping.keys():
                 self.hand_combo_box.addItem(hand_serial)
+            # TODO(@anyone): adapt so that hand Hs are included as options in combo box
 
-        selector_layout.addWidget(self.hand_combo_box)
+            selector_layout.addWidget(self.hand_combo_box)
+            selector_frame.setLayout(selector_layout)
+            sublayout.addWidget(selector_frame)
 
-        selector_frame.setLayout(selector_layout)
-        sublayout.addWidget(selector_frame)
-
-        self.hand_combo_box.activated.connect(self.hand_selected)
+            self.hand_combo_box.activated.connect(self.hand_selected)
 
         self.grasp_from_chooser = GraspChooser(self._widget, self, "From: ")
         self.layout.addWidget(self.grasp_from_chooser)
