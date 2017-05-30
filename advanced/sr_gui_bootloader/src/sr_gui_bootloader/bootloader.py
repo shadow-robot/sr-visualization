@@ -101,7 +101,8 @@ class SrGuiBootloader(Plugin):
             'sr_gui_bootloader'), 'uis', 'SrBootloader.ui')
         loadUi(ui_file, self._widget)
         self._widget.setObjectName('SrMotorResetterUi')
-        context.add_widget(self._widget)
+        if context is not None:
+            context.add_widget(self._widget)
 
         # setting the prefixes
         self._hand_finder = HandFinder()
@@ -303,3 +304,12 @@ class SrGuiBootloader(Plugin):
     def prefix_selected(self, prefix):
         self._prefix = prefix
         self.populate_motors()
+
+if __name__ == "__main__":
+    from QtWidgets import QApplication
+    import sys
+    rospy.init_node("bootloader")
+    app = QApplication(sys.argv)
+    ctrl = SrGuiBootloader(None)
+    ctrl._widget.show()
+    app.exec_()
