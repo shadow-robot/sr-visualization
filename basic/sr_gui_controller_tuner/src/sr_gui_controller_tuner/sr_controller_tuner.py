@@ -358,6 +358,9 @@ class SrControllerTunerApp(object):
 
         if controller_type == "Motor Force":
             try:
+                for setting in ["torque_limit", "torque_limiter_gain"]:
+                    if setting not in contrlr_settings_converted:
+                        contrlr_settings_converted[setting] = 0
                 pid_service(int(contrlr_settings_converted["max_pwm"]),
                             int(contrlr_settings_converted["sgleftref"]),
                             int(contrlr_settings_converted["sgrightref"]),
@@ -366,7 +369,10 @@ class SrControllerTunerApp(object):
                                 contrlr_settings_converted["i"]),
                             int(contrlr_settings_converted["d"]), int(
                                 contrlr_settings_converted["imax"]),
-                            int(contrlr_settings_converted["deadband"]), int(contrlr_settings_converted["sign"]))
+                            int(contrlr_settings_converted["deadband"]),
+                            int(contrlr_settings_converted["sign"]),
+                            int(contrlr_settings_converted["torque_limit"]),
+                            int(contrlr_settings_converted["torque_limiter_gain"]))
             except rospy.ServiceException:
                 return False
 

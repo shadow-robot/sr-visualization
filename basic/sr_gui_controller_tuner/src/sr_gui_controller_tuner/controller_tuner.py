@@ -597,6 +597,7 @@ class SrGuiControllerTuner(Plugin):
 
                 parameter_values = self.sr_controller_tuner_app_.load_parameters(
                     controller_type, motor_name)
+
                 if parameter_values != -1:
                     # the parameters have been found
                     self.ctrl_widgets[motor_name] = {}
@@ -631,10 +632,14 @@ class SrGuiControllerTuner(Plugin):
                             motor_item, 0, frame_buttons)
 
                     for index_item, item in enumerate(ctrl_settings.headers):
+                        param_name = item["name"].lower()
+                        if param_name not in parameter_values:
+                            rospy.logwarn("Param %s not found for joint %s" % (param_name, motor_name))
+                            continue
+
                         if item["type"] == "Bool":
                             check_box = QCheckBox()
 
-                            param_name = item["name"].lower()
                             param_val = parameter_values[param_name]
                             check_box.setChecked(param_val)
                             if param_name == "sign":
@@ -651,8 +656,6 @@ class SrGuiControllerTuner(Plugin):
                             spin_box = QSpinBox()
                             spin_box.setRange(
                                 int(item["min"]), int(item["max"]))
-
-                            param_name = item["name"].lower()
                             spin_box.setValue(
                                 int(parameter_values[param_name]))
                             self.ctrl_widgets[motor_name][
@@ -666,7 +669,6 @@ class SrGuiControllerTuner(Plugin):
                             spin_box.setRange(-65535.0, 65535.0)
                             spin_box.setDecimals(3)
 
-                            param_name = item["name"].lower()
                             spin_box.setValue(
                                 float(parameter_values[param_name]))
                             self.ctrl_widgets[motor_name][
