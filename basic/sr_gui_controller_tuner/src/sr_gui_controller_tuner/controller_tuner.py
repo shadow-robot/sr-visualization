@@ -634,7 +634,7 @@ class SrGuiControllerTuner(Plugin):
                     for index_item, item in enumerate(ctrl_settings.headers):
                         param_name = item["name"].lower()
                         if param_name not in parameter_values:
-                            rospy.logwarn("Param %s not found for joint %s" % (param_name, motor_name))
+                            rospy.logdebug("Param %s not found for joint %s" % (param_name, motor_name))
                             continue
 
                         if item["type"] == "Bool":
