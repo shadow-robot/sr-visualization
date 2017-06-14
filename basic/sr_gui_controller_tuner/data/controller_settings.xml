@@ -47,6 +47,8 @@
       <item name="Deadband" type="Int" min="0" max="255"/>
       <item name="Sgleftref" type="Int" min="0" max="255"/>
       <item name="Sgrightref" type="Int" min="0" max="255"/>
+      <item name="Torque_Limit" type="Int" min="0" max="32767" new="true"/>
+      <item name="Torque_Limiter_Gain" type="Int" min="-32767" max="32767" new="true"/>
       <item name="Sign" type="Bool"/>
     </headers>
   </controller>
