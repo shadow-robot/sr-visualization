@@ -54,10 +54,10 @@ class MotorFlasher(QThread):
             if motor.checkbox.checkState() == Qt.Checked:
                 try:
                     print(
-                        "resetting: realtime_loop/" + self.prefix +
+                        "resetting: sr_hand_robot/" + self.prefix +
                         "reset_motor_" + motor.motor_name)
                     self.flasher_service = rospy.ServiceProxy(
-                        'realtime_loop/' + self.prefix + 'reset_motor_' +
+                        'sr_hand_robot/' + self.prefix + 'reset_motor_' +
                         motor.motor_name, Empty)
                     self.flasher_service()
                 except rospy.ServiceException, e:

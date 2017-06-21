@@ -462,7 +462,7 @@ class SrGuiGraspController(Plugin):
 
             self.hand_combo_box = QtWidgets.QComboBox()
 
-            hand_parameters = hand_finder.get_hand_parameters()
+            self.hand_parameters = hand_finder.get_hand_parameters()
             for hand_serial in self.hand_parameters.mapping.keys():
                 self.hand_combo_box.addItem(hand_serial)
             # TODO(@anyone): adapt so that hand Hs are included as options in combo box
