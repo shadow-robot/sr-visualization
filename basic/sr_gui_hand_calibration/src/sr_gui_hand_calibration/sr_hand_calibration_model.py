@@ -407,10 +407,11 @@ class HandCalibration(QTreeWidgetItem):
         self.progress()
 
         # select the next row by default
-        item.setSelected(False)
         next_item = self.tree_widget.itemBelow(item)
-        next_item.setSelected(True)
-        self.tree_widget.setCurrentItem(next_item)
+        if next_item is not None:
+            item.setSelected(False)
+            next_item.setSelected(True)
+            self.tree_widget.setCurrentItem(next_item)
 
     def calibrate_joint0s(self, btn_joint_0s):
         joint0s = ["FFJ1", "FFJ2",
