@@ -211,19 +211,34 @@ class SrGuiJointSlider(Plugin):
         """
         @return: list of current controllers with associated data
         """
-        success = True
-        list_controllers = rospy.ServiceProxy(
-            'controller_manager/list_controllers', ListControllers)
+        success_xyz = True
+        success_ser = True
+        list_xyz_controllers = rospy.ServiceProxy(
+            'xyz_robot/controller_manager/list_controllers', ListControllers)
+        list_ser_controllers = rospy.ServiceProxy(
+            'ser_robot/controller_manager/list_controllers', ListControllers)
         try:
-            resp1 = list_controllers()
+            resp1 = list_xyz_controllers()
         except rospy.ServiceException:
-            success = False
+            success_xyz = False
+        try:
+            resp2 = list_ser_controllers()
+        except rospy.ServiceException:
+            success_ser = False
 
-        if success:
+        if success_ser:
+            return [c for c in resp2.controller if c.state == "running"]
+        else:
+            rospy.loginfo(
+                "Couldn't get list of controllers from ser_robot/controller_manager/list_controllers service")
+
+        if success_xyz:
             return [c for c in resp1.controller if c.state == "running"]
         else:
             rospy.loginfo(
-                "Couldn't get list of controllers from controller_manager/list_controllers service")
+                "Couldn't get list of controllers from xyz_robot/controller_manager/list_controllers service")
+
+        if not success_xyz and not success_ser:
             return []
 
     def _load_robot_description(self):
