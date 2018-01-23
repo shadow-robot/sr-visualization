@@ -226,17 +226,13 @@ class SrGuiJointSlider(Plugin):
         except rospy.ServiceException:
             success_ser = False
 
-        if success_ser:
-            return [c for c in resp2.controller if c.state == "running"]
+        total_resp = resp1.controller + resp2.controller
+
+        if success_ser and success_xyz:
+            return [c for c in total_resp if c.state == "running"]
         else:
             rospy.loginfo(
                 "Couldn't get list of controllers from ser_robot/controller_manager/list_controllers service")
-
-        if success_xyz:
-            return [c for c in resp1.controller if c.state == "running"]
-        else:
-            rospy.loginfo(
-                "Couldn't get list of controllers from xyz_robot/controller_manager/list_controllers service")
 
         if not success_xyz and not success_ser:
             return []
