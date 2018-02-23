@@ -215,10 +215,10 @@ class EtherCATHandSlider(ExtendedSlider):
                 self.slider.setTracking(False)
         elif (self.joint.controller.controller_category == "velocity"):
             self.slider.setTracking(True)
-            self.connect(self.slider, QtCore.SIGNAL('sliderReleased()'), self.on_slider_released)
+            self.slider.sliderReleased.connect(self.on_slider_released)
         elif (self.joint.controller.controller_category == "effort"):
             self.slider.setTracking(True)
-            self.connect(self.slider, QtCore.SIGNAL('sliderReleased()'), self.on_slider_released)
+            self.slider.sliderReleased.connect(self.on_slider_released)
 
     def on_slider_released(self):
         if (self.joint.controller.controller_category == "effort")\
@@ -358,8 +358,7 @@ class EtherCATSelectionSlider(SelectionSlider):
         for slider in self.plugin_parent.sliders:
             if (slider.joint.controller.controller_category == "effort")\
                     or (slider.joint.controller.controller_category == "velocity"):
-                self.connect(self.slider, QtCore.SIGNAL(
-                    'sliderReleased()'), self.on_slider_released)
+                self.slider.sliderReleased.connect(self.on_slider_released)
                 self.slider.setSliderPosition(50)
                 self.current_value = 50
                 self.target.setText("Tgt: " + str(50) + "%")
