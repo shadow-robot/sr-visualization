@@ -322,23 +322,27 @@ class SrGuiJointSlider(Plugin):
                             if self._widget.joint_name_filter_edit.text() not in j_name:
                                 continue
 
-                            min, max, vel = self._get_joint_min_max_vel_special(
-                                j_name)
+                            min, max, vel = self._get_joint_min_max_vel(j_name)
+
                             joint = Joint(
                                 j_name, min, max, vel, joint_controller)
                             joints.append(joint)
                     else:
                         joint_name = ctrl_params["joint"]
                         if joint_name in trajectory_ctrl_joint_names:
-                            # These joints are controlled by the trajectory controller
+                            # These joints are controlled by the trajectory controller (this is to cover the case of a
+                            # position trajectory controller chainloaded on top of a different controller,
+                            # e.g. SrhJointPositionController that doesn't claim the joint as a resource)
                             continue
 
-                        if "J0" in joint_name:  # xxJ0 are controlled by the by the trajectory controller xxJ1 and xxJ2
-                            jname1 = joint_name.replace("J0", "J1")
-                            jname2 = joint_name.replace("J0", "J2")
-                            if jname1 in trajectory_ctrl_joint_names \
-                                    and jname2 in trajectory_ctrl_joint_names:
-                                continue
+                        if self._is_hand_e_controller(controller):
+                            if "J0" in joint_name:
+                                # In hand E xxJ0 might be controlled by the by the trajectory controller xxJ1 and xxJ2
+                                jname1 = joint_name.replace("J0", "J1")
+                                jname2 = joint_name.replace("J0", "J2")
+                                if jname1 in trajectory_ctrl_joint_names \
+                                        and jname2 in trajectory_ctrl_joint_names:
+                                    continue
 
                         joint_controller = JointController(
                             controller.name, controller_type, controller_state_type, controller_category)
@@ -348,8 +352,11 @@ class SrGuiJointSlider(Plugin):
                         if self._widget.joint_name_filter_edit.text() not in joint_name:
                             continue
 
-                        min, max, vel = self._get_joint_min_max_vel_special(
-                            joint_name)
+                        if self._is_hand_e_controller(controller):
+                            min, max, vel = self._get_joint_min_max_vel_special(joint_name)
+                        else:
+                            min, max, vel = self._get_joint_min_max_vel(joint_name)
+
                         joint = Joint(
                             joint_name, min, max, vel, joint_controller)
                         joints.append(joint)
@@ -375,3 +382,8 @@ class SrGuiJointSlider(Plugin):
 
         for cb in self.trajectory_state_slider_cb[index]:  # call the callbacks of the sliders in the list
             cb(msg)
+
+    def _is_hand_e_controller(self, controller):
+        if "sr_mechanism_controllers" in controller.type:
+            return True
+        return False
