@@ -26,22 +26,26 @@ from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
 from QtCore import Qt
-from QtGui import QWidget, QMessageBox
-
-from controller_manager_msgs.srv import ListControllers
-from control_msgs.msg import JointControllerState
-from sr_robot_msgs.msg import JointControllerState as SrJointControllerState
-from sr_robot_msgs.msg import JointMusclePositionControllerState
-from control_msgs.msg import JointTrajectoryControllerState
-from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
-
-from sr_gui_joint_slider.sliders import JointController, Joint, EtherCATHandSlider
-from sr_gui_joint_slider.sliders import EtherCATHandTrajectorySlider, EtherCATSelectionSlider
+from QtWidgets import QWidget, QMessageBox
 
 
-class SrGuiDynamicPlotToolPlugin(Plugin):
+class SrGuiDynamicPlotTool(Plugin):
 
     """
     A rosgui plugin to easily decide which hand's information to plot.
     """
+
+    def __init__(self, context):
+        super(SrGuiDynamicPlotTool, self).__init__(context)
+        self.setObjectName('SrGuiDynamicPlotTool')
+
+        self._widget = QWidget()
+
+        ui_file = os.path.join(rospkg.RosPack().get_path(
+            'sr_gui_dynamic_plot_tool'), 'uis', 'SrGuiDynamicPlotTool.ui')
+
+        loadUi(ui_file, self._widget)
+
+        self._widget.setObjectName('SrGuiDynamicPlotToolUi')
+        context.add_widget(self._widget)
 
