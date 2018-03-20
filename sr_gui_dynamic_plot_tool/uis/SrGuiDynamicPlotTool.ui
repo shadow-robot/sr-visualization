@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>622</width>
-    <height>45</height>
+    <width>94</width>
+    <height>293</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="mouseTracking">
    <bool>false</bool>
@@ -17,6 +23,9 @@
    <string>Dynamic Plot Tool</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
+   <property name="alignment">
+    <set>Qt::AlignTop</set>
+   </property>
    <item row="0" column="0">
     <widget class="QLabel" name="text">
       <property name="text">
@@ -28,9 +37,16 @@
     <widget class="QComboBox" name="select_script"/>
    </item>
    <item row="0" column="2">
-    <widget class="QPushButton" name="button_run">
+    <widget class="QPushButton" name="run_button">
      <property name="text">
       <string>Run</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <widget class="QPushButton" name="edit_button">
+     <property name="text">
+      <string>Edit Script</string>
      </property>
     </widget>
    </item>
