@@ -19,43 +19,30 @@
 import os
 import rospkg
 import rospy
-from sr_gui_dynamic_plot_tool.dynamic_plot_tool import SrGuiDynamicPlotTool
-from qt_gui.plugin import Plugin
+import sys
 
 
 class SrAddInterfaceEntries():
 
     def __init__(self):
-        self._dynamic_plot_tool = SrGuiDynamicPlotTool(None)
-    
-    def create_interface(self):
+        self._widget_choice = []
+
+    def populate_interface(self):
         """
         Add here the entries for your interface
         """
-
-        self._dynamic_plot_tool.add_widget("Hand")
-
-        #add_widget_array("Finger", "name")
-
-        #add_widget_topic_name("Hand", "/H?_trajectory_controller")
-        #add_widget_topic_name("Next Bit", "*")
+        self._widget_choice.append('Hand')
+        self._widget_choice.append('Finger')
+        self._widget_choice.append('Joint')
+        return self._widget_choice
 
     def create_plots(self, choices):
         """
         Add here your plot settings
         """
-
+        pass
         #topic_name = "/fh_finger/H" + str(choices[0]) + "J{}".format()
-
         #plots = create_plots(2,2)
         #plots[0].add_topic(topic1)
         #plots[0].add_topic(topic2)
-
         #plots.add_topic(0, topic1)
-
-if __name__ == '__main__':
-    rospy.init_node("dynamic_plot_configuration", anonymous=True)
-    plot = SrAddInterfaceEntries()
-    plot.create_interface()
-    rospy.spin()
-
