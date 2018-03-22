@@ -80,39 +80,49 @@ class SrGuiDynamicPlotTool(Plugin):
         rospy.loginfo("Adding widget..")
         subframe = QtWidgets.QFrame()
         sublayout = QtWidgets.QHBoxLayout()
+        
+        # Add widgets based on script selections
         self.plot_selection_interface = AddWidget(self._widget, widget_choices)
         sublayout.addWidget(self.plot_selection_interface)
+        
+        # Add plot button
+        plot_button = QtWidgets.QPushButton()
+        plot_button.setText("Plot")
+        sublayout.addWidget(plot_button)
+
         subframe.setLayout(sublayout)
         self.layout.addWidget(subframe)
 
-    def create_multiplot_configuration(self):
+        plot_button.pressed.connect(self.get_user_choices)
+
+    def get_user_choices(self):
+        user_choices = self.plot_selection_interface._user_selections
+        self.create_multiplot_configuration(user_choices)
+
+    def create_multiplot_configuration(self, user_choices):
         """
         Dynamically creates the multiplot configuration
         """
         rospy.loginfo("Creating Multiplot configuration..")
+        print("User choices: ", user_choices)
 
 
 class AddWidget(QWidget):
-
     """
-    Insert the information about the hand, finger and joint that you want to plot
+    Create widgets to select hand, finger and joint that you want to plot
     """
-
     def __init__(self, parent, widget_choices):
         QWidget.__init__(self, parent)
         self._widget_choices = widget_choices
         self.setWindowTitle("Plot selection interface")
         self._hand_config = HandConfig()
+        self._user_selections = []
         plot_interface_frame = QtWidgets.QFrame()
         self.plot_interface_layout = QtWidgets.QVBoxLayout()
 
         self.plot_interface_layout.addWidget(plot_interface_frame)
         self.plot_interface_layout.setAlignment(Qt.AlignCenter)
         self.plot_interface_layout.setAlignment(Qt.AlignBottom)
-
-        self.selection_button_hand = QtWidgets.QPushButton()
-        self.selection_button_finger = []
-        self.selection_button_joint = []
 
         hand_parameters, hand_prefix, hand_name = self._hand_config.get_hand_data()
 
@@ -122,62 +132,90 @@ class AddWidget(QWidget):
             self._create_finger_widget(hand_parameters, hand_prefix)
         if "Joint" in widget_choices:
             self._create_joint_widget(hand_name)
-
-        self.selection_button_hand.setCheckable(True)
-        self.selection_button_hand.pressed.connect(self.hand_selected)
+        else:
+            for name in widget_choices:
+                self._create_generic_widget(name)
         
         self.setLayout(self.plot_interface_layout)
         self.show()
     
     def _create_hand_widget(self, prefix, name):
+        """
+        Create hand selection buttons
+        @param prefix - string hand prefix e.g. H0, sr
+        @param name - string name of the hand found
+        """
         label_name = QtWidgets.QLabel()
-        label_name.setText("Found" + name)
+        label_name.setText("Select " + name)
         self.plot_interface_layout.addWidget(label_name)
-        self.plot_interface_layout.addWidget(label_name)
-        self.selection_button_hand.setText(prefix[:-1])
-        self.plot_interface_layout.addWidget(self.selection_button_hand)
+
+        selection_button_hand = QtWidgets.QToolButton()
+        selection_button_hand.setCheckable(True)
+        selection_button_hand.setText(prefix[:-1])
+        selection_button_hand.setObjectName(prefix[:-1])
+
+        self.plot_interface_layout.addWidget(selection_button_hand)
+        selection_button_hand.released.connect(self._hand_button_released)
+
+    def _hand_button_released(self):
+        sending_button = self.sender()
+        self.user_selection(str(sending_button.objectName()))
     
     def _create_finger_widget(self, hand_parameters, prefix):
+        """
+        Create finger selection buttons
+        @param hand_parameters - dictionary that cointains hand parameters
+        @param prefix - string hand prefix e.g. H0, sr
+        """
         label_name = QtWidgets.QLabel()
         label_name.setText("Select Finger")
         self.plot_interface_layout.addWidget(label_name)
+
         for i, key in enumerate(hand_parameters[prefix[:-1]].get('fingers')):
-            self.selection_button_finger = QtWidgets.QToolButton()
-            self.selection_button_finger.setText(key)
-            self.selection_button_finger.setObjectName(key)
-            self.selection_button_finger.released.connect(self._finger_button_released)
-            self.plot_interface_layout.addWidget(self.selection_button_finger)
+            selection_button_finger = QtWidgets.QToolButton()
+            selection_button_finger.setCheckable(True)
+            selection_button_finger.setText(key)
+            selection_button_finger.setObjectName(key)
+            selection_button_finger.released.connect(self._finger_button_released)
+            self.plot_interface_layout.addWidget(selection_button_finger)
     
     def _finger_button_released(self):
         sending_button = self.sender()
-        self.finger_selected(str(sending_button.objectName()))
+        self.user_selection(str(sending_button.objectName()))
 
     def _create_joint_widget(self, hand_name):
+        """
+        Create joint selection buttons
+        @param hand_name - string name of the hand found
+        """
         label_name = QtWidgets.QLabel()
         label_name.setText("Select Joint")
         self.plot_interface_layout.addWidget(label_name)
+
         if hand_name == "hand_h":
             number_of_joint = 3
             for joint in range(0, number_of_joint):
-                self.selection_button_joint = QtWidgets.QToolButton()
-                self.selection_button_joint.setText("J"+str(joint))
-                self.selection_button_joint.setObjectName("J"+str(joint))
-                self.selection_button_joint.released.connect(self._joint_button_released)
-                self.plot_interface_layout.addWidget(self.selection_button_joint)
+                selection_button_joint = QtWidgets.QToolButton()
+                selection_button_joint.setCheckable(True)
+                selection_button_joint.setText("J"+str(joint))
+                selection_button_joint.setObjectName("J"+str(joint))
+                selection_button_joint.released.connect(self._joint_button_released)
+                self.plot_interface_layout.addWidget(selection_button_joint)
     
+    def _create_generic_widget(self, name):
+        # TODO(@anyone): update to create buttons for adding a generic widget and get options from user
+        label_name = QtWidgets.QLabel()
+        label_name.setText("Select"+name)
+        self.plot_interface_layout.addWidget(label_name)
+
     def _joint_button_released(self):
         sending_button = self.sender()
-        self.joint_selected(str(sending_button.objectName()))
+        self.user_selection(str(sending_button.objectName()))
 
-    def hand_selected(self):
-        print("hand selected")
+    def user_selection(self, name):
+        self._user_selections.append(name)
+        return self._user_selections
 
-    def finger_selected(self, name):
-        print("finger selected", name)
-    
-    def joint_selected(self, name):
-        print("joint selected", name)
-    
 
 class HandConfig():
     """
