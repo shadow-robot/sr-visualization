@@ -30,6 +30,8 @@ import QtWidgets
 from QtWidgets import QWidget, QMessageBox
 from sr_utilities.hand_finder import HandFinder
 
+import xml.etree.ElementTree as xmlTool
+
 
 
 class SrGuiDynamicPlotTool(Plugin):
@@ -70,7 +72,7 @@ class SrGuiDynamicPlotTool(Plugin):
         module = __import__(module_name, fromlist=['SrAddInterfaceEntries'])
         user_entry_class = getattr(module, 'SrAddInterfaceEntries')
         self._user_entry_class = user_entry_class()
-        self._widget_choices = self._user_entry_class.populate_interface()
+        self._widget_choices = self._user_entry_class.define_interface_setting()
         self.add_widgets(self._widget_choices)
 
     def add_widgets(self, widget_choices):
@@ -97,14 +99,13 @@ class SrGuiDynamicPlotTool(Plugin):
 
     def get_user_choices(self):
         user_choices = self.plot_selection_interface._user_selections
-        self.create_multiplot_configuration(user_choices)
+        self._user_entry_class.define_plot_settings(user_choices)
 
     def create_multiplot_configuration(self, user_choices):
         """
         Dynamically creates the multiplot configuration
         """
         rospy.loginfo("Creating Multiplot configuration..")
-        print("User choices: ", user_choices)
 
 
 class AddWidget(QWidget):
@@ -233,4 +234,70 @@ class HandConfig():
             hand_parameters = rospy.get_param("/fh_hand")
         return hand_parameters, prefix, name
 
-        
+
+class CreatePlotConfigurations():
+    """
+    Dinamically create plot configuration
+    """
+    def __init__(self, rows, columns, configuration_name):
+        self._plots = []
+        self._plot_rows = []
+        self._plot_columns = []
+        self._base_configuration_xml = xmlTool.parse('/home/user/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations/empty_configuration.xml')
+        self._xml_root = self._base_configuration_xml.getroot()
+        self._generate_xml(rows, columns)
+        self._configuration_name = configuration_name
+
+    def _generate_xml(self, rows, columns):
+        """
+        Add right number of plots in rows and columns
+        """
+        for child in self._xml_root.findall("table"):
+            for item in child:
+                if item.tag == "plots":
+                    for row in range(0, rows):
+                        new_row = xmlTool.SubElement(item, "row_{}".format(row))
+                        for column in range(0, columns):
+                            new_column = xmlTool.SubElement(new_row, "col_{}".format(column))
+                            new_axes = xmlTool.SubElement(new_column, "axes")
+                            new_axes_bis = xmlTool.SubElement(new_axes, "axes")
+                            new_x_axis = xmlTool.SubElement(new_axes_bis, "x_axis")
+                            self._set_axis(new_x_axis)
+                            new_y_axis = xmlTool.SubElement(new_axes_bis, "y_axis")
+                            self._set_axis(new_y_axis)
+                            self._plots.append(Plot(row, column, self._configuration_name))
+
+        self._base_configuration_xml.write("/home/user/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations/{}".format(self._configuration_name))
+        return self._plots
+
+    def _set_axis(self, parent_tag):
+        new_custom_title = xmlTool.SubElement(parent_tag, "custom_title")
+        new_custom_title.text = "Untitled Axis"
+        new_title_type = xmlTool.SubElement(parent_tag, "title_type")
+        new_title_type.text = "0"
+        new_title_visible = xmlTool.SubElement(parent_tag, "title_visible")
+        new_title_visible.text = "true"
+
+
+class Plot():
+    """
+    Create Plot Xml
+    """
+    def __init__(self, row, column, configuration_name):
+        self._row = row
+        self._column = column
+        self._configuration_xml = xmlTool.parse('/home/user/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations/{}'.format(self._configuration_name))
+        self._xml_root = self._configuration_xml.getroot()
+
+    def add_topic(self, topic_name):
+        for row in self._xml_root.iter("row_{}".format(self._row)):
+            print("Tags in rows: ", row.tag)
+            for col in item.find("col_{}".format(self._column)):
+                print("Tags in columns: ", col.tag)
+
+
+            
+        #add the topic to the plot depending on entrance
+        # get topic and add curve
+        # create the curves
+        pass

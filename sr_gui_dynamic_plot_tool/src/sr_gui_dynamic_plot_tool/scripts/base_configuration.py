@@ -20,29 +20,51 @@ import os
 import rospkg
 import rospy
 import sys
-
+from sr_gui_dynamic_plot_tool.dynamic_plot_tool import CreatePlotConfigurations
 
 class SrAddInterfaceEntries():
 
     def __init__(self):
         self._widget_choice = []
+        self._plot_setting_choices = []
 
-    def populate_interface(self):
+    def define_interface_setting(self):
+        # @TODO(Giuseppe): Make this a dictionary for entries
         """
-        Add here the entries for your interface
+        Add here the entries for your interface.
+        Format - append name of item and number of items.
+        Hand H default = 1
+        Finger H default = 3
+        Joint H default = 3
+        Add what you want with their naming
         """
         self._widget_choice.append('Hand')
         self._widget_choice.append('Finger')
         self._widget_choice.append('Joint')
         return self._widget_choice
 
-    def create_plots(self, choices):
+    def define_plot_settings(self, choices):
         """
         Add here your plot settings
+        @param choices - list containing user selection from the GUI
         """
-        pass
-        #topic_name = "/fh_finger/H" + str(choices[0]) + "J{}".format()
-        #plots = create_plots(2,2)
+        print("Choices user: ", choices)
+
+        # Position demand topic
+        #position_demand_topic = "/fh_finger/H" + str(choices[0]) + "J{}".format()
+        # Position actual topic
+        #position_current_topic = "/fh_finger/H" + str(choices[0]) + "J{}".format()
+        # Torque demand topic
+        # Torque actual topic
+
+        plots = CreatePlotConfigurations(2,2, "new_test_configuration.xml")
+        plots_list = plots._plots
+        plots_list[0].add_topic("gino")
+
+        #plot_row[0].add_topic(position_actual_topic)
+        #plot_column[0].add_topic(torque_demand_topic)
+        #plot_column[0].add_topic(torque_actual_topic)
         #plots[0].add_topic(topic1)
         #plots[0].add_topic(topic2)
         #plots.add_topic(0, topic1)
+        return self._plot_setting_choices
