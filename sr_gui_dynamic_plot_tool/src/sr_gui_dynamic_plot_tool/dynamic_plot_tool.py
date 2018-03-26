@@ -99,6 +99,7 @@ class SrGuiDynamicPlotTool(Plugin):
 
     def get_user_choices(self):
         user_choices = self.plot_selection_interface._user_selections
+        self.plot_selection_interface._user_selections = []
         self._user_entry_class.define_plot_settings(user_choices)
 
     def create_multiplot_configuration(self, user_choices):
@@ -125,18 +126,15 @@ class AddWidget(QWidget):
         self.plot_interface_layout.setAlignment(Qt.AlignCenter)
         self.plot_interface_layout.setAlignment(Qt.AlignBottom)
 
-        # hand_parameters, hand_prefix, hand_name = self._hand_config.get_hand_data()
+        hand_parameters, hand_prefix, hand_name = self._hand_config.get_hand_data()
 
         if "Hand" in widget_choices:
-            hand_parameters, hand_prefix, hand_name = self._hand_config.get_hand_data()
             self._create_hand_widget(hand_prefix, hand_name)
-        if "Finger" in widget_choices:
             self._create_finger_widget(hand_parameters, hand_prefix)
-        if "Joint" in widget_choices:
             self._create_joint_widget(hand_name)
         else:
-            for name in widget_choices:
-                self._create_generic_widget(name)
+            for key_name in widget_choices:
+                self._create_generic_widget(key_name, widget_choices[key_name])
         
         self.setLayout(self.plot_interface_layout)
         self.show()
@@ -204,11 +202,17 @@ class AddWidget(QWidget):
                 selection_button_joint.released.connect(self._joint_button_released)
                 self.plot_interface_layout.addWidget(selection_button_joint)
     
-    def _create_generic_widget(self, name):
-        # TODO(@anyone): update to create buttons for adding a generic widget and get options from user
+    def _create_generic_widget(self, name, parameters):
         label_name = QtWidgets.QLabel()
         label_name.setText("Select"+name)
         self.plot_interface_layout.addWidget(label_name)
+        for field in parameters:
+            selection_button_joint = QtWidgets.QToolButton()
+            selection_button_joint.setCheckable(True)
+            selection_button_joint.setText(field)
+            selection_button_joint.setObjectName(field)
+            selection_button_joint.released.connect(self._generic_button_released)
+            self.plot_interface_layout.addWidget(selection_button_joint)
 
     def _joint_button_released(self):
         sending_button = self.sender()
@@ -315,10 +319,14 @@ class Plot():
                 plot_title_tag.text = plot_title
         configuration_xml.write("/home/user/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations/{}".format(self._configuration_name))
 
-    def add_curve(self, x_axis_topic_name, y_axis_topic_name, curve_number):
+    def add_curve(self, x_axis_topic, y_axis_topic, curve_number):
         """
         Function to add topic to plot to the xml configuration
-        @param topic_name - string that contains the topic to plot
+        @param x_axis_topic - named tuple that contains informations
+        (topic_name, field_to_plot, topic_msg_type) of the topic to plot in x_axis
+        @param y_axis_topic - named tuple that contains informations
+        of the topic to plot in y_axis
+        @param curve_name - int number of the curve in the plot
         """
         configuration_xml = xmlTool.parse('/home/user/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations/{}'.format(self._configuration_name))
         xml_root = configuration_xml.getroot()
@@ -328,8 +336,8 @@ class Plot():
                     print("Found curves: ", col.tag)
                     topic_curve_tag = xmlTool.SubElement(col, "curve_{}".format(curve_number))
                     axes_curve_tag = xmlTool.SubElement(topic_curve_tag, "axes")
-                    self._add_axis_topic(axes_curve_tag, "x_axis", x_axis_topic_name)
-                    self._add_axis_topic(axes_curve_tag, "y_axis", y_axis_topic_name)
+                    self._add_axis_topic(axes_curve_tag, "x_axis", x_axis_topic)
+                    self._add_axis_topic(axes_curve_tag, "y_axis", y_axis_topic)
                     self._add_color_settings(axes_curve_tag, "#000000")
                     self._add_data_settings(axes_curve_tag, "3")
                     self._add_style_settings(axes_curve_tag)
@@ -340,15 +348,14 @@ class Plot():
          
         configuration_xml.write("/home/user/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations/{}".format(self._configuration_name))
 
-    def _add_axis_topic(self, parent_tag, name_of_axis, topic_name):
+    def _add_axis_topic(self, parent_tag, name_of_axis, topic):
         """
         Generate x or y axis for a given curve
         @param parent_tag - parent xml tag element
-        @param name_of_axis - string that contains name of axes to add, x or y
         """
         axis_tag = xmlTool.SubElement(parent_tag, name_of_axis)
         field_tag = xmlTool.SubElement(axis_tag, "field_type")
-        field_tag.text = topic_name
+        field_tag.text = topic.topic_field
         field_type_tag = xmlTool.SubElement(axis_tag, "field_type")
         field_type_tag.text = "1"
         scale_tag = xmlTool.SubElement(axis_tag, "scale")
@@ -361,9 +368,9 @@ class Plot():
         rel_min_tag = xmlTool.SubElement(scale_tag, "relative_minimum")
         rel_min_tag.text = "1000"
         topic_tag = xmlTool.SubElement(axis_tag, "topic")
-        topic_tag.text = topic_name
+        topic_tag.text = topic.topic_name
         topic_type_tag = xmlTool.SubElement(axis_tag, "topic_type")
-        topic_type_tag.text = "topic_type"
+        topic_type_tag.text = topic.msg_type
 
     def _add_color_settings(self, parent_tag, color):
         """

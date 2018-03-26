@@ -21,6 +21,9 @@ import rospkg
 import rospy
 import sys
 from sr_gui_dynamic_plot_tool.dynamic_plot_tool import CreatePlotConfigurations
+from collections import namedtuple
+
+TopicStruct = namedtuple('TopicStructure', "topic_name topic_field msg_type")
 
 class SrAddInterfaceEntries():
 
@@ -29,7 +32,6 @@ class SrAddInterfaceEntries():
         self._plot_setting_choices = []
 
     def define_interface_setting(self):
-        # @TODO(Giuseppe): Make this a dictionary for entries
         """
         Add here the entries for your interface.
         Format - append name of item and number of items.
@@ -48,35 +50,57 @@ class SrAddInterfaceEntries():
         Add here your plot settings
         @param choices - list containing user selection from the GUI
         """
-        print("Choices user: ", choices)
+        print("Choices: ", choices)
+        selected_hand = choices[0]
+        selected_finger = choices[1]
+        selected_joint = choices[2]
+        selected_joint_position = int(selected_joint[-1:]) + int(selected_joint[-1:])
+        selected_joint_torque = selected_joint_position + 1
 
-        # Position demand topic
-        #position_demand_topic = "/fh_finger/H" + str(choices[0]) + "J{}".format()
-        # Position actual topic
-        #position_current_topic = "/fh_finger/H" + str(choices[0]) + "J{}".format()
-        # Torque demand topic
-        # Torque actual topic
+        # Encoder data topic
+        EncoderPositionDataTopic = TopicStruct(topic_name="/fh_finger/{}_{}/driver_state".format(selected_hand, selected_finger),
+                                               topic_field="data/0/int16s_values/{}".format(selected_joint_position),
+                                               msg_type="fh_msgs/FhState")
 
+        EncoderTorqueDataTopic = TopicStruct(topic_name="/fh_finger/{}_{}/driver_state".format(selected_hand, selected_finger),
+                                             topic_field="data/0/int16s_values/{}".format(selected_joint_torque),
+                                             msg_type="fh_msgs/FhState")
+
+        EncoderDataTimeTopic = TopicStruct(topic_name="/fh_finger/{}_{}/driver_state".format(selected_hand, selected_finger),
+                                           topic_field="data/0/int16s_values/0",
+                                           msg_type="fh_msgs/FhState")
+
+        # Command data topic
+        EncoderCommandPositionTopic = TopicStruct(topic_name="/fh_finger/{}_{}/driver_command".format(selected_hand, selected_finger),
+                                                  topic_field="data/0/int16s_values/{}".format(selected_joint_position),
+                                                  msg_type="fh_msgs/FhCommand")
+
+        EncoderCommandTorqueTopic = TopicStruct(topic_name="/fh_finger/{}_{}/driver_command".format(selected_hand, selected_finger),
+                                                topic_field="data/0/int16s_values/{}".format(selected_joint_torque),
+                                                msg_type="fh_msgs/FhCommand")
+
+        EncoderCommandTimeTopic = TopicStruct(topic_name="/fh_finger/{}_{}/driver_command".format(selected_hand, selected_finger),
+                                              topic_field="data/0/int16s_values/0",
+                                              msg_type="fh_msgs/FhCommand")
+
+        
         # Create configuration xml file.
         # CreatePlotConfiguration(number_of_row, number_of_columns, name_of_configuration_file)
-        plots = CreatePlotConfigurations(2,2, "new_test_configuration.xml")
+        plots = CreatePlotConfigurations(2,2, "production_configuration.xml")
 
         # Get list of plots. Numbering of the plots takes first row and all the columns associated with it
         # e.g. if plot is 2 rows and 2 columns the first element of the list is plot (0,0), the second element
         # is plot(0,1), the third is (1,0) and so on. 
         plots_list = plots._plots
-
+        print("Plot list: ", plots_list)
         # Add topic to plot to the corresponding plot
         # Format - plot_list[number_of_the_plot].add_curve("name_of_the_topic_to_plot_on_x"
         # "name_of_topic_to_plot_on_y", number_of_curve_in_the_plot)
-        plots_list[0].set_title_and_frame_rate("Test_plot", 30)
-        plots_list[0].add_curve("gino_x", "gino_y", 0)
-        plots_list[0].add_curve("paolo_x", "paolo_y", 1)
+        plots_list[0].set_title_and_frame_rate("Encoder Position Data", 30)
+        plots_list[0].add_curve(EncoderPositionDataTopic, EncoderCommandTimeTopic, 0)
+        plots_list[1].set_title_and_frame_rate("Encoder Torque Data", 30)
+        plots_list[1].add_curve(EncoderTorqueDataTopic, EncoderDataTimeTopic, 0)
 
-        #plot_row[0].add_topic(position_actual_topic)
-        #plot_column[0].add_topic(torque_demand_topic)
-        #plot_column[0].add_topic(torque_actual_topic)
-        #plots[0].add_topic(topic1)
-        #plots[0].add_topic(topic2)
-        #plots.add_topic(0, topic1)
+        os.system("rosrun rqt_multiplot rqt_multiplot --multiplot-config /home/user/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations/production_configuration.xml")
+
         return self._plot_setting_choices
