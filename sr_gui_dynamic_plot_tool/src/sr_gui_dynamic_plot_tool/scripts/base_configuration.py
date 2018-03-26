@@ -25,7 +25,7 @@ from sr_gui_dynamic_plot_tool.dynamic_plot_tool import CreatePlotConfigurations
 class SrAddInterfaceEntries():
 
     def __init__(self):
-        self._widget_choice = []
+        self._widget_choice = {}
         self._plot_setting_choices = []
 
     def define_interface_setting(self):
@@ -38,9 +38,9 @@ class SrAddInterfaceEntries():
         Joint H default = 3
         Add what you want with their naming
         """
-        self._widget_choice.append('Hand')
-        self._widget_choice.append('Finger')
-        self._widget_choice.append('Joint')
+        self._widget_choice['Hand'] = "1"
+        self._widget_choice['Finger'] = "3"
+        self._widget_choice['Joint'] = "3"
         return self._widget_choice
 
     def define_plot_settings(self, choices):
@@ -57,9 +57,21 @@ class SrAddInterfaceEntries():
         # Torque demand topic
         # Torque actual topic
 
+        # Create configuration xml file.
+        # CreatePlotConfiguration(number_of_row, number_of_columns, name_of_configuration_file)
         plots = CreatePlotConfigurations(2,2, "new_test_configuration.xml")
+
+        # Get list of plots. Numbering of the plots takes first row and all the columns associated with it
+        # e.g. if plot is 2 rows and 2 columns the first element of the list is plot (0,0), the second element
+        # is plot(0,1), the third is (1,0) and so on. 
         plots_list = plots._plots
-        plots_list[0].add_topic("gino")
+
+        # Add topic to plot to the corresponding plot
+        # Format - plot_list[number_of_the_plot].add_curve("name_of_the_topic_to_plot_on_x"
+        # "name_of_topic_to_plot_on_y", number_of_curve_in_the_plot)
+        plots_list[0].set_title_and_frame_rate("Test_plot", 30)
+        plots_list[0].add_curve("gino_x", "gino_y", 0)
+        plots_list[0].add_curve("paolo_x", "paolo_y", 1)
 
         #plot_row[0].add_topic(position_actual_topic)
         #plot_column[0].add_topic(torque_demand_topic)

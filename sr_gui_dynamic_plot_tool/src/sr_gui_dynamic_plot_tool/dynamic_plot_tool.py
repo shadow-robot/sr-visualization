@@ -64,7 +64,7 @@ class SrGuiDynamicPlotTool(Plugin):
 
     def run_script(self):
         """
-        Run script selected
+        Run script configuratin selected
         """
         #add_widget("HandType")
         script_name = self._widget.select_script.currentText()
@@ -125,9 +125,10 @@ class AddWidget(QWidget):
         self.plot_interface_layout.setAlignment(Qt.AlignCenter)
         self.plot_interface_layout.setAlignment(Qt.AlignBottom)
 
-        hand_parameters, hand_prefix, hand_name = self._hand_config.get_hand_data()
+        # hand_parameters, hand_prefix, hand_name = self._hand_config.get_hand_data()
 
         if "Hand" in widget_choices:
+            hand_parameters, hand_prefix, hand_name = self._hand_config.get_hand_data()
             self._create_hand_widget(hand_prefix, hand_name)
         if "Finger" in widget_choices:
             self._create_finger_widget(hand_parameters, hand_prefix)
@@ -226,6 +227,11 @@ class HandConfig():
         self.hand_finder = HandFinder()
 
     def get_hand_data(self):
+        """
+        Get parameters of the hands connected
+        @param - number_of_hands: int that indicates the number of hands that has
+        been indicated by the user in the configuration script
+        """
         if self.hand_finder.hand_e_available():
             name, prefix, hand_serial = self.hand_finder.get_hand_e(number=0)
             hand_parameters = rospy.get_param("/hand")
@@ -245,38 +251,41 @@ class CreatePlotConfigurations():
         self._plot_columns = []
         self._base_configuration_xml = xmlTool.parse('/home/user/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations/empty_configuration.xml')
         self._xml_root = self._base_configuration_xml.getroot()
-        self._generate_xml(rows, columns)
-        self._configuration_name = configuration_name
+        self._generate_xml(rows, columns, configuration_name)
 
-    def _generate_xml(self, rows, columns):
+    def _generate_xml(self, rows, columns, configuration_name):
         """
         Add right number of plots in rows and columns
+        @param rows - int for the number of rows of plot that have to be added to the configuration
+        @param columns - int for the number of columns in a row of plots
+        @param configuration_name - string with the name of the xml file to generate
         """
         for child in self._xml_root.findall("table"):
             for item in child:
                 if item.tag == "plots":
                     for row in range(0, rows):
-                        new_row = xmlTool.SubElement(item, "row_{}".format(row))
+                        new_row_tag = xmlTool.SubElement(item, "row_{}".format(row))
                         for column in range(0, columns):
-                            new_column = xmlTool.SubElement(new_row, "col_{}".format(column))
-                            new_axes = xmlTool.SubElement(new_column, "axes")
-                            new_axes_bis = xmlTool.SubElement(new_axes, "axes")
-                            new_x_axis = xmlTool.SubElement(new_axes_bis, "x_axis")
-                            self._set_axis(new_x_axis)
-                            new_y_axis = xmlTool.SubElement(new_axes_bis, "y_axis")
-                            self._set_axis(new_y_axis)
-                            self._plots.append(Plot(row, column, self._configuration_name))
+                            new_column_tag = xmlTool.SubElement(new_row_tag, "col_{}".format(column))
+                            new_axes_tag = xmlTool.SubElement(new_column_tag, "axes")
+                            new_axes_bis_tag = xmlTool.SubElement(new_axes_tag, "axes")
+                            new_x_axis_tag = xmlTool.SubElement(new_axes_bis_tag, "x_axis")
+                            self._set_axis(new_x_axis_tag)
+                            new_y_axis_tag = xmlTool.SubElement(new_axes_bis_tag, "y_axis")
+                            self._set_axis(new_y_axis_tag)
+                            curves_tag = xmlTool.SubElement(new_column_tag, "curves")
+                            self._plots.append(Plot(row, column, configuration_name))
 
-        self._base_configuration_xml.write("/home/user/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations/{}".format(self._configuration_name))
+        self._base_configuration_xml.write("/home/user/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations/{}".format(configuration_name))
         return self._plots
 
     def _set_axis(self, parent_tag):
-        new_custom_title = xmlTool.SubElement(parent_tag, "custom_title")
-        new_custom_title.text = "Untitled Axis"
-        new_title_type = xmlTool.SubElement(parent_tag, "title_type")
-        new_title_type.text = "0"
-        new_title_visible = xmlTool.SubElement(parent_tag, "title_visible")
-        new_title_visible.text = "true"
+        custom_title_tag = xmlTool.SubElement(parent_tag, "custom_title")
+        custom_title_tag.text = "Untitled Axis"
+        title_type_tag = xmlTool.SubElement(parent_tag, "title_type")
+        title_type_tag.text = "0"
+        title_visible_tag = xmlTool.SubElement(parent_tag, "title_visible")
+        title_visible_tag.text = "true"
 
 
 class Plot():
@@ -286,18 +295,116 @@ class Plot():
     def __init__(self, row, column, configuration_name):
         self._row = row
         self._column = column
-        self._configuration_xml = xmlTool.parse('/home/user/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations/{}'.format(self._configuration_name))
-        self._xml_root = self._configuration_xml.getroot()
+        self._configuration_name = configuration_name
 
-    def add_topic(self, topic_name):
-        for row in self._xml_root.iter("row_{}".format(self._row)):
-            print("Tags in rows: ", row.tag)
-            for col in item.find("col_{}".format(self._column)):
-                print("Tags in columns: ", col.tag)
+    def set_title_and_frame_rate(self, plot_title, frame_rate):
+        """
+        @param plot_title - string indicating the plot title
+        @param frame_rate - int frame rate for plotting
+        """
+        configuration_xml = xmlTool.parse('/home/user/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations/{}'.format(self._configuration_name))
+        xml_root = configuration_xml.getroot()
+        for row in xml_root.iter("row_{}".format(self._row)):
+            for col_tag in row.iter("col_{}".format(self._column)):
+                legend_tag = xmlTool.SubElement(col_tag, "legend")
+                visible_legend_tag = xmlTool.SubElement(legend_tag, "visible")
+                visible_legend_tag.text = "true"
+                plot_rate_tag = xmlTool.SubElement(col_tag, "plot_rate")
+                plot_rate_tag.text = str(frame_rate)
+                plot_title_tag = xmlTool.SubElement(col_tag, "title")
+                plot_title_tag.text = plot_title
+        configuration_xml.write("/home/user/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations/{}".format(self._configuration_name))
 
+    def add_curve(self, x_axis_topic_name, y_axis_topic_name, curve_number):
+        """
+        Function to add topic to plot to the xml configuration
+        @param topic_name - string that contains the topic to plot
+        """
+        configuration_xml = xmlTool.parse('/home/user/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations/{}'.format(self._configuration_name))
+        xml_root = configuration_xml.getroot()
+        for row in xml_root.iter("row_{}".format(self._row)):
+            for col in row.find("col_{}".format(self._column)):
+                if col.tag == "curves":
+                    print("Found curves: ", col.tag)
+                    topic_curve_tag = xmlTool.SubElement(col, "curve_{}".format(curve_number))
+                    axes_curve_tag = xmlTool.SubElement(topic_curve_tag, "axes")
+                    self._add_axis_topic(axes_curve_tag, "x_axis", x_axis_topic_name)
+                    self._add_axis_topic(axes_curve_tag, "y_axis", y_axis_topic_name)
+                    self._add_color_settings(axes_curve_tag, "#000000")
+                    self._add_data_settings(axes_curve_tag, "3")
+                    self._add_style_settings(axes_curve_tag)
+                    sub_queue_size_tag = xmlTool.SubElement(axes_curve_tag, "subscriber_queue_size")
+                    sub_queue_size_tag.text = "100"
+                    title_tag = xmlTool.SubElement(axes_curve_tag, "title")
+                    title_tag.text = "test_plot"
+         
+        configuration_xml.write("/home/user/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations/{}".format(self._configuration_name))
 
-            
-        #add the topic to the plot depending on entrance
-        # get topic and add curve
-        # create the curves
-        pass
+    def _add_axis_topic(self, parent_tag, name_of_axis, topic_name):
+        """
+        Generate x or y axis for a given curve
+        @param parent_tag - parent xml tag element
+        @param name_of_axis - string that contains name of axes to add, x or y
+        """
+        axis_tag = xmlTool.SubElement(parent_tag, name_of_axis)
+        field_tag = xmlTool.SubElement(axis_tag, "field_type")
+        field_tag.text = topic_name
+        field_type_tag = xmlTool.SubElement(axis_tag, "field_type")
+        field_type_tag.text = "1"
+        scale_tag = xmlTool.SubElement(axis_tag, "scale")
+        abs_max_tag = xmlTool.SubElement(scale_tag, "absolute_maximum")
+        abs_max_tag.text = "1000"
+        abs_min_tag = xmlTool.SubElement(scale_tag, "absolute_minimum")
+        abs_min_tag.text = "1000"
+        rel_max_tag = xmlTool.SubElement(scale_tag, "relative_maximum")
+        rel_max_tag.text = "1000"
+        rel_min_tag = xmlTool.SubElement(scale_tag, "relative_minimum")
+        rel_min_tag.text = "1000"
+        topic_tag = xmlTool.SubElement(axis_tag, "topic")
+        topic_tag.text = topic_name
+        topic_type_tag = xmlTool.SubElement(axis_tag, "topic_type")
+        topic_type_tag.text = "topic_type"
+
+    def _add_color_settings(self, parent_tag, color):
+        """
+        Add color settings for curve
+        """
+        color_tag = xmlTool.SubElement(parent_tag, "color")
+        custom_color_tag = xmlTool.SubElement(color_tag, "custom_color")
+        custom_color_tag.text = color
+        type_color_tag = xmlTool.SubElement(color_tag, "type")
+        type_color_tag.text = "0"
+
+    def _add_data_settings(self, parent_tag, data_type):
+        """
+        Add data settings for curve
+        """
+        data_tag = xmlTool.SubElement(parent_tag, "data")
+        circular_buf_capacity_tag = xmlTool.SubElement(data_tag, "circular_buffer_capacity")
+        circular_buf_capacity_tag.text = "1000"
+        time_frame_length_tag = xmlTool.SubElement(data_tag, "time_frame_length")
+        time_frame_length_tag.text = "10"
+        type_tag = xmlTool.SubElement(data_tag, "type")
+        type_tag.text = data_type
+
+    def _add_style_settings(self, parent_tag):
+        """
+        Add style settings for curve
+        """
+        style_tag = xmlTool.SubElement(parent_tag, "style")
+        lines_interp_tag = xmlTool.SubElement(style_tag, "lines_interpolate")
+        lines_interp_tag.text = "false"
+        pen_style_tag = xmlTool.SubElement(style_tag, "pen_style")
+        pen_style_tag.text = "1"
+        pen_width_tag = xmlTool.SubElement(style_tag, "pen_width")
+        pen_width_tag.text = "1"
+        render_antialias_tag = xmlTool.SubElement(style_tag, "render_antialias")
+        render_antialias_tag.text = "false"
+        steps_invert_tag = xmlTool.SubElement(style_tag, "steps_invert")
+        steps_invert_tag.text = "false"
+        sticks_baseline_tag = xmlTool.SubElement(style_tag, "sticks_bsaeline")
+        sticks_baseline_tag.text = "0"
+        sticks_orientation_tag = xmlTool.SubElement(style_tag, "sticks_orientation")
+        sticks_orientation_tag.text = "2"
+        type_tag = xmlTool.SubElement(style_tag, "type")
+        type_tag.text = "0"
