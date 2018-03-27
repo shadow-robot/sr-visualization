@@ -30,7 +30,7 @@ class SrGuiDynamicPlotTool(Plugin):
         self.setObjectName('SrGuiDynamicPlotTool')
         print("Creating instance of Plugin")
         self._widget = QWidget()
-        
+
         ui_file = os.path.join(rospkg.RosPack().get_path(
             'sr_gui_dynamic_plot_tool'), 'uis', 'SrGuiDynamicPlotTool.ui')
 
@@ -38,7 +38,7 @@ class SrGuiDynamicPlotTool(Plugin):
 
         self._widget.setObjectName('SrGuiDynamicPlotToolUi')
         context.add_widget(self._widget)
-        
+
         self.layout = self._widget.layout()
 
         self.script_dir = os.path.expanduser("~/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/src/sr_gui_dynamic_plot_tool/scripts")
@@ -76,11 +76,11 @@ class SrGuiDynamicPlotTool(Plugin):
         rospy.loginfo("Adding widget..")
         subframe = QtWidgets.QFrame()
         sublayout = QtWidgets.QHBoxLayout()
-        
+
         # Add widgets based on script selections
         self.plot_selection_interface = AddWidget(self._widget, widget_choices)
         sublayout.addWidget(self.plot_selection_interface)
-        
+
         # Add plot button
         plot_button = QtWidgets.QPushButton()
         plot_button.setText("Plot")
@@ -128,13 +128,13 @@ class AddWidget(QWidget):
         self._create_hand_widget(hand_prefix, hand_name)
         self._create_finger_widget(hand_parameters, hand_prefix)
         self._create_joint_widget(hand_name)
-        
+
         for key_name in widget_choices:
             self._create_generic_widget(key_name, widget_choices[key_name])
-        
+
         self.setLayout(self.plot_interface_layout)
         self.show()
-    
+
     def _create_hand_widget(self, prefix, name):
         """
         Create hand selection buttons
@@ -156,7 +156,7 @@ class AddWidget(QWidget):
     def _hand_button_released(self):
         sending_button = self.sender()
         self.user_selection(str(sending_button.objectName()))
-    
+
     def _create_finger_widget(self, hand_parameters, prefix):
         """
         Create finger selection buttons
@@ -175,7 +175,7 @@ class AddWidget(QWidget):
             selection_button_finger.released.connect(self._finger_button_released)
             self.selection_button_finger.append(selection_button_finger)
             self.plot_interface_layout.addWidget(selection_button_finger)
-    
+
     def _finger_button_released(self):
         sending_button = self.sender()
         self.user_selection(str(sending_button.objectName()))
@@ -199,7 +199,7 @@ class AddWidget(QWidget):
                 selection_button_joint.released.connect(self._joint_button_released)
                 self.selection_button_joint.append(selection_button_joint)
                 self.plot_interface_layout.addWidget(selection_button_joint)
-    
+
     def _create_generic_widget(self, name, parameters):
         label_name = QtWidgets.QLabel()
         label_name.setText("Select"+name)
@@ -215,7 +215,7 @@ class AddWidget(QWidget):
     def _joint_button_released(self):
         sending_button = self.sender()
         self.user_selection(str(sending_button.objectName()))
-    
+
     def _generic_button_released(self):
         sending_button = self.sender()
         self.user_selection(str(sending_button.objectName()))
@@ -349,7 +349,7 @@ class Plot():
                     sub_queue_size_tag.text = "100"
                     title_tag = xmlTool.SubElement(axes_curve_tag, "title")
                     title_tag.text = "test_plot"
-         
+
         configuration_xml.write("{}/{}".format(self._xml_configuration_dir, self._configuration_name))
 
     def _add_axis_topic(self, parent_tag, name_of_axis, topic):
