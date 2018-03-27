@@ -9,7 +9,7 @@ import sys
 from sr_gui_dynamic_plot_tool.dynamic_plot_tool import CreatePlotConfigurations
 from collections import namedtuple
 
-TopicStruct = namedtuple('TopicStructure', "topic_name topic_field msg_type")
+TopicStruct = namedtuple('TopicStructure', "topic_name topic_field msg_type time_receipt")
 
 
 class SrAddInterfaceEntries():
@@ -41,28 +41,35 @@ class SrAddInterfaceEntries():
         # Encoder data topic
         EncoderPosTopic = TopicStruct(topic_name="/fh_finger/{}_{}/driver_state".format(selected_hand, selected_finger),
                                       topic_field="data/0/int16s_values/{}".format(selected_joint_position),
-                                      msg_type="fh_msgs/FhState")
+                                      msg_type="fh_msgs/FhState",
+                                      time_receipt=False)
 
         EncoderTorTopic = TopicStruct(topic_name="/fh_finger/{}_{}/driver_state".format(selected_hand, selected_finger),
                                       topic_field="data/0/int16s_values/{}".format(selected_joint_torque),
-                                      msg_type="fh_msgs/FhState")
+                                      msg_type="fh_msgs/FhState",
+                                      time_receipt=False)
 
         EncoderTimeTopic = TopicStruct(topic_name="/fh_finger/{}_{}/driver_state".format(selected_hand, selected_finger),
-                                       topic_field="data/0/int16s_values/0",
-                                       msg_type="fh_msgs/FhState")
+                                      topic_field="data/0/int16s_values/{}".format(selected_joint_position),
+                                      msg_type="fh_msgs/FhState",
+                                      time_receipt=True)
+
 
         # Command data topic
         CommandPosTopic = TopicStruct(topic_name="/fh_finger/{}_{}/driver_command".format(selected_hand, selected_finger),
                                       topic_field="data/0/int16s_values/{}".format(selected_joint_position),
-                                      msg_type="fh_msgs/FhCommand")
+                                      msg_type="fh_msgs/FhCommand",
+                                      time_receipt=False)
 
         CommandTorTopic = TopicStruct(topic_name="/fh_finger/{}_{}/driver_command".format(selected_hand, selected_finger),
                                       topic_field="data/0/int16s_values/{}".format(selected_joint_torque),
-                                      msg_type="fh_msgs/FhCommand")
+                                      msg_type="fh_msgs/FhCommand",
+                                      time_receipt=False)
 
         CommandTimeTopic = TopicStruct(topic_name="/fh_finger/{}_{}/driver_command".format(selected_hand, selected_finger),
                                        topic_field="data/0/int16s_values/0",
-                                       msg_type="fh_msgs/FhCommand")
+                                       msg_type="fh_msgs/FhCommand",
+                                       time_receipt=True)
 
         # Create configuration xml file.
         # CreatePlotConfiguration(number_of_row, number_of_columns, name_of_configuration_file)
@@ -72,12 +79,12 @@ class SrAddInterfaceEntries():
         # Add topic to plot to the corresponding plot
         # Format - plot_list[number_of_the_plot].add_curve("name_of_the_topic_to_plot_on_x"
         # "name_of_topic_to_plot_on_y", number_of_curve_in_the_plot)
-        plots_list[0].set_title_and_frame_rate("{}_{} Position Encoder Raw Data".format(selected_hand, selected_finger), 30)
-        plots_list[0].add_curve(EncoderPosTopic, EncoderTimeTopic, 0)
-        plots_list[1].set_title_and_frame_rate("{}_{} Torque Encoder Raw Data".format(selected_hand, selected_finger), 30)
-        plots_list[1].add_curve(EncoderTorTopic, EncoderTimeTopic, 0)
+        plots_list[0].set_title_and_frame_rate("{}_{}{} Position Encoder Raw Data".format(selected_hand, selected_finger, selected_joint), 30)
+        plots_list[0].add_curve(EncoderTimeTopic, EncoderPosTopic, 0)
+        plots_list[1].set_title_and_frame_rate("{}_{}{} Torque Encoder Raw Data".format(selected_hand, selected_finger, selected_joint), 30)
+        plots_list[1].add_curve(EncoderTimeTopic, EncoderTorTopic, 0)
 
         xml_config = os.path.expanduser("~/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations")
-        os.system("rosrun rqt_multiplot rqt_multiplot --multiplot-config {}/production_configuration.xml".format(xml_config))
+        os.system("rosrun rqt_multiplot rqt_multiplot --multiplot-config {}/base_configuration.xml".format(xml_config))
 
         return self._plot_setting_choices

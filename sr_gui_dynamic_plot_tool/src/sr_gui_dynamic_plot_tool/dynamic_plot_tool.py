@@ -75,7 +75,7 @@ class SrGuiDynamicPlotTool(Plugin):
         """
         rospy.loginfo("Adding widget..")
         subframe = QtWidgets.QFrame()
-        sublayout = QtWidgets.QHBoxLayout()
+        sublayout = QtWidgets.QVBoxLayout()
 
         # Add widgets based on script selections
         self.plot_selection_interface = AddWidget(self._widget, widget_choices)
@@ -116,8 +116,6 @@ class AddWidget(QWidget):
         self.plot_interface_layout = QtWidgets.QVBoxLayout()
 
         self.plot_interface_layout.addWidget(plot_interface_frame)
-        self.plot_interface_layout.setAlignment(Qt.AlignCenter)
-        self.plot_interface_layout.setAlignment(Qt.AlignBottom)
 
         self.selection_button_hand = QtWidgets.QToolButton()
         self.selection_button_finger = []
@@ -141,21 +139,21 @@ class AddWidget(QWidget):
         @param prefix - string hand prefix e.g. H0, sr
         @param name - string name of the hand found
         """
+        sublayout_hand = QtWidgets.QHBoxLayout()
+        subframe_hand = QtWidgets.QFrame()
         label_name = QtWidgets.QLabel()
         label_name.setText("Select " + name)
-        self.plot_interface_layout.addWidget(label_name)
+        sublayout_hand.addWidget(label_name)
 
-        #selection_button_hand = QtWidgets.QToolButton()
         self.selection_button_hand.setCheckable(True)
+        self.selection_button_hand.setFixedSize(60, 40)
         self.selection_button_hand.setText(prefix[:-1])
         self.selection_button_hand.setObjectName(prefix[:-1])
 
-        self.plot_interface_layout.addWidget(self.selection_button_hand)
-        self.selection_button_hand.released.connect(self._hand_button_released)
-
-    def _hand_button_released(self):
-        sending_button = self.sender()
-        self.user_selection(str(sending_button.objectName()))
+        sublayout_hand.addWidget(self.selection_button_hand)
+        subframe_hand.setLayout(sublayout_hand)
+        self.plot_interface_layout.addWidget(subframe_hand)
+        self.selection_button_hand.released.connect(self._button_released)
 
     def _create_finger_widget(self, hand_parameters, prefix):
         """
@@ -163,60 +161,67 @@ class AddWidget(QWidget):
         @param hand_parameters - dictionary that cointains hand parameters
         @param prefix - string hand prefix e.g. H0, sr
         """
+        sublayout_finger = QtWidgets.QHBoxLayout()
+        subframe_finger = QtWidgets.QFrame()
         label_name = QtWidgets.QLabel()
         label_name.setText("Select Finger")
-        self.plot_interface_layout.addWidget(label_name)
+        sublayout_finger.addWidget(label_name)
 
         for i, key in enumerate(hand_parameters[prefix[:-1]].get('fingers')):
             selection_button_finger = QtWidgets.QToolButton()
+            selection_button_finger.setFixedSize(60, 30)
             selection_button_finger.setCheckable(True)
             selection_button_finger.setText(key)
             selection_button_finger.setObjectName(key)
-            selection_button_finger.released.connect(self._finger_button_released)
+            selection_button_finger.released.connect(self._button_released)
             self.selection_button_finger.append(selection_button_finger)
-            self.plot_interface_layout.addWidget(selection_button_finger)
-
-    def _finger_button_released(self):
-        sending_button = self.sender()
-        self.user_selection(str(sending_button.objectName()))
+            sublayout_finger.addWidget(selection_button_finger)
+            subframe_finger.setLayout(sublayout_finger)
+            self.plot_interface_layout.addWidget(subframe_finger)
 
     def _create_joint_widget(self, hand_name):
         """
         Create joint selection buttons
         @param hand_name - string name of the hand found
         """
+        sublayout_joint = QtWidgets.QHBoxLayout()
+        subframe_joint = QtWidgets.QFrame()
         label_name = QtWidgets.QLabel()
         label_name.setText("Select Joint")
-        self.plot_interface_layout.addWidget(label_name)
+        sublayout_joint.addWidget(label_name)
 
         if hand_name == "hand_h":
             number_of_joint = 3
             for joint in range(0, number_of_joint):
                 selection_button_joint = QtWidgets.QToolButton()
+                selection_button_joint.setFixedSize(60, 30)
                 selection_button_joint.setCheckable(True)
                 selection_button_joint.setText("J"+str(joint))
                 selection_button_joint.setObjectName("J"+str(joint))
-                selection_button_joint.released.connect(self._joint_button_released)
+                selection_button_joint.released.connect(self._button_released)
                 self.selection_button_joint.append(selection_button_joint)
-                self.plot_interface_layout.addWidget(selection_button_joint)
+                sublayout_joint.addWidget(selection_button_joint)
+                subframe_joint.setLayout(sublayout_joint)
+                self.plot_interface_layout.addWidget(subframe_joint)
 
     def _create_generic_widget(self, name, parameters):
+        sublayout_generic = QtWidgets.QHBoxLayout()
+        subframe_generic = QtWidgets.QFrame()
         label_name = QtWidgets.QLabel()
-        label_name.setText("Select"+name)
-        self.plot_interface_layout.addWidget(label_name)
+        label_name.setText("Select "+name)
+        sublayout_generic.addWidget(label_name)
         for field in parameters:
             selection_button_generic = QtWidgets.QToolButton()
+            selection_button_generic.setFixedSize(60, 30)
             selection_button_generic.setCheckable(True)
             selection_button_generic.setText(field)
             selection_button_generic.setObjectName(field)
-            selection_button_generic.released.connect(self._generic_button_released)
-            self.plot_interface_layout.addWidget(selection_button_generic)
+            selection_button_generic.released.connect(self._button_released)
+            sublayout_generic.addWidget(selection_button_generic)
+            subframe_generic.setLayout(sublayout_generic)
+            self.plot_interface_layout.addWidget(subframe_generic)
 
-    def _joint_button_released(self):
-        sending_button = self.sender()
-        self.user_selection(str(sending_button.objectName()))
-
-    def _generic_button_released(self):
+    def _button_released(self):
         sending_button = self.sender()
         self.user_selection(str(sending_button.objectName()))
 
@@ -361,7 +366,11 @@ class Plot():
         field_tag = xmlTool.SubElement(axis_tag, "field_type")
         field_tag.text = topic.topic_field
         field_type_tag = xmlTool.SubElement(axis_tag, "field_type")
-        field_type_tag.text = "1"
+        print("Receipt time: ", topic.time_receipt)
+        if topic.time_receipt:
+            field_type_tag.text = "1"
+        else:
+            field_type_tag.text = "0"
         scale_tag = xmlTool.SubElement(axis_tag, "scale")
         abs_max_tag = xmlTool.SubElement(scale_tag, "absolute_maximum")
         abs_max_tag.text = "1000"
