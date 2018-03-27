@@ -33,7 +33,6 @@ from sr_utilities.hand_finder import HandFinder
 import xml.etree.ElementTree as xmlTool
 
 
-
 class SrGuiDynamicPlotTool(Plugin):
 
     """
@@ -56,17 +55,16 @@ class SrGuiDynamicPlotTool(Plugin):
         
         self.layout = self._widget.layout()
 
-        self._list_scripts = os.listdir("/home/user/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/src/sr_gui_dynamic_plot_tool/scripts")
-
+        self.script_dir = os.path.expanduser("~/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/src/sr_gui_dynamic_plot_tool/scripts")
+        self._list_scripts = os.listdir(self.script_dir)
         self._widget.select_script.addItems(self._list_scripts)
-
         self._widget.run_button.pressed.connect(self.run_script)
+        self._widget.edit_button.pressed.connect(self.edit_script)
 
     def run_script(self):
         """
-        Run script configuratin selected
+        Run script configuration selected
         """
-        #add_widget("HandType")
         script_name = self._widget.select_script.currentText()
         module_name = "sr_gui_dynamic_plot_tool.scripts." + script_name[:-3]
         module = __import__(module_name, fromlist=['SrAddInterfaceEntries'])
@@ -74,6 +72,13 @@ class SrGuiDynamicPlotTool(Plugin):
         self._user_entry_class = user_entry_class()
         self._widget_choices = self._user_entry_class.define_interface_setting()
         self.add_widgets(self._widget_choices)
+
+    def edit_script(self):
+        """
+        Edit script selected
+        """
+        script_name = self._widget.select_script.currentText()
+        os.system("code {}/{}".format(self.script_dir, script_name))
 
     def add_widgets(self, widget_choices):
         """
@@ -261,7 +266,8 @@ class CreatePlotConfigurations():
         self._plots = []
         self._plot_rows = []
         self._plot_columns = []
-        self._base_configuration_xml = xmlTool.parse('/home/user/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations/empty_configuration.xml')
+        self._xml_configuration_dir = os.path.expanduser("~/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations")
+        self._base_configuration_xml = xmlTool.parse('{}/empty_configuration.xml'.format(self._xml_configuration_dir))
         self._xml_root = self._base_configuration_xml.getroot()
         self._generate_xml(rows, columns, configuration_name)
 
@@ -288,7 +294,7 @@ class CreatePlotConfigurations():
                             curves_tag = xmlTool.SubElement(new_column_tag, "curves")
                             self._plots.append(Plot(row, column, configuration_name))
 
-        self._base_configuration_xml.write("/home/user/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations/{}".format(configuration_name))
+        self._base_configuration_xml.write("{}/{}".format(self._xml_configuration_dir, configuration_name))
         return self._plots
 
     def _set_axis(self, parent_tag):
@@ -308,13 +314,14 @@ class Plot():
         self._row = row
         self._column = column
         self._configuration_name = configuration_name
+        self._xml_configuration_dir = os.path.expanduser("~/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations")
 
     def set_title_and_frame_rate(self, plot_title, frame_rate):
         """
         @param plot_title - string indicating the plot title
         @param frame_rate - int frame rate for plotting
         """
-        configuration_xml = xmlTool.parse('/home/user/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations/{}'.format(self._configuration_name))
+        configuration_xml = xmlTool.parse('{}/{}'.format(self._xml_configuration_dir, self._configuration_name))
         xml_root = configuration_xml.getroot()
         for row in xml_root.iter("row_{}".format(self._row)):
             for col_tag in row.iter("col_{}".format(self._column)):
@@ -325,7 +332,7 @@ class Plot():
                 plot_rate_tag.text = str(frame_rate)
                 plot_title_tag = xmlTool.SubElement(col_tag, "title")
                 plot_title_tag.text = plot_title
-        configuration_xml.write("/home/user/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations/{}".format(self._configuration_name))
+        configuration_xml.write("{}/{}".format(self._xml_configuration_dir, self._configuration_name))
 
     def add_curve(self, x_axis_topic, y_axis_topic, curve_number):
         """
@@ -336,7 +343,7 @@ class Plot():
         of the topic to plot in y_axis
         @param curve_name - int number of the curve in the plot
         """
-        configuration_xml = xmlTool.parse('/home/user/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations/{}'.format(self._configuration_name))
+        configuration_xml = xmlTool.parse('{}/{}'.format(self._xml_configuration_dir, self._configuration_name))
         xml_root = configuration_xml.getroot()
         for row in xml_root.iter("row_{}".format(self._row)):
             for col in row.find("col_{}".format(self._column)):
@@ -354,7 +361,7 @@ class Plot():
                     title_tag = xmlTool.SubElement(axes_curve_tag, "title")
                     title_tag.text = "test_plot"
          
-        configuration_xml.write("/home/user/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations/{}".format(self._configuration_name))
+        configuration_xml.write("{}/{}".format(self._xml_configuration_dir, self._configuration_name))
 
     def _add_axis_topic(self, parent_tag, name_of_axis, topic):
         """
