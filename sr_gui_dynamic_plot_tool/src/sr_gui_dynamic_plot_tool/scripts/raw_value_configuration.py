@@ -78,9 +78,13 @@ class SrAddInterfaceEntries():
         # Add topic to plot to the corresponding plot
         # Format - plot_list[number_of_the_plot].add_curve("name_of_the_topic_to_plot_on_x"
         # "name_of_topic_to_plot_on_y", number_of_curve_in_the_plot)
-        plots_list[0].set_title_and_frame_rate("{}_{}{} Position Encoder Raw Data".format(hand_choice, finger_choice, joint_choice), 30)
+        plots_list[0].set_title_and_frame_rate("{}_{}{} Position Encoder Raw Data".format(hand_choice,
+                                                                                          finger_choice,
+                                                                                          joint_choice), 30)
         plots_list[0].add_curve(EncoderTimeTopic, EncoderPosTopic, 0)
-        plots_list[1].set_title_and_frame_rate("{}_{}{} Torque Encoder Raw Data".format(hand_choice, finger_choice, joint_choice), 30)
+        plots_list[1].set_title_and_frame_rate("{}_{}{} Torque Encoder Raw Data".format(hand_choice,
+                                                                                        finger_choice,
+                                                                                        joint_choice), 30)
         plots_list[1].add_curve(EncoderTimeTopic, EncoderTorTopic, 0)
 
         xml_config = os.path.expanduser("~/projects/shadow_robot/base_deps/src/sr-visualization/"
