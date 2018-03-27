@@ -41,7 +41,8 @@ class SrGuiDynamicPlotTool(Plugin):
 
         self.layout = self._widget.layout()
 
-        self.script_dir = os.path.expanduser("~/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/src/sr_gui_dynamic_plot_tool/scripts")
+        self.script_dir = os.path.expanduser("~/projects/shadow_robot/base_deps/src/sr-visualization/"
+                                             "sr_gui_dynamic_plot_tool/src/sr_gui_dynamic_plot_tool/scripts")
         self.list_scripts = []
         for script in os.listdir(self.script_dir):
             if script.endswith('.py'):
@@ -260,7 +261,8 @@ class CreatePlotConfigurations():
         self._plots = []
         self._plot_rows = []
         self._plot_columns = []
-        self._xml_configuration_dir = os.path.expanduser("~/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations")
+        self._xml_configuration_dir = os.path.expanduser("~/projects/shadow_robot/base_deps/src/sr-visualization/"
+                                                         "sr_gui_dynamic_plot_tool/xml_configurations")
         self._base_configuration_xml = xmlTool.parse('{}/empty_configuration.xml'.format(self._xml_configuration_dir))
         self._xml_root = self._base_configuration_xml.getroot()
         self._generate_xml(rows, columns, configuration_name)
@@ -308,7 +310,8 @@ class Plot():
         self._row = row
         self._column = column
         self._configuration_name = configuration_name
-        self._xml_configuration_dir = os.path.expanduser("~/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations")
+        self._xml_configuration_dir = os.path.expanduser("~/projects/shadow_robot/base_deps/src/sr-visualization/"
+                                                         "sr_gui_dynamic_plot_tool/xml_configurations")
 
     def set_title_and_frame_rate(self, plot_title, frame_rate):
         """
@@ -366,7 +369,6 @@ class Plot():
         field_tag = xmlTool.SubElement(axis_tag, "field_type")
         field_tag.text = topic.topic_field
         field_type_tag = xmlTool.SubElement(axis_tag, "field_type")
-        print("Receipt time: ", topic.time_receipt)
         if topic.time_receipt:
             field_type_tag.text = "1"
         else:

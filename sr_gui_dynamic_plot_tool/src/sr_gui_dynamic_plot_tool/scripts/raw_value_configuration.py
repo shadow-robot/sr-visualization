@@ -32,41 +32,40 @@ class SrAddInterfaceEntries():
         Add here your plot settings
         @param choices - list containing user selection from the GUI
         """
-        selected_hand = choices[0]
-        selected_finger = choices[1]
-        selected_joint = choices[2]
-        selected_joint_position = int(selected_joint[-1:]) + int(selected_joint[-1:])
-        selected_joint_torque = selected_joint_position + 1
+        hand_choice = choices[0]
+        finger_choice = choices[1]
+        joint_choice = choices[2]
+        joint_position_choice = int(joint_choice[-1:]) + int(joint_choice[-1:])
+        joint_torque_choice = joint_position_choice + 1
 
         # Encoder data topic
-        EncoderPosTopic = TopicStruct(topic_name="/fh_finger/{}_{}/driver_state".format(selected_hand, selected_finger),
-                                      topic_field="data/0/int16s_values/{}".format(selected_joint_position),
+        EncoderPosTopic = TopicStruct(topic_name="/fh_finger/{}_{}/driver_state".format(hand_choice, finger_choice),
+                                      topic_field="data/0/int16s_values/{}".format(joint_position_choice),
                                       msg_type="fh_msgs/FhState",
                                       time_receipt=False)
 
-        EncoderTorTopic = TopicStruct(topic_name="/fh_finger/{}_{}/driver_state".format(selected_hand, selected_finger),
-                                      topic_field="data/0/int16s_values/{}".format(selected_joint_torque),
+        EncoderTorTopic = TopicStruct(topic_name="/fh_finger/{}_{}/driver_state".format(hand_choice, finger_choice),
+                                      topic_field="data/0/int16s_values/{}".format(joint_torque_choice),
                                       msg_type="fh_msgs/FhState",
                                       time_receipt=False)
 
-        EncoderTimeTopic = TopicStruct(topic_name="/fh_finger/{}_{}/driver_state".format(selected_hand, selected_finger),
-                                      topic_field="data/0/int16s_values/{}".format(selected_joint_position),
-                                      msg_type="fh_msgs/FhState",
-                                      time_receipt=True)
-
+        EncoderTimeTopic = TopicStruct(topic_name="/fh_finger/{}_{}/driver_state".format(hand_choice, finger_choice),
+                                       topic_field="data/0/int16s_values/{}".format(joint_position_choice),
+                                       msg_type="fh_msgs/FhState",
+                                       time_receipt=True)
 
         # Command data topic
-        CommandPosTopic = TopicStruct(topic_name="/fh_finger/{}_{}/driver_command".format(selected_hand, selected_finger),
-                                      topic_field="data/0/int16s_values/{}".format(selected_joint_position),
+        CommandPosTopic = TopicStruct(topic_name="/fh_finger/{}_{}/driver_command".format(hand_choice, finger_choice),
+                                      topic_field="data/0/int16s_values/{}".format(joint_position_choice),
                                       msg_type="fh_msgs/FhCommand",
                                       time_receipt=False)
 
-        CommandTorTopic = TopicStruct(topic_name="/fh_finger/{}_{}/driver_command".format(selected_hand, selected_finger),
-                                      topic_field="data/0/int16s_values/{}".format(selected_joint_torque),
+        CommandTorTopic = TopicStruct(topic_name="/fh_finger/{}_{}/driver_command".format(hand_choice, finger_choice),
+                                      topic_field="data/0/int16s_values/{}".format(joint_torque_choice),
                                       msg_type="fh_msgs/FhCommand",
                                       time_receipt=False)
 
-        CommandTimeTopic = TopicStruct(topic_name="/fh_finger/{}_{}/driver_command".format(selected_hand, selected_finger),
+        CommandTimeTopic = TopicStruct(topic_name="/fh_finger/{}_{}/driver_command".format(hand_choice, finger_choice),
                                        topic_field="data/0/int16s_values/0",
                                        msg_type="fh_msgs/FhCommand",
                                        time_receipt=True)
@@ -79,12 +78,13 @@ class SrAddInterfaceEntries():
         # Add topic to plot to the corresponding plot
         # Format - plot_list[number_of_the_plot].add_curve("name_of_the_topic_to_plot_on_x"
         # "name_of_topic_to_plot_on_y", number_of_curve_in_the_plot)
-        plots_list[0].set_title_and_frame_rate("{}_{}{} Position Encoder Raw Data".format(selected_hand, selected_finger, selected_joint), 30)
+        plots_list[0].set_title_and_frame_rate("{}_{}{} Position Encoder Raw Data".format(hand_choice, finger_choice, joint_choice), 30)
         plots_list[0].add_curve(EncoderTimeTopic, EncoderPosTopic, 0)
-        plots_list[1].set_title_and_frame_rate("{}_{}{} Torque Encoder Raw Data".format(selected_hand, selected_finger, selected_joint), 30)
+        plots_list[1].set_title_and_frame_rate("{}_{}{} Torque Encoder Raw Data".format(hand_choice, finger_choice, joint_choice), 30)
         plots_list[1].add_curve(EncoderTimeTopic, EncoderTorTopic, 0)
 
-        xml_config = os.path.expanduser("~/projects/shadow_robot/base_deps/src/sr-visualization/sr_gui_dynamic_plot_tool/xml_configurations")
+        xml_config = os.path.expanduser("~/projects/shadow_robot/base_deps/src/sr-visualization/"
+                                        "sr_gui_dynamic_plot_tool/xml_configurations")
         os.system("rosrun rqt_multiplot rqt_multiplot --multiplot-config {}/base_configuration.xml".format(xml_config))
 
         return self._plot_setting_choices
