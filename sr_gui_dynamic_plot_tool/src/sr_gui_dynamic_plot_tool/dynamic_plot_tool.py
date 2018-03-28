@@ -213,7 +213,7 @@ class AddWidget(QWidget):
         sublayout_generic.addWidget(label_name)
         for field in parameters:
             selection_button_generic = QtWidgets.QToolButton()
-            selection_button_generic.setFixedSize(100, 30)
+            selection_button_generic.setFixedSize(150, 40)
             selection_button_generic.setCheckable(True)
             selection_button_generic.setText(field)
             selection_button_generic.setObjectName(field)
@@ -366,7 +366,7 @@ class Plot():
         @param parent_tag - parent xml tag element
         """
         axis_tag = xmlTool.SubElement(parent_tag, name_of_axis)
-        field_tag = xmlTool.SubElement(axis_tag, "field_type")
+        field_tag = xmlTool.SubElement(axis_tag, "field")
         field_tag.text = topic.topic_field
         field_type_tag = xmlTool.SubElement(axis_tag, "field_type")
         if topic.time_receipt:
@@ -384,7 +384,7 @@ class Plot():
         rel_min_tag.text = "1000"
         topic_tag = xmlTool.SubElement(axis_tag, "topic")
         topic_tag.text = topic.topic_name
-        topic_type_tag = xmlTool.SubElement(axis_tag, "topic_type")
+        topic_type_tag = xmlTool.SubElement(axis_tag, "type")
         topic_type_tag.text = topic.msg_type
 
     def _add_color_settings(self, parent_tag, color):
