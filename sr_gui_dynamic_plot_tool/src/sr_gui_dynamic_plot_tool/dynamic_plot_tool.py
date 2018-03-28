@@ -331,21 +331,21 @@ class Plot():
                 plot_title_tag.text = plot_title
         configuration_xml.write("{}/{}".format(self._xml_configuration_dir, self._configuration_name))
 
-    def add_curve(self, x_axis_topic, y_axis_topic, curve_number):
+    def add_curve(self, x_axis_topic, y_axis_topic, curve_number, curve_name):
         """
         Function to add topic to plot to the xml configuration
         @param x_axis_topic - named tuple that contains informations
         (topic_name, field_to_plot, topic_msg_type) of the topic to plot in x_axis
         @param y_axis_topic - named tuple that contains informations
         of the topic to plot in y_axis
-        @param curve_name - int number of the curve in the plot
+        @param curve_number - int number of the curve in the plot
+        @param curve_name - string with name of the curve
         """
         configuration_xml = xmlTool.parse('{}/{}'.format(self._xml_configuration_dir, self._configuration_name))
         xml_root = configuration_xml.getroot()
         for row in xml_root.iter("row_{}".format(self._row)):
             for col in row.find("col_{}".format(self._column)):
                 if col.tag == "curves":
-                    print("Found curves: ", col.tag)
                     topic_curve_tag = xmlTool.SubElement(col, "curve_{}".format(curve_number))
                     axes_curve_tag = xmlTool.SubElement(topic_curve_tag, "axes")
                     self._add_axis_topic(axes_curve_tag, "x_axis", x_axis_topic)
@@ -356,7 +356,7 @@ class Plot():
                     sub_queue_size_tag = xmlTool.SubElement(axes_curve_tag, "subscriber_queue_size")
                     sub_queue_size_tag.text = "100"
                     title_tag = xmlTool.SubElement(axes_curve_tag, "title")
-                    title_tag.text = "test_plot"
+                    title_tag.text = curve_name
 
         configuration_xml.write("{}/{}".format(self._xml_configuration_dir, self._configuration_name))
 

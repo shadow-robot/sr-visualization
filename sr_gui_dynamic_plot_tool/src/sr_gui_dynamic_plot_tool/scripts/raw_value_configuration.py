@@ -43,18 +43,19 @@ class SrAddInterfaceEntries():
 
         joint_position_choice = int(joint_choice[-1:]) + int(joint_choice[-1:])
         joint_torque_choice = joint_position_choice + 1
-        choice_argument = hand_choice + "_" + finger_choice + joint_choice
+        full_choice_argument = hand_choice + "_" + finger_choice + joint_choice
 
         controller_type = self._check_loaded_controllers()
 
-        joint_state_selection = self._get_joint_state_topic(choice_argument)
+        joint_state_selection = self._get_joint_state_topic(full_choice_argument)
 
         # Position Control Topic
         if controller_type == "trajectory":
-            position_control_topic = self.create_position_control_topic(hand_choice, joint_state_selection, time_receipt=False)
-            position_control_time_receipt = self.create_position_control_topic(hand_choice, joint_state_selection, time_receipt=True)
+            position_control_topic = self.create_trajectory_control_topic(hand_choice, joint_state_selection, time_receipt=False)
+            position_control_time_receipt = self.create_trajectory_control_topic(hand_choice, joint_state_selection, time_receipt=True)
         elif controller_type == "position":
-            pass
+            position_control_topic = self.create_position_control_topic(full_choice_argument, time_receipt=False)
+            position_control_time_receipt = self.create_position_control_topic(full_choice_argument, time_receipt=True)
 
         # Joint State topic
         joint_state_position_topic = self.create_joint_state_topic(joint_state_selection, "position", time_receipt=False)
@@ -75,29 +76,21 @@ class SrAddInterfaceEntries():
         plots = CreatePlotConfigurations(1, 1, "base_configuration.xml")
         plots_list = plots._plots
 
-        # Add topic to plot to the corresponding plot
+        # Add topics to plot
         if configuration_choice == "Raw_Encoder_Position":
-            plots_list[0].set_title_and_frame_rate("{}_{}{} Position Encoder Raw Data".format(hand_choice,
-                                                                                              finger_choice,
-                                                                                              joint_choice), 30)
-            plots_list[0].add_curve(raw_encoder_time_receipt, raw_encoder_position_topic, 0)
+            plots_list[0].set_title_and_frame_rate("{}_{}{}".format(hand_choice, finger_choice, joint_choice), 30)
+            plots_list[0].add_curve(raw_encoder_time_receipt, raw_encoder_position_topic, 0, "raw_encoder_pos")
         elif configuration_choice == "Raw_Encoder_Torque":
-            plots_list[0].set_title_and_frame_rate("{}_{}{} Torque Encoder Raw Data".format(hand_choice,
-                                                                                            finger_choice,
-                                                                                            joint_choice), 30)
-            plots_list[0].add_curve(raw_encoder_time_receipt, raw_encoder_torque_topic, 0)
+            plots_list[0].set_title_and_frame_rate("{}_{}{}".format(hand_choice, finger_choice, joint_choice), 30)
+            plots_list[0].add_curve(raw_encoder_time_receipt, raw_encoder_torque_topic, 0, "raw_encoder_torque")
         elif configuration_choice == "Position_Control":
-            plots_list[0].set_title_and_frame_rate("{}_{}{} CommandedPos vs ActualPos".format(hand_choice,
-                                                                                                    finger_choice,
-                                                                                                    joint_choice), 30)
-            plots_list[0].add_curve(position_control_time_receipt, position_control_topic, 0)
-            plots_list[0].add_curve(joint_state_time_receipt, joint_state_position_topic, 1)
+            plots_list[0].set_title_and_frame_rate("{}_{}{}".format(hand_choice, finger_choice, joint_choice), 30)
+            plots_list[0].add_curve(position_control_time_receipt, position_control_topic, 0, "Measured Position")
+            plots_list[0].add_curve(joint_state_time_receipt, joint_state_position_topic, 1, "Commanded Position")
         elif configuration_choice == "Torque_Control":
-            plots_list[0].set_title_and_frame_rate("{}_{}{} CommandedTorque vs ActualTorque".format(hand_choice,
-                                                                                                    finger_choice,
-                                                                                                    joint_choice), 30)
-            plots_list[0].add_curve(commanded_torque_time_receipt, joint_state_effort_topic, 0)
-            plots_list[0].add_curve(joint_state_time_receipt, commanded_torque_topic, 1)
+            plots_list[0].set_title_and_frame_rate("{}_{}{}".format(hand_choice, finger_choice, joint_choice), 30)
+            plots_list[0].add_curve(commanded_torque_time_receipt, joint_state_effort_topic, 0, "Measured Torque")
+            plots_list[0].add_curve(joint_state_time_receipt, commanded_torque_topic, 1, "Commanded Torque")
         else:
             rospy.logerr("No configuration selected")
 
@@ -117,17 +110,24 @@ class SrAddInterfaceEntries():
             for controller in resp1.controller:
                 if controller.type == "effort_controllers/JointTrajectoryController":
                     return "trajectory"
-                elif controller.type == "effort_controller/JointPositionController":
+                elif controller.type == "effort_controllers/JointPositionController":
                     return "position"
         except rospy.ServiceException:
             rospy.logerr("Could not get any controller")
 
-    def create_position_control_topic(self, hand_choice, joint_selected, time_receipt):
-        PositionControlTopic = TopicStruct(topic_name="/{}_trajectory_controller/follow_joint_trajectory/feedback".format(hand_choice),
-                                           topic_field = "feedback/desired/positions/{}".format(joint_selected),
-                                           msg_type="control_msgs/FollowJointTrajectoryActionFeedback",
-                                           time_receipt=time_receipt)
-        return PositionControlTopic
+    def create_trajectory_control_topic(self, hand_choice, joint_selected, time_receipt):
+        TrajControlTopic = TopicStruct(topic_name="/{}_trajectory_controller/follow_joint_trajectory/feedback".format(hand_choice),
+                                       topic_field = "feedback/desired/positions/{}".format(joint_selected),
+                                       msg_type="control_msgs/FollowJointTrajectoryActionFeedback",
+                                       time_receipt=time_receipt)
+        return TrajControlTopic
+
+    def create_position_control_topic(self, joint_selection, time_receipt):
+        PosControlTopic = TopicStruct(topic_name="/{}_position_controller/command".format(joint_selection),
+                                      topic_field="data",
+                                      msg_type="std_msgs/Float64",
+                                      time_receipt=time_receipt)
+        return PosControlTopic
 
     def create_joint_state_topic(self, joint_selected, topic_field, time_receipt):
         JointPositionTopic = TopicStruct(topic_name="/joint_states",
