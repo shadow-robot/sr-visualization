@@ -14,6 +14,7 @@ from python_qt_binding import loadUi
 from QtCore import Qt
 import QtWidgets
 from QtWidgets import QWidget, QMessageBox
+from QtGui import QFont
 from sr_utilities.hand_finder import HandFinder
 
 import xml.etree.ElementTree as xmlTool
@@ -68,15 +69,19 @@ class SrGuiDynamicPlotTool(Plugin):
         """
         rospy.loginfo("Adding widget..")
         subframe = QtWidgets.QFrame()
-        sublayout = QtWidgets.QVBoxLayout()
+        sublayout = QtWidgets.QHBoxLayout()
 
         # Add widgets based on script selections
         self.plot_selection_interface = AddWidget(self._widget, widget_choices)
+        sublayout.setContentsMargins(0,0,0,0)
+        sublayout.setAlignment(Qt.AlignCenter)
         sublayout.addWidget(self.plot_selection_interface)
 
         # Add plot button
         plot_button = QtWidgets.QPushButton()
         plot_button.setText("Plot")
+        plot_button.setFixedSize(150, 100)
+        plot_button.setFont(QFont("Helvetica", 15))
         sublayout.addWidget(plot_button)
 
         subframe.setLayout(sublayout)
@@ -86,12 +91,13 @@ class SrGuiDynamicPlotTool(Plugin):
 
     def plot_user_choices(self):
         user_choices = self.plot_selection_interface._user_selections
-        self.plot_selection_interface._user_selections = []
         self.plot_selection_interface.selection_button_hand.setChecked(False)
         for finger_button in self.plot_selection_interface.selection_button_finger:
             finger_button.setChecked(False)
         for joint_button in self.plot_selection_interface.selection_button_joint:
             joint_button.setChecked(False)
+        for generic_button in self.plot_selection_interface.selection_button_generic:
+            generic_button.setChecked(False)
         self._user_entry_class.define_plot_settings(user_choices)
         t = threading.Thread(target=self._start_rqt)
         t.start()
@@ -111,22 +117,35 @@ class AddWidget(QWidget):
         QWidget.__init__(self, parent)
         self._widget_choices = widget_choices
         self.setWindowTitle("Plot selection interface")
-        self._hand_config = HandConfig()
+        self._hand_finder = HandFinder()
         self._user_selections = []
         plot_interface_frame = QtWidgets.QFrame()
         self.plot_interface_layout = QtWidgets.QVBoxLayout()
-
+        self.plot_interface_layout.setAlignment(Qt.AlignTop)
         self.plot_interface_layout.addWidget(plot_interface_frame)
+
+        label_name = QtWidgets.QLabel()
+        label_name.setText("Plot selection interface")
+        label_name.setAlignment(Qt.AlignTop)
+        label_name.setFont(QFont("Helvetica", 14))
+        self.plot_interface_layout.addWidget(label_name)
 
         self.selection_button_hand = QtWidgets.QToolButton()
         self.selection_button_finger = []
         self.selection_button_joint = []
+        self.selection_button_generic = []
 
-        hand_parameters, hand_prefix, hand_name = self._hand_config.get_hand_data()
-
-        self._create_hand_widget(hand_prefix, hand_name)
-        self._create_finger_widget(hand_parameters, hand_prefix)
-        self._create_joint_widget(hand_name)
+        if self._hand_finder.hand_e_available():
+            hand_name, hand_prefix, hand_serial = self._hand_finder.get_hand_e(number=0)
+            hand_joints = self._hand_finder.get_hand_joints()
+            self._create_hand_widget(hand_prefix, hand_name)
+            self._create_joint_widget(hand_name, hand_prefix, hand_joints)
+        elif self._hand_finder.hand_h_available():
+            hand_name, hand_prefix, hand_serial = self._hand_finder.get_hand_h(number=0)
+            hand_parameters = rospy.get_param("/fh_hand")
+            self._create_hand_widget(hand_prefix, hand_name)
+            self._create_finger_widget(hand_parameters, hand_prefix)
+            self._create_joint_widget(hand_name)
 
         for key_name in widget_choices:
             self._create_generic_widget(key_name, widget_choices[key_name])
@@ -141,10 +160,14 @@ class AddWidget(QWidget):
         @param name - string name of the hand found
         """
         sublayout_hand = QtWidgets.QHBoxLayout()
+        sublayout_hand.setAlignment(Qt.AlignLeft)
+        sublayout_hand.setContentsMargins(0,0,0,0)
         subframe_hand = QtWidgets.QFrame()
         label_name = QtWidgets.QLabel()
         label_name.setText("Select " + name)
-        sublayout_hand.addWidget(label_name)
+        label_name.setAlignment(Qt.AlignTop)
+        label_name.setFont(QFont("Helvetica", 12))
+        self.plot_interface_layout.addWidget(label_name)
 
         self.selection_button_hand.setCheckable(True)
         self.selection_button_hand.setFixedSize(60, 40)
@@ -163,10 +186,14 @@ class AddWidget(QWidget):
         @param prefix - string hand prefix e.g. H0, sr
         """
         sublayout_finger = QtWidgets.QHBoxLayout()
+        sublayout_finger.setAlignment(Qt.AlignLeft)
+        sublayout_finger.setContentsMargins(0,0,0,0)
         subframe_finger = QtWidgets.QFrame()
         label_name = QtWidgets.QLabel()
         label_name.setText("Select Finger")
-        sublayout_finger.addWidget(label_name)
+        label_name.setAlignment(Qt.AlignTop)
+        label_name.setFont(QFont("Helvetica", 12))
+        self.plot_interface_layout.addWidget(label_name)
 
         for i, key in enumerate(hand_parameters[prefix[:-1]].get('fingers')):
             selection_button_finger = QtWidgets.QToolButton()
@@ -177,20 +204,23 @@ class AddWidget(QWidget):
             selection_button_finger.released.connect(self._button_released)
             self.selection_button_finger.append(selection_button_finger)
             sublayout_finger.addWidget(selection_button_finger)
-            subframe_finger.setLayout(sublayout_finger)
-            self.plot_interface_layout.addWidget(subframe_finger)
+        subframe_finger.setLayout(sublayout_finger)
+        self.plot_interface_layout.addWidget(subframe_finger)
 
-    def _create_joint_widget(self, hand_name):
+    def _create_joint_widget(self, hand_name, hand_prefix=None, joints=None):
         """
         Create joint selection buttons
         @param hand_name - string name of the hand found
         """
         sublayout_joint = QtWidgets.QHBoxLayout()
+        sublayout_joint.setAlignment(Qt.AlignLeft)
+        sublayout_joint.setContentsMargins(0,0,0,0)
         subframe_joint = QtWidgets.QFrame()
         label_name = QtWidgets.QLabel()
         label_name.setText("Select Joint")
-        sublayout_joint.addWidget(label_name)
-
+        label_name.setAlignment(Qt.AlignTop)
+        label_name.setFont(QFont("Helvetica", 12))
+        self.plot_interface_layout.addWidget(label_name)
         if hand_name == "hand_h":
             number_of_joint = 3
             for joint in range(0, number_of_joint):
@@ -202,15 +232,30 @@ class AddWidget(QWidget):
                 selection_button_joint.released.connect(self._button_released)
                 self.selection_button_joint.append(selection_button_joint)
                 sublayout_joint.addWidget(selection_button_joint)
-                subframe_joint.setLayout(sublayout_joint)
-                self.plot_interface_layout.addWidget(subframe_joint)
+            subframe_joint.setLayout(sublayout_joint)
+            self.plot_interface_layout.addWidget(subframe_joint)
+        else:
+            for joint in joints[hand_prefix[:-1]]:
+                selection_button_joint = QtWidgets.QToolButton()
+                selection_button_joint.setFixedSize(60, 30)
+                selection_button_joint.setCheckable(True)
+                selection_button_joint.setText(str(joint))
+                selection_button_joint.setObjectName(str(joint))
+                selection_button_joint.released.connect(self._button_released)
+                self.selection_button_joint.append(selection_button_joint)
+                sublayout_joint.addWidget(selection_button_joint)
+            subframe_joint.setLayout(sublayout_joint)
+            self.plot_interface_layout.addWidget(subframe_joint)
 
     def _create_generic_widget(self, name, parameters):
         sublayout_generic = QtWidgets.QHBoxLayout()
+        sublayout_generic.setAlignment(Qt.AlignLeft)
+        sublayout_generic.setContentsMargins(0,0,0,0)
         subframe_generic = QtWidgets.QFrame()
         label_name = QtWidgets.QLabel()
         label_name.setText("Select "+name)
-        sublayout_generic.addWidget(label_name)
+        label_name.setFont(QFont("Helvetica", 12))
+        self.plot_interface_layout.addWidget(label_name)
         for field in parameters:
             selection_button_generic = QtWidgets.QToolButton()
             selection_button_generic.setFixedSize(150, 40)
@@ -218,9 +263,10 @@ class AddWidget(QWidget):
             selection_button_generic.setText(field)
             selection_button_generic.setObjectName(field)
             selection_button_generic.released.connect(self._button_released)
+            self.selection_button_generic.append(selection_button_generic)
             sublayout_generic.addWidget(selection_button_generic)
-            subframe_generic.setLayout(sublayout_generic)
-            self.plot_interface_layout.addWidget(subframe_generic)
+        subframe_generic.setLayout(sublayout_generic)
+        self.plot_interface_layout.addWidget(subframe_generic)
 
     def _button_released(self):
         sending_button = self.sender()
@@ -229,28 +275,6 @@ class AddWidget(QWidget):
     def user_selection(self, name):
         self._user_selections.append(name)
         return self._user_selections
-
-
-class HandConfig():
-    """
-    Get Hand Parameters
-    """
-    def __init__(self):
-        self.hand_finder = HandFinder()
-
-    def get_hand_data(self):
-        """
-        Get parameters of the hands connected
-        @param - number_of_hands: int that indicates the number of hands that has
-        been indicated by the user in the configuration script
-        """
-        if self.hand_finder.hand_e_available():
-            name, prefix, hand_serial = self.hand_finder.get_hand_e(number=0)
-            hand_parameters = rospy.get_param("/hand")
-        elif self.hand_finder.hand_h_available():
-            name, prefix, hand_serial = self.hand_finder.get_hand_h(number=0)
-            hand_parameters = rospy.get_param("/fh_hand")
-        return hand_parameters, prefix, name
 
 
 class CreatePlotConfigurations():

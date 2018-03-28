@@ -35,7 +35,6 @@ class SrAddInterfaceEntries():
         Add here your plot settings
         @param choices - list containing user selection from the GUI
         """
-        #TODO(@Giuseppe): search for hand in choices to avoid order confusion
         hand_choice = choices[0]
         finger_choice = choices[1]
         joint_choice = choices[2]

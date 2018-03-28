@@ -22,26 +22,30 @@
   <property name="windowTitle">
    <string>Dynamic Plot Tool</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2">
+  <layout class="QVBoxLayout" name="V_Layout">
    <property name="alignment">
     <set>Qt::AlignTop</set>
    </property>
-   <item row="0" column="0">
-    <widget class="QLabel" name="text">
-      <property name="text">
-       <string>Select script you want to run to generate your plot: </string>
-      </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QComboBox" name="select_script"/>
-   </item>
-   <item row="0" column="2">
-    <widget class="QPushButton" name="run_button">
-     <property name="text">
-      <string>Run</string>
-     </property>
-    </widget>
+   <item>
+    <layout class="QHBoxLayout" name="H_Layout">
+     <item>
+      <widget class="QLabel" name="text">
+       <property name="text">
+        <string>Select script you want to run to generate your plot: </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="select_script"/>
+     </item>
+     <item>
+      <widget class="QPushButton" name="run_button">
+       <property name="text">
+        <string>Run</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
