@@ -43,13 +43,6 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="3">
-    <widget class="QPushButton" name="edit_button">
-     <property name="text">
-      <string>Edit Script</string>
-     </property>
-    </widget>
-   </item>
   </layout>
  </widget>
  <resources/>

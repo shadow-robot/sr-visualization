@@ -17,10 +17,10 @@ from QtWidgets import QWidget, QMessageBox
 from sr_utilities.hand_finder import HandFinder
 
 import xml.etree.ElementTree as xmlTool
-
+import subprocess
+import threading
 
 class SrGuiDynamicPlotTool(Plugin):
-
     """
     A rosgui plugin to easily decide which hand's information to plot.
     """
@@ -49,7 +49,6 @@ class SrGuiDynamicPlotTool(Plugin):
                 self.list_scripts.append(script)
         self._widget.select_script.addItems(self.list_scripts)
         self._widget.run_button.pressed.connect(self.run_script)
-        self._widget.edit_button.pressed.connect(self.edit_script)
 
     def run_script(self):
         """
@@ -62,13 +61,6 @@ class SrGuiDynamicPlotTool(Plugin):
         self._user_entry_class = user_entry_class()
         self._widget_choices = self._user_entry_class.define_interface_setting()
         self.add_widgets(self._widget_choices)
-
-    def edit_script(self):
-        """
-        Edit script selected
-        """
-        script_name = self._widget.select_script.currentText()
-        os.system("code {}/{}".format(self.script_dir, script_name))
 
     def add_widgets(self, widget_choices):
         """
@@ -90,9 +82,9 @@ class SrGuiDynamicPlotTool(Plugin):
         subframe.setLayout(sublayout)
         self.layout.addWidget(subframe)
 
-        plot_button.pressed.connect(self.get_user_choices)
+        plot_button.pressed.connect(self.plot_user_choices)
 
-    def get_user_choices(self):
+    def plot_user_choices(self):
         user_choices = self.plot_selection_interface._user_selections
         self.plot_selection_interface._user_selections = []
         self.plot_selection_interface.selection_button_hand.setChecked(False)
@@ -101,6 +93,14 @@ class SrGuiDynamicPlotTool(Plugin):
         for joint_button in self.plot_selection_interface.selection_button_joint:
             joint_button.setChecked(False)
         self._user_entry_class.define_plot_settings(user_choices)
+        t = threading.Thread(target=self._start_rqt)
+        t.start()
+
+    def _start_rqt(self):
+        xml_config = os.path.expanduser("~/projects/shadow_robot/base_deps/src/sr-visualization/"
+                                        "sr_gui_dynamic_plot_tool/xml_configurations")
+
+        subprocess.call("rosrun rqt_multiplot rqt_multiplot --multiplot-config {}/base_configuration.xml".format(xml_config), shell=True)
 
 
 class AddWidget(QWidget):
@@ -213,7 +213,7 @@ class AddWidget(QWidget):
         sublayout_generic.addWidget(label_name)
         for field in parameters:
             selection_button_generic = QtWidgets.QToolButton()
-            selection_button_generic.setFixedSize(60, 30)
+            selection_button_generic.setFixedSize(100, 30)
             selection_button_generic.setCheckable(True)
             selection_button_generic.setText(field)
             selection_button_generic.setObjectName(field)
