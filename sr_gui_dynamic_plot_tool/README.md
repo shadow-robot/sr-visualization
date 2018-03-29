@@ -1,23 +1,27 @@
 # Sr-gui-dynamic-plot-tool
 
-Package that offers rqt GUI plugin to easily generate useful plots for agile grasper and hand E.
+Package that offers rqt GUI plugin to easily generate useful plots for Agile Grasper and hand E.
 
 # Usage
 
 The plugin can be started from rqt. In the top navigation bar select plugins, then Shadow Robot and finally
 Dynamic Plot Tool.
 
-If you want to plot hand E data, select the hand_e_default_configuration.py script, while if you want to plot
-agile grasper data select the agile_grasper_default_configuration.py script. 
+If you want to plot **Hand E data**, select the **hand_e_default_configuration.py** script.<br/>
+If you want to plot **Agile Grasper data**, select the **agile_grasper_default_configuration.py** script.<br/>
+Once you selected the right script click **RUN** button which will generate the plot selection interface
+as shown in the images below.<br/>
+
 
 # Example view Agile Grasper
 
-
+![alt text](https://github.com/shadow-robot/sr-visualization/blob/F%23SRC-1485_implement_rqt_dyn_plots/sr_gui_dynamic_plot_tool/AgileGrasper_example.png)
 
 
 # Example view Hand E
 
+![alt text](https://github.com/shadow-robot/sr-visualization/blob/F%23SRC-1485_implement_rqt_dyn_plots/sr_gui_dynamic_plot_tool/HandE_example.png)
 
-In those GUI select the hand, the finger, the joint and the data you are interested in plotting.
-Clicking 'PLOT' will open a new instance of rqt_multiplot with the requested plot.
-If you want another plot, just repeat the process by selecting the hand, finger, joint and configuration you want and by clicking PLOT the requested plot will be opened in a separate window.
+In those GUI select the Hand, the Finger, the Joint and the Configuration you are interested in plotting.<br/>
+By clicking **PLOT** a new instance of rqt_multiplot with the requested plot will be generated.<br/>
+If you want to plot another joint, just repeat the process of selecting the hand, finger, joint and configuration and click again on PLOT to open the requested plot in a separate window.
