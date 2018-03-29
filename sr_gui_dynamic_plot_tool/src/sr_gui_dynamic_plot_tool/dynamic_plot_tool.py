@@ -379,12 +379,12 @@ class Plot():
                     axes_curve_tag = xmlTool.SubElement(topic_curve_tag, "axes")
                     self._add_axis_topic(axes_curve_tag, "x_axis", x_axis_topic)
                     self._add_axis_topic(axes_curve_tag, "y_axis", y_axis_topic)
-                    self._add_color_settings(axes_curve_tag, "#000000")
-                    self._add_data_settings(axes_curve_tag, "3")
-                    self._add_style_settings(axes_curve_tag)
-                    sub_queue_size_tag = xmlTool.SubElement(axes_curve_tag, "subscriber_queue_size")
+                    self._add_color_settings(topic_curve_tag, "#000000")
+                    self._add_data_settings(topic_curve_tag, "3")
+                    self._add_style_settings(topic_curve_tag)
+                    sub_queue_size_tag = xmlTool.SubElement(topic_curve_tag, "subscriber_queue_size")
                     sub_queue_size_tag.text = "100"
-                    title_tag = xmlTool.SubElement(axes_curve_tag, "title")
+                    title_tag = xmlTool.SubElement(topic_curve_tag, "title")
                     title_tag.text = curve_name
 
         configuration_xml.write("{}/{}".format(self._xml_configuration_dir, self._configuration_name))
@@ -411,6 +411,8 @@ class Plot():
         rel_max_tag.text = "0"
         rel_min_tag = xmlTool.SubElement(scale_tag, "relative_minimum")
         rel_min_tag.text = "1000"
+        type_scale_tag = xmlTool.SubElement(scale_tag, "type")
+        type_scale_tag.text = "0"
         topic_tag = xmlTool.SubElement(axis_tag, "topic")
         topic_tag.text = topic.topic_name
         topic_type_tag = xmlTool.SubElement(axis_tag, "type")
@@ -453,7 +455,7 @@ class Plot():
         render_antialias_tag.text = "false"
         steps_invert_tag = xmlTool.SubElement(style_tag, "steps_invert")
         steps_invert_tag.text = "false"
-        sticks_baseline_tag = xmlTool.SubElement(style_tag, "sticks_bsaeline")
+        sticks_baseline_tag = xmlTool.SubElement(style_tag, "sticks_baseline")
         sticks_baseline_tag.text = "0"
         sticks_orientation_tag = xmlTool.SubElement(style_tag, "sticks_orientation")
         sticks_orientation_tag.text = "2"
