@@ -141,7 +141,7 @@ class AddWidget(QWidget):
         # Create configuration widget
         for key_name in widget_choices:
             self._create_configuration_widget(key_name, widget_choices[key_name])
-        
+
         self.setLayout(self.plot_interface_layout)
         self.show()
 
@@ -268,15 +268,15 @@ class AddWidget(QWidget):
     def _hand_button_released(self):
         sending_button = self.sender()
         self._user_selections["Hand"] = str(sending_button.objectName())
-    
+
     def _finger_button_released(self):
         sending_button = self.sender()
         self._user_selections["Finger"] = str(sending_button.objectName())
-    
+
     def _joint_button_released(self):
         sending_button = self.sender()
         self._user_selections["Joint"] = str(sending_button.objectName())
-    
+
     def _configuration_button_released(self):
         sending_button = self.sender()
         self._user_selections["Configuration"] = str(sending_button.objectName())

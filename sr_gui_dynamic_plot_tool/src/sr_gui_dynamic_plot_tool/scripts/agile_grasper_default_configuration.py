@@ -114,8 +114,8 @@ class SrAddInterfaceEntries():
         xml_dir = os.path.expanduser("~/projects/shadow_robot/base_deps/src/sr-visualization/"
                                      "sr_gui_dynamic_plot_tool/xml_configurations")
 
-        subprocess.call("rosrun rqt_multiplot rqt_multiplot --multiplot-config {}/{}".format(xml_dir, self.xml_cfg_name) 
-                        , shell=True)
+        subprocess.call("rosrun rqt_multiplot rqt_multiplot --multiplot-config {}/{}".format(xml_dir,
+                        self.xml_cfg_name), shell=True)
 
     def _get_joint_state_topic(self, selected_joint_name):
         for index, name in enumerate(self._joint_state_msg.name):
