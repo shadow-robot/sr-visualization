@@ -44,7 +44,6 @@ class SrAddInterfaceEntries():
         full_choice_argument = hand_choice + "_" + joint_choice
 
         controller_type = self._check_loaded_controllers()
-        print("Fll choice: ", full_choice_argument)
         joint_state_selection = self._get_joint_state_topic(full_choice_argument)
 
         # Position Control Topic

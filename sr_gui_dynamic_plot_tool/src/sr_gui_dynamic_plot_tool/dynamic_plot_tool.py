@@ -45,7 +45,8 @@ class SrGuiDynamicPlotTool(Plugin):
         self.list_scripts = []
         for script in os.listdir(self.script_dir):
             if script.endswith('.py'):
-                self.list_scripts.append(script)
+                if not script.startswith('__'):
+                    self.list_scripts.append(script)
         self._widget.select_script.addItems(self.list_scripts)
         self._widget.run_button.pressed.connect(self.run_script)
 
