@@ -38,10 +38,10 @@ class SrAddInterfaceEntries():
         Add here your plot settings
         @param choices - list containing user selection from the GUI
         """
-        hand_choice = choices[0]
-        finger_choice = choices[1]
-        joint_choice = choices[2]
-        configuration_choice = choices[3]
+        hand_choice = choices["Hand"]
+        finger_choice = choices["Finger"]
+        joint_choice = choices["Joint"]
+        configuration_choice = choices["Configuration"]
 
         joint_position_choice = int(joint_choice[-1:]) + int(joint_choice[-1:])
         joint_torque_choice = joint_position_choice + 1
@@ -102,8 +102,8 @@ class SrAddInterfaceEntries():
             plots_list[0].add_curve(joint_state_time_receipt, joint_state_position_topic, 1, "Commanded Position")
         elif configuration_choice == "Torque_Control":
             plots_list[0].set_title_and_frame_rate("{}_{}{}".format(hand_choice, finger_choice, joint_choice), 30)
-            plots_list[0].add_curve(commanded_torque_time_receipt, joint_state_effort_topic, 0, "Measured Torque")
-            plots_list[0].add_curve(joint_state_time_receipt, commanded_torque_topic, 1, "Commanded Torque")
+            plots_list[0].add_curve(joint_state_time_receipt, joint_state_effort_topic, 0, "Measured Torque")
+            plots_list[0].add_curve(commanded_torque_time_receipt, commanded_torque_topic, 1, "Commanded Torque")
         else:
             rospy.logerr("No configuration selected")
 
@@ -114,8 +114,8 @@ class SrAddInterfaceEntries():
         xml_dir = os.path.expanduser("~/projects/shadow_robot/base_deps/src/sr-visualization/"
                                      "sr_gui_dynamic_plot_tool/xml_configurations")
 
-        subprocess.call("rosrun rqt_multiplot rqt_multiplot --multiplot-config {}/{}".format(xml_dir, self.xml_cfg_name)
-                        ,shell=True)
+        subprocess.call("rosrun rqt_multiplot rqt_multiplot --multiplot-config {}/{}".format(xml_dir, self.xml_cfg_name) 
+                        , shell=True)
 
     def _get_joint_state_topic(self, selected_joint_name):
         for index, name in enumerate(self._joint_state_msg.name):
