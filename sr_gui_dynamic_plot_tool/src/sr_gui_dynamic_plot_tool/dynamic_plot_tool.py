@@ -230,10 +230,10 @@ class AddWidget(QWidget):
         else:
             for joint in joints[hand_prefix[:-1]]:
                 selection_button_joint = QtWidgets.QToolButton()
-                selection_button_joint.setFixedSize(60, 30)
+                selection_button_joint.setFixedSize(40, 30)
                 selection_button_joint.setCheckable(True)
-                selection_button_joint.setText(str(joint))
-                selection_button_joint.setObjectName(str(joint))
+                selection_button_joint.setText(str(joint[3:]))
+                selection_button_joint.setObjectName(str(joint[3:]))
                 selection_button_joint.released.connect(self._joint_button_released)
                 self.selection_button_joint.append(selection_button_joint)
                 sublayout_joint.addWidget(selection_button_joint)
