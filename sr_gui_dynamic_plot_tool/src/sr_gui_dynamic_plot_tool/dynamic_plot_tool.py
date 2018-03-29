@@ -18,8 +18,7 @@ from QtGui import QFont
 from sr_utilities.hand_finder import HandFinder
 
 import xml.etree.ElementTree as xmlTool
-import subprocess
-import threading
+
 
 class SrGuiDynamicPlotTool(Plugin):
     """
@@ -73,7 +72,7 @@ class SrGuiDynamicPlotTool(Plugin):
 
         # Add widgets based on script selections
         self.plot_selection_interface = AddWidget(self._widget, widget_choices)
-        sublayout.setContentsMargins(0,0,0,0)
+        sublayout.setContentsMargins(0, 0, 0, 0)
         sublayout.setAlignment(Qt.AlignCenter)
         sublayout.addWidget(self.plot_selection_interface)
 
@@ -99,14 +98,6 @@ class SrGuiDynamicPlotTool(Plugin):
         for generic_button in self.plot_selection_interface.selection_button_generic:
             generic_button.setChecked(False)
         self._user_entry_class.define_plot_settings(user_choices)
-        t = threading.Thread(target=self._start_rqt)
-        t.start()
-
-    def _start_rqt(self):
-        xml_config = os.path.expanduser("~/projects/shadow_robot/base_deps/src/sr-visualization/"
-                                        "sr_gui_dynamic_plot_tool/xml_configurations")
-
-        subprocess.call("rosrun rqt_multiplot rqt_multiplot --multiplot-config {}/base_configuration.xml".format(xml_config), shell=True)
 
 
 class AddWidget(QWidget):
@@ -161,7 +152,7 @@ class AddWidget(QWidget):
         """
         sublayout_hand = QtWidgets.QHBoxLayout()
         sublayout_hand.setAlignment(Qt.AlignLeft)
-        sublayout_hand.setContentsMargins(0,0,0,0)
+        sublayout_hand.setContentsMargins(0, 0, 0, 0)
         subframe_hand = QtWidgets.QFrame()
         label_name = QtWidgets.QLabel()
         label_name.setText("Select " + name)
@@ -187,7 +178,7 @@ class AddWidget(QWidget):
         """
         sublayout_finger = QtWidgets.QHBoxLayout()
         sublayout_finger.setAlignment(Qt.AlignLeft)
-        sublayout_finger.setContentsMargins(0,0,0,0)
+        sublayout_finger.setContentsMargins(0, 0, 0, 0)
         subframe_finger = QtWidgets.QFrame()
         label_name = QtWidgets.QLabel()
         label_name.setText("Select Finger")
@@ -214,7 +205,7 @@ class AddWidget(QWidget):
         """
         sublayout_joint = QtWidgets.QHBoxLayout()
         sublayout_joint.setAlignment(Qt.AlignLeft)
-        sublayout_joint.setContentsMargins(0,0,0,0)
+        sublayout_joint.setContentsMargins(0, 0, 0, 0)
         subframe_joint = QtWidgets.QFrame()
         label_name = QtWidgets.QLabel()
         label_name.setText("Select Joint")
@@ -250,7 +241,7 @@ class AddWidget(QWidget):
     def _create_generic_widget(self, name, parameters):
         sublayout_generic = QtWidgets.QHBoxLayout()
         sublayout_generic.setAlignment(Qt.AlignLeft)
-        sublayout_generic.setContentsMargins(0,0,0,0)
+        sublayout_generic.setContentsMargins(0, 0, 0, 0)
         subframe_generic = QtWidgets.QFrame()
         label_name = QtWidgets.QLabel()
         label_name.setText("Select "+name)
