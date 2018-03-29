@@ -111,11 +111,11 @@ class SrAddInterfaceEntries():
         t.start()
 
     def _start_rqt(self):
-        xml_cfg = os.path.expanduser("~/projects/shadow_robot/base_deps/src/sr-visualization/"
-                                        "sr_gui_dynamic_plot_tool/xml_configurations")
+        xml_dir = os.path.expanduser("~/projects/shadow_robot/base_deps/src/sr-visualization/"
+                                     "sr_gui_dynamic_plot_tool/xml_configurations")
 
-        subprocess.call("rosrun rqt_multiplot rqt_multiplot --multiplot-config {}/{}".format(xml_cfg, self.xml_cfg_name),
-                        shell=True)
+        subprocess.call("rosrun rqt_multiplot rqt_multiplot --multiplot-config {}/{}".format(xml_dir, self.xml_cfg_name)
+                        ,shell=True)
 
     def _get_joint_state_topic(self, selected_joint_name):
         for index, name in enumerate(self._joint_state_msg.name):
@@ -139,8 +139,9 @@ class SrAddInterfaceEntries():
             rospy.logerr("Could not get any controller")
 
     def create_trajectory_control_topic(self, hand_choice, joint_selected, time_receipt):
-        TrajCtrlTopic = TopicStruct(topic_name="/{}_trajectory_controller/follow_joint_trajectory/feedback".format(hand_choice),
-                                    topic_field = "feedback/desired/positions/{}".format(joint_selected),
+        TrajCtrlTopic = TopicStruct(topic_name="/{}_trajectory_controller/follow_joint_trajectory/"
+                                               "feedback".format(hand_choice),
+                                    topic_field="feedback/desired/positions/{}".format(joint_selected),
                                     msg_type="control_msgs/FollowJointTrajectoryActionFeedback",
                                     time_receipt=time_receipt)
         return TrajCtrlTopic
@@ -165,7 +166,7 @@ class SrAddInterfaceEntries():
                                       msg_type="fh_msgs/FhState",
                                       time_receipt=time_receipt)
         return EncoderPosTopic
-    
+
     def create_torque_command_topic(self, hand_choice, finger_choice, joint_choice, time_receipt):
         CmdTorqueTopic = TopicStruct(topic_name="/fh_finger/{}_{}/driver_command".format(hand_choice, finger_choice),
                                      topic_field="data/0/int16s_values/{}".format(joint_choice[-1:]),

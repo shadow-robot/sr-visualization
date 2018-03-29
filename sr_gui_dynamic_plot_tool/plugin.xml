@@ -8,7 +8,7 @@
         <label>Shadow Robot</label>
       </group>
       <label>Dynamic Plot Tool</label>
-      <icon type="theme">system-help</icon>
+      <icon type="theme">../sr_visualization_icons/icons/hand.png</icon>
       <statustip>A plugin to easily select which hand's information to plot.</statustip>
     </qtgui>
   </class>
