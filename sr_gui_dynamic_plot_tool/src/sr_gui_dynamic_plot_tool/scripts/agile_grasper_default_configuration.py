@@ -62,6 +62,8 @@ class SrAddInterfaceEntries():
                                                                         time_receipt=False)
             position_control_time_receipt = self.create_position_control_topic(full_choice_argument,
                                                                                time_receipt=True)
+        else:
+            rospy.logerr("No position or trajectory controller loaded")
 
         # Joint State topic
         joint_state_position_topic = self.create_joint_state_topic(joint_state_selection, "position",
@@ -92,18 +94,30 @@ class SrAddInterfaceEntries():
         # Add topics to plot
         if configuration_choice == "Raw_Encoder_Position":
             plots_list[0].set_title_and_frame_rate("{}_{}{}".format(hand_choice, finger_choice, joint_choice), 30)
-            plots_list[0].add_curve(raw_encoder_time_receipt, raw_encoder_position_topic, 0, "raw_encoder_pos")
+            try:
+                plots_list[0].add_curve(raw_encoder_time_receipt, raw_encoder_position_topic, 0, "raw_encoder_pos")
+            except:
+                rospy.logerr("Could not create configuration, are topic correctly loaded?")
         elif configuration_choice == "Raw_Encoder_Torque":
             plots_list[0].set_title_and_frame_rate("{}_{}{}".format(hand_choice, finger_choice, joint_choice), 30)
-            plots_list[0].add_curve(raw_encoder_time_receipt, raw_encoder_torque_topic, 0, "raw_encoder_torque")
+            try:
+                plots_list[0].add_curve(raw_encoder_time_receipt, raw_encoder_torque_topic, 0, "raw_encoder_torque")
+            except:
+                rospy.logerr("Could not create configuration, are topic correctly loaded?")
         elif configuration_choice == "Position_Control":
             plots_list[0].set_title_and_frame_rate("{}_{}{}".format(hand_choice, finger_choice, joint_choice), 30)
-            plots_list[0].add_curve(position_control_time_receipt, position_control_topic, 0, "Measured Position")
-            plots_list[0].add_curve(joint_state_time_receipt, joint_state_position_topic, 1, "Commanded Position")
+            try:
+                plots_list[0].add_curve(position_control_time_receipt, position_control_topic, 0, "Measured Position")
+                plots_list[0].add_curve(joint_state_time_receipt, joint_state_position_topic, 1, "Commanded Position")
+            except:
+                rospy.logerr("Could not create position control configuration, are controller loaded?")
         elif configuration_choice == "Torque_Control":
             plots_list[0].set_title_and_frame_rate("{}_{}{}".format(hand_choice, finger_choice, joint_choice), 30)
-            plots_list[0].add_curve(joint_state_time_receipt, joint_state_effort_topic, 0, "Measured Torque")
-            plots_list[0].add_curve(commanded_torque_time_receipt, commanded_torque_topic, 1, "Commanded Torque")
+            try:
+                plots_list[0].add_curve(joint_state_time_receipt, joint_state_effort_topic, 0, "Measured Torque")
+                plots_list[0].add_curve(commanded_torque_time_receipt, commanded_torque_topic, 1, "Commanded Torque")
+            except:
+                rospy.logerr("Could not create torque control configuration, are controller loaded?")
         else:
             rospy.logerr("No configuration selected")
 
@@ -135,6 +149,8 @@ class SrAddInterfaceEntries():
                     return "trajectory"
                 elif controller.type == "effort_controllers/JointPositionController":
                     return "position"
+                else:
+                    rospy.logwarn("No position or trajectory controller loaded")
         except rospy.ServiceException:
             rospy.logerr("Could not get any controller")
 
