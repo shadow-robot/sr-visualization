@@ -107,8 +107,8 @@ class SrAddInterfaceEntries():
         elif configuration_choice == "Position_Control":
             plots_list[0].set_title_and_frame_rate("{}_{}{}".format(hand_choice, finger_choice, joint_choice), 30)
             try:
-                plots_list[0].add_curve(position_control_time_receipt, position_control_topic, 0, "Measured Position")
-                plots_list[0].add_curve(joint_state_time_receipt, joint_state_position_topic, 1, "Commanded Position")
+                plots_list[0].add_curve(position_control_time_receipt, position_control_topic, 0, "Commanded Position")
+                plots_list[0].add_curve(joint_state_time_receipt, joint_state_position_topic, 1, "Measured Position")
             except:
                 rospy.logerr("Could not create position control configuration, are controller loaded?")
         elif configuration_choice == "Torque_Control":
