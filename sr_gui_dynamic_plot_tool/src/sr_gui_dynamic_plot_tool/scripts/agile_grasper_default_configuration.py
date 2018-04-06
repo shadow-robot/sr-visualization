@@ -185,7 +185,7 @@ class SrAddInterfaceEntries():
 
     def create_torque_command_topic(self, hand_choice, finger_choice, joint_choice, time_receipt):
         CmdTorqueTopic = TopicStruct(topic_name="/fh_finger/{}_{}/driver_command".format(hand_choice, finger_choice),
-                                     topic_field="data/0/int16s_values/{}".format(joint_choice[-1:]),
+                                     topic_field="data/0/float32_values/{}".format(joint_choice[-1:]),
                                      msg_type="fh_msgs/FhCommand",
                                      time_receipt=time_receipt)
         return CmdTorqueTopic
