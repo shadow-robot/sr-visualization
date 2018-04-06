@@ -155,10 +155,9 @@ class SrAddInterfaceEntries():
             rospy.logerr("Could not get any controller")
 
     def create_trajectory_control_topic(self, hand_choice, joint_selected, time_receipt):
-        TrajCtrlTopic = TopicStruct(topic_name="/{}_trajectory_controller/follow_joint_trajectory/"
-                                               "feedback".format(hand_choice),
-                                    topic_field="feedback/desired/positions/{}".format(joint_selected),
-                                    msg_type="control_msgs/FollowJointTrajectoryActionFeedback",
+        TrajCtrlTopic = TopicStruct(topic_name="/{}_trajectory_controller/state".format(hand_choice),
+                                    topic_field="desired/positions/{}".format(joint_selected),
+                                    msg_type="control_msgs/JointTrajectoryControllerState",
                                     time_receipt=time_receipt)
         return TrajCtrlTopic
 
