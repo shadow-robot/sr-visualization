@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rqt_multiplot>
+    <table>
+        <background_color>#ffffff</background_color>
+        <foreground_color>#000000</foreground_color>
+        <link_cursor>false</link_cursor>
+        <link_scale>false</link_scale>
+        <plots>
+        </plots>
+        <track_points>false</track_points>
+    </table>
+</rqt_multiplot>
