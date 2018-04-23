@@ -1,0 +1,11 @@
+<launch>
+   <node pkg="tf2_ros" type="static_transform_publisher" name="link1_broadcaster" args="1 0 0 0 0 0 1 world camera_link" />
+   <node pkg="rviz" type="rviz" name="rviz"
+	args="-d $(find dbot_example)/config/visualization.rviz"/>
+   <include file="$(find freenect_launch)/launch/freenect.launch"/>
+   <include file="$(find dbot_ros)/launch/particle_tracker.launch">
+     <arg name="camera_config" value="$(find sr_bayesian_object_tracking)/config/sr_camera.yaml" />
+     <arg name="object_config" value="$(find sr_bayesian_object_tracking)/config/sr_object_test.yaml" />
+   </include>
+</launch>
+

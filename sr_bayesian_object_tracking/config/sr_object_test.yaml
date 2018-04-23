@@ -1,0 +1,4 @@
+object:
+  package:    sr_bayesian_object_tracking
+  directory:  sr_test_objects
+  meshes:     [ utl5_large.obj]

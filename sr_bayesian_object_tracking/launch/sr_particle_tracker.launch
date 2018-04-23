@@ -1,0 +1,6 @@
+<launch>
+   <include file="$(find dbot_ros)/launch/particle_tracker.launch">
+     <arg name="camera_config" value="$(find sr_bayesian_object_tracking)/config/sr_camera.yaml" />
+     <arg name="object_config" value="$(find sr_bayesian_object_tracking)/config/sr_object_test.yaml" />
+   </include>
+</launch>
