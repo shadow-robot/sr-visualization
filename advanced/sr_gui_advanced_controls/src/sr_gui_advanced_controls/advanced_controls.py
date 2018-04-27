@@ -369,7 +369,7 @@ class SrGuiAdvancedControls(Plugin):
 
     def change_force_ctrl_type(self, chng_type_msg):
         """
-        Calls the service (realtime_loop/change_control_type) that allows to
+        Calls the service (sr_hand_robot/change_control_type) that allows to
         tell the driver (sr_robot_lib)
         which type of force control has to be sent to the motor:
             - torque demand (sr_robot_msgs::ControlType::FORCE)
@@ -379,7 +379,7 @@ class SrGuiAdvancedControls(Plugin):
         """
         success = True
         for hand_id in self.hand_ids:
-            srv_path = 'realtime_loop/' + hand_id + '/change_control_type'
+            srv_path = 'sr_hand_robot/' + hand_id + '/change_control_type'
             # remove double slash for empty hand_id
             srv_path.replace("//", "/")
             change_control_type = rospy.ServiceProxy(srv_path,

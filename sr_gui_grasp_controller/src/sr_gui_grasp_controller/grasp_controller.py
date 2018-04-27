@@ -421,12 +421,7 @@ class SrGuiGraspController(Plugin):
         subframe = QtWidgets.QFrame()
         sublayout = QtWidgets.QVBoxLayout()
 
-        self.hand_finder = HandFinder()
-        self.hand_parameters = self.hand_finder.get_hand_parameters()
-
-        self.hand_commander = SrHandCommander(
-            hand_parameters=self.hand_parameters,
-            hand_serial=self.hand_parameters.mapping.keys()[0])
+        self.hand_commander = SrHandCommander()
 
         self.grasp_slider = GraspSlider(self._widget, self)
         sublayout.addWidget(self.grasp_slider)
@@ -458,22 +453,25 @@ class SrGuiGraspController(Plugin):
         sublayout.addWidget(btn_frame)
         subframe.setLayout(sublayout)
 
-        selector_layout = QtWidgets.QHBoxLayout()
-        selector_frame = QtWidgets.QFrame()
+        hand_finder = HandFinder()
+        if hand_finder.hand_e_available():
+            selector_layout = QtWidgets.QHBoxLayout()
+            selector_frame = QtWidgets.QFrame()
 
-        selector_layout.addWidget(QtWidgets.QLabel("Select Hand"))
+            selector_layout.addWidget(QtWidgets.QLabel("Select Hand"))
 
-        self.hand_combo_box = QtWidgets.QComboBox()
+            self.hand_combo_box = QtWidgets.QComboBox()
 
-        for hand_serial in self.hand_parameters.mapping.keys():
-            self.hand_combo_box.addItem(hand_serial)
+            self.hand_parameters = hand_finder.get_hand_parameters()
+            for hand_serial in self.hand_parameters.mapping.keys():
+                self.hand_combo_box.addItem(hand_serial)
+            # TODO(@anyone): adapt so that hand Hs are included as options in combo box
 
-        selector_layout.addWidget(self.hand_combo_box)
+            selector_layout.addWidget(self.hand_combo_box)
+            selector_frame.setLayout(selector_layout)
+            sublayout.addWidget(selector_frame)
 
-        selector_frame.setLayout(selector_layout)
-        sublayout.addWidget(selector_frame)
-
-        self.hand_combo_box.activated.connect(self.hand_selected)
+            self.hand_combo_box.activated.connect(self.hand_selected)
 
         self.grasp_from_chooser = GraspChooser(self._widget, self, "From: ")
         self.layout.addWidget(self.grasp_from_chooser)

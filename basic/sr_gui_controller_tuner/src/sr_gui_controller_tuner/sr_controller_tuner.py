@@ -253,7 +253,7 @@ class SrControllerTunerApp(object):
         Effectively change control mode on the realtime loop
         """
         self.control_mode = rospy.get_param(
-            'realtime_loop/' + self.prefix + 'default_control_mode', 'FORCE')
+            'sr_hand_robot/' + self.prefix + 'default_control_mode', 'FORCE')
 
     def get_controller_settings(self, controller_type):
         """
@@ -307,11 +307,11 @@ class SrControllerTunerApp(object):
         prefix = self.prefix if self.single_loop is not True else ""
 
         if controller_type == "Motor Force":
-            # /realtime_loop/change_force_PID_FFJ0
+            # /sr_hand_robot/change_force_PID_FFJ0
             # currently use non-prefixed joint names but adds prefix in the middle
             # no matter if single or dual loops there is always a prefix for
             # motors
-            service_name = "realtime_loop/" + self.prefix + \
+            service_name = "sr_hand_robot/" + self.prefix + \
                 "change_force_PID_" + joint_name[-4:].upper()
             pid_service = rospy.ServiceProxy(service_name, ForceController)
 
@@ -358,6 +358,9 @@ class SrControllerTunerApp(object):
 
         if controller_type == "Motor Force":
             try:
+                for setting in ["torque_limit", "torque_limiter_gain"]:
+                    if setting not in contrlr_settings_converted:
+                        contrlr_settings_converted[setting] = 0
                 pid_service(int(contrlr_settings_converted["max_pwm"]),
                             int(contrlr_settings_converted["sgleftref"]),
                             int(contrlr_settings_converted["sgrightref"]),
@@ -366,7 +369,10 @@ class SrControllerTunerApp(object):
                                 contrlr_settings_converted["i"]),
                             int(contrlr_settings_converted["d"]), int(
                                 contrlr_settings_converted["imax"]),
-                            int(contrlr_settings_converted["deadband"]), int(contrlr_settings_converted["sign"]))
+                            int(contrlr_settings_converted["deadband"]),
+                            int(contrlr_settings_converted["sign"]),
+                            int(contrlr_settings_converted["torque_limit"]),
+                            int(contrlr_settings_converted["torque_limiter_gain"]))
             except rospy.ServiceException:
                 return False
 
