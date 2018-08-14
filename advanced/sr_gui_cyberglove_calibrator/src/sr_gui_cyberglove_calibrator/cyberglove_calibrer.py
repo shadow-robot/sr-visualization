@@ -299,28 +299,19 @@ class CybergloveCalibrer:
         # Write to an xml file
         #
         # store the text in a table
+
+        ## yaml output
+
         text = []
+        text.append("{'cyberglove_calibration': [")
 
-        text.append("<?xml version=\"1.0\" ?>")
-        text.append("<Cyberglove_calibration>")
+
         for name in self.joints:
-            # joint name
-            text.append("<Joint name=\"" + name + "\">")
-
             cal = self.joints[name]
-            # min value
-            text.append("<calib raw_value=\"" + str(cal.raw_min) +
-                        "\" calibrated_value=\"" +
-                        str(cal.calibrated_min) + "\"/>")
+            text.append("['%s', [[%f,%f],[%f,%f]]]," % (
+            name, cal.raw_min, cal.calibrated_min, cal.raw_max, cal.calibrated_max))
 
-            # max value
-            text.append("<calib raw_value=\"" + str(cal.raw_max) +
-                        "\" calibrated_value=\"" +
-                        str(cal.calibrated_max) + "\"/>")
-
-            text.append("</Joint>")
-
-        text.append("</Cyberglove_calibration>")
+        text.append("]}")
 
         # write the text to a file
         try:
