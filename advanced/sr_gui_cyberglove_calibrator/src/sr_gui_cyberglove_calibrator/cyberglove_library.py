@@ -100,7 +100,7 @@ class Cyberglove:
         self.isFirstMessage = True
         self.liste = 0
         self.raw = rospy.Subscriber(
-            'cyberglove/raw/joint_states', JointState, self.callback_raw)
+            'rh_cyberglove/raw/joint_states', JointState, self.callback_raw)
         self.calibrated = rospy.Subscriber(
             'cyberglove/calibrated/joint_states', JointState, self.callback_calibrated)
         threading.Thread(None, rospy.spin)
@@ -192,6 +192,7 @@ class Cyberglove:
         """
         @return: True if a cyberglove is detected by ROS
         """
+        return True   ## TODO(@dg-shadow) disabled to test rest of gui. fix to work with raw topic
         if not self.hasglove == 0:
             return self.hasglove
         self.hasglove = False
