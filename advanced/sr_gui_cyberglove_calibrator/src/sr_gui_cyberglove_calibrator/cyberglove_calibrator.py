@@ -379,12 +379,11 @@ class SrGuiCybergloveCalibrator(Plugin):
 
         self.calibrer.write_calibration_file(filename)
 
-        # QMessageBox returns 0 for yes
         if QtWidgets.QMessageBox.question(self._widget,
                                           "Load new Calibration",
                                           "Do you want to load the new calibration file?",
                                           QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
-                                          QtWidgets.QMessageBox.No) == 0:
+                                          QtWidgets.QMessageBox.No) == QtWidgets.QMessageBox.Yes:
             self.load_calib(filename)
 
     def load_calib(self, filename=""):
@@ -402,7 +401,7 @@ class SrGuiCybergloveCalibrator(Plugin):
             # statusbar do not exist in rqt anymore (since shared with several plugins)
             # self.statusBar().showMessage("New Cyberglove Calibration Loaded.")
             QtWidgets.QMessageBox.information(self._widget, "Calibration successfully loaded",
-                                              "Do you want to load the new calibration file?",
+                                              "Calibration successfully loaded.",
                                               QtWidgets.QMessageBox.Ok,
                                               QtWidgets.QMessageBox.Ok)
         else:
