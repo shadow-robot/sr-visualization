@@ -330,20 +330,20 @@ class CybergloveCalibrer:
         if filename == "":
             return -1
         try:
-            rospy.wait_for_service('/cyberglove/calibration', timeout=5)
+            # TODO(@dg-shadow): remove the literal namespace (rh_calibration) and replace with something dynamic
+            rospy.wait_for_service('/rh_cyberglove/reload_calibration', timeout=5)
             try:
                 calib = rospy.ServiceProxy(
-                    '/cyberglove/calibration', CalibrationSrv)
-
-                path = filename.encode("iso-8859-1")
-                resp = calib(path)
-                return 0  # resp.state
-            except rospy.ServiceException, e:
-                print 'Failed to call start service'
+                    '/cyberglove/calibration', Empty)
+                with f as open(path, "r"):
+                    calibration_string = f.read()
+                    rospy.set_param("/rh_cyberglove/cyberglove_calibration", calibration_string)
+                calib()
+            except rospy.ServiceException, e as exp:
+                print 'Failed to call service: %s' % str(exp)
                 return -2
         except rospy.ROSException, e:
-            print ('Call start service not found, is the driver running? If you are using cyberglove_trajectory, ' +
-                   'please be adviced that following plugin does not support that package yet.')
+            print ('Service not found, is the driver running?)
             return -3
 
 
