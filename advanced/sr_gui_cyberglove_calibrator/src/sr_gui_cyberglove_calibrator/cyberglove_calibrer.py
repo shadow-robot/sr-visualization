@@ -26,7 +26,9 @@ import roslib
 
 import os
 from cyberglove_library import Cyberglove
-from cyberglove.srv import Calibration as CalibrationSrv
+from std_srvs.srv import Empty
+
+import yaml
 
 import rospy
 
@@ -334,17 +336,20 @@ class CybergloveCalibrer:
             rospy.wait_for_service('/rh_cyberglove/reload_calibration', timeout=5)
             try:
                 calib = rospy.ServiceProxy(
-                    '/cyberglove/calibration', Empty)
-                with f as open(path, "r"):
-                    calibration_string = f.read()
+                    '/rh_cyberglove/reload_calibration', Empty)
+                with open(filename, "r") as f:
+                    calibration_dict = yaml.load(f.read())
+                    calibration_string = calibration_dict["cyberglove_calibration"]
+                    rospy.logwarn(calibration_string)
                     rospy.set_param("/rh_cyberglove/cyberglove_calibration", calibration_string)
                 calib()
-            except rospy.ServiceException, e as exp:
-                print 'Failed to call service: %s' % str(exp)
+            except rospy.ServiceException, e:
+                print 'Failed to call service: %s' % str(e)
                 return -2
         except rospy.ROSException, e:
-            print ('Service not found, is the driver running?)
+            print ('Service not found, is the driver running?')
             return -3
+        return 0
 
 
 #
