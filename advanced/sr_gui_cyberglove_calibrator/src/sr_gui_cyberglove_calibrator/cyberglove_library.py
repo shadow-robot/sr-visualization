@@ -192,7 +192,6 @@ class Cyberglove:
         """
         @return: True if a cyberglove is detected by ROS
         """
-        return True   ## TODO(@dg-shadow) disabled to test rest of gui. fix to work with raw topic
         if not self.hasglove == 0:
             return self.hasglove
         self.hasglove = False
@@ -202,6 +201,6 @@ class Cyberglove:
 
         for topic_typ in self.liste:
             for topic in topic_typ:
-                if '/raw' in topic:
+                if 'cyberglove/raw' in topic:
                     self.hasglove = True
         return self.hasglove
