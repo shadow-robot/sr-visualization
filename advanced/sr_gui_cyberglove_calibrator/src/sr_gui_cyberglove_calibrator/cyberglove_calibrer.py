@@ -286,13 +286,13 @@ class CybergloveCalibrer:
         errors = [];
         for name in self.joints.keys():
             if self.joints[name].raw_min == self.joints[name].raw_max:
-                errors.append("Zero range for joint %s, (%f). Min value modified (-0.001)."
+                errors.append("%s zero range: %f. Min modified (-0.001)."
                               % (name, self.joints[name].raw_min))
                 self.joints[name].raw_min -= 0.001
             if self.joints[name].raw_max == 1.0:
-                errors.append("Sensor %s max value is 1.0" % name)
+                errors.append("%s max value is 1.0." % name)
             if self.joints[name].raw_min == 0.0:
-                errors.append("Sensor %s min value is 0.0" % name)
+                errors.append("%s min value is 0.0." % name)
         for error in errors:
             rospy.logwarn(error)
 

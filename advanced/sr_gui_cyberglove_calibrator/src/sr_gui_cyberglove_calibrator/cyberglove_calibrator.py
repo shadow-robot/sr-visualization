@@ -385,16 +385,22 @@ class SrGuiCybergloveCalibrator(Plugin):
             return
 
         write_output = self.calibrer.write_calibration_file(filename)
+        error = None
         if write_output == -1:
             error = "Calibration has not been finished, output not written."
         elif write_output == -2:
             error = "Error writing file."
 
-        if QtWidgets.QMessageBox.question(self._widget,
-                                          "Load new Calibration",
-                                          "Do you want to load the new calibration file?",
-                                          QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
-                                          QtWidgets.QMessageBox.No) == QtWidgets.QMessageBox.Yes:
+        if error is not None:
+            QtWidgets.QMessageBox.error(self._widget, "Error writing config.",
+                                        error,
+                                        QtWidgets.QMessageBox.Cancel,
+                                        QtWidgets.QMessageBox.Cancel)
+        elif QtWidgets.QMessageBox.question(self._widget,
+                                            "Load new Calibration",
+                                            "Do you want to load the new calibration file?",
+                                            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+                                            QtWidgets.QMessageBox.No) == QtWidgets.QMessageBox.Yes:
             self.load_calib(filename)
 
     def load_calib(self, filename=""):
