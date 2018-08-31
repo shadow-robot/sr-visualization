@@ -368,6 +368,13 @@ class SrGuiCybergloveCalibrator(Plugin):
                 self.glove_calibrating_widget.set_calibrated([name])
 
         if self.calibrer.all_steps_done():
+            range_errors = self.calibrer.check_ranges()
+            if len(range_errors) != 0:
+                 QtWidgets.QMessageBox.warning(self._widget, "%d ensor range error(s) reported." % len(range_errors),
+                                               "\n".join(range_errors),
+                                               QtWidgets.QMessageBox.Ok,
+                                               QtWidgets.QMessageBox.Ok)
+
             self.btn_save.setEnabled(True)
 
     def save_calib(self):
@@ -377,7 +384,11 @@ class SrGuiCybergloveCalibrator(Plugin):
         if filename == "":
             return
 
-        self.calibrer.write_calibration_file(filename)
+        write_output = self.calibrer.write_calibration_file(filename)
+        if write_output == -1:
+            error = "Calibration has not been finished, output not written."
+        elif write_output == -2:
+            error = "Error writing file."
 
         if QtWidgets.QMessageBox.question(self._widget,
                                           "Load new Calibration",
