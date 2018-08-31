@@ -283,7 +283,7 @@ class CybergloveCalibrer:
         Check for zero range calibrations, also for min/max values (-> full sensor range not being used)
         """
         self.reorder_calibration()
-        errors = [];
+        errors = []
         for name in self.joints.keys():
             if self.joints[name].raw_min == self.joints[name].raw_max:
                 errors.append("%s zero range: %f. Min modified (-0.001)."
@@ -297,7 +297,6 @@ class CybergloveCalibrer:
             rospy.logwarn(error)
 
         return errors
-
 
     def write_calibration_file(self, filepath):
         """
@@ -323,16 +322,13 @@ class CybergloveCalibrer:
         #
         # store the text in a table
 
-        ## yaml output
-
         text = []
         text.append("{'cyberglove_calibration': [")
-
 
         for name in self.joints:
             cal = self.joints[name]
             text.append("['%s', [[%f,%f],[%f,%f]]]," % (
-            name, cal.raw_min, cal.calibrated_min, cal.raw_max, cal.calibrated_max))
+                name, cal.raw_min, cal.calibrated_min, cal.raw_max, cal.calibrated_max))
 
         text.append("]}")
 
