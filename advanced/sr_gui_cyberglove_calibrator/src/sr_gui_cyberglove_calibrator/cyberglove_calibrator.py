@@ -370,10 +370,10 @@ class SrGuiCybergloveCalibrator(Plugin):
         if self.calibrer.all_steps_done():
             range_errors = self.calibrer.check_ranges()
             if len(range_errors) != 0:
-                 QtWidgets.QMessageBox.warning(self._widget, "%d ensor range error(s) reported." % len(range_errors),
-                                               "\n".join(range_errors),
-                                               QtWidgets.QMessageBox.Ok,
-                                               QtWidgets.QMessageBox.Ok)
+                QtWidgets.QMessageBox.warning(self._widget, "%d ensor range error(s) reported." % len(range_errors),
+                                              "\n".join(range_errors),
+                                              QtWidgets.QMessageBox.Ok,
+                                              QtWidgets.QMessageBox.Ok)
 
             self.btn_save.setEnabled(True)
 
