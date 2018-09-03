@@ -34,6 +34,7 @@ from cyberglove_calibrer import *
 from cyberglove_mapper import *
 
 from sensor_msgs.msg import JointState
+from std_srvs.srv import Empty
 
 rootPath = os.path.join(
     rospkg.RosPack().get_path('sr_gui_cyberglove_calibrator'))
@@ -48,7 +49,7 @@ class SrGuiCyberglovePointTweaker(QtWidgets.QWidget):
         button.setMaximumSize(40,40)
         return button
 
-    def __init__(self, index, raw, calibrated, increment=0.01, button_callback=lambda x: x):
+    def __init__(self, index, raw, calibrated, button_callback=lambda x,y: x):
         super(SrGuiCyberglovePointTweaker, self).__init__()
         self.setLayout(QGridLayout())
 
@@ -74,7 +75,6 @@ class SrGuiCyberglovePointTweaker(QtWidgets.QWidget):
         self.layout().addWidget(down3, 1, 3)
 
         self._button_callback = button_callback
-        self._increment = increment
 
         self._set_raw_value(raw)
         self._set_calibrated_value(calibrated)
@@ -82,7 +82,7 @@ class SrGuiCyberglovePointTweaker(QtWidgets.QWidget):
 
     def _change_raw(self, amount):
         self._set_raw_value(self._raw_value + amount)
-        self._button_callback(self._raw_value)
+        self._button_callback(self._index, self._raw_value)
 
     def _set_calibrated_value(self, value):
         self._calibrated_value = value
@@ -97,9 +97,11 @@ class SrGuiCybergloveJointTweaker(QtWidgets.QWidget):
     Calibrator for one joint, expecting linear calibrations between two or more points.
     """
 
-    def __init__(self, joint_name, calibration_changed_callback, calibration_points=[]):
+    def __init__(self, joint_name, calibration_changed_callback, calibration_points, tweak_callback):
         super(SrGuiCybergloveJointTweaker, self).__init__()
 
+        self._tweak_callback = tweak_callback
+        self._joint_name = joint_name
         self.setLayout(QHBoxLayout())
 
         labels = QtWidgets.QWidget()
@@ -117,7 +119,7 @@ class SrGuiCybergloveJointTweaker(QtWidgets.QWidget):
 
         self.layout().addWidget(labels)
         for n,point in enumerate(calibration_points):
-            self.layout().addWidget(SrGuiCyberglovePointTweaker(n, point[0], point[1]))
+            self.layout().addWidget(SrGuiCyberglovePointTweaker(n, point[0], point[1], self._point_change_callback))
         self.layout().addStretch()
 
         self._timer = rospy.Timer(rospy.Duration(0.1), self._update)
@@ -132,30 +134,16 @@ class SrGuiCybergloveJointTweaker(QtWidgets.QWidget):
         self._calibrated_value_label.setText("%10.4f (Calibrated)" % self._calibrated_value)
         self._raw_value_label.setText("%10.4f (Raw)" % self._raw_value)
 
+
+    def _point_change_callback(self, index, value):
+        self._calibration_points[index][0] = value
+        rospy.logwarn("%s - %s" % (self._joint_name, str(self._calibration_points)))
+        self._tweak_callback(self._joint_name, self._calibration_points)
 class QHLine(QFrame):
     def __init__(self):
         super(QHLine, self).__init__()
         self.setFrameShape(QFrame.HLine)
         self.setFrameShadow(QFrame.Sunken)
-
-# class CalibrationPoint
-
-# class JointCalibration(object)
-
-# class JointCalibration(object):
-#     def __init__(self, specification):
-#         if (type(specification) != list or len(specification) != 2 or
-#             type(specification[0]) != str or type(specification[1]) != list):
-#             rospy.logfatal("Incorrectly specified calibration point: %s" % str(specification))
-#         self._name = specification[0]
-
-#         raw = []
-#         cal = []
-
-#         for entry in specification[1]:
-#             if type(entry) != list or len(entry) != 2:
-#                 rospy.logfatal("Incorrectly specified calibration point: %s" % str(specification))
-#             sel
 
 class SrGuiCybergloveTweaker(Plugin):
 
@@ -170,6 +158,14 @@ class SrGuiCybergloveTweaker(Plugin):
         self._calibrated_listner = rospy.Subscriber("/rh_cyberglove/calibrated/joint_states",
                                                     JointState, self._calibrated_callback, queue_size=1)
 
+    def _get_calibration_from_parameter(self):
+        calibration = rospy.get_param("/rh_cyberglove/cyberglove_calibration")
+        self._original_calibration =  calibration
+        self._calibration = {}
+        for entry in calibration:
+            name = entry[0]
+            self._calibration[name] = entry[1]
+
     def _raw_callback(self, msg):
         for n, joint in enumerate(msg.name):
             value = msg.position[n]
@@ -179,6 +175,15 @@ class SrGuiCybergloveTweaker(Plugin):
         for n, joint in enumerate(msg.name):
             value = msg.position[n]
             self._joint_tweakers[joint].set_calibrated_value(value)
+
+    def _tweak_callback(self, joint, calibration):
+        self._calibration[joint] = calibration
+        self._output_calibration_to_param()
+
+    def _output_calibration_to_param(self):
+        calibration = [ [name, self._calibration[name]] for name in self._joint_names ]
+        rospy.set_param("/rh_cyberglove/cyberglove_calibration", calibration)
+        self._driver_reload_callback()
 
     def _make_widget(self, context):
         ui_file = os.path.join(rospkg.RosPack().get_path(
@@ -203,10 +208,12 @@ class SrGuiCybergloveTweaker(Plugin):
 
         self._top_layout.addWidget(QtWidgets.QWidget())
 
+        self._get_calibration_from_parameter()
+
         self._joint_tweakers = {}
 
         for joint in self._joint_names:
-            joint_tweaker = SrGuiCybergloveJointTweaker(joint, None, [[0.02,50.0],[0.55,0.0]])
+            joint_tweaker = SrGuiCybergloveJointTweaker(joint, None, self._calibration[joint], self._tweak_callback)
             joint_tweaker.set_raw_value(0)
             joint_tweaker.set_calibrated_value(0)
             self._joint_tweakers[joint] = joint_tweaker
@@ -236,6 +243,8 @@ class SrGuiCybergloveTweaker(Plugin):
         self._make_widget(context)
 
         self._make_listeners()
+
+        self._driver_reload_callback = rospy.ServiceProxy("/rh_cyberglove/reload_calibration", Empty)
 
         # self.layout = self._widget.layout
         # subframe = QtWidgets.QFrame()
