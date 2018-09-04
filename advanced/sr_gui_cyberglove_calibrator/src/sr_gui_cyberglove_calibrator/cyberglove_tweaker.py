@@ -259,7 +259,6 @@ class SrGuiCybergloveTweaker(Plugin):
         self.icon_dir = os.path.join(
             rospkg.RosPack().get_path('sr_visualization_icons'), '/icons')
 
-
         self._make_calibrer()
 
         self._make_widget(context)
@@ -321,45 +320,38 @@ class SrGuiCybergloveTweaker(Plugin):
 
 
     def _save_calibration(self):
-        # load in to calibrer or hack calibrer to accept array
-        pass
+        (file_name, dummy) = QtWidgets.QFileDialog.getSaveFileName(
+            self._widget, 'Save Calibration', '')
+        if file_name == "":
+            return
 
-    #     # since pyqt5, filters are also returned
-    #     (filename, dummy) = QtWidgets.QFileDialog.getSaveFileName(
-    #         self._widget, 'Save Calibration', '')
-    #     if filename == "":
-    #         return
+        text = ["{'cyberglove_calibration': ["]
 
-    #     write_output = self.calibrer.write_calibration_file(filename)
-    #     error = None
-    #     if write_output == -1:
-    #         error = "Calibration has not been finished, output not written."
-    #     elif write_output == -2:
-    #         error = "Error writing file."
+        for name in self._joint_names:
+            calibration_string = str(self._calibration[name])
+            text.append("['%s', %s]," % (name, calibration_string))
+        text.append("]}")
 
-    #     if error is not None:
-    #         QtWidgets.QMessageBox.error(self._widget, "Error writing config.",
-    #                                     error,
-    #                                     QtWidgets.QMessageBox.Cancel,
-    #                                     QtWidgets.QMessageBox.Cancel)
-    #     elif QtWidgets.QMessageBox.question(self._widget,
-    #                                         "Load new Calibration",
-    #                                         "Do you want to load the new calibration file?",
-    #                                         QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
-    #                                         QtWidgets.QMessageBox.No) == QtWidgets.QMessageBox.Yes:
-    #         self.load_calib(filename)
+        try:
+            with open(file_name, "w") as output_file:
+                for line in text:
+                    output_file.write(line + "\n")
+        except Exception as e:
+            rospy.logerr(str(e))
+            QtWidgets.QMessageBox.information(
+                self._widget, "Calibration saving failed!", "Saving loading failed: %s" % str(e),
+                QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.Ok)
 
     def _load_calibration(self):
-        (filename, dummy) = QtWidgets.QFileDialog.getOpenFileName(
+        (file_name, dummy) = QtWidgets.QFileDialog.getOpenFileName(
             self._widget, 'Open Calibration', '')
-        if "" == filename:
+        if "" == file_name:
                  return
 
-        if self._calibrer.load_calib(str(filename)) == 0:
-            QtWidgets.QMessageBox.information(self._widget, "Calibration successfully loaded",
-                                              "Calibration successfully loaded.",
-                                              QtWidgets.QMessageBox.Ok,
-                                              QtWidgets.QMessageBox.Ok)
+        if self._calibrer.load_calib(str(file_name)) == 0:
+            QtWidgets.QMessageBox.information(
+                self._widget, "Calibration successfully loaded", "Calibration successfully loaded.",
+                QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.Ok)
             # cyberglove_calibrer already had a function for loading from a file which writes to the parameter.
             # as we have to set the parameter anyway, we just let calibrer do it and read it back from the param server
             # it's a little bit dirty, but sue me, it works ;)
@@ -368,10 +360,9 @@ class SrGuiCybergloveTweaker(Plugin):
             self._reset_tweakers()
 
         else:
-            QtWidgets.QMessageBox.information(self._widget, "Calibration loading failed",
-                                              "Calibration loading failed",
-                                              QtWidgets.QMessageBox.Ok,
-                                              QtWidgets.QMessageBox.Ok)
+            QtWidgets.QMessageBox.information(
+                self._widget, "Calibration loading failed", "Calibration loading failed",
+                QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.Ok)
 
 if __name__ == '__main__':
     import sys
