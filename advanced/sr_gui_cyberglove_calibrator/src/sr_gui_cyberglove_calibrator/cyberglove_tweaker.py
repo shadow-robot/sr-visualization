@@ -29,6 +29,8 @@ import QtGui
 from QtGui import *
 import QtWidgets
 from QtWidgets import *
+from math import degrees
+from copy import deepcopy
 
 from cyberglove_calibrer import *
 from cyberglove_mapper import *
@@ -38,6 +40,8 @@ from std_srvs.srv import Empty
 
 rootPath = os.path.join(
     rospkg.RosPack().get_path('sr_gui_cyberglove_calibrator'))
+
+import sip
 
 class SrGuiCyberglovePointTweaker(QtWidgets.QWidget):
     """
@@ -92,6 +96,7 @@ class SrGuiCyberglovePointTweaker(QtWidgets.QWidget):
         self._raw_value = value
         self._raw_value_label.setText("%.4f (Raw)" % self._raw_value)
 
+
 class SrGuiCybergloveJointTweaker(QtWidgets.QWidget):
     """
     Calibrator for one joint, expecting linear calibrations between two or more points.
@@ -131,14 +136,17 @@ class SrGuiCybergloveJointTweaker(QtWidgets.QWidget):
         self._raw_value = value
 
     def _update(self, event):
-        self._calibrated_value_label.setText("%10.4f (Calibrated)" % self._calibrated_value)
-        self._raw_value_label.setText("%10.4f (Raw)" % self._raw_value)
-
+        try:
+            self._calibrated_value_label.setText("%10.4f (Calibrated)" % self._calibrated_value)
+            self._raw_value_label.setText("%10.4f (Raw)" % self._raw_value)
+        except Exception as e: # Only reason for an exception is objects being deleted in the wrong order. Kill unwanted error messages.
+            pass
 
     def _point_change_callback(self, index, value):
         self._calibration_points[index][0] = value
-        rospy.logwarn("%s - %s" % (self._joint_name, str(self._calibration_points)))
         self._tweak_callback(self._joint_name, self._calibration_points)
+
+
 class QHLine(QFrame):
     def __init__(self):
         super(QHLine, self).__init__()
@@ -158,30 +166,35 @@ class SrGuiCybergloveTweaker(Plugin):
         self._calibrated_listner = rospy.Subscriber("/rh_cyberglove/calibrated/joint_states",
                                                     JointState, self._calibrated_callback, queue_size=1)
 
-    def _get_calibration_from_parameter(self):
-        calibration = rospy.get_param("/rh_cyberglove/cyberglove_calibration")
-        self._original_calibration =  calibration
+    def _get_calibration_from_parameter(self, calibration=None):
+        if calibration is None:
+            calibration = rospy.get_param("/rh_cyberglove/cyberglove_calibration")
+        self._original_calibration =  deepcopy(calibration)
         self._calibration = {}
         for entry in calibration:
             name = entry[0]
             self._calibration[name] = entry[1]
 
+
     def _raw_callback(self, msg):
         for n, joint in enumerate(msg.name):
-            value = msg.position[n]
-            self._joint_tweakers[joint].set_raw_value(value)
+            if joint in self._joint_tweakers:
+                value = msg.position[n]
+                self._joint_tweakers[joint].set_raw_value(value)
 
     def _calibrated_callback(self, msg):
         for n, joint in enumerate(msg.name):
-            value = msg.position[n]
-            self._joint_tweakers[joint].set_calibrated_value(value)
+            if joint in self._joint_tweakers:
+                value = msg.position[n]
+                self._joint_tweakers[joint].set_calibrated_value(degrees(value))
 
     def _tweak_callback(self, joint, calibration):
         self._calibration[joint] = calibration
-        self._output_calibration_to_param()
+        self._output_calibration_to_parameter()
 
-    def _output_calibration_to_param(self):
-        calibration = [ [name, self._calibration[name]] for name in self._joint_names ]
+    def _output_calibration_to_parameter(self, calibration = None):
+        if calibration is None:
+            calibration = [ [name, self._calibration[name]] for name in self._joint_names ]
         rospy.set_param("/rh_cyberglove/cyberglove_calibration", calibration)
         self._driver_reload_callback()
 
@@ -210,7 +223,14 @@ class SrGuiCybergloveTweaker(Plugin):
 
         self._get_calibration_from_parameter()
 
+        self._add_tweakers_to_widget()
+
+        self._make_buttons()
+
+
+    def _add_tweakers_to_widget(self):
         self._joint_tweakers = {}
+        self._joint_lines = {}
 
         for joint in self._joint_names:
             joint_tweaker = SrGuiCybergloveJointTweaker(joint, None, self._calibration[joint], self._tweak_callback)
@@ -218,7 +238,9 @@ class SrGuiCybergloveTweaker(Plugin):
             joint_tweaker.set_calibrated_value(0)
             self._joint_tweakers[joint] = joint_tweaker
             self._joints_layout.addWidget(joint_tweaker)
-            self._joints_layout.addWidget(QHLine())
+            self._joint_lines[joint] = QHLine()
+            self._joints_layout.addWidget(self._joint_lines[joint])
+
 
     def _make_calibrer(self):
         # read nb_sensors from rosparam or fallback to 22
@@ -246,67 +268,62 @@ class SrGuiCybergloveTweaker(Plugin):
 
         self._driver_reload_callback = rospy.ServiceProxy("/rh_cyberglove/reload_calibration", Empty)
 
-        # self.layout = self._widget.layout
-        # subframe = QtWidgets.QFrame()
-        # sublayout = QtWidgets.QHBoxLayout()
 
-        # self.glove_calibrating_widget = GloveCalibratingWidget(
-        #     self._widget, self.joint_names)
-        # self.layout.addWidget(self.glove_calibrating_widget)
+    def _make_buttons(self):
+        btn_frame = QtWidgets.QFrame()
+        btn_layout = QtWidgets.QHBoxLayout()
+        btn_layout.setSpacing(25)
+        # btn_layout.addStretch()
 
-        # self.step_selector = StepSelector(self._widget, self.calibrer)
-        # sublayout.addWidget(self.step_selector)
+        btn_save = QtWidgets.QPushButton()
+        btn_save.setText("&Save")
+        btn_save.setToolTip("Save the current calibration")
+        btn_save.setIcon(QtGui.QIcon(rootPath + '/images/icons/save.png'))
+        btn_save.clicked.connect(self._save_calibration)
+        btn_layout.addWidget(btn_save)
 
-        # btn_frame = QtWidgets.QFrame()
-        # btn_layout = QtWidgets.QVBoxLayout()
-        # btn_layout.setSpacing(25)
-        # btn_calibrate = QtWidgets.QPushButton()
-        # btn_calibrate.setText("Calibrate")
-        # btn_calibrate.setToolTip("Calibrate the current selected step")
-        # btn_calibrate.setIcon(
-        #     QtGui.QIcon(rootPath + '/images/icons/calibrate.png'))
-        # btn_layout.addWidget(btn_calibrate)
-        # btn_calibrate.clicked.connect(self.calibrate_current_step)
-        # self.btn_save = QtWidgets.QPushButton()
-        # self.btn_save.setText("Save")
-        # self.btn_save.setToolTip("Save the current calibration")
-        # self.btn_save.setIcon(QtGui.QIcon(rootPath + '/images/icons/save.png'))
-        # self.btn_save.setDisabled(True)
-        # btn_layout.addWidget(self.btn_save)
-        # self.btn_save.clicked.connect(self.save_calib)
-        # btn_load = QtWidgets.QPushButton()
-        # btn_load.setText("Load")
-        # btn_load.setToolTip("Load a Glove calibration")
-        # btn_load.setIcon(QtGui.QIcon(rootPath + '/images/icons/load.png'))
-        # btn_layout.addWidget(btn_load)
-        # btn_load.clicked.connect(self.load_calib)
-        # btn_frame.setLayout(btn_layout)
-        # sublayout.addWidget(btn_frame)
-        # subframe.setLayout(sublayout)
-        # self.layout.addWidget(subframe)
+        btn_load = QtWidgets.QPushButton()
+        btn_load.setText("&Load")
+        btn_load.setToolTip("Load a Glove calibration")
+        btn_load.setIcon(QtGui.QIcon(rootPath + '/images/icons/load.png'))
+        btn_layout.addWidget(btn_load)
+        btn_load.clicked.connect(self._load_calibration)
+        btn_frame.setLayout(btn_layout)
+
+        btn_reset = QtWidgets.QPushButton()
+        btn_reset.setText("&Reset")
+        btn_reset.setToolTip("Reset to original/last loaded calibration.")
+        btn_reset.setIcon(QtGui.QIcon(rootPath + '/images/icons/load.png'))
+        btn_layout.addWidget(btn_reset)
+        btn_reset.clicked.connect(self._reset_calibration)
+        btn_frame.setLayout(btn_layout)
+
+        self._top_layout.addWidget(btn_frame)
+
 
         # #  QtCore.QTimer.singleShot(0, self.window.adjustSize)
 
-    # def calibrate_current_step(self):
-    #     self.step_selector.calibrate_current_step()
+    def _delete_widget(self, layout, widget):
+        layout.removeWidget(widget)
+        sip.delete(widget)
+        widget = None
 
-    #     for name in self.joint_names:
-    #         if self.calibrer.is_step_done(name) == 0.5:
-    #             self.glove_calibrating_widget.set_half_calibrated([name])
-    #         elif self.calibrer.is_step_done(name) == 1.0:
-    #             self.glove_calibrating_widget.set_calibrated([name])
+    def _reset_calibration(self):
+        self._output_calibration_to_parameter(self._original_calibration)
+        self._get_calibration_from_parameter()
+        self._reset_tweakers()
 
-    #     if self.calibrer.all_steps_done():
-    #         range_errors = self.calibrer.check_ranges()
-    #         if len(range_errors) != 0:
-    #             QtWidgets.QMessageBox.warning(self._widget, "%d ensor range error(s) reported." % len(range_errors),
-    #                                           "\n".join(range_errors),
-    #                                           QtWidgets.QMessageBox.Ok,
-    #                                           QtWidgets.QMessageBox.Ok)
+    def _reset_tweakers(self):
+        for joint_name in self._joint_tweakers:
+            self._delete_widget(self._joints_layout,  self._joint_tweakers[joint_name])
+            self._delete_widget(self._joints_layout,  self._joint_lines[joint_name])
+        self._add_tweakers_to_widget()
 
-    #         self.btn_save.setEnabled(True)
 
-    # def save_calib(self):
+    def _save_calibration(self):
+        # load in to calibrer or hack calibrer to accept array
+        pass
+
     #     # since pyqt5, filters are also returned
     #     (filename, dummy) = QtWidgets.QFileDialog.getSaveFileName(
     #         self._widget, 'Save Calibration', '')
@@ -332,29 +349,29 @@ class SrGuiCybergloveTweaker(Plugin):
     #                                         QtWidgets.QMessageBox.No) == QtWidgets.QMessageBox.Yes:
     #         self.load_calib(filename)
 
-    # def load_calib(self, filename=""):
-    #     # when called from the button. filename is filled with some more info
-    #     if filename is False:
-    #         filename = ""
-    #     if "" == filename:
-    #         # since pyqt5, filters are also returned
-    #         (filename, dummy) = QtWidgets.QFileDialog.getOpenFileName(
-    #             self._widget, 'Open Calibration', '')
-    #         if "" == filename:
-    #             return
+    def _load_calibration(self):
+        (filename, dummy) = QtWidgets.QFileDialog.getOpenFileName(
+            self._widget, 'Open Calibration', '')
+        if "" == filename:
+                 return
 
-    #     if self.calibrer.load_calib(str(filename)) == 0:
-    #         # statusbar do not exist in rqt anymore (since shared with several plugins)
-    #         # self.statusBar().showMessage("New Cyberglove Calibration Loaded.")
-    #         QtWidgets.QMessageBox.information(self._widget, "Calibration successfully loaded",
-    #                                           "Calibration successfully loaded.",
-    #                                           QtWidgets.QMessageBox.Ok,
-    #                                           QtWidgets.QMessageBox.Ok)
-    #     else:
-    #         QtWidgets.QMessageBox.information(self._widget, "Calibration loading failed",
-    #                                           "Calibration loading failed",
-    #                                           QtWidgets.QMessageBox.Ok,
-    #                                           QtWidgets.QMessageBox.Ok)
+        if self._calibrer.load_calib(str(filename)) == 0:
+            QtWidgets.QMessageBox.information(self._widget, "Calibration successfully loaded",
+                                              "Calibration successfully loaded.",
+                                              QtWidgets.QMessageBox.Ok,
+                                              QtWidgets.QMessageBox.Ok)
+            # cyberglove_calibrer already had a function for loading from a file which writes to the parameter.
+            # as we have to set the parameter anyway, we just let calibrer do it and read it back from the param server
+            # it's a little bit dirty, but sue me, it works ;)
+
+            self._get_calibration_from_parameter()
+            self._reset_tweakers()
+
+        else:
+            QtWidgets.QMessageBox.information(self._widget, "Calibration loading failed",
+                                              "Calibration loading failed",
+                                              QtWidgets.QMessageBox.Ok,
+                                              QtWidgets.QMessageBox.Ok)
 
 if __name__ == '__main__':
     import sys

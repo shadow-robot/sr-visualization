@@ -357,7 +357,6 @@ class CybergloveCalibrer:
                 with open(filename, "r") as f:
                     calibration_dict = yaml.load(f.read())
                     calibration_string = calibration_dict["cyberglove_calibration"]
-                    rospy.logwarn(calibration_string)
                     rospy.set_param("/rh_cyberglove/cyberglove_calibration", calibration_string)
                 calib()
             except rospy.ServiceException, e:
