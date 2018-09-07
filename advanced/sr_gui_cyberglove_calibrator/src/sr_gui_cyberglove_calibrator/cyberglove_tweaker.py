@@ -22,7 +22,6 @@ import rospkg
 
 
 from qt_gui.plugin import Plugin
-from python_qt_binding import loadUi
 import QtCore
 from QtCore import Qt, QEvent, QObject, pyqtSignal
 import QtGui
@@ -158,6 +157,12 @@ class SrGuiCybergloveJointTweaker(QtWidgets.QWidget):
         points_and_display.layout().addWidget(points)
 
         self.layout().addWidget(points_and_display)
+        picture = QLabel()
+        location = rospkg.RosPack().get_path('sr_gui_cyberglove_calibrator') + '/images/%s.jpg' % joint_name
+        picture.setPixmap(QPixmap(location))
+        rospy.logwarn(location)
+
+        self.layout().addWidget(picture)
         self.layout().addStretch()
 
         self.update_gui.connect(self._update_gui)
@@ -255,8 +260,6 @@ class SrGuiCybergloveTweaker(Plugin):
         self._driver_reload_callback()
 
     def _make_widget(self, context):
-        ui_file = os.path.join(rospkg.RosPack().get_path(
-            'sr_gui_cyberglove_calibrator'), 'uis', 'SrGuiCybergloveTweaker.ui')
         self._widget = QtWidgets.QWidget()
 
         if context is not None:
@@ -319,6 +322,8 @@ class SrGuiCybergloveTweaker(Plugin):
 
         self._make_listeners()
 
+        self._widget.setWindowTitle('Cyberglove Calibration Tweaker')
+
         self._driver_reload_callback = rospy.ServiceProxy("/rh_cyberglove/reload_calibration", Empty)
 
 
@@ -326,7 +331,6 @@ class SrGuiCybergloveTweaker(Plugin):
         btn_frame = QtWidgets.QFrame()
         btn_layout = QtWidgets.QHBoxLayout()
         btn_layout.setSpacing(25)
-        # btn_layout.addStretch()
 
         btn_save = QtWidgets.QPushButton()
         btn_save.setText("&Save")
