@@ -158,9 +158,7 @@ class SrGuiCybergloveJointTweaker(QtWidgets.QWidget):
 
         self.layout().addWidget(points_and_display)
         picture = QLabel()
-        location = rospkg.RosPack().get_path('sr_gui_cyberglove_calibrator') + '/images/%s.jpg' % joint_name
-        picture.setPixmap(QPixmap(location))
-        rospy.logwarn(location)
+        picture.setPixmap(QPixmap(rootPath + '/images/%s.jpg' % joint_name))
 
         self.layout().addWidget(picture)
         self.layout().addStretch()
@@ -229,7 +227,7 @@ class SrGuiCybergloveTweaker(Plugin):
 
     def _get_calibration_from_parameter(self, calibration=None):
         if calibration is None:
-            calibration = rospy.get_param("/rh_cyberglove/cyberglove_calibration")
+            calibration = rospy.get_param(self._calibration_param)
         self._original_calibration =  deepcopy(calibration)
         self._calibration = {}
         for entry in calibration:
@@ -256,7 +254,7 @@ class SrGuiCybergloveTweaker(Plugin):
     def _output_calibration_to_parameter(self, calibration = None):
         if calibration is None:
             calibration = [ [name, self._calibration[name]] for name in self._joint_names ]
-        rospy.set_param("/rh_cyberglove/cyberglove_calibration", calibration)
+        rospy.set_param(self._calibration_param, calibration)
         self._driver_reload_callback()
 
     def _make_widget(self, context):
@@ -315,6 +313,8 @@ class SrGuiCybergloveTweaker(Plugin):
         self.setObjectName('SrGuiCybergloveTweaker')
         self.icon_dir = os.path.join(
             rospkg.RosPack().get_path('sr_visualization_icons'), '/icons')
+
+        self._calibration_param = "/rh_cyberglove/cyberglove_calibration"
 
         self._make_calibrer()
 
