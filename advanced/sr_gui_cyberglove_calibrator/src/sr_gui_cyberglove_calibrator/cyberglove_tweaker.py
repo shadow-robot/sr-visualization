@@ -24,7 +24,7 @@ import rospkg
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 import QtCore
-from QtCore import Qt, QEvent, QObject
+from QtCore import Qt, QEvent, QObject, pyqtSignal
 import QtGui
 from QtGui import *
 import QtWidgets
@@ -43,6 +43,18 @@ rootPath = os.path.join(
 
 import sip
 
+class QHLine(QFrame):
+    def __init__(self):
+        super(QHLine, self).__init__()
+        self.setFrameShape(QFrame.HLine)
+        self.setFrameShadow(QFrame.Sunken)
+
+class QVLine(QFrame):
+    def __init__(self):
+        super(QVLine, self).__init__()
+        self.setFrameShape(QFrame.VLine)
+        self.setFrameShadow(QFrame.Sunken)
+
 class SrGuiCyberglovePointTweaker(QtWidgets.QWidget):
     """
     Adjustment for one calibration point
@@ -56,6 +68,7 @@ class SrGuiCyberglovePointTweaker(QtWidgets.QWidget):
     def __init__(self, index, raw, calibrated, button_callback=lambda x,y: x):
         super(SrGuiCyberglovePointTweaker, self).__init__()
         self.setLayout(QGridLayout())
+        self.layout().setVerticalSpacing(25)
 
         self._raw_value_label = QLabel()
         self._calibrated_value_label = QLabel()
@@ -101,33 +114,54 @@ class SrGuiCybergloveJointTweaker(QtWidgets.QWidget):
     """
     Calibrator for one joint, expecting linear calibrations between two or more points.
     """
+    update_gui = pyqtSignal()
 
     def __init__(self, joint_name, calibration_changed_callback, calibration_points, tweak_callback):
         super(SrGuiCybergloveJointTweaker, self).__init__()
 
         self._tweak_callback = tweak_callback
         self._joint_name = joint_name
+
         self.setLayout(QHBoxLayout())
+
 
         labels = QtWidgets.QWidget()
         labels.setLayout(QVBoxLayout())
         labels.layout().addWidget(QLabel(joint_name))
-
+        self._name = joint_name
         self._raw_value_label = QLabel()
         self._calibrated_value_label = QLabel()
 
         labels.layout().addWidget(self._calibrated_value_label)
         labels.layout().addWidget(self._raw_value_label)
 
+        points = QtWidgets.QWidget()
+        points.setLayout(QHBoxLayout())
+
+        points_and_display = QtWidgets.QWidget()
+        points_and_display.setLayout(QVBoxLayout())
+        points_and_display.layout().setSpacing(30)
+
         self._calibration_points = calibration_points
         self._calibration_points.sort(key = lambda p: p[1])
 
         self.layout().addWidget(labels)
         for n,point in enumerate(calibration_points):
-            self.layout().addWidget(SrGuiCyberglovePointTweaker(n, point[0], point[1], self._point_change_callback))
+            points.layout().addWidget(SrGuiCyberglovePointTweaker(n, point[0], point[1], self._point_change_callback))
+            if n < len(calibration_points) - 1:
+                points.layout().addWidget(QVLine())
+
+        self._progress_bar = QProgressBar()
+        self._progress_bar.setRange(0,1000)
+
+        points_and_display.layout().addWidget(self._progress_bar)
+        points_and_display.layout().addWidget(points)
+
+        self.layout().addWidget(points_and_display)
         self.layout().addStretch()
 
-        self._timer = rospy.Timer(rospy.Duration(0.1), self._update)
+        self.update_gui.connect(self._update_gui)
+        self._timer = rospy.Timer(rospy.Duration(0.05), lambda x: self.update_gui.emit())
 
     def set_calibrated_value(self, value):
         self._calibrated_value = value
@@ -135,23 +169,45 @@ class SrGuiCybergloveJointTweaker(QtWidgets.QWidget):
     def set_raw_value(self, value):
         self._raw_value = value
 
-    def _update(self, event):
-        try:
-            self._calibrated_value_label.setText("%10.4f (Calibrated)" % self._calibrated_value)
-            self._raw_value_label.setText("%10.4f (Raw)" % self._raw_value)
-        except Exception as e: # Only reason for an exception is objects being deleted in the wrong order. Kill unwanted error messages.
-            pass
+    def _set_progress_bar(self):
+        min_calibration = self._calibration_points[0][1]
+        max_calibration = self._calibration_points[-1][1]
+
+        position = max(self._calibrated_value, min_calibration)
+        position = min(position, max_calibration)
+
+        window_index = 0
+        number_of_windows = (len(self._calibration_points) - 1)
+
+        range_per_window = (self._progress_bar.maximum() - self._progress_bar.minimum()) / number_of_windows
+
+        lower_bound = min_calibration
+        upper_bound = max_calibration
+
+        for n in range(len(self._calibration_points) - 1):
+            if position > self._calibration_points[n + 1][1]:
+                lower_bound = self._calibration_points[n + 1][1]
+                window_index += 1
+            else:
+                upper_bound = self._calibration_points[n + 1][1]
+                break
+
+        position_in_window = (position - lower_bound)/(upper_bound - lower_bound)
+        value = (window_index + position_in_window) * range_per_window
+
+        self._progress_bar.setValue(value)
+
+
+    @QtCore.pyqtSlot()
+    def _update_gui(self):
+        self._calibrated_value_label.setText("%10.4f (Calibrated)" % self._calibrated_value)
+        self._raw_value_label.setText("%10.4f (Raw)" % self._raw_value)
+        self._set_progress_bar()
 
     def _point_change_callback(self, index, value):
         self._calibration_points[index][0] = value
         self._tweak_callback(self._joint_name, self._calibration_points)
 
-
-class QHLine(QFrame):
-    def __init__(self):
-        super(QHLine, self).__init__()
-        self.setFrameShape(QFrame.HLine)
-        self.setFrameShadow(QFrame.Sunken)
 
 class SrGuiCybergloveTweaker(Plugin):
 
@@ -227,7 +283,6 @@ class SrGuiCybergloveTweaker(Plugin):
 
         self._make_buttons()
 
-
     def _add_tweakers_to_widget(self):
         self._joint_tweakers = {}
         self._joint_lines = {}
@@ -240,7 +295,6 @@ class SrGuiCybergloveTweaker(Plugin):
             self._joints_layout.addWidget(joint_tweaker)
             self._joint_lines[joint] = QHLine()
             self._joints_layout.addWidget(self._joint_lines[joint])
-
 
     def _make_calibrer(self):
         # read nb_sensors from rosparam or fallback to 22
@@ -298,9 +352,6 @@ class SrGuiCybergloveTweaker(Plugin):
         btn_frame.setLayout(btn_layout)
 
         self._top_layout.addWidget(btn_frame)
-
-
-        # #  QtCore.QTimer.singleShot(0, self.window.adjustSize)
 
     def _delete_widget(self, layout, widget):
         layout.removeWidget(widget)
