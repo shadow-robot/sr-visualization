@@ -37,10 +37,11 @@ from cyberglove_mapper import *
 from sensor_msgs.msg import JointState
 from std_srvs.srv import Empty
 
+import sip
+
 rootPath = os.path.join(
     rospkg.RosPack().get_path('sr_gui_cyberglove_calibrator'))
 
-import sip
 
 class QHLine(QFrame):
     def __init__(self):
@@ -48,11 +49,13 @@ class QHLine(QFrame):
         self.setFrameShape(QFrame.HLine)
         self.setFrameShadow(QFrame.Sunken)
 
+
 class QVLine(QFrame):
     def __init__(self):
         super(QVLine, self).__init__()
         self.setFrameShape(QFrame.VLine)
         self.setFrameShadow(QFrame.Sunken)
+
 
 class SrGuiCyberglovePointTweaker(QtWidgets.QWidget):
     """
@@ -113,7 +116,9 @@ class SrGuiCybergloveJointTweaker(QtWidgets.QWidget):
     """
     Calibrator for one joint, expecting linear calibrations between two or more points.
     """
+    # You can't set widget properties from outside main thread, so create a signal to updat with new sensor readings
     update_gui = pyqtSignal()
+
 
     def __init__(self, joint_name, calibration_changed_callback, calibration_points, tweak_callback):
         super(SrGuiCybergloveJointTweaker, self).__init__()
@@ -121,18 +126,42 @@ class SrGuiCybergloveJointTweaker(QtWidgets.QWidget):
         self._tweak_callback = tweak_callback
         self._joint_name = joint_name
 
+
+        self._calibration_points = calibration_points
+        self._calibration_points.sort(key = lambda p: p[1])
+
         self.setLayout(QHBoxLayout())
+        self.layout().addWidget(self._get_labels(joint_name))
 
+        self.layout().addWidget(self._get_points_and_display(self._calibration_points))
 
+        self.layout().addWidget(self._get_picture(joint_name))
+        self.layout().addStretch()
+
+        self.update_gui.connect(self._update_gui)
+
+        # Updating Widgets too fast causes the gui to crash. Update everything at 20hz,
+        # rather than each time a new value is ready.
+        self._timer = rospy.Timer(rospy.Duration(0.05), lambda x: self.update_gui.emit())
+
+    def _get_picture(self, joint_name):
+        picture = QLabel()
+        picture.setPixmap(QPixmap(rootPath + '/images/%s.jpg' % joint_name))
+        return picture
+
+    def _get_labels(self, joint_name):
         labels = QtWidgets.QWidget()
         labels.setLayout(QVBoxLayout())
         labels.layout().addWidget(QLabel(joint_name))
-        self._name = joint_name
+
         self._raw_value_label = QLabel()
         self._calibrated_value_label = QLabel()
 
         labels.layout().addWidget(self._calibrated_value_label)
         labels.layout().addWidget(self._raw_value_label)
+        return labels
+
+    def _get_points_and_display(self, calibration_points):
 
         points = QtWidgets.QWidget()
         points.setLayout(QHBoxLayout())
@@ -141,30 +170,19 @@ class SrGuiCybergloveJointTweaker(QtWidgets.QWidget):
         points_and_display.setLayout(QVBoxLayout())
         points_and_display.layout().setSpacing(30)
 
-        self._calibration_points = calibration_points
-        self._calibration_points.sort(key = lambda p: p[1])
-
-        self.layout().addWidget(labels)
         for n,point in enumerate(calibration_points):
             points.layout().addWidget(SrGuiCyberglovePointTweaker(n, point[0], point[1], self._point_change_callback))
             if n < len(calibration_points) - 1:
                 points.layout().addWidget(QVLine())
 
         self._progress_bar = QProgressBar()
+        self._progress_bar.setTextVisible(False)
         self._progress_bar.setRange(0,1000)
 
         points_and_display.layout().addWidget(self._progress_bar)
         points_and_display.layout().addWidget(points)
 
-        self.layout().addWidget(points_and_display)
-        picture = QLabel()
-        picture.setPixmap(QPixmap(rootPath + '/images/%s.jpg' % joint_name))
-
-        self.layout().addWidget(picture)
-        self.layout().addStretch()
-
-        self.update_gui.connect(self._update_gui)
-        self._timer = rospy.Timer(rospy.Duration(0.05), lambda x: self.update_gui.emit())
+        return points_and_display
 
     def set_calibrated_value(self, value):
         self._calibrated_value = value
@@ -173,6 +191,11 @@ class SrGuiCybergloveJointTweaker(QtWidgets.QWidget):
         self._raw_value = value
 
     def _set_progress_bar(self):
+        """
+        Split the sensor range into (number of cal points - 1) windows. Treat each window as a separate linear
+        interpolation, so progress bar shows which calibration points are controlling the current value.
+        """
+
         min_calibration = self._calibration_points[0][1]
         max_calibration = self._calibration_points[-1][1]
 
@@ -187,6 +210,7 @@ class SrGuiCybergloveJointTweaker(QtWidgets.QWidget):
         lower_bound = min_calibration
         upper_bound = max_calibration
 
+        # Find which window the sensor value is in. Set upper and lower bounds to the edges the  window.
         for n in range(len(self._calibration_points) - 1):
             if position > self._calibration_points[n + 1][1]:
                 lower_bound = self._calibration_points[n + 1][1]
@@ -200,12 +224,17 @@ class SrGuiCybergloveJointTweaker(QtWidgets.QWidget):
 
         self._progress_bar.setValue(value)
 
-
     @QtCore.pyqtSlot()
     def _update_gui(self):
-        self._calibrated_value_label.setText("%10.4f (Calibrated)" % self._calibrated_value)
-        self._raw_value_label.setText("%10.4f (Raw)" % self._raw_value)
-        self._set_progress_bar()
+        try:
+            self._calibrated_value_label.setText("%10.4f (Calibrated)" % self._calibrated_value)
+            self._raw_value_label.setText("%10.4f (Raw)" % self._raw_value)
+            self._set_progress_bar()
+        except RuntimeError as e:
+            # When the gui is closed, different threads die at different times. Sometimes an attempt is
+            # made to write to set the values of a deleted label. This kills the unwanted error messages.
+            if "has been deleted" not in str(e):
+                rospy.logerr("Runtime error while updating gui: %s" % str(e))
 
     def _point_change_callback(self, index, value):
         self._calibration_points[index][0] = value
@@ -213,7 +242,6 @@ class SrGuiCybergloveJointTweaker(QtWidgets.QWidget):
 
 
 class SrGuiCybergloveTweaker(Plugin):
-
     """
     The plugin used to tweak glove calibrations.
     """
@@ -233,7 +261,6 @@ class SrGuiCybergloveTweaker(Plugin):
         for entry in calibration:
             name = entry[0]
             self._calibration[name] = entry[1]
-
 
     def _raw_callback(self, msg):
         for n, joint in enumerate(msg.name):
