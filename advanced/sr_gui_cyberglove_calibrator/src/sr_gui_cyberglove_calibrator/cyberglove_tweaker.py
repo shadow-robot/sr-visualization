@@ -247,7 +247,7 @@ class SrGuiCybergloveTweaker(Plugin):
 
     def _make_listeners(self):
         self._raw_listner = rospy.Subscriber("/rh_cyberglove/raw/joint_states",
-                                              JointState, self._raw_callback, queue_size=1)
+                                             JointState, self._raw_callback, queue_size=1)
         self._calibrated_listner = rospy.Subscriber("/rh_cyberglove/calibrated/joint_states",
                                                     JointState, self._calibrated_callback, queue_size=1)
 
