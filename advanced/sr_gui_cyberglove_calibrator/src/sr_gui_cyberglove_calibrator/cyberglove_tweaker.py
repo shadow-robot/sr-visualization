@@ -64,10 +64,10 @@ class SrGuiCyberglovePointTweaker(QtWidgets.QWidget):
     def _get_button(self, text, amount):
         button = QPushButton(text)
         button.clicked.connect(lambda: self._change_raw(amount))
-        button.setMaximumSize(40,40)
+        button.setMaximumSize(40, 40)
         return button
 
-    def __init__(self, index, raw, calibrated, button_callback=lambda x,y: x):
+    def __init__(self, index, raw, calibrated, button_callback=lambda x, y: x):
         super(SrGuiCyberglovePointTweaker, self).__init__()
         self.setLayout(QGridLayout())
         self.layout().setVerticalSpacing(25)
@@ -119,16 +119,14 @@ class SrGuiCybergloveJointTweaker(QtWidgets.QWidget):
     # You can't set widget properties from outside main thread, so create a signal to updat with new sensor readings
     update_gui = pyqtSignal()
 
-
     def __init__(self, joint_name, calibration_changed_callback, calibration_points, tweak_callback):
         super(SrGuiCybergloveJointTweaker, self).__init__()
 
         self._tweak_callback = tweak_callback
         self._joint_name = joint_name
 
-
         self._calibration_points = calibration_points
-        self._calibration_points.sort(key = lambda p: p[1])
+        self._calibration_points.sort(key=lambda p: p[1])
 
         self.setLayout(QHBoxLayout())
         self.layout().addWidget(self._get_labels(joint_name))
@@ -170,14 +168,14 @@ class SrGuiCybergloveJointTweaker(QtWidgets.QWidget):
         points_and_display.setLayout(QVBoxLayout())
         points_and_display.layout().setSpacing(30)
 
-        for n,point in enumerate(calibration_points):
+        for n, point in enumerate(calibration_points):
             points.layout().addWidget(SrGuiCyberglovePointTweaker(n, point[0], point[1], self._point_change_callback))
             if n < len(calibration_points) - 1:
                 points.layout().addWidget(QVLine())
 
         self._progress_bar = QProgressBar()
         self._progress_bar.setTextVisible(False)
-        self._progress_bar.setRange(0,1000)
+        self._progress_bar.setRange(0, 1000)
 
         points_and_display.layout().addWidget(self._progress_bar)
         points_and_display.layout().addWidget(points)
@@ -248,7 +246,7 @@ class SrGuiCybergloveTweaker(Plugin):
     name = "Cyberglove Calibration Tweaker"
 
     def _make_listeners(self):
-        self._raw_listner  = rospy.Subscriber("/rh_cyberglove/raw/joint_states",
+        self._raw_listner = rospy.Subscriber("/rh_cyberglove/raw/joint_states",
                                               JointState, self._raw_callback, queue_size=1)
         self._calibrated_listner = rospy.Subscriber("/rh_cyberglove/calibrated/joint_states",
                                                     JointState, self._calibrated_callback, queue_size=1)
@@ -256,7 +254,7 @@ class SrGuiCybergloveTweaker(Plugin):
     def _get_calibration_from_parameter(self, calibration=None):
         if calibration is None:
             calibration = rospy.get_param(self._calibration_param)
-        self._original_calibration =  deepcopy(calibration)
+        self._original_calibration = deepcopy(calibration)
         self._calibration = {}
         for entry in calibration:
             name = entry[0]
@@ -278,9 +276,9 @@ class SrGuiCybergloveTweaker(Plugin):
         self._calibration[joint] = calibration
         self._output_calibration_to_parameter()
 
-    def _output_calibration_to_parameter(self, calibration = None):
+    def _output_calibration_to_parameter(self, calibration=None):
         if calibration is None:
-            calibration = [ [name, self._calibration[name]] for name in self._joint_names ]
+            calibration = [[name, self._calibration[name]] for name in self._joint_names]
         rospy.set_param(self._calibration_param, calibration)
         self._driver_reload_callback()
 
@@ -334,7 +332,6 @@ class SrGuiCybergloveTweaker(Plugin):
         self._joint_names = self._calibrer.cyberglove.joints.keys()
         self._joint_names.sort()
 
-
     def __init__(self, context):
         super(SrGuiCybergloveTweaker, self).__init__(context)
         self.setObjectName('SrGuiCybergloveTweaker')
@@ -352,7 +349,6 @@ class SrGuiCybergloveTweaker(Plugin):
         self._widget.setWindowTitle('Cyberglove Calibration Tweaker')
 
         self._driver_reload_callback = rospy.ServiceProxy("/rh_cyberglove/reload_calibration", Empty)
-
 
     def _make_buttons(self):
         btn_frame = QtWidgets.QFrame()
@@ -400,7 +396,6 @@ class SrGuiCybergloveTweaker(Plugin):
             self._delete_widget(self._joints_layout,  self._joint_lines[joint_name])
         self._add_tweakers_to_widget()
 
-
     def _save_calibration(self):
         (file_name, dummy) = QtWidgets.QFileDialog.getSaveFileName(
             self._widget, 'Save Calibration', '')
@@ -428,7 +423,7 @@ class SrGuiCybergloveTweaker(Plugin):
         (file_name, dummy) = QtWidgets.QFileDialog.getOpenFileName(
             self._widget, 'Open Calibration', '')
         if "" == file_name:
-                 return
+            return
 
         if self._calibrer.load_calib(str(file_name)) == 0:
             QtWidgets.QMessageBox.information(
