@@ -21,11 +21,7 @@ class TestCybergloveCalibrator(unittest.TestCase):
     def test_warning_message(self, Cyberglove):
         self.calibrer = CybergloveCalibrer(description_function=None)
         self.calibrer.load_calib("mock_file_name")
-<<<<<<< HEAD
-        self.assertEqual(sys.stdout.getvalue().strip(), 'Srvice not found, is the driver running?')
-=======
         self.assertEqual(sys.stdout.getvalue().strip(), 'Service not found, is the driver running?')
->>>>>>> F#SRC-2007_gui_update
 
 if __name__ == "__main__":
     rospy.init_node("test_cyberglove_calibrator")
