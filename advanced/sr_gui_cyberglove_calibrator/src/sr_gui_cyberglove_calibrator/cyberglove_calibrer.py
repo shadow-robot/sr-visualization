@@ -26,7 +26,9 @@ import roslib
 
 import os
 from cyberglove_library import Cyberglove
-from cyberglove.srv import Calibration as CalibrationSrv
+from std_srvs.srv import Empty
+
+import yaml
 
 import rospy
 
@@ -276,6 +278,26 @@ class CybergloveCalibrer:
                 self.joints[name].raw_max = tmp_raw
                 self.joints[name].calibrated_max = tmp_cal
 
+    def check_ranges(self):
+        """
+        Check for zero range calibrations, also for min/max values (-> full sensor range not being used)
+        """
+        self.reorder_calibration()
+        errors = []
+        for name in self.joints.keys():
+            if self.joints[name].raw_min == self.joints[name].raw_max:
+                errors.append("%s zero range: %f. Min modified (-0.001)."
+                              % (name, self.joints[name].raw_min))
+                self.joints[name].raw_min -= 0.001
+            if self.joints[name].raw_max == 1.0:
+                errors.append("%s max value is 1.0." % name)
+            if self.joints[name].raw_min == 0.0:
+                errors.append("%s min value is 0.0." % name)
+        for error in errors:
+            rospy.logwarn(error)
+
+        return errors
+
     def write_calibration_file(self, filepath):
         """
         Checks if all the steps were processed by calling self.all_steps_done()
@@ -299,28 +321,16 @@ class CybergloveCalibrer:
         # Write to an xml file
         #
         # store the text in a table
+
         text = []
+        text.append("{'cyberglove_calibration': [")
 
-        text.append("<?xml version=\"1.0\" ?>")
-        text.append("<Cyberglove_calibration>")
         for name in self.joints:
-            # joint name
-            text.append("<Joint name=\"" + name + "\">")
-
             cal = self.joints[name]
-            # min value
-            text.append("<calib raw_value=\"" + str(cal.raw_min) +
-                        "\" calibrated_value=\"" +
-                        str(cal.calibrated_min) + "\"/>")
+            text.append("['%s', [[%f,%f],[%f,%f]]]," % (
+                name, cal.raw_min, cal.calibrated_min, cal.raw_max, cal.calibrated_max))
 
-            # max value
-            text.append("<calib raw_value=\"" + str(cal.raw_max) +
-                        "\" calibrated_value=\"" +
-                        str(cal.calibrated_max) + "\"/>")
-
-            text.append("</Joint>")
-
-        text.append("</Cyberglove_calibration>")
+        text.append("]}")
 
         # write the text to a file
         try:
@@ -339,21 +349,23 @@ class CybergloveCalibrer:
         if filename == "":
             return -1
         try:
-            rospy.wait_for_service('/cyberglove/calibration', timeout=5)
+            # TODO(@dg-shadow): remove the literal namespace (rh_calibration) and replace with something dynamic
+            rospy.wait_for_service('/rh_cyberglove/reload_calibration', timeout=5)
             try:
                 calib = rospy.ServiceProxy(
-                    '/cyberglove/calibration', CalibrationSrv)
-
-                path = filename.encode("iso-8859-1")
-                resp = calib(path)
-                return 0  # resp.state
+                    '/rh_cyberglove/reload_calibration', Empty)
+                with open(filename, "r") as f:
+                    calibration_dict = yaml.load(f.read())
+                    calibration_string = calibration_dict["cyberglove_calibration"]
+                    rospy.set_param("/rh_cyberglove/cyberglove_calibration", calibration_string)
+                calib()
             except rospy.ServiceException, e:
-                print 'Failed to call start service'
+                print 'Failed to call service: %s' % str(e)
                 return -2
         except rospy.ROSException, e:
-            print ('Call start service not found, is the driver running? If you are using cyberglove_trajectory, ' +
-                   'please be adviced that following plugin does not support that package yet.')
+            print ('Service not found, is the driver running?')
             return -3
+        return 0
 
 
 #

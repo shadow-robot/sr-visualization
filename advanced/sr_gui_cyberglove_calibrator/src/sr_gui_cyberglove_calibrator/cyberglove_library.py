@@ -100,7 +100,7 @@ class Cyberglove:
         self.isFirstMessage = True
         self.liste = 0
         self.raw = rospy.Subscriber(
-            'cyberglove/raw/joint_states', JointState, self.callback_raw)
+            'rh_cyberglove/raw/joint_states', JointState, self.callback_raw)
         self.calibrated = rospy.Subscriber(
             'cyberglove/calibrated/joint_states', JointState, self.callback_calibrated)
         threading.Thread(None, rospy.spin)
@@ -201,6 +201,6 @@ class Cyberglove:
 
         for topic_typ in self.liste:
             for topic in topic_typ:
-                if '/raw' in topic:
+                if 'cyberglove/raw' in topic:
                     self.hasglove = True
         return self.hasglove

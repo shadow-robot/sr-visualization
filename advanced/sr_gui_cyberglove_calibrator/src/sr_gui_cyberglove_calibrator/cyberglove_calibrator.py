@@ -368,6 +368,13 @@ class SrGuiCybergloveCalibrator(Plugin):
                 self.glove_calibrating_widget.set_calibrated([name])
 
         if self.calibrer.all_steps_done():
+            range_errors = self.calibrer.check_ranges()
+            if len(range_errors) != 0:
+                QtWidgets.QMessageBox.warning(self._widget, "%d ensor range error(s) reported." % len(range_errors),
+                                              "\n".join(range_errors),
+                                              QtWidgets.QMessageBox.Ok,
+                                              QtWidgets.QMessageBox.Ok)
+
             self.btn_save.setEnabled(True)
 
     def save_calib(self):
@@ -377,14 +384,23 @@ class SrGuiCybergloveCalibrator(Plugin):
         if filename == "":
             return
 
-        self.calibrer.write_calibration_file(filename)
+        write_output = self.calibrer.write_calibration_file(filename)
+        error = None
+        if write_output == -1:
+            error = "Calibration has not been finished, output not written."
+        elif write_output == -2:
+            error = "Error writing file."
 
-        # QMessageBox returns 0 for yes
-        if QtWidgets.QMessageBox.question(self._widget,
-                                          "Load new Calibration",
-                                          "Do you want to load the new calibration file?",
-                                          QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
-                                          QtWidgets.QMessageBox.No) == 0:
+        if error is not None:
+            QtWidgets.QMessageBox.error(self._widget, "Error writing config.",
+                                        error,
+                                        QtWidgets.QMessageBox.Cancel,
+                                        QtWidgets.QMessageBox.Cancel)
+        elif QtWidgets.QMessageBox.question(self._widget,
+                                            "Load new Calibration",
+                                            "Do you want to load the new calibration file?",
+                                            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+                                            QtWidgets.QMessageBox.No) == QtWidgets.QMessageBox.Yes:
             self.load_calib(filename)
 
     def load_calib(self, filename=""):
@@ -402,7 +418,7 @@ class SrGuiCybergloveCalibrator(Plugin):
             # statusbar do not exist in rqt anymore (since shared with several plugins)
             # self.statusBar().showMessage("New Cyberglove Calibration Loaded.")
             QtWidgets.QMessageBox.information(self._widget, "Calibration successfully loaded",
-                                              "Do you want to load the new calibration file?",
+                                              "Calibration successfully loaded.",
                                               QtWidgets.QMessageBox.Ok,
                                               QtWidgets.QMessageBox.Ok)
         else:

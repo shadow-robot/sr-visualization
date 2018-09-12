@@ -21,10 +21,7 @@ class TestCybergloveCalibrator(unittest.TestCase):
     def test_warning_message(self, Cyberglove):
         self.calibrer = CybergloveCalibrer(description_function=None)
         self.calibrer.load_calib("mock_file_name")
-        self.assertEqual(sys.stdout.getvalue().strip(), 'Call start service not found, is the driver running? ' +
-                                                        'If you are using cyberglove_trajectory, ' +
-                                                        'please be adviced that following plugin does ' +
-                                                        'not support that package yet.')
+        self.assertEqual(sys.stdout.getvalue().strip(), 'Service not found, is the driver running?')
 
 if __name__ == "__main__":
     rospy.init_node("test_cyberglove_calibrator")
