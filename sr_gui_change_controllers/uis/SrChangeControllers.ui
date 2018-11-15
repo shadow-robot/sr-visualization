@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>698</width>
-    <height>300</height>
+    <height>275</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -111,6 +111,13 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QRadioButton" name="radioButton_14">
+            <property name="text">
+             <string>Grasp ctrl</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
@@ -151,6 +158,13 @@
            <widget class="QRadioButton" name="radioButton_3">
             <property name="text">
              <string>Position ctrl</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButton_13">
+            <property name="text">
+             <string>Grasp ctrl</string>
             </property>
            </widget>
           </item>
@@ -218,8 +232,6 @@
     </layout>
    </item>
   </layout>
-  <zorder>verticalLayoutWidget</zorder>
-  <zorder>layoutWidget</zorder>
  </widget>
  <resources/>
  <connections/>
