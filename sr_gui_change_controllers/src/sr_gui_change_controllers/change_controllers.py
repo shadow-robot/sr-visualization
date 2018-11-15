@@ -40,22 +40,28 @@ class SrGuiChangeControllers(Plugin):
         self._rh_teach_buttons.append(self._widget.radioButton_1)
         self._rh_teach_buttons.append(self._widget.radioButton_2)
         self._rh_teach_buttons.append(self._widget.radioButton_3)
+        self._rh_teach_buttons.append(self._widget.radioButton_13)
         self._widget.radioButton_1.toggled.connect(
             self.teach_mode_button_toggled_rh)
         self._widget.radioButton_2.toggled.connect(
             self.teach_mode_button_toggled_rh)
         self._widget.radioButton_3.toggled.connect(
             self.teach_mode_button_toggled_rh)
+        self._widget.radioButton_13.toggled.connect(
+            self.teach_mode_button_toggled_rh)
 
         # lh group
         self._lh_teach_buttons.append(self._widget.radioButton_4)
         self._lh_teach_buttons.append(self._widget.radioButton_5)
         self._lh_teach_buttons.append(self._widget.radioButton_6)
+        self._lh_teach_buttons.append(self._widget.radioButton_14)
         self._widget.radioButton_4.toggled.connect(
             self.teach_mode_button_toggled_lh)
         self._widget.radioButton_5.toggled.connect(
             self.teach_mode_button_toggled_lh)
         self._widget.radioButton_6.toggled.connect(
+            self.teach_mode_button_toggled_lh)
+        self._widget.radioButton_14.toggled.connect(
             self.teach_mode_button_toggled_lh)
 
         # ra group
@@ -98,18 +104,41 @@ class SrGuiChangeControllers(Plugin):
 
     def teach_mode_button_toggled(self, checked, robot, buttons):
         if checked:
-            if buttons[0].isChecked():
-                mode = RobotTeachModeRequest.TRAJECTORY_MODE
-            elif buttons[1].isChecked():
-                mode = RobotTeachModeRequest.TEACH_MODE
-            elif buttons[2].isChecked():
-                mode = RobotTeachModeRequest.POSITION_MODE
+            if robot == "right_hand" or robot == "left_hand":
+                mode = self._check_hand_mode(robot, buttons)
+            elif robot == "right_arm" or robot == "left_arm":
+                mode = self._check_arm_mode(robot, buttons)
             else:
-                rospy.logerr("None of the buttons checked for robot %s", robot)
+                rospy.logerr("Invalid input for robot %s", robot)
                 return
-
             rospy.loginfo("Changing robot %s to mode %d", robot, mode)
             self.change_teach_mode(mode, robot)
+
+    def _check_arm_mode(self, robot, buttons):
+        if buttons[0].isChecked():
+            mode = RobotTeachModeRequest.TRAJECTORY_MODE
+        elif buttons[1].isChecked():
+            mode = RobotTeachModeRequest.TEACH_MODE
+        elif buttons[2].isChecked():
+            mode = RobotTeachModeRequest.POSITION_MODE
+        else:
+            rospy.logerr("None of the buttons checked for robot %s", robot)
+            return
+        return mode
+
+    def _check_hand_mode(self, robot, buttons):
+        if buttons[0].isChecked():
+            mode = RobotTeachModeRequest.TRAJECTORY_MODE
+        elif buttons[1].isChecked():
+            mode = RobotTeachModeRequest.TEACH_MODE
+        elif buttons[2].isChecked():
+            mode = RobotTeachModeRequest.POSITION_MODE
+        elif buttons[3].isChecked():
+            mode = RobotTeachModeRequest.GRASP_MODE
+        else:
+            rospy.logerr("None of the buttons checked for robot %s", robot)
+            return
+        return mode
 
     @staticmethod
     def change_teach_mode(mode, robot):
