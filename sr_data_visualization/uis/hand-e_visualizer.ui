@@ -49,6 +49,84 @@
     <attribute name="title">
      <string>Benchmarks Visualizer</string>
     </attribute>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>371</width>
+       <height>81</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Database</string>
+     </property>
+     <widget class="QPushButton" name="load_button">
+      <property name="geometry">
+       <rect>
+        <x>320</x>
+        <y>30</y>
+        <width>41</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Load</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="dbs_combo_box">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>30</y>
+        <width>301</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string/>
+       </property>
+      </item>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>100</y>
+       <width>371</width>
+       <height>871</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Scene</string>
+     </property>
+     <widget class="QWidget" name="verticalLayoutWidget_10">
+      <property name="geometry">
+       <rect>
+        <x>-1</x>
+        <y>50</y>
+        <width>371</width>
+        <height>821</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="scene_layout"/>
+     </widget>
+     <widget class="QLabel" name="scene_label">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>25</y>
+        <width>301</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </widget>
     <widget class="QTabWidget" name="tabWidget">
      <property name="geometry">
       <rect>
@@ -65,6 +143,54 @@
       <attribute name="title">
        <string>Global</string>
       </attribute>
+      <widget class="QGroupBox" name="group_box_9">
+       <property name="geometry">
+        <rect>
+         <x>480</x>
+         <y>310</y>
+         <width>461</width>
+         <height>291</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Clearance (m)</string>
+       </property>
+       <widget class="QWidget" name="verticalLayoutWidget_11">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>20</y>
+          <width>461</width>
+          <height>271</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="clearance_layout"/>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="group_box_10">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>610</y>
+         <width>461</width>
+         <height>291</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Correct (%)</string>
+       </property>
+       <widget class="QWidget" name="verticalLayoutWidget_12">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>20</y>
+          <width>461</width>
+          <height>271</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="correct_layout"/>
+       </widget>
+      </widget>
       <widget class="QGroupBox" name="group_box_20">
        <property name="geometry">
         <rect>
@@ -75,7 +201,7 @@
         </rect>
        </property>
        <property name="title">
-        <string>Total time (s)</string>
+        <string>Input</string>
        </property>
        <widget class="QWidget" name="verticalLayoutWidget_13">
         <property name="geometry">
@@ -89,6 +215,1037 @@
         <layout class="QVBoxLayout" name="plan_time_layout"/>
        </widget>
       </widget>
+      <widget class="QGroupBox" name="group_box_21">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>310</y>
+         <width>461</width>
+         <height>291</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Solved (%)</string>
+       </property>
+       <widget class="QWidget" name="verticalLayoutWidget_22">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>20</y>
+          <width>461</width>
+          <height>271</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="solved_layout"/>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="group_box_22">
+       <property name="geometry">
+        <rect>
+         <x>950</x>
+         <y>10</y>
+         <width>461</width>
+         <height>291</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Plan Quality 1</string>
+       </property>
+       <widget class="QWidget" name="verticalLayoutWidget_23">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>20</y>
+          <width>461</width>
+          <height>271</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="quality_1_layout"/>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="group_box_23">
+       <property name="geometry">
+        <rect>
+         <x>480</x>
+         <y>610</y>
+         <width>461</width>
+         <height>291</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Smoothness </string>
+       </property>
+       <widget class="QWidget" name="verticalLayoutWidget_24">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>20</y>
+          <width>461</width>
+          <height>271</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="smoothness_layout"/>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="group_box_24">
+       <property name="geometry">
+        <rect>
+         <x>950</x>
+         <y>310</y>
+         <width>461</width>
+         <height>291</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Plan Quality 2</string>
+       </property>
+       <widget class="QWidget" name="verticalLayoutWidget_25">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>20</y>
+          <width>461</width>
+          <height>271</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="quality_2_layout"/>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="group_box_25">
+       <property name="geometry">
+        <rect>
+         <x>480</x>
+         <y>10</y>
+         <width>461</width>
+         <height>291</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>dInput/dt</string>
+       </property>
+       <widget class="QWidget" name="verticalLayoutWidget_26">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>20</y>
+          <width>461</width>
+          <height>271</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="finger_position_layout"/>
+       </widget>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="tab_9">
+      <attribute name="title">
+       <string>Per Query</string>
+      </attribute>
+      <widget class="QTabWidget" name="tabWidget_4">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>1431</width>
+         <height>921</height>
+        </rect>
+       </property>
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="tab_10">
+        <attribute name="title">
+         <string>Choose planner</string>
+        </attribute>
+        <widget class="QComboBox" name="planners_combo_box">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>10</y>
+           <width>221</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <item>
+          <property name="text">
+           <string/>
+          </property>
+         </item>
+        </widget>
+        <widget class="QGroupBox" name="group_box_26">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>50</y>
+           <width>461</width>
+           <height>275</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Total time (s)</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_27">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>20</y>
+            <width>461</width>
+            <height>251</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="perquery_plan_time_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_27">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>330</y>
+           <width>461</width>
+           <height>275</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Solved (%)</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_28">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>20</y>
+            <width>461</width>
+            <height>251</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="perquery_solved_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_28">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>610</y>
+           <width>461</width>
+           <height>275</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Correct (%)</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_29">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>20</y>
+            <width>461</width>
+            <height>251</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="perquery_correct_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_36">
+         <property name="geometry">
+          <rect>
+           <x>480</x>
+           <y>50</y>
+           <width>461</width>
+           <height>275</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Lenght (rad)</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_30">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>20</y>
+            <width>461</width>
+            <height>251</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="perquery_lenght_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_38">
+         <property name="geometry">
+          <rect>
+           <x>480</x>
+           <y>330</y>
+           <width>461</width>
+           <height>275</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Clearance (m)</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_31">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>20</y>
+            <width>461</width>
+            <height>251</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="perquery_clearance_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_39">
+         <property name="geometry">
+          <rect>
+           <x>480</x>
+           <y>610</y>
+           <width>461</width>
+           <height>275</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Smoothness </string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_32">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>20</y>
+            <width>461</width>
+            <height>251</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="perquery_smoothness_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_40">
+         <property name="geometry">
+          <rect>
+           <x>950</x>
+           <y>50</y>
+           <width>461</width>
+           <height>275</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Plan Quality 1</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_33">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>20</y>
+            <width>461</width>
+            <height>251</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="perquery_quality_1_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_41">
+         <property name="geometry">
+          <rect>
+           <x>950</x>
+           <y>330</y>
+           <width>461</width>
+           <height>275</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Plan Quality 2</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_34">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>20</y>
+            <width>461</width>
+            <height>251</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="perquery_quality_2_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_42">
+         <property name="geometry">
+          <rect>
+           <x>950</x>
+           <y>610</y>
+           <width>461</width>
+           <height>275</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Queries legend</string>
+         </property>
+         <widget class="QTextBrowser" name="queries_legend">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>27</y>
+            <width>441</width>
+            <height>231</height>
+           </rect>
+          </property>
+         </widget>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="tab_11">
+        <attribute name="title">
+         <string>Choose query</string>
+        </attribute>
+        <widget class="QComboBox" name="queries_combo_box">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>10</y>
+           <width>221</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <item>
+          <property name="text">
+           <string/>
+          </property>
+         </item>
+        </widget>
+        <widget class="QGroupBox" name="group_box_43">
+         <property name="geometry">
+          <rect>
+           <x>480</x>
+           <y>610</y>
+           <width>461</width>
+           <height>275</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Smoothness </string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_46">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>20</y>
+            <width>461</width>
+            <height>251</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="perquery_smoothness_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_44">
+         <property name="geometry">
+          <rect>
+           <x>950</x>
+           <y>50</y>
+           <width>461</width>
+           <height>275</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Plan Quality 1</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_47">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>20</y>
+            <width>461</width>
+            <height>251</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="perquery_quality_1_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_45">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>50</y>
+           <width>461</width>
+           <height>275</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Total time (s)</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_48">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>20</y>
+            <width>461</width>
+            <height>251</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="perquery_plan_time_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_46">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>330</y>
+           <width>461</width>
+           <height>275</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Solved (%)</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_49">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>20</y>
+            <width>461</width>
+            <height>251</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="perquery_solved_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_47">
+         <property name="geometry">
+          <rect>
+           <x>950</x>
+           <y>330</y>
+           <width>461</width>
+           <height>275</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Plan Quality 2</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_50">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>20</y>
+            <width>461</width>
+            <height>251</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="perquery_quality_2_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_48">
+         <property name="geometry">
+          <rect>
+           <x>480</x>
+           <y>50</y>
+           <width>461</width>
+           <height>275</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Lenght (rad)</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_51">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>20</y>
+            <width>461</width>
+            <height>251</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="perquery_lenght_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_49">
+         <property name="geometry">
+          <rect>
+           <x>480</x>
+           <y>330</y>
+           <width>461</width>
+           <height>275</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Clearance (m)</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_52">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>20</y>
+            <width>461</width>
+            <height>251</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="perquery_clearance_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_50">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>610</y>
+           <width>461</width>
+           <height>275</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Correct (%)</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_53">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>20</y>
+            <width>461</width>
+            <height>251</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="perquery_correct_layout_2"/>
+         </widget>
+        </widget>
+       </widget>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="tab_12">
+      <attribute name="title">
+       <string>Experiments info</string>
+      </attribute>
+      <widget class="QTextBrowser" name="experiments_info">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>291</width>
+         <height>881</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QTextBrowser" name="textBrowser_9">
+       <property name="geometry">
+        <rect>
+         <x>310</x>
+         <y>10</y>
+         <width>360</width>
+         <height>287</height>
+        </rect>
+       </property>
+       <property name="html">
+        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Total time (s):&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Time taken by the whole process. Formula:&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;T = plan_time  + interpolation_time + simplify_time + process_time&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The lower the value, the better performance of the planner.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+      <widget class="QTextBrowser" name="textBrowser_10">
+       <property name="geometry">
+        <rect>
+         <x>680</x>
+         <y>310</y>
+         <width>360</width>
+         <height>287</height>
+        </rect>
+       </property>
+       <property name="html">
+        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Clearance (m):&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Calculated by average distance to nearest invalid state throughout the planned path. Formula:&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;C = (1/n)&lt;span style=&quot; vertical-align:sub;&quot;&gt; * &lt;/span&gt;sum&lt;span style=&quot; vertical-align:sub;&quot;&gt;i=0&lt;/span&gt;&lt;span style=&quot; vertical-align:super;&quot;&gt;n-1&lt;/span&gt;{cl(s&lt;span style=&quot; vertical-align:sub;&quot;&gt;i&lt;/span&gt;)}, where:&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;n - number of states on path,&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;s&lt;span style=&quot; vertical-align:sub;&quot;&gt;i&lt;/span&gt; - i&lt;span style=&quot; vertical-align:super;&quot;&gt;th&lt;/span&gt; state,&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;cl() - distance to the first invalid state.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The higher the value, the better the plan.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+      <widget class="QTextBrowser" name="textBrowser_11">
+       <property name="geometry">
+        <rect>
+         <x>310</x>
+         <y>610</y>
+         <width>360</width>
+         <height>281</height>
+        </rect>
+       </property>
+       <property name="html">
+        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Correct (%):&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Percentage of solved plans generated by the planner that are correct. Correctness means that path trajectory avoids collisions and all waypoints satisfy given bounds.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The higher the value, the better performace of the planner.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+      <widget class="QTextBrowser" name="textBrowser_12">
+       <property name="geometry">
+        <rect>
+         <x>680</x>
+         <y>610</y>
+         <width>360</width>
+         <height>281</height>
+        </rect>
+       </property>
+       <property name="html">
+        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Smoothness:&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Looks at three consecutive waypoints and the angle formed between them. Value is calculated as a square of sum of all the angles calculated that way. Formula:&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;S = sum&lt;span style=&quot; vertical-align:sub;&quot;&gt;i=2&lt;/span&gt;&lt;span style=&quot; vertical-align:super;&quot;&gt;n-1&lt;/span&gt;{(2 &lt;span style=&quot; vertical-align:sub;&quot;&gt;* &lt;/span&gt;(pi - arccos((d&lt;span style=&quot; vertical-align:sub;&quot;&gt;i-2,i-1&lt;/span&gt;&lt;span style=&quot; vertical-align:super;&quot;&gt;2&lt;/span&gt;+d&lt;span style=&quot; vertical-align:sub;&quot;&gt;i-1,i&lt;/span&gt;&lt;span style=&quot; vertical-align:super;&quot;&gt;2&lt;/span&gt;+d&lt;span style=&quot; vertical-align:sub;&quot;&gt;i-2,i)&lt;/span&gt;&lt;span style=&quot; vertical-align:super;&quot;&gt;2&lt;/span&gt;)/(2&lt;span style=&quot; vertical-align:sub;&quot;&gt; * &lt;/span&gt;d&lt;span style=&quot; vertical-align:sub;&quot;&gt;i-2,i-1&lt;/span&gt; &lt;span style=&quot; vertical-align:sub;&quot;&gt;* &lt;/span&gt;d&lt;span style=&quot; vertical-align:sub;&quot;&gt;i-1,i&lt;/span&gt;))&lt;span style=&quot; vertical-align:super;&quot;&gt;2&lt;/span&gt;}, where:&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;n - number of waypoints on the path,&lt;br /&gt;d&lt;span style=&quot; vertical-align:sub;&quot;&gt;x,y&lt;/span&gt; - distance between waypoints with index x and y.&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Aligned points result in S = 0. The lower the value, the smoother plan. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+      <widget class="QTextBrowser" name="textBrowser_13">
+       <property name="geometry">
+        <rect>
+         <x>310</x>
+         <y>310</y>
+         <width>360</width>
+         <height>287</height>
+        </rect>
+       </property>
+       <property name="html">
+        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Solved (%):&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Percentage of queries that the planner was able to find a solution for.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The higher the value, the better performance of the planner.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+      <widget class="QTextBrowser" name="textBrowser_14">
+       <property name="geometry">
+        <rect>
+         <x>680</x>
+         <y>10</y>
+         <width>360</width>
+         <height>287</height>
+        </rect>
+       </property>
+       <property name="html">
+        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Lenght (rad):&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Calculated by a sum of angles traveled by each of the joints. Formula&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;L = sum&lt;span style=&quot; vertical-align:sub;&quot;&gt;i=0&lt;/span&gt;&lt;span style=&quot; vertical-align:super;&quot;&gt;n-1{&lt;/span&gt;abs(x&lt;span style=&quot; vertical-align:sub;&quot;&gt;i &lt;/span&gt;- x&lt;span style=&quot; vertical-align:sub;&quot;&gt;i0&lt;/span&gt;)}, where:&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;n - number of robot's joints,&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;x - joint's goal position,&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;x&lt;span style=&quot; vertical-align:sub;&quot;&gt;0 &lt;/span&gt;- joint's initial position.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The lower the value, the better the plan.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+      <widget class="QTextBrowser" name="textBrowser_15">
+       <property name="geometry">
+        <rect>
+         <x>1050</x>
+         <y>10</y>
+         <width>371</width>
+         <height>431</height>
+        </rect>
+       </property>
+       <property name="html">
+        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Plan quality 1:&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Calculated by a weighted sum of angles traveled by each of the joints, giving higher weights to the joints closer to the base of the robot, thus penalizing them as small movements of these joints will result in bigger movements of the end effector. Formula:&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;PQ = sum&lt;span style=&quot; vertical-align:sub;&quot;&gt;i=0&lt;/span&gt;&lt;span style=&quot; vertical-align:super;&quot;&gt;n-1{&lt;/span&gt;w&lt;span style=&quot; vertical-align:sub;&quot;&gt;i *&lt;/span&gt; abs(x&lt;span style=&quot; vertical-align:sub;&quot;&gt;i &lt;/span&gt;- x&lt;span style=&quot; vertical-align:sub;&quot;&gt;i0&lt;/span&gt;)}, where:&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;n - number of robot's joints,&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;w - weight specified for each joint,&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;x - joint's goal position,&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;x&lt;span style=&quot; vertical-align:sub;&quot;&gt;0 &lt;/span&gt;- joint's initial position.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The lower the value, the better the plan.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+      <widget class="QTextBrowser" name="textBrowser_16">
+       <property name="geometry">
+        <rect>
+         <x>1050</x>
+         <y>449</y>
+         <width>371</width>
+         <height>441</height>
+        </rect>
+       </property>
+       <property name="html">
+        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Plan quality 2:&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Measures how different is the total distance traveled by the arm end effector to the most direct path between the start and goal position. Formula:&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;PQ = (d&lt;span style=&quot; vertical-align:sub;&quot;&gt;t&lt;/span&gt;/d&lt;span style=&quot; vertical-align:sub;&quot;&gt;l&lt;/span&gt; + r&lt;span style=&quot; vertical-align:sub;&quot;&gt;t&lt;/span&gt;/r&lt;span style=&quot; vertical-align:sub;&quot;&gt;l&lt;/span&gt;)/2, where:&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;d&lt;span style=&quot; vertical-align:sub;&quot;&gt;t&lt;/span&gt; - total distance travelled by the end effector,&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;d&lt;span style=&quot; vertical-align:sub;&quot;&gt;l &lt;/span&gt;- distance travelled by the end effector in a straight line,&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;r&lt;span style=&quot; vertical-align:sub;&quot;&gt;t&lt;/span&gt; - total rotation done by the end effector,&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;r&lt;span style=&quot; vertical-align:sub;&quot;&gt;l&lt;/span&gt; - relative rotation of end effector between start and goal pose.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The lower the value, the better the plan with 1 being the best possible score.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tab_7">
+    <attribute name="title">
+     <string>Benchmark_Tools</string>
+    </attribute>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>589</width>
+       <height>148</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Export to text files</string>
+     </property>
+     <widget class="QPushButton" name="pushButton_exportQueries">
+      <property name="geometry">
+       <rect>
+        <x>370</x>
+        <y>70</y>
+        <width>117</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Export</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>12</x>
+        <y>70</y>
+        <width>352</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Export the queries in the warehouse to a .queries text file:</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_exportScenes">
+      <property name="geometry">
+       <rect>
+        <x>370</x>
+        <y>30</y>
+        <width>116</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Export</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label">
+      <property name="geometry">
+       <rect>
+        <x>14</x>
+        <y>30</y>
+        <width>340</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Export the scenes in the warehouse to a .scene text file:</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_4">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>170</y>
+       <width>589</width>
+       <height>91</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Import to warehouse</string>
+     </property>
+     <widget class="QPushButton" name="pushButton_import_all">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>40</y>
+        <width>75</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Import</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_3">
+      <property name="geometry">
+       <rect>
+        <x>14</x>
+        <y>40</y>
+        <width>280</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Load all scenes and queries to the warehouse:</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_5">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>270</y>
+       <width>589</width>
+       <height>151</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Running a benchmark experiment</string>
+     </property>
+     <widget class="QLabel" name="label_4">
+      <property name="geometry">
+       <rect>
+        <x>12</x>
+        <y>40</y>
+        <width>232</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Select benchmark configuration:</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="bench_config_combobox">
+      <property name="geometry">
+       <rect>
+        <x>210</x>
+        <y>40</y>
+        <width>231</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string/>
+       </property>
+      </item>
+     </widget>
+     <widget class="QLabel" name="label_5">
+      <property name="geometry">
+       <rect>
+        <x>13</x>
+        <y>70</y>
+        <width>131</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Initial z of robot base:</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="initial_z_comboBox">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>70</y>
+        <width>77</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>0.1</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>0.7621</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QPushButton" name="pushButton_run_benchmark">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>110</y>
+        <width>79</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Run</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_6">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>430</y>
+       <width>589</width>
+       <height>121</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Saving logs to db files</string>
+     </property>
+     <widget class="QPushButton" name="pushButton_saving_all_logs">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>30</y>
+        <width>131</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Saving all logs</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_saving_logs_sorted">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>70</y>
+        <width>221</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Saving all logs sorted by scene</string>
+      </property>
      </widget>
     </widget>
    </widget>

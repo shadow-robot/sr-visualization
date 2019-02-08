@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 
 import sys
+import matplotlib
+matplotlib.use("Qt5Agg")
 from python_qt_binding.QtGui import *
 from python_qt_binding.QtCore import *
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
+import numpy as np
 
 try:
     from python_qt_binding.QtWidgets import *
@@ -16,8 +19,13 @@ from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 from matplotlib import __version__ as matplotlibversion
 
+from matplotlib.animation import TimedAnimation
+from matplotlib.lines import Line2D
+
+
 import signal
 import rospy
+from control_msgs.msg import JointControllerState
 import os
 import rospkg
 import sqlite3
@@ -43,24 +51,52 @@ class SrMoveitPlannerBenchmarksVisualizer(Plugin):
 
         self._widget.setWindowTitle("Moveit Planner Benchmarks")
         self.init_widget_children()
+        self.graph_one = CustomFigCanvas()
+        self.create_graph(self.plan_time_layout)
 
-    plt.axis([0, 10, 0, 1])
+        self.sub = rospy.Subscriber('sh_rh_ffj0_position_controller/state', JointControllerState,
+                                    self.addData_callbackFunc,
+                                    queue_size=1)
 
-    for i in range(10):
-        y = np.random.random()
-        plt.scatter(i, y)
-        plt.pause(0.05)
+        self.graph_one.setParent(self._widget)
 
-    plt.show()
+        self.plan_time_layout.addWidget(self.graph_one)
+
+
+
+
+
+    def addData_callbackFunc(self, value):
+        print("data: " + str(value.process_value))
+        self.graph_one.addData(value.process_value)
+
 
     def init_widget_children(self):
 
         self.plan_time_layout = self._widget.findChild(QVBoxLayout, "plan_time_layout")
 
-        self.perquery_plan_time_layout = self._widget.findChild(QVBoxLayout, "perquery_plan_time_layout")
 
-        self.perquery_plan_time_layout_2 = self._widget.findChild(QVBoxLayout, "perquery_plan_time_layout_2")
+    def create_graph(self, layout):
 
+        figcanvas = CustomFigCanvas()
+        figcanvas.setParent(self._widget)
+        #FigureCanvas.setSizePolicy(figcanvas, QSizePolicy.Expanding, QSizePolicy.Expanding)
+        #FigureCanvas.updateGeometry(figcanvas)
+        #####
+        labels = []
+        measurements = []
+        total_per_planner = []
+
+
+        # ###
+        # if int(matplotlibversion.split('.')[0]) < 1:
+        #     ax.boxplot(measurements, notch=0, sym='r+', vert=1, whis=1.5)
+        # else:
+        #     ax.boxplot(measurements, notch=0, sym='r+', vert=1, whis=1.5, bootstrap=1000)
+
+
+        #self.clearLayout(layout)
+        layout.addWidget(figcanvas)
 
     def destruct(self):
         self._widget = None
@@ -77,125 +113,46 @@ class SrMoveitPlannerBenchmarksVisualizer(Plugin):
         self.scene_label.setText(scene_name)
         self.load_scene_file(scene_name)
 
-    def load_database(self):
-        path_to_db = None
-        db_to_be_loaded = self.dbs_combo_box.currentText()
-        for db in self.available_databases:
-            if db_to_be_loaded == db['rel_path']:
-                path_to_db = db['full_path']
-                break
-        if path_to_db is not None:
-            self.connect_to_database(path_to_db)
-            self.get_planners_list()
-            self.get_queries_list()
-            self.update_data_display()
-
-    def load_bench_conf(self):
-        self.bench_config_combo_box.clear()
-        directory = rospkg.RosPack().get_path('sr_moveit_planner_benchmarking') + "/experiments/benchmark_configs/"
-        for root, dirs, files in os.walk(directory):
-            for file in files:
-                if file.endswith(".yaml"):
-                    full_path = os.path.join(root, file)
-                    rel_path = os.path.relpath(full_path, directory)
-                    self.bench_config_combo_box.addItem(rel_path)
-                    self.available_benchmarks.append({'rel_path': rel_path, 'full_path': full_path})
 
     def create_menu_bar(self):
         self._widget.myQMenuBar = QMenuBar(self._widget)
         fileMenu = self._widget.myQMenuBar.addMenu('&File')
 
-    def plot_attribute(self, cur, planners, attribute, typename, layout):
-        labels = []
-        measurements = []
-        total_per_planner = []
-
-        for planner in planners:
-            cur.execute('SELECT %s FROM runs WHERE plannerid = %s AND %s IS NOT NULL'
-                        % (attribute, planner[0], attribute))
-            measurement = [t[0] for t in cur.fetchall() if t[0] != None]
-            cur.execute('SELECT count(*) FROM runs WHERE plannerid = %s'
-                        % (planner[0]))
-            total_per_planner.append(cur.fetchone()[0])
-
-            labels.append(planner[1])
-            measurements.append(measurement)
-
-        if len(measurements) == 0:
-            print('Skipping "%s": no available measurements' % attribute)
-            return
-
-        self.plot_measurements(measurements, total_per_planner, planners, attribute, typename, labels, layout)
-
-    def plot_measurements(self, measurements, total_per_planner, planners, attribute, typename, labels, layout):
-        plt.clf()
-
-        width = 5
-        height = 4
-        dpi = 100
-        fig = Figure(figsize=(width, height), dpi=dpi, facecolor=(1.0, 1.0, 1.0, 1.0))
-        ax = fig.add_subplot(111)
-
-        figcanvas = FigureCanvas(fig)
-        figcanvas.setParent(self._widget)
-        FigureCanvas.setSizePolicy(figcanvas, QSizePolicy.Expanding, QSizePolicy.Expanding)
-        FigureCanvas.updateGeometry(figcanvas)
-
-        if typename == 'BOOLEAN':
-            width = .5
-            measurementsPercentage = [sum(m) * 100. / total_per_planner[counter] for counter, m in
-                                      enumerate(measurements)]
-            ind = range(len(measurements))
-            ax.bar(ind, measurementsPercentage, width)
-            plt.setp(ax, xticks=[x + width / 2. for x in ind])
-            ax.set_ylim([0, 100])
-            ax.set_xlim([0, len(planners)])
-        else:
-            if int(matplotlibversion.split('.')[0]) < 1:
-                ax.boxplot(measurements, notch=0, sym='r+', vert=1, whis=1.5)
-            else:
-                ax.boxplot(measurements, notch=0, sym='r+', vert=1, whis=1.5, bootstrap=1000)
-
-        xtickNames = plt.setp(ax, xticklabels=labels)
-        plt.setp(xtickNames, rotation=90)
-        for tick in ax.xaxis.get_major_ticks():  # shrink the font size of the x tick labels
-            tick.label.set_fontsize(7)
-        for tick in ax.yaxis.get_major_ticks():  # shrink the font size of the y tick labels
-            tick.label.set_fontsize(7)
-        fig.subplots_adjust(bottom=0.32, top=0.90, left=0.08, right=0.98)
-        ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)
-
-        if "clearance" in attribute:
-            ax.ticklabel_format(style='sci', axis='y', scilimits=(-3, 4), useLocale=True)
-            ax.yaxis.offsetText.set_fontsize(7)
-
-        self.clearLayout(layout)
-        layout.addWidget(figcanvas)
-
-    def plot_attribute_per_query_per_query(self, cur, query, planners, attribute, typename, layout):
-        # Plotting each query results in a graph with the planners in x axis
-        experiment_id = [given_query[0] for given_query in self.queries if given_query[1] == query][0]
-
-        labels = []
-        measurements = []
-        total_per_planner = []
-
-        for planner in planners:
-            cur.execute('SELECT %s FROM runs WHERE experimentid=%s AND plannerid = %s AND %s IS NOT NULL'
-                        % (attribute, experiment_id, planner[0], attribute))
-            measurement = [t[0] for t in cur.fetchall() if t[0] != None]
-            cur.execute('SELECT count(*) FROM runs WHERE experimentid=%s AND plannerid = %s'
-                        % (experiment_id, planner[0]))
-            total_per_planner.append(cur.fetchone()[0])
-
-            labels.append(planner[1])
-            measurements.append(measurement)
-
-        if len(measurements) == 0:
-            print('Skipping "%s": no available measurements' % attribute)
-            return
-
-        self.plot_measurements(measurements, total_per_planner, planners, attribute, typename, labels, layout)
+    # def plot_measurements(self, measurements, total_per_planner, planners, attribute, typename, labels, layout):
+    #     plt.clf()
+    #
+    #     width = 5
+    #     height = 4
+    #     dpi = 100
+    #     fig = Figure(figsize=(width, height), dpi=dpi, facecolor=(1.0, 1.0, 1.0, 1.0))
+    #     ax = fig.add_subplot(111)
+    #
+    #     figcanvas = CustomFigCanvas()
+    #     figcanvas.setParent(self._widget)
+    #     FigureCanvas.setSizePolicy(figcanvas, QSizePolicy.Expanding, QSizePolicy.Expanding)
+    #     FigureCanvas.updateGeometry(figcanvas)
+    #
+    #
+    #     if int(matplotlibversion.split('.')[0]) < 1:
+    #         ax.boxplot(measurements, notch=0, sym='r+', vert=1, whis=1.5)
+    #     else:
+    #         ax.boxplot(measurements, notch=0, sym='r+', vert=1, whis=1.5, bootstrap=1000)
+    #
+    #     xtickNames = plt.setp(ax, xticklabels=labels)
+    #     plt.setp(xtickNames, rotation=90)
+    #     for tick in ax.xaxis.get_major_ticks():  # shrink the font size of the x tick labels
+    #         tick.label.set_fontsize(7)
+    #     for tick in ax.yaxis.get_major_ticks():  # shrink the font size of the y tick labels
+    #         tick.label.set_fontsize(7)
+    #     fig.subplots_adjust(bottom=0.32, top=0.90, left=0.08, right=0.98)
+    #     ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)
+    #
+    #     if "clearance" in attribute:
+    #         ax.ticklabel_format(style='sci', axis='y', scilimits=(-3, 4), useLocale=True)
+    #         ax.yaxis.offsetText.set_fontsize(7)
+    #
+    #     self.clearLayout(layout)
+    #     layout.addWidget(figcanvas)
 
     def plot_attribute_per_query(self, cur, planner, attribute, typename, layout):
         # Plotting for the selected planner results for each query
@@ -278,39 +235,6 @@ class SrMoveitPlannerBenchmarksVisualizer(Plugin):
         self.clearLayout(layout)
         layout.addWidget(figcanvas)
 
-    def plot_statistics(self):
-        self.c.execute('PRAGMA table_info(runs)')
-        colInfo = self.c.fetchall()[3:]
-
-        for col in colInfo:
-
-            if "time" == col[1]:
-                self.plot_attribute(self.c, self.planners, col[1], col[2], self.plan_time_layout)
-
-
-    def plot_statistics_per_query_per_planner(self, planner):
-        self.c.execute('PRAGMA table_info(runs)')
-        colInfo = self.c.fetchall()[3:]
-
-        for col in colInfo:
-
-            if "time" == col[1]:
-                self.plot_attribute_per_query(self.c, planner, col[1], col[2], self.perquery_plan_time_layout)
-
-        self.queries_legend.clear()
-        for query in self.queries:
-            self.queries_legend.append('Query {}: {}'.format(query[0], query[1]))
-
-    def plot_statistics_per_query_per_query(self, query):
-        self.c.execute('PRAGMA table_info(runs)')
-        colInfo = self.c.fetchall()[3:]
-
-        for col in colInfo:
-
-            if "time" == col[1]:
-                self.plot_attribute_per_query_per_query(self.c, query, self.planners, col[1], col[2],
-                                                        self.perquery_plan_time_layout_2)
-
 
 
     def clearLayout(self, layout):
@@ -334,6 +258,95 @@ class SrMoveitPlannerBenchmarksVisualizer(Plugin):
         for planner in self.planners:
             self.planners_combo_box.addItem(planner[1])
         self.planners_combo_box.blockSignals(False)
+
+
+
+''' End Class '''
+
+
+class CustomFigCanvas(FigureCanvas, TimedAnimation):
+
+    def __init__(self):
+
+        self.addedData = []
+        print(matplotlib.__version__)
+
+        # The data
+        self.xlim = 200
+        self.n = np.linspace(0, self.xlim - 1, self.xlim)
+        a = []
+        b = []
+        a.append(2.0)
+        a.append(4.0)
+        a.append(2.0)
+        b.append(4.0)
+        b.append(3.0)
+        b.append(4.0)
+        self.y = (self.n * 0.0) + 50
+
+        # The window
+        self.fig = Figure(figsize=(5,5), dpi=100)
+        self.ax1 = self.fig.add_subplot(111)
+
+
+        # self.ax1 settings
+        self.ax1.set_xlabel('time')
+        self.ax1.set_ylabel('raw data')
+        self.line1 = Line2D([], [], color='blue')
+        self.line1_tail = Line2D([], [], color='red', linewidth=2)
+        self.line1_head = Line2D([], [], color='red', marker='o', markeredgecolor='r')
+        self.ax1.add_line(self.line1)
+        self.ax1.add_line(self.line1_tail)
+        self.ax1.add_line(self.line1_head)
+        self.ax1.set_xlim(0, self.xlim - 1)
+        self.ax1.set_ylim(-4, 4)
+
+
+        FigureCanvas.__init__(self, self.fig)
+        TimedAnimation.__init__(self, self.fig, interval = 50, blit = True)
+
+    def new_frame_seq(self):
+        return iter(range(self.n.size))
+
+    def _init_draw(self):
+        lines = [self.line1, self.line1_tail, self.line1_head]
+        for l in lines:
+            l.set_data([], [])
+
+    def addData(self, value):
+        self.addedData.append(value)
+
+    def zoomIn(self, value):
+        bottom = self.ax1.get_ylim()[0]
+        top = self.ax1.get_ylim()[1]
+        bottom += value
+        top -= value
+        self.ax1.set_ylim(bottom,top)
+        self.draw()
+
+
+    def _step(self, *args):
+        # Extends the _step() method for the TimedAnimation class.
+        try:
+            TimedAnimation._step(self, *args)
+        except Exception as e:
+            self.abc += 1
+            print(str(self.abc))
+            TimedAnimation._stop(self)
+            pass
+
+    def _draw_frame(self, framedata):
+        margin = 2
+        while(len(self.addedData) > 0):
+            self.y = np.roll(self.y, -1)
+            self.y[-1] = self.addedData[0]
+            del(self.addedData[0])
+
+
+        self.line1.set_data(self.n[ 0 : self.n.size - margin ], self.y[ 0 : self.n.size - margin ])
+        self.line1_tail.set_data(np.append(self.n[-10:-1 - margin], self.n[-1 - margin]), np.append(self.y[-10:-1 - margin], self.y[-1 - margin]))
+        self.line1_head.set_data(self.n[-1 - margin], self.y[-1 - margin])
+        self._drawn_artists = [self.line1, self.line1_tail, self.line1_head]
 
 
 
