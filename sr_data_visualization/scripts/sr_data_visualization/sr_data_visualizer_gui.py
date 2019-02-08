@@ -96,7 +96,7 @@ class SrDataVisualizer(Plugin):
 
 
 class CustomFigCanvas(FigureCanvas, TimedAnimation):
-
+###https://stackoverflow.com/questions/36665850/matplotlib-animation-inside-your-own-pyqt4-gui
     def __init__(self):
 
         self.addedData = []
@@ -105,14 +105,6 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         # The data
         self.xlim = 200
         self.n = np.linspace(0, self.xlim - 1, self.xlim)
-        a = []
-        b = []
-        a.append(2.0)
-        a.append(4.0)
-        a.append(2.0)
-        b.append(4.0)
-        b.append(3.0)
-        b.append(4.0)
         self.y = (self.n * 0.0) + 50
 
         # The window
