@@ -1,0 +1,26 @@
+<launch>
+  <!-- Set initial_z of the robot to enable to set it on a table -->
+  <arg name="initial_z" default="0.1"/>
+
+  <!-- benchmark options file -->
+  <arg name="bench_opts" />
+
+  <!-- launch benchmarking automatically -->
+  <arg name="launch_benchmarking" default="true" />
+
+  <!-- Load robot settings -->
+  <include file="$(find sr_moveit_planner_benchmarking)/launch/robot.launch">
+    <arg name="initial_z" value="$(arg initial_z)" />
+    <arg name="visualization" value="false" />
+  </include>
+
+  <!-- Load all planning pipelines that will be benchmarked -->
+  <include ns="sr_moveit_run_benchmark" file="$(find sr_box_ur10_moveit_config)/launch/planning_pipeline.launch.xml">
+    <arg name="pipeline" value="ompl" />
+  </include>
+
+  <!-- Launch benchmark node -->
+  <node name="sr_moveit_run_benchmark" pkg="sr_moveit_planner_benchmarking" type="sr_moveit_run_benchmark" output="screen" required="true">
+    <rosparam command="load" file="$(arg bench_opts)"/>
+  </node>
+</launch>

@@ -1,0 +1,10 @@
+<launch>
+  <!-- Load robot -->
+  <arg name="initial_z" default="0.1"/>
+  <include file="$(find sr_moveit_planner_benchmarking)/launch/robot.launch">
+    <arg name="initial_z" value="$(arg initial_z)" />
+    <arg name="rviz" default="false"/>
+  </include>
+
+  <node pkg="sr_utilities_common" type="timed_rosrun.sh" args="0 sr_moveit_planner_benchmarking sr_moveit_planner_benchmarking_gui.py" name="timed_gui" output="screen"/>
+</launch>

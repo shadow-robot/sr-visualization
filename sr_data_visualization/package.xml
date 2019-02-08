@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package>
+  <name>sr_data_visualization</name>
+  <version>0.0.1</version>
+  <description>
+    A package to show all the data coming from the dexterous hand.
+  </description>
+  <author email="tom@shadowrobot.com">Tom Queen</author>
+  <maintainer email="software@shadowrobot.com">>Shadow Robot's software team</maintainer>
+
+  <license>GPL</license>
+
+  <build_depend>std_msgs</build_depend>
+  <build_depend>moveit_ros_benchmarks</build_depend>
+  
+  <run_depend>std_msgs</run_depend>
+  <run_depend>moveit_ros_benchmarks</run_depend>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+</package>
+
