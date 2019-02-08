@@ -51,17 +51,23 @@ class SrMoveitPlannerBenchmarksVisualizer(Plugin):
 
         self._widget.setWindowTitle("Moveit Planner Benchmarks")
         self.init_widget_children()
+        #self.init_plots()
         self.graph_one = CustomFigCanvas()
-        self.create_graph(self.plan_time_layout)
+        self.graph_two = CustomFigCanvas()
+        self.graph_three = CustomFigCanvas()
+        #self.create_graph(self.plan_time_layout)
 
         self.sub = rospy.Subscriber('sh_rh_ffj0_position_controller/state', JointControllerState,
                                     self.addData_callbackFunc,
                                     queue_size=1)
 
         self.graph_one.setParent(self._widget)
+        self.graph_two = CustomFigCanvas()
+        self.graph_three = CustomFigCanvas()
+
 
         self.plan_time_layout.addWidget(self.graph_one)
-
+        self.finger_position_layout.addWidget(self.graph_two)
 
 
 
@@ -69,33 +75,22 @@ class SrMoveitPlannerBenchmarksVisualizer(Plugin):
     def addData_callbackFunc(self, value):
         print("data: " + str(value.process_value))
         self.graph_one.addData(value.process_value)
+        self.graph_two.addData(value.process_value)
 
 
     def init_widget_children(self):
 
         self.plan_time_layout = self._widget.findChild(QVBoxLayout, "plan_time_layout")
+        self.finger_position_layout = self._widget.findChild(QVBoxLayout, "finger_position_layout")
 
+    def init_plots(self):
+        self.create_graph(self.plan_time_layout)
+        #self.create_graph(self.finger_position_layout)
 
     def create_graph(self, layout):
 
         figcanvas = CustomFigCanvas()
         figcanvas.setParent(self._widget)
-        #FigureCanvas.setSizePolicy(figcanvas, QSizePolicy.Expanding, QSizePolicy.Expanding)
-        #FigureCanvas.updateGeometry(figcanvas)
-        #####
-        labels = []
-        measurements = []
-        total_per_planner = []
-
-
-        # ###
-        # if int(matplotlibversion.split('.')[0]) < 1:
-        #     ax.boxplot(measurements, notch=0, sym='r+', vert=1, whis=1.5)
-        # else:
-        #     ax.boxplot(measurements, notch=0, sym='r+', vert=1, whis=1.5, bootstrap=1000)
-
-
-        #self.clearLayout(layout)
         layout.addWidget(figcanvas)
 
     def destruct(self):
