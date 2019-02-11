@@ -22,6 +22,8 @@ import rospy
 from control_msgs.msg import JointControllerState
 import os
 import rospkg
+import rviz
+import subprocess
 
 
 
@@ -41,9 +43,11 @@ class SrDataVisualizer(Plugin):
 
         self._widget.setWindowTitle("Moveit Planner Benchmarks")
         self.init_widget_children()
+        self.create_scene_plugin()
+
         #self.init_plots()
-        self.graph_one = CustomFigCanvas()
-        self.graph_two = CustomFigCanvas()
+        self.graph_one = CustomFigCanvas('green')
+        self.graph_two = CustomFigCanvas('blue')
         #self.create_graph(self.plan_time_layout)
 
         self.sub = rospy.Subscriber('sh_rh_ffj0_position_controller/state', JointControllerState,
@@ -54,22 +58,53 @@ class SrDataVisualizer(Plugin):
                                     queue_size=1)
 
         self.graph_one.setParent(self._widget)
-        self.graph_two = CustomFigCanvas()
-        self.graph_three = CustomFigCanvas()
+        #self.graph_two = CustomFigCanvas()
+        #self.graph_three = CustomFigCanvas()
 
 
         self.plan_time_layout.addWidget(self.graph_one)
         self.finger_position_layout.addWidget(self.graph_two)
 
+    def create_scene_plugin(self):
+        package_path = rospkg.RosPack().get_path('sr_data_visualization')
+        rviz_config_approach = package_path + "/uis/handescene.rviz"
+
+        reader = rviz.YamlConfigReader()
+
+        # Configuring approach window
+        config_approach = rviz.Config()
+        reader.readFile(config_approach, rviz_config_approach)
+        self.frame_scene = rviz.VisualizationFrame()
+        self.frame_scene.setSplashPath("")
+        self.frame_scene.initialize()
+        self.frame_scene.setMenuBar(None)
+        self.frame_scene.setStatusBar(None)
+        self.frame_scene.setHideButtonVisibility(False)
+        self.frame_scene.load(config_approach)
+
+        scene_layout = self._widget.findChild(QVBoxLayout, "scene_layout")
+        scene_layout.addWidget(self.frame_scene)
+        #self.load_scene_file("empty")
+
+    def load_scene_file(self, scene_name):
+        try:
+            scenes_path = "`rospack find sr_data_visualization`/scenes/" + scene_name + ".scene"
+            p = subprocess.Popen(['rosrun moveit_ros_planning moveit_publish_scene_from_text {}'.format(scenes_path)],
+                                 shell=True)
+        except rospy.ROSException as e:
+            rospy.logerr("There was an error loading the scene: ", scene_name)
+            rospy.logerr(e)
+            return
+
 
 
 
     def p_val_cb(self, value):
-        print("process_value: " + str(value.process_value))
+        #print("process_value: " + str(value.process_value))
         self.graph_one.addData(value.process_value)
 
     def p_val_dot_cb(self, value):
-        print("process_value_dot: " + str(value.process_value_dot))
+        #print("process_value_dot: " + str(value.process_value_dot))
         self.graph_two.addData(value.process_value_dot)
 
 
@@ -97,7 +132,7 @@ class SrDataVisualizer(Plugin):
 
 class CustomFigCanvas(FigureCanvas, TimedAnimation):
 ###https://stackoverflow.com/questions/36665850/matplotlib-animation-inside-your-own-pyqt4-gui
-    def __init__(self):
+    def __init__(self, Color):
 
         self.addedData = []
         print(matplotlib.__version__)
@@ -112,10 +147,11 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         self.ax1 = self.fig.add_subplot(111)
 
 
+
         # self.ax1 settings
         self.ax1.set_xlabel('time')
         self.ax1.set_ylabel('raw data')
-        self.line1 = Line2D([], [], color='blue')
+        self.line1 = Line2D([], [], color=Color)
         self.line1_tail = Line2D([], [], color='red', linewidth=2)
         self.line1_head = Line2D([], [], color='red', marker='o', markeredgecolor='r')
         self.ax1.add_line(self.line1)
@@ -127,6 +163,8 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
 
         FigureCanvas.__init__(self, self.fig)
         TimedAnimation.__init__(self, self.fig, interval = 50, blit = True)
+
+
 
     def new_frame_seq(self):
         return iter(range(self.n.size))
