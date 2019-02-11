@@ -46,8 +46,8 @@ class SrDataVisualizer(Plugin):
         self.create_scene_plugin()
 
         #self.init_plots()
-        self.graph_one = CustomFigCanvas('green')
-        self.graph_two = CustomFigCanvas('blue')
+        self.graph_one = CustomFigCanvas(1)
+        self.graph_two = CustomFigCanvas(1)
         #self.create_graph(self.plan_time_layout)
 
         self.sub = rospy.Subscriber('sh_rh_ffj0_position_controller/state', JointControllerState,
@@ -101,11 +101,11 @@ class SrDataVisualizer(Plugin):
 
     def p_val_cb(self, value):
         #print("process_value: " + str(value.process_value))
-        self.graph_one.addData(value.process_value)
+        self.graph_one.addData(value.process_value, 0)
 
     def p_val_dot_cb(self, value):
         #print("process_value_dot: " + str(value.process_value_dot))
-        self.graph_two.addData(value.process_value_dot)
+        self.graph_two.addData(value.process_value_dot, 0)
 
 
     def init_widget_children(self):
@@ -132,49 +132,68 @@ class SrDataVisualizer(Plugin):
 
 class CustomFigCanvas(FigureCanvas, TimedAnimation):
 ###https://stackoverflow.com/questions/36665850/matplotlib-animation-inside-your-own-pyqt4-gui
-    def __init__(self, Color):
-
+    def __init__(self, num_lines):
+        self.num_lines = num_lines
+        #self.addedDataArray = []
         self.addedData = []
+        # n = 0
+        # while n < self.num_lines:
+        #     self.addedData = []
+        #     self.addedDataArray.append(self.addedData)
+        #     n = n + 1
+        #print(type(self.addedDataArray))
+        #print(type(self.addedDataArray[0]))
         print(matplotlib.__version__)
 
         # The data
         self.xlim = 200
         self.n = np.linspace(0, self.xlim - 1, self.xlim)
         self.y = (self.n * 0.0) + 50
+        print(self.n)
+        print("#######################")
+        print(self.y)
 
         # The window
         self.fig = Figure(figsize=(5,5), dpi=100)
         self.ax1 = self.fig.add_subplot(111)
 
-
-
         # self.ax1 settings
         self.ax1.set_xlabel('time')
         self.ax1.set_ylabel('raw data')
-        self.line1 = Line2D([], [], color=Color)
-        self.line1_tail = Line2D([], [], color='red', linewidth=2)
-        self.line1_head = Line2D([], [], color='red', marker='o', markeredgecolor='r')
-        self.ax1.add_line(self.line1)
-        self.ax1.add_line(self.line1_tail)
-        self.ax1.add_line(self.line1_head)
-        self.ax1.set_xlim(0, self.xlim - 1)
-        self.ax1.set_ylim(-4, 4)
+        i = 0
+
+        self.line = [self.num_lines]
+        self.line_head = [self.num_lines]
+        self.line_tail = [self.num_lines]
+        while i < self.num_lines:
+            self.line[i] = Line2D([], [], color='blue')
+            self.line_tail[i] = Line2D([], [], color='red', linewidth=2)
+            self.line_head[i] = Line2D([], [], color='red', marker='o', markeredgecolor='r')
+            self.ax1.add_line(self.line[i])
+            self.ax1.add_line(self.line_tail[i])
+            self.ax1.add_line(self.line_head[i])
+            self.ax1.set_xlim(0, self.xlim - 1)
+            self.ax1.set_ylim(-4, 4)
+            i = i + 1
 
 
         FigureCanvas.__init__(self, self.fig)
         TimedAnimation.__init__(self, self.fig, interval = 50, blit = True)
 
 
-
     def new_frame_seq(self):
         return iter(range(self.n.size))
 
     def _init_draw(self):
-        lines = [self.line1, self.line1_tail, self.line1_head]
-        for l in lines:
-            l.set_data([], [])
+        i = 0
+        while i < self.num_lines:
+            lines = [self.line[i], self.line_tail[i], self.line_head[i]]
+            for l in lines:
+                l.set_data([], [])
+            i = i + 1
 
-    def addData(self, value):
+    def addData(self, value, index):
+        #self.addedDataArray[index].append(value)
         self.addedData.append(value)
 
     def zoomIn(self, value):
@@ -198,17 +217,20 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
 
     def _draw_frame(self, framedata):
         margin = 2
+        #for l in self.addedDataArray:
+            #print(l)
         while(len(self.addedData) > 0):
             self.y = np.roll(self.y, -1)
             self.y[-1] = self.addedData[0]
             del(self.addedData[0])
 
-
-        self.line1.set_data(self.n[ 0 : self.n.size - margin ], self.y[ 0 : self.n.size - margin ])
-        self.line1_tail.set_data(np.append(self.n[-10:-1 - margin], self.n[-1 - margin]), np.append(self.y[-10:-1 - margin], self.y[-1 - margin]))
-        self.line1_head.set_data(self.n[-1 - margin], self.y[-1 - margin])
-        self._drawn_artists = [self.line1, self.line1_tail, self.line1_head]
-
+        i = 0
+        while i < self.num_lines:
+            self.line[i].set_data(self.n[ 0 : self.n.size - margin ], self.y[ 0 : self.n.size - margin ])
+            self.line_tail[i].set_data(np.append(self.n[-10:-1 - margin], self.n[-1 - margin]), np.append(self.y[-10:-1 - margin], self.y[-1 - margin]))
+            self.line_head[i].set_data(self.n[-1 - margin], self.y[-1 - margin])
+            self._drawn_artists = [self.line[i], self.line_tail[i], self.line_head[i]]
+            i = i + 1
 
 
 if __name__ == "__main__":
