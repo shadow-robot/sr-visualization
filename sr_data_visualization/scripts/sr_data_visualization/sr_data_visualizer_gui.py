@@ -46,8 +46,8 @@ class SrDataVisualizer(Plugin):
         self.create_scene_plugin()
 
         #self.init_plots()
-        self.graph_one = CustomFigCanvas(2)
-        self.graph_two = CustomFigCanvas(1)
+        self.graph_one = CustomFigCanvas(2, ['blue', 'green'])
+        self.graph_two = CustomFigCanvas(1, ['blue'])
         #self.create_graph(self.plan_time_layout)
 
         self.sub = rospy.Subscriber('sh_rh_ffj0_position_controller/state', JointControllerState,
@@ -134,7 +134,7 @@ class SrDataVisualizer(Plugin):
 
 class CustomFigCanvas(FigureCanvas, TimedAnimation):
 ###https://stackoverflow.com/questions/36665850/matplotlib-animation-inside-your-own-pyqt4-gui
-    def __init__(self, num_lines):
+    def __init__(self, num_lines, colour = []):
         self.num_lines = num_lines
         self.addedDataArray = []
         #self.addedData = []
@@ -143,15 +143,17 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
             addedData = []
             self.addedDataArray.append(addedData)
             n = n + 1
-        #print(type(self.addedDataArray))
-        #print(type(self.addedDataArray[0]))
+
         print(matplotlib.__version__)
 
         # The data
         self.xlim = 200
         self.n = np.linspace(0, self.xlim - 1, self.xlim)
-        self.y = (self.n * 0.0) + 50
-        self.yer = (self.n * 0.0) + 50
+        self.y = []
+        n = 0
+        while n < self.num_lines:
+            self.y.append((self.n * 0.0) + 50)
+            n = n + 1
         print(self.n)
         print("#######################")
         print(self.y)
@@ -171,7 +173,7 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         print("line: ", self.num_lines)
         while i < self.num_lines:
             print("i: ",i)
-            self.line.append(Line2D([], [], color='blue'))
+            self.line.append(Line2D([], [], color=colour[i]))
             self.line_tail.append(Line2D([], [], color='red', linewidth=2))
             self.line_head.append(Line2D([], [], color='red', marker='o', markeredgecolor='r'))
             self.ax1.add_line(self.line[i])
@@ -222,38 +224,25 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
 
     def _draw_frame(self, framedata):
         margin = 2
-        #for l in self.addedDataArray:
-            #print(l)
         i = 0
         while i < self.num_lines:
-            if i == 0:
-                while(len(self.addedDataArray[i]) > 0):
-                    self.y = np.roll(self.y, -1)
-                    self.y[-1] = self.addedDataArray[i][0]
-                    del(self.addedDataArray[i][0])
-            else:
-                while(len(self.addedDataArray[i]) > 0):
-                    self.yer = np.roll(self.yer, -1)
-                    self.yer[-1] = self.addedDataArray[i][0]
-                    del(self.addedDataArray[i][0])
+            while(len(self.addedDataArray[i]) > 0):
+                self.y[i] = np.roll(self.y[i], -1)
+                self.y[i][-1] = self.addedDataArray[i][0]
+                del(self.addedDataArray[i][0])
             i = i + 1
-
         i = 0
-        print(self.n)
-        print(self.y)
         while i < self.num_lines:
-            if i == 0:
-                self.line[i].set_data(self.n[ 0 : self.n.size - margin ], self.y[ 0 : self.n.size - margin ])
-                self.line_tail[i].set_data(np.append(self.n[-10:-1 - margin], self.n[-1 - margin]), np.append(self.y[-10:-1 - margin], self.y[-1 - margin]))
-                self.line_head[i].set_data(self.n[-1 - margin], self.y[-1 - margin])
-            else:
-                self.line[i].set_data(self.n[0: self.n.size - margin], self.yer[0: self.n.size - margin])
-                self.line_tail[i].set_data(np.append(self.n[-10:-1 - margin], self.n[-1 - margin]), np.append(self.yer[-10:-1 - margin], self.yer[-1 - margin]))
-                self.line_head[i].set_data(self.n[-1 - margin], self.yer[-1 - margin])
-            if self.num_lines == 1:
-                self._drawn_artists = [self.line[i], self.line_tail[i], self.line_head[i]]
-            else:
-                self._drawn_artists = [self.line[0], self.line_tail[0], self.line_head[0], self.line[1], self.line_tail[1], self.line_head[1]]
+            self.line[i].set_data(self.n[ 0 : self.n.size - margin ], self.y[i][ 0 : self.n.size - margin ])
+            self.line_tail[i].set_data(np.append(self.n[-10:-1 - margin], self.n[-1 - margin]), np.append(self.y[i][-10:-1 - margin], self.y[i][-1 - margin]))
+            self.line_head[i].set_data(self.n[-1 - margin], self.y[i][-1 - margin])
+            self._drawn_artists = []
+            for l in self.line:
+                self._drawn_artists.append(l)
+            for l in self.line_tail:
+                self._drawn_artists.append(l)
+            for l in self.line_head:
+                self._drawn_artists.append(l)
             i = i + 1
 
 
