@@ -20,7 +20,7 @@
    <enum>Qt::NoFocus</enum>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Hand E Visualizer</string>
   </property>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
@@ -47,7 +47,7 @@
    </property>
    <widget class="QWidget" name="tab_6">
     <attribute name="title">
-     <string>Benchmarks Visualizer</string>
+     <string>Visual and Graphs</string>
     </attribute>
     <widget class="QGroupBox" name="groupBox">
      <property name="geometry">
@@ -59,7 +59,7 @@
       </rect>
      </property>
      <property name="title">
-      <string>Database</string>
+      <string>cb1</string>
      </property>
      <widget class="QPushButton" name="load_button">
       <property name="geometry">
@@ -100,7 +100,7 @@
       </rect>
      </property>
      <property name="title">
-      <string>Scene</string>
+      <string>rviz</string>
      </property>
      <widget class="QWidget" name="verticalLayoutWidget_10">
       <property name="geometry">
@@ -141,7 +141,7 @@
      </property>
      <widget class="QWidget" name="tab_8">
       <attribute name="title">
-       <string>Global</string>
+       <string>t1</string>
       </attribute>
       <widget class="QGroupBox" name="group_box_9">
        <property name="geometry">
@@ -153,7 +153,7 @@
         </rect>
        </property>
        <property name="title">
-        <string>Clearance (m)</string>
+        <string>PID</string>
        </property>
        <widget class="QWidget" name="verticalLayoutWidget_11">
         <property name="geometry">
@@ -177,7 +177,7 @@
         </rect>
        </property>
        <property name="title">
-        <string>Correct (%)</string>
+        <string>t7</string>
        </property>
        <widget class="QWidget" name="verticalLayoutWidget_12">
         <property name="geometry">
@@ -225,7 +225,7 @@
         </rect>
        </property>
        <property name="title">
-        <string>Solved (%)</string>
+        <string>t6</string>
        </property>
        <widget class="QWidget" name="verticalLayoutWidget_22">
         <property name="geometry">
@@ -249,7 +249,7 @@
         </rect>
        </property>
        <property name="title">
-        <string>Plan Quality 1</string>
+        <string>Palm Extras</string>
        </property>
        <widget class="QWidget" name="verticalLayoutWidget_23">
         <property name="geometry">
@@ -273,7 +273,7 @@
         </rect>
        </property>
        <property name="title">
-        <string>Smoothness </string>
+        <string>t8</string>
        </property>
        <widget class="QWidget" name="verticalLayoutWidget_24">
         <property name="geometry">
@@ -297,7 +297,7 @@
         </rect>
        </property>
        <property name="title">
-        <string>Plan Quality 2</string>
+        <string>Biotacs</string>
        </property>
        <widget class="QWidget" name="verticalLayoutWidget_25">
         <property name="geometry">
@@ -338,7 +338,7 @@
      </widget>
      <widget class="QWidget" name="tab_9">
       <attribute name="title">
-       <string>Per Query</string>
+       <string>t2</string>
       </attribute>
       <widget class="QTabWidget" name="tabWidget_4">
        <property name="geometry">
@@ -803,7 +803,7 @@
      </widget>
      <widget class="QWidget" name="tab_12">
       <attribute name="title">
-       <string>Experiments info</string>
+       <string>t3</string>
       </attribute>
       <widget class="QTextBrowser" name="experiments_info">
        <property name="geometry">
@@ -1016,7 +1016,7 @@ p, li { white-space: pre-wrap; }
    </widget>
    <widget class="QWidget" name="tab_7">
     <attribute name="title">
-     <string>Benchmark_Tools</string>
+     <string>Options</string>
     </attribute>
     <widget class="QGroupBox" name="groupBox_2">
      <property name="geometry">
