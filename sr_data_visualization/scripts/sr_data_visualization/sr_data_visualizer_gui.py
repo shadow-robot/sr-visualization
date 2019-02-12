@@ -36,7 +36,7 @@ class SrDataVisualizer(Plugin):
         super(SrDataVisualizer, self).__init__(context)
         self.setObjectName("SrDataVisualizer")
         self._widget = QWidget()
-        self.create_menu_bar()
+        #self.create_menu_bar()
 
         ui_file = os.path.join(rospkg.RosPack().get_path(
             'sr_data_visualization'), 'uis', 'hand-e_visualizer.ui')
