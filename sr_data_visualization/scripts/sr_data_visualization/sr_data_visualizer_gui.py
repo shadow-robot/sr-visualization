@@ -361,17 +361,6 @@ class SrDataVisualizer(Plugin):
 
         scene_layout = self._widget.findChild(QVBoxLayout, "scene_layout")
         scene_layout.addWidget(self.frame_scene)
-        #self.load_scene_file("empty")
-
-    def load_scene_file(self, scene_name):
-        try:
-            scenes_path = "`rospack find sr_data_visualization`/scenes/" + scene_name + ".scene"
-            p = subprocess.Popen(['rosrun moveit_ros_planning moveit_publish_scene_from_text {}'.format(scenes_path)],
-                                 shell=True)
-        except rospy.ROSException as e:
-            rospy.logerr("There was an error loading the scene: ", scene_name)
-            rospy.logerr(e)
-            return
 
     def init_widget_children(self):
         #Overview page
