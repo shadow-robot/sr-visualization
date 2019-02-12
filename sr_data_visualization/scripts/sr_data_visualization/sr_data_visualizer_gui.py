@@ -57,7 +57,7 @@ class SrDataVisualizer(Plugin):
 
     def create_graphs(self):
         #Overview page graphs
-        self.palm_extras_graph = CustomFigCanvas(10, ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink', 'red', 'magenta'], 0, 36, ['accel x', 'accel y', 'accel z', 'gyro x', 'gyro y', 'gyro z', 'ADC0', 'ADC1', 'ADC2', 'ADC3'])
+        self.palm_extras_graph = CustomFigCanvas(10, ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink', 'red', 'magenta'], 0, 36, ['accel x', 'accel y', 'accel z', 'gyro x', 'gyro y', 'gyro z', 'ADC0', 'ADC1', 'ADC2', 'ADC3'], 2)
         self.effort_graph = CustomFigCanvas(2, ['red', 'cyan', ], -100, 100, ['Commanded Effort', 'Measured Effort'])
         self.biotac_overview_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 1000, ['PAC0', 'PAC1', 'PDC', 'TAC', 'TDC'])
         self.pid_clipped_graph = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4, ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
@@ -415,8 +415,9 @@ class SrDataVisualizer(Plugin):
 
 class CustomFigCanvas(FigureCanvas, TimedAnimation):
 ###https://stackoverflow.com/questions/36665850/matplotlib-animation-inside-your-own-pyqt4-gui
-    def __init__(self, num_lines, colour = [], ymin = -1, ymax = 1, legends = []):
+    def __init__(self, num_lines, colour = [], ymin = -1, ymax = 1, legends = [], rows=1):
         self.num_lines = num_lines
+        self.rows = rows
         self.addedDataArray = []
         n = 0
         while n < self.num_lines:
@@ -459,7 +460,7 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
             i = i + 1
 
         self.ax1.legend(self.line, legends, bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
-           ncol=self.num_lines, mode="expand", borderaxespad=0., prop={'size': 7})
+           ncol=self.num_lines/self.rows, mode="expand", borderaxespad=0., prop={'size': 7})
 
         FigureCanvas.__init__(self, self.fig)
         TimedAnimation.__init__(self, self.fig, interval = 50, blit = True)
