@@ -141,7 +141,7 @@
      </property>
      <widget class="QWidget" name="tab_8">
       <attribute name="title">
-       <string>t1</string>
+       <string>Overview</string>
       </attribute>
       <widget class="QGroupBox" name="group_box_9">
        <property name="geometry">
@@ -260,7 +260,7 @@
           <height>351</height>
          </rect>
         </property>
-        <layout class="QVBoxLayout" name="quality_1_layout"/>
+        <layout class="QVBoxLayout" name="palm_extras_layout"/>
        </widget>
       </widget>
       <widget class="QGroupBox" name="group_box_23">
@@ -338,7 +338,7 @@
      </widget>
      <widget class="QWidget" name="tab_9">
       <attribute name="title">
-       <string>t2</string>
+       <string>All Joints</string>
       </attribute>
       <widget class="QTabWidget" name="tabWidget_4">
        <property name="geometry">
@@ -369,7 +369,7 @@
          <item row="1" column="0">
           <widget class="QGroupBox" name="group_box_33">
            <property name="title">
-            <string>j0</string>
+            <string>FFJ1</string>
            </property>
            <widget class="QWidget" name="verticalLayoutWidget_108">
             <property name="geometry">
@@ -387,7 +387,7 @@
          <item row="1" column="1">
           <widget class="QGroupBox" name="group_box_34">
            <property name="title">
-            <string>j1</string>
+            <string>FFJ2</string>
            </property>
            <widget class="QWidget" name="verticalLayoutWidget_109">
             <property name="geometry">
@@ -405,7 +405,7 @@
          <item row="1" column="2">
           <widget class="QGroupBox" name="group_box_35">
            <property name="title">
-            <string>j2</string>
+            <string>FFJ3</string>
            </property>
            <widget class="QWidget" name="verticalLayoutWidget_110">
             <property name="geometry">
@@ -423,7 +423,7 @@
          <item row="1" column="3">
           <widget class="QGroupBox" name="group_box_36">
            <property name="title">
-            <string>j3</string>
+            <string>FFJ4</string>
            </property>
            <widget class="QWidget" name="verticalLayoutWidget_111">
             <property name="geometry">
@@ -441,7 +441,7 @@
          <item row="1" column="4">
           <widget class="QGroupBox" name="group_box_37">
            <property name="title">
-            <string>j4</string>
+            <string>LFJ1</string>
            </property>
            <widget class="QWidget" name="verticalLayoutWidget_112">
             <property name="geometry">
@@ -459,7 +459,7 @@
          <item row="1" column="5">
           <widget class="QGroupBox" name="group_box_40">
            <property name="title">
-            <string>j5</string>
+            <string>LFJ2</string>
            </property>
            <widget class="QWidget" name="verticalLayoutWidget_113">
             <property name="geometry">
@@ -477,7 +477,7 @@
          <item row="2" column="0">
           <widget class="QGroupBox" name="group_box_51">
            <property name="title">
-            <string>j6</string>
+            <string>LFJ3</string>
            </property>
            <widget class="QWidget" name="verticalLayoutWidget_118">
             <property name="geometry">
@@ -495,7 +495,7 @@
          <item row="2" column="1">
           <widget class="QGroupBox" name="group_box_41">
            <property name="title">
-            <string>j7</string>
+            <string>LFJ4</string>
            </property>
            <widget class="QWidget" name="verticalLayoutWidget_116">
             <property name="geometry">
@@ -513,7 +513,7 @@
          <item row="2" column="2">
           <widget class="QGroupBox" name="group_box_38">
            <property name="title">
-            <string>j8</string>
+            <string>LFJ5</string>
            </property>
            <widget class="QWidget" name="verticalLayoutWidget_114">
             <property name="geometry">
@@ -531,7 +531,7 @@
          <item row="2" column="3">
           <widget class="QGroupBox" name="group_box_39">
            <property name="title">
-            <string>j9</string>
+            <string>MFJ1</string>
            </property>
            <widget class="QWidget" name="verticalLayoutWidget_115">
             <property name="geometry">
@@ -549,7 +549,7 @@
          <item row="2" column="4">
           <widget class="QGroupBox" name="group_box_52">
            <property name="title">
-            <string>j10</string>
+            <string>MFJ2</string>
            </property>
            <widget class="QWidget" name="verticalLayoutWidget_119">
             <property name="geometry">
@@ -567,7 +567,7 @@
          <item row="2" column="5">
           <widget class="QGroupBox" name="group_box_42">
            <property name="title">
-            <string>j11</string>
+            <string>MFJ3</string>
            </property>
            <widget class="QWidget" name="verticalLayoutWidget_117">
             <property name="geometry">
@@ -585,7 +585,7 @@
          <item row="3" column="0">
           <widget class="QGroupBox" name="group_box_57">
            <property name="title">
-            <string>j12</string>
+            <string>MFJ4</string>
            </property>
            <widget class="QWidget" name="verticalLayoutWidget_124">
             <property name="geometry">
@@ -603,7 +603,7 @@
          <item row="3" column="1">
           <widget class="QGroupBox" name="group_box_54">
            <property name="title">
-            <string>j13</string>
+            <string>RFJ1</string>
            </property>
            <widget class="QWidget" name="verticalLayoutWidget_121">
             <property name="geometry">
@@ -621,7 +621,7 @@
          <item row="3" column="2">
           <widget class="QGroupBox" name="group_box_56">
            <property name="title">
-            <string>j14</string>
+            <string>RFJ2</string>
            </property>
            <widget class="QWidget" name="verticalLayoutWidget_123">
             <property name="geometry">
@@ -639,7 +639,7 @@
          <item row="3" column="3">
           <widget class="QGroupBox" name="group_box_55">
            <property name="title">
-            <string>j15</string>
+            <string>RFJ3</string>
            </property>
            <widget class="QWidget" name="verticalLayoutWidget_122">
             <property name="geometry">
@@ -657,7 +657,7 @@
          <item row="3" column="4">
           <widget class="QGroupBox" name="group_box_53">
            <property name="title">
-            <string>j16</string>
+            <string>RFJ4</string>
            </property>
            <widget class="QWidget" name="verticalLayoutWidget_120">
             <property name="geometry">
@@ -675,7 +675,7 @@
          <item row="3" column="5">
           <widget class="QGroupBox" name="group_box_58">
            <property name="title">
-            <string>j17</string>
+            <string>THJ1</string>
            </property>
            <widget class="QWidget" name="verticalLayoutWidget_125">
             <property name="geometry">
@@ -693,7 +693,7 @@
          <item row="4" column="0">
           <widget class="QGroupBox" name="group_box_63">
            <property name="title">
-            <string>j18</string>
+            <string>THJ2</string>
            </property>
            <widget class="QWidget" name="verticalLayoutWidget_130">
             <property name="geometry">
@@ -711,7 +711,7 @@
          <item row="4" column="1">
           <widget class="QGroupBox" name="group_box_60">
            <property name="title">
-            <string>j19</string>
+            <string>THJ3</string>
            </property>
            <widget class="QWidget" name="verticalLayoutWidget_127">
             <property name="geometry">
@@ -729,7 +729,7 @@
          <item row="4" column="2">
           <widget class="QGroupBox" name="group_box_62">
            <property name="title">
-            <string>j20</string>
+            <string>THJ4</string>
            </property>
            <widget class="QWidget" name="verticalLayoutWidget_129">
             <property name="geometry">
@@ -747,7 +747,7 @@
          <item row="4" column="3">
           <widget class="QGroupBox" name="group_box_61">
            <property name="title">
-            <string>j21</string>
+            <string>THJ5</string>
            </property>
            <widget class="QWidget" name="verticalLayoutWidget_128">
             <property name="geometry">
@@ -765,7 +765,7 @@
          <item row="4" column="4">
           <widget class="QGroupBox" name="group_box_59">
            <property name="title">
-            <string>j22</string>
+            <string>WRJ1</string>
            </property>
            <widget class="QWidget" name="verticalLayoutWidget_126">
             <property name="geometry">
@@ -783,7 +783,7 @@
          <item row="4" column="5">
           <widget class="QGroupBox" name="group_box_64">
            <property name="title">
-            <string>j23</string>
+            <string>WRJ2</string>
            </property>
            <widget class="QWidget" name="verticalLayoutWidget_131">
             <property name="geometry">
@@ -1013,6 +1013,215 @@
         </widget>
        </widget>
       </widget>
+     </widget>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>Biotacs</string>
+      </attribute>
+      <widget class="QGroupBox" name="groupBox_7">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>70</y>
+         <width>491</width>
+         <height>261</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>biotac_0</string>
+       </property>
+       <widget class="QWidget" name="verticalLayoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>40</y>
+          <width>491</width>
+          <height>221</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="biotac_0_layout"/>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_8">
+       <property name="geometry">
+        <rect>
+         <x>530</x>
+         <y>70</y>
+         <width>491</width>
+         <height>261</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>biotac_1</string>
+       </property>
+       <widget class="QWidget" name="verticalLayoutWidget_6">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>40</y>
+          <width>491</width>
+          <height>221</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="biotac_1_layout"/>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_9">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>340</y>
+         <width>491</width>
+         <height>261</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>biotac_3</string>
+       </property>
+       <widget class="QWidget" name="verticalLayoutWidget_7">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>40</y>
+          <width>491</width>
+          <height>221</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="biotac_3_layout"/>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_10">
+       <property name="geometry">
+        <rect>
+         <x>530</x>
+         <y>340</y>
+         <width>491</width>
+         <height>261</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>biotac_4</string>
+       </property>
+       <widget class="QWidget" name="verticalLayoutWidget_8">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>40</y>
+          <width>491</width>
+          <height>221</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="biotac_4_layout"/>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_11">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>610</y>
+         <width>991</width>
+         <height>271</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>biotacs pressure ac</string>
+       </property>
+       <widget class="QWidget" name="verticalLayoutWidget_9">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>40</y>
+          <width>991</width>
+          <height>231</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="biotacs_pac_layout"/>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_12">
+       <property name="geometry">
+        <rect>
+         <x>1030</x>
+         <y>70</y>
+         <width>491</width>
+         <height>261</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>biotac_2</string>
+       </property>
+       <widget class="QWidget" name="verticalLayoutWidget_14">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>40</y>
+          <width>491</width>
+          <height>221</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="biotac_2_layout"/>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_13">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>890</y>
+         <width>991</width>
+         <height>271</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>biotacs pressure dc</string>
+       </property>
+       <widget class="QWidget" name="verticalLayoutWidget_15">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>40</y>
+          <width>991</width>
+          <height>231</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="biotacs_pdc_layout"/>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_14">
+       <property name="geometry">
+        <rect>
+         <x>1040</x>
+         <y>350</y>
+         <width>481</width>
+         <height>541</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>biotacs temperature ac</string>
+       </property>
+       <widget class="QWidget" name="verticalLayoutWidget_16">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>40</y>
+          <width>481</width>
+          <height>501</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="biotacs_tac_layout"/>
+       </widget>
+      </widget>
+      <zorder>groupBox_7</zorder>
+      <zorder>groupBox_8</zorder>
+      <zorder>groupBox_9</zorder>
+      <zorder>groupBox_10</zorder>
+      <zorder>groupBox_11</zorder>
+      <zorder>groupBox_8</zorder>
+      <zorder>groupBox_9</zorder>
+      <zorder>groupBox_10</zorder>
+      <zorder>groupBox_11</zorder>
+      <zorder>groupBox_12</zorder>
+      <zorder>groupBox_13</zorder>
+      <zorder>groupBox_14</zorder>
      </widget>
      <widget class="QWidget" name="tab_12">
       <attribute name="title">

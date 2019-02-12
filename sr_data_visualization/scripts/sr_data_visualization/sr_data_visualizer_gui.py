@@ -21,7 +21,9 @@ import signal
 import rospy
 from control_msgs.msg import JointControllerState
 from sr_robot_msgs.msg import MechanismStatistics
+from sr_robot_msgs.msg import BiotacAll
 from sensor_msgs.msg import JointState
+from std_msgs.msg import Float64MultiArray
 import os
 import rospkg
 import rviz
@@ -51,9 +53,29 @@ class SrDataVisualizer(Plugin):
         #j0_graphs_scale = 600
         self.j0_graphs_effort_scale = j0_graphs_scale/600
         #self.init_plots()
-        self.graph_one = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'yellow'], -4, 4, ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
-        self.graph_two = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'yellow'], -300, 300, ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
-        self.graph_three = CustomFigCanvas(3, ['red', 'blue', 'green'], -100, 100, ['Position', 'Velocity', 'Effort'])
+        self.palm_extras_graph = CustomFigCanvas(10, ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink', 'red', 'magenta'], 0, 36, ['accel x', 'accel y', 'accel z', 'gyro x', 'gyro y', 'gyro z', 'ADC0', 'ADC1', 'ADC2', 'ADC3'])
+
+        self.biotac_0_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 1000,
+                                               ['PAC0', 'PAC1', 'PDC', 'TAC', 'TDC'])
+        self.biotac_2_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 1000,
+                                               ['PAC0', 'PAC1', 'PDC', 'TAC', 'TDC'])
+        self.biotac_1_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 1000,
+                                               ['PAC0', 'PAC1', 'PDC', 'TAC', 'TDC'])
+        self.biotac_3_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 1000,
+                                               ['PAC0', 'PAC1','PDC', 'TAC', 'TDC'])
+        self.biotac_4_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 1000,
+                                               ['PAC0', 'PAC1','PDC', 'TAC', 'TDC'])
+        self.biotacs_tac_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 34000,
+                                               ['biotac_0', 'biotac_1', 'biotac_2', 'biotac_3', 'biotac_4'])
+        self.biotacs_pdc_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 20000,
+                                               ['biotac_0', 'biotac_1', 'biotac_2', 'biotac_3', 'biotac_4'])
+        self.biotacs_pac_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 1000,
+                                               ['biotac_0', 'biotac_1', 'biotac_2', 'biotac_3', 'biotac_4'])
+
+        self.pid_clipped_graph = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4, ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+        self.pid_graph = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -300, 300, ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+        self.pos_vel_eff_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -100, 100, ['Position', 'Velocity', 'Effort'])
+
         self.j0_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale, ['Position', 'Velocity', 'Effort'])
         self.j1_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale, ['Position', 'Velocity', 'Effort'])
         self.j2_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale, ['Position', 'Velocity', 'Effort'])
@@ -93,13 +115,25 @@ class SrDataVisualizer(Plugin):
 
         self.sub = rospy.Subscriber('joint_states', JointState, self.joint_state_cb, queue_size=1)
 
+        self.sub = rospy.Subscriber('/rh/palm_extras', Float64MultiArray, self.palm_extras_cb, queue_size=1)
+        self.sub = rospy.Subscriber('/rh/tactile', BiotacAll, self.biotac_all_cb, queue_size=1)
+
         #self.graph_one.setParent(self._widget)
         #self.graph_two = CustomFigCanvas()
         #self.graph_three = CustomFigCanvas()
 
-        self.plan_time_layout.addWidget(self.graph_one)
-        self.finger_position_layout.addWidget(self.graph_two)
-        self.pos_vel_eff_layout.addWidget(self.graph_three)
+        self.pid_clipped_layout.addWidget(self.pid_clipped_graph)
+        self.pid_layout.addWidget(self.pid_graph)
+        self.pos_vel_eff_layout.addWidget(self.pos_vel_eff_graph)
+        self.palm_extras_layout.addWidget(self.palm_extras_graph)
+        self.biotac_0_layout.addWidget(self.biotac_0_graph)
+        self.biotac_1_layout.addWidget(self.biotac_1_graph)
+        self.biotac_2_layout.addWidget(self.biotac_2_graph)
+        self.biotac_3_layout.addWidget(self.biotac_3_graph)
+        self.biotac_4_layout.addWidget(self.biotac_4_graph)
+        self.biotacs_tac_layout.addWidget(self.biotacs_tac_graph)
+        self.biotacs_pac_layout.addWidget(self.biotacs_pac_graph)
+        self.biotacs_pdc_layout.addWidget(self.biotacs_pdc_graph)
 
         self.j0_layout.addWidget(self.j0_graph)
         self.j1_layout.addWidget(self.j1_graph)
@@ -127,6 +161,70 @@ class SrDataVisualizer(Plugin):
         self.j21_layout.addWidget(self.j21_graph)
         self.j22_layout.addWidget(self.j22_graph)
         self.j23_layout.addWidget(self.j23_graph)
+
+    def biotac_all_cb(self, value):
+        self.biotac_0_graph.addData(value.tactiles[0].pac0,0)
+        self.biotac_0_graph.addData(value.tactiles[0].pac1, 1)
+        self.biotac_0_graph.addData(value.tactiles[0].pdc, 2)
+        self.biotac_0_graph.addData(value.tactiles[0].tac, 3)
+        self.biotac_0_graph.addData(value.tactiles[0].tdc, 4)
+
+        self.biotac_1_graph.addData(value.tactiles[1].pac0,0)
+        self.biotac_1_graph.addData(value.tactiles[1].pac1, 1)
+        self.biotac_1_graph.addData(value.tactiles[1].pdc, 2)
+        self.biotac_1_graph.addData(value.tactiles[1].tac, 3)
+        self.biotac_1_graph.addData(value.tactiles[1].tdc, 4)
+
+        self.biotac_2_graph.addData(value.tactiles[2].pac0,0)
+        self.biotac_2_graph.addData(value.tactiles[2].pac1, 1)
+        self.biotac_2_graph.addData(value.tactiles[2].pdc, 2)
+        self.biotac_2_graph.addData(value.tactiles[2].tac, 3)
+        self.biotac_2_graph.addData(value.tactiles[2].tdc, 4)
+
+        self.biotac_3_graph.addData(value.tactiles[3].pac0,0)
+        self.biotac_3_graph.addData(value.tactiles[3].pac1, 1)
+        self.biotac_3_graph.addData(value.tactiles[3].pdc, 2)
+        self.biotac_3_graph.addData(value.tactiles[3].tac, 3)
+        self.biotac_3_graph.addData(value.tactiles[3].tdc, 4)
+
+        self.biotac_4_graph.addData(value.tactiles[4].pac0,0)
+        self.biotac_4_graph.addData(value.tactiles[4].pac1, 1)
+        self.biotac_4_graph.addData(value.tactiles[4].pdc, 2)
+        self.biotac_4_graph.addData(value.tactiles[4].tac, 3)
+        self.biotac_4_graph.addData(value.tactiles[4].tdc, 4)
+
+        self.biotacs_tac_graph.addData(value.tactiles[0].tac, 0)
+        self.biotacs_tac_graph.addData(value.tactiles[1].tac, 1)
+        self.biotacs_tac_graph.addData(value.tactiles[2].tac, 2)
+        self.biotacs_tac_graph.addData(value.tactiles[3].tac, 3)
+        self.biotacs_tac_graph.addData(value.tactiles[4].tac, 4)
+
+        self.biotacs_pdc_graph.addData(value.tactiles[0].pdc, 0)
+        self.biotacs_pdc_graph.addData(value.tactiles[1].pdc, 1)
+        self.biotacs_pdc_graph.addData(value.tactiles[2].pdc, 2)
+        self.biotacs_pdc_graph.addData(value.tactiles[3].pdc, 3)
+        self.biotacs_pdc_graph.addData(value.tactiles[4].pdc, 4)
+
+        self.biotacs_pac_graph.addData(value.tactiles[0].pac0, 0)
+        self.biotacs_pac_graph.addData(value.tactiles[1].pac0, 1)
+        self.biotacs_pac_graph.addData(value.tactiles[2].pac0, 2)
+        self.biotacs_pac_graph.addData(value.tactiles[3].pac0, 3)
+        self.biotacs_pac_graph.addData(value.tactiles[4].pac0, 4)
+
+
+    def palm_extras_cb(self, value):
+        self.palm_extras_graph.addData(value.data[0], 0)
+        self.palm_extras_graph.addData(value.data[1], 1)
+        self.palm_extras_graph.addData(value.data[2], 2)
+        self.palm_extras_graph.addData(value.data[3], 3)
+        self.palm_extras_graph.addData(value.data[4], 4)
+        self.palm_extras_graph.addData(value.data[5], 5)
+        self.palm_extras_graph.addData(value.data[6], 6)
+        self.palm_extras_graph.addData(value.data[7], 7)
+        self.palm_extras_graph.addData(value.data[8], 8)
+        self.palm_extras_graph.addData(value.data[9], 9)
+
+
 
     def joint_state_cb(self, value):
         self.j0_graph.addData(value.position[0], 0)
@@ -228,17 +326,17 @@ class SrDataVisualizer(Plugin):
 
     def mech_stat_cb(self, value):
         #print(value.joint_statistics[2])
-        self.graph_three.addData(value.joint_statistics[2].position, 0)
-        self.graph_three.addData(value.joint_statistics[2].velocity, 1)
-        self.graph_three.addData(value.joint_statistics[2].measured_effort, 2)
+        self.pos_vel_eff_graph.addData(value.joint_statistics[2].position, 0)
+        self.pos_vel_eff_graph.addData(value.joint_statistics[2].velocity, 1)
+        self.pos_vel_eff_graph.addData(value.joint_statistics[2].measured_effort, 2)
 
     def p_val_cb(self, value):
         # print("process_value: " + str(value.process_value))
-        self.graph_one.addData(value.set_point, 0)
-        self.graph_one.addData(value.process_value, 1)
-        self.graph_one.addData(value.process_value_dot, 2)
-        self.graph_one.addData(value.error, 3)
-        self.graph_one.addData(value.command, 4)
+        self.pid_clipped_graph.addData(value.set_point, 0)
+        self.pid_clipped_graph.addData(value.process_value, 1)
+        self.pid_clipped_graph.addData(value.process_value_dot, 2)
+        self.pid_clipped_graph.addData(value.error, 3)
+        self.pid_clipped_graph.addData(value.command, 4)
 
 
 
@@ -246,11 +344,11 @@ class SrDataVisualizer(Plugin):
         # print("process_value_dot: " + str(value.process_value_dot))
         #self.graph_two.addData(value.process_value_dot, 0)
         #self.graph_one.addData(value.process_value_dot, 1)
-        self.graph_two.addData(value.set_point, 0)
-        self.graph_two.addData(value.process_value, 1)
-        self.graph_two.addData(value.process_value_dot, 2)
-        self.graph_two.addData(value.error, 3)
-        self.graph_two.addData(value.command, 4)
+        self.pid_graph.addData(value.set_point, 0)
+        self.pid_graph.addData(value.process_value, 1)
+        self.pid_graph.addData(value.process_value_dot, 2)
+        self.pid_graph.addData(value.error, 3)
+        self.pid_graph.addData(value.command, 4)
 
     def create_scene_plugin(self):
         package_path = rospkg.RosPack().get_path('sr_data_visualization')
@@ -285,9 +383,19 @@ class SrDataVisualizer(Plugin):
 
     def init_widget_children(self):
 
-        self.plan_time_layout = self._widget.findChild(QVBoxLayout, "pid_clipped_layout")
-        self.finger_position_layout = self._widget.findChild(QVBoxLayout, "pid_layout")
+        self.pid_clipped_layout = self._widget.findChild(QVBoxLayout, "pid_clipped_layout")
+        self.pid_layout         = self._widget.findChild(QVBoxLayout, "pid_layout")
         self.pos_vel_eff_layout = self._widget.findChild(QVBoxLayout, "pos_vel_eff_layout")
+        self.palm_extras_layout = self._widget.findChild(QVBoxLayout, "palm_extras_layout")
+        self.biotac_0_layout = self._widget.findChild(QVBoxLayout, "biotac_0_layout")
+        self.biotac_1_layout = self._widget.findChild(QVBoxLayout, "biotac_1_layout")
+        self.biotac_2_layout = self._widget.findChild(QVBoxLayout, "biotac_2_layout")
+        self.biotac_3_layout = self._widget.findChild(QVBoxLayout, "biotac_3_layout")
+        self.biotac_4_layout = self._widget.findChild(QVBoxLayout, "biotac_4_layout")
+
+        self.biotacs_tac_layout = self._widget.findChild(QVBoxLayout, "biotacs_tac_layout")
+        self.biotacs_pdc_layout = self._widget.findChild(QVBoxLayout, "biotacs_pdc_layout")
+        self.biotacs_pac_layout = self._widget.findChild(QVBoxLayout, "biotacs_pac_layout")
 
         self.j0_layout = self._widget.findChild(QVBoxLayout, "j0_layout")
         self.j1_layout = self._widget.findChild(QVBoxLayout, "j1_layout")
@@ -345,8 +453,6 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
             self.addedDataArray.append(addedData)
             n = n + 1
 
-        print(matplotlib.__version__)
-
         # The data
         self.xlim = 200
         self.n = np.linspace(0, self.xlim - 1, self.xlim)
@@ -370,9 +476,7 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         self.line = []
         self.line_head = []
         self.line_tail = []
-        print("line: ", self.num_lines)
         while i < self.num_lines:
-            print("i: ",i)
             self.line.append(Line2D([], [], color=colour[i]))
             self.line_tail.append(Line2D([], [], color='red', linewidth=2))
             self.line_head.append(Line2D([], [], color='red', marker='o', markeredgecolor='r'))
