@@ -3,14 +3,14 @@ project(sr_data_visualization)
 
 find_package(catkin REQUIRED COMPONENTS
   std_msgs
-  moveit_ros_benchmarks
+  sr_robot_msgs
   rospy
 )
 
 catkin_package(
   CATKIN_DEPENDS
     std_msgs
-    moveit_ros_benchmarks
+    sr_robot_msgs
   INCLUDE_DIRS include
 )
 

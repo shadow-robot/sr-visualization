@@ -96,9 +96,9 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
-     <widget class="QWidget" name="tab_8">
+     <widget class="QWidget" name="tab_1">
       <attribute name="title">
        <string>Overview</string>
       </attribute>
@@ -247,7 +247,7 @@
        </widget>
       </widget>
      </widget>
-     <widget class="QWidget" name="tab_9">
+     <widget class="QWidget" name="tab_2">
       <attribute name="title">
        <string>All Joints</string>
       </attribute>
@@ -827,56 +827,8 @@
         <layout class="QVBoxLayout" name="j7_layout"/>
        </widget>
       </widget>
-      <zorder>group_box_52</zorder>
-      <zorder>group_box_61</zorder>
-      <zorder>group_box_64</zorder>
-      <zorder>group_box_59</zorder>
-      <zorder>group_box_35</zorder>
-      <zorder>group_box_63</zorder>
-      <zorder>group_box_39</zorder>
-      <zorder>group_box_42</zorder>
-      <zorder>group_box_51</zorder>
-      <zorder>group_box_58</zorder>
-      <zorder>group_box_53</zorder>
-      <zorder>group_box_34</zorder>
-      <zorder>group_box_40</zorder>
-      <zorder>group_box_60</zorder>
-      <zorder>group_box_38</zorder>
-      <zorder>group_box_57</zorder>
-      <zorder>group_box_36</zorder>
-      <zorder>group_box_37</zorder>
-      <zorder>group_box_54</zorder>
-      <zorder>group_box_62</zorder>
-      <zorder>group_box_33</zorder>
-      <zorder>group_box_56</zorder>
-      <zorder>group_box_55</zorder>
-      <zorder>group_box_41</zorder>
-      <zorder>group_box_52</zorder>
-      <zorder>group_box_61</zorder>
-      <zorder>group_box_64</zorder>
-      <zorder>group_box_59</zorder>
-      <zorder>group_box_35</zorder>
-      <zorder>group_box_63</zorder>
-      <zorder>group_box_39</zorder>
-      <zorder>group_box_42</zorder>
-      <zorder>group_box_51</zorder>
-      <zorder>group_box_58</zorder>
-      <zorder>group_box_53</zorder>
-      <zorder>group_box_34</zorder>
-      <zorder>group_box_40</zorder>
-      <zorder>group_box_60</zorder>
-      <zorder>group_box_38</zorder>
-      <zorder>group_box_57</zorder>
-      <zorder>group_box_36</zorder>
-      <zorder>group_box_37</zorder>
-      <zorder>group_box_54</zorder>
-      <zorder>group_box_62</zorder>
-      <zorder>group_box_33</zorder>
-      <zorder>group_box_56</zorder>
-      <zorder>group_box_55</zorder>
-      <zorder>group_box_41</zorder>
      </widget>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="tab_3">
       <attribute name="title">
        <string>Biotacs</string>
       </attribute>
@@ -1072,22 +1024,16 @@
         <layout class="QVBoxLayout" name="biotacs_tac_layout"/>
        </widget>
       </widget>
-      <zorder>groupBox_7</zorder>
-      <zorder>groupBox_8</zorder>
-      <zorder>groupBox_9</zorder>
-      <zorder>groupBox_10</zorder>
-      <zorder>groupBox_11</zorder>
-      <zorder>groupBox_8</zorder>
-      <zorder>groupBox_9</zorder>
-      <zorder>groupBox_10</zorder>
-      <zorder>groupBox_11</zorder>
-      <zorder>groupBox_12</zorder>
-      <zorder>groupBox_13</zorder>
-      <zorder>groupBox_14</zorder>
      </widget>
     </widget>
+    <zorder>groupBox_3</zorder>
+    <zorder>tabWidget</zorder>
+    <zorder>tabWidget_2</zorder>
    </widget>
   </widget>
+  <zorder>layoutWidget</zorder>
+  <zorder>tabWidget_3</zorder>
+  <zorder>tabWidget_2</zorder>
  </widget>
  <resources/>
  <connections/>
