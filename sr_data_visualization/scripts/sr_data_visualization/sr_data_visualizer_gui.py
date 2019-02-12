@@ -50,6 +50,8 @@ class SrDataVisualizer(Plugin):
         self.create_scene_plugin()
 
         self.j0_graphs_scale = 3.14159
+        self.pid_output_scale = 0.013333333
+
         self.j0_graphs_effort_scale = self.j0_graphs_scale/600
         self.create_graphs()
         self.create_subscribers()
@@ -109,6 +111,55 @@ class SrDataVisualizer(Plugin):
         self.j22_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale, ['Position', 'Velocity', 'Effort'])
         self.j23_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale, ['Position', 'Velocity', 'Effort'])
 
+        self.pid_graph_j0 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+        self.pid_graph_j1 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+        self.pid_graph_j2 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+        self.pid_graph_j3 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+        self.pid_graph_j4 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+        self.pid_graph_j5 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+        self.pid_graph_j6 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+        self.pid_graph_j7 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+        self.pid_graph_j8 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+        self.pid_graph_j9 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+        self.pid_graph_j10 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+        self.pid_graph_j11 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+        self.pid_graph_j12 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+        self.pid_graph_j13 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+        self.pid_graph_j14 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+        self.pid_graph_j15 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+        self.pid_graph_j16 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+        self.pid_graph_j17 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+        self.pid_graph_j18 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+        self.pid_graph_j19 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+        self.pid_graph_j20 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+        self.pid_graph_j21 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+        self.pid_graph_j22 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                          ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+        self.pid_graph_j23 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                          ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+
     def create_subscribers(self):
         self.sub = rospy.Subscriber('sh_rh_ffj0_position_controller/state', JointControllerState, self.pid_graphs_cb, queue_size=1)
         self.sub = rospy.Subscriber('mechanism_statistics', MechanismStatistics, self.mech_stat_cb, queue_size=1)
@@ -116,6 +167,50 @@ class SrDataVisualizer(Plugin):
         self.sub = rospy.Subscriber('/rh/palm_extras', Float64MultiArray, self.palm_extras_cb, queue_size=1)
         self.sub = rospy.Subscriber('/rh/tactile', BiotacAll, self.biotac_all_cb, queue_size=1)
         #self.graph_one.setParent(self._widget)
+        self.sub = rospy.Subscriber('sh_rh_ffj0_position_controller/state', JointControllerState, self.pid_graphs_cb, queue_size=1)
+
+        self.sub = rospy.Subscriber('/sh_rh_ffj0_position_controller/state', JointControllerState, self.j0_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_ffj3_position_controller/state', JointControllerState, self.j1_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_ffj4_position_controller/state', JointControllerState, self.j2_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_lfj0_position_controller/state', JointControllerState, self.j3_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_lfj3_position_controller/state', JointControllerState, self.j4_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_lfj4_position_controller/state', JointControllerState, self.j5_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_lfj5_position_controller/state', JointControllerState, self.j6_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_mfj0_position_controller/state', JointControllerState, self.j7_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_mfj3_position_controller/state', JointControllerState, self.j8_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_mfj4_position_controller/state', JointControllerState, self.j9_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_rfj0_position_controller/state', JointControllerState, self.j10_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_rfj3_position_controller/state', JointControllerState, self.j11_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_rfj4_position_controller/state', JointControllerState, self.j12_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_thj1_position_controller/state', JointControllerState, self.j13_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_thj2_position_controller/state', JointControllerState, self.j14_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_thj3_position_controller/state', JointControllerState, self.j15_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_thj4_position_controller/state', JointControllerState, self.j16_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_thj5_position_controller/state', JointControllerState, self.j17_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_wrj1_position_controller/state', JointControllerState, self.j18_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_wrj2_position_controller/state', JointControllerState, self.j19_pid_cb,
+                                    queue_size=1)
+
+
 
     def attach_graphs(self):
         self.pid_clipped_layout.addWidget(self.pid_clipped_graph)
@@ -156,6 +251,28 @@ class SrDataVisualizer(Plugin):
         self.j21_layout.addWidget(self.j21_graph)
         self.j22_layout.addWidget(self.j22_graph)
         self.j23_layout.addWidget(self.j23_graph)
+
+        self.j0_pid_layout.addWidget(self.pid_graph_j0)
+        self.j1_pid_layout.addWidget(self.pid_graph_j1)
+        self.j2_pid_layout.addWidget(self.pid_graph_j2)
+        self.j3_pid_layout.addWidget(self.pid_graph_j3)
+        self.j4_pid_layout.addWidget(self.pid_graph_j4)
+        self.j5_pid_layout.addWidget(self.pid_graph_j5)
+        self.j6_pid_layout.addWidget(self.pid_graph_j6)
+        self.j7_pid_layout.addWidget(self.pid_graph_j7)
+        self.j8_pid_layout.addWidget(self.pid_graph_j8)
+        self.j9_pid_layout.addWidget(self.pid_graph_j9)
+        self.j10_pid_layout.addWidget(self.pid_graph_j10)
+        self.j11_pid_layout.addWidget(self.pid_graph_j11)
+        self.j12_pid_layout.addWidget(self.pid_graph_j12)
+        self.j13_pid_layout.addWidget(self.pid_graph_j13)
+        self.j14_pid_layout.addWidget(self.pid_graph_j14)
+        self.j15_pid_layout.addWidget(self.pid_graph_j15)
+        self.j16_pid_layout.addWidget(self.pid_graph_j16)
+        self.j17_pid_layout.addWidget(self.pid_graph_j17)
+        self.j18_pid_layout.addWidget(self.pid_graph_j18)
+        self.j19_pid_layout.addWidget(self.pid_graph_j19)
+
 
     def biotac_all_cb(self, value):
         self.biotac_0_graph.addData(value.tactiles[0].pac0,0)
@@ -329,6 +446,175 @@ class SrDataVisualizer(Plugin):
         self.effort_graph.addData(value.actuator_statistics[2].last_commanded_effort, 0)
         self.effort_graph.addData(value.actuator_statistics[2].last_measured_effort, 1)
 
+    def j0_pid_cb(self, value):
+        self.pid_graph_j0.addData(value.set_point, 0)
+        self.pid_graph_j0.addData(value.process_value, 1)
+        self.pid_graph_j0.addData(value.process_value_dot, 2)
+        self.pid_graph_j0.addData(value.error, 3)
+        self.pid_graph_j0.addData(value.command*self.pid_output_scale, 4)
+
+    def j1_pid_cb(self, value):
+        self.pid_graph_j1.addData(value.set_point, 0)
+        self.pid_graph_j1.addData(value.process_value, 1)
+        self.pid_graph_j1.addData(value.process_value_dot, 2)
+        self.pid_graph_j1.addData(value.error, 3)
+        self.pid_graph_j1.addData(value.command*self.pid_output_scale, 4)
+
+    def j2_pid_cb(self, value):
+        self.pid_graph_j2.addData(value.set_point, 0)
+        self.pid_graph_j2.addData(value.process_value, 1)
+        self.pid_graph_j2.addData(value.process_value_dot, 2)
+        self.pid_graph_j2.addData(value.error, 3)
+        self.pid_graph_j2.addData(value.command*self.pid_output_scale, 4)
+
+    def j3_pid_cb(self, value):
+        self.pid_graph_j3.addData(value.set_point, 0)
+        self.pid_graph_j3.addData(value.process_value, 1)
+        self.pid_graph_j3.addData(value.process_value_dot, 2)
+        self.pid_graph_j3.addData(value.error, 3)
+        self.pid_graph_j3.addData(value.command*self.pid_output_scale, 4)
+
+    def j4_pid_cb(self, value):
+        self.pid_graph_j4.addData(value.set_point, 0)
+        self.pid_graph_j4.addData(value.process_value, 1)
+        self.pid_graph_j4.addData(value.process_value_dot, 2)
+        self.pid_graph_j4.addData(value.error, 3)
+        self.pid_graph_j4.addData(value.command*self.pid_output_scale, 4)
+
+    def j5_pid_cb(self, value):
+        self.pid_graph_j5.addData(value.set_point, 0)
+        self.pid_graph_j5.addData(value.process_value, 1)
+        self.pid_graph_j5.addData(value.process_value_dot, 2)
+        self.pid_graph_j5.addData(value.error, 3)
+        self.pid_graph_j5.addData(value.command*self.pid_output_scale, 4)
+
+    def j6_pid_cb(self, value):
+        self.pid_graph_j6.addData(value.set_point, 0)
+        self.pid_graph_j6.addData(value.process_value, 1)
+        self.pid_graph_j6.addData(value.process_value_dot, 2)
+        self.pid_graph_j6.addData(value.error, 3)
+        self.pid_graph_j6.addData(value.command*self.pid_output_scale, 4)
+
+    def j7_pid_cb(self, value):
+        self.pid_graph_j7.addData(value.set_point, 0)
+        self.pid_graph_j7.addData(value.process_value, 1)
+        self.pid_graph_j7.addData(value.process_value_dot, 2)
+        self.pid_graph_j7.addData(value.error, 3)
+        self.pid_graph_j7.addData(value.command*self.pid_output_scale, 4)
+
+    def j8_pid_cb(self, value):
+        self.pid_graph_j8.addData(value.set_point, 0)
+        self.pid_graph_j8.addData(value.process_value, 1)
+        self.pid_graph_j8.addData(value.process_value_dot, 2)
+        self.pid_graph_j8.addData(value.error, 3)
+        self.pid_graph_j8.addData(value.command*self.pid_output_scale, 4)
+
+    def j9_pid_cb(self, value):
+        self.pid_graph_j9.addData(value.set_point, 0)
+        self.pid_graph_j9.addData(value.process_value, 1)
+        self.pid_graph_j9.addData(value.process_value_dot, 2)
+        self.pid_graph_j9.addData(value.error, 3)
+        self.pid_graph_j9.addData(value.command*self.pid_output_scale, 4)
+
+    def j10_pid_cb(self, value):
+        self.pid_graph_j10.addData(value.set_point, 0)
+        self.pid_graph_j10.addData(value.process_value, 1)
+        self.pid_graph_j10.addData(value.process_value_dot, 2)
+        self.pid_graph_j10.addData(value.error, 3)
+        self.pid_graph_j10.addData(value.command*self.pid_output_scale, 4)
+
+    def j11_pid_cb(self, value):
+        self.pid_graph_j11.addData(value.set_point, 0)
+        self.pid_graph_j11.addData(value.process_value, 1)
+        self.pid_graph_j11.addData(value.process_value_dot, 2)
+        self.pid_graph_j11.addData(value.error, 3)
+        self.pid_graph_j11.addData(value.command*self.pid_output_scale, 4)
+
+    def j12_pid_cb(self, value):
+        self.pid_graph_j12.addData(value.set_point, 0)
+        self.pid_graph_j12.addData(value.process_value, 1)
+        self.pid_graph_j12.addData(value.process_value_dot, 2)
+        self.pid_graph_j12.addData(value.error, 3)
+        self.pid_graph_j12.addData(value.command*self.pid_output_scale, 4)
+
+    def j13_pid_cb(self, value):
+        self.pid_graph_j13.addData(value.set_point, 0)
+        self.pid_graph_j13.addData(value.process_value, 1)
+        self.pid_graph_j13.addData(value.process_value_dot, 2)
+        self.pid_graph_j13.addData(value.error, 3)
+        self.pid_graph_j13.addData(value.command*self.pid_output_scale, 4)
+
+    def j14_pid_cb(self, value):
+        self.pid_graph_j14.addData(value.set_point, 0)
+        self.pid_graph_j14.addData(value.process_value, 1)
+        self.pid_graph_j14.addData(value.process_value_dot, 2)
+        self.pid_graph_j14.addData(value.error, 3)
+        self.pid_graph_j14.addData(value.command*self.pid_output_scale, 4)
+
+    def j15_pid_cb(self, value):
+        self.pid_graph_j15.addData(value.set_point, 0)
+        self.pid_graph_j15.addData(value.process_value, 1)
+        self.pid_graph_j15.addData(value.process_value_dot, 2)
+        self.pid_graph_j15.addData(value.error, 3)
+        self.pid_graph_j15.addData(value.command*self.pid_output_scale, 4)
+
+    def j16_pid_cb(self, value):
+        self.pid_graph_j16.addData(value.set_point, 0)
+        self.pid_graph_j16.addData(value.process_value, 1)
+        self.pid_graph_j16.addData(value.process_value_dot, 2)
+        self.pid_graph_j16.addData(value.error, 3)
+        self.pid_graph_j16.addData(value.command*self.pid_output_scale, 4)
+
+    def j17_pid_cb(self, value):
+        self.pid_graph_j17.addData(value.set_point, 0)
+        self.pid_graph_j17.addData(value.process_value, 1)
+        self.pid_graph_j17.addData(value.process_value_dot, 2)
+        self.pid_graph_j17.addData(value.error, 3)
+        self.pid_graph_j17.addData(value.command*self.pid_output_scale, 4)
+
+    def j18_pid_cb(self, value):
+        self.pid_graph_j18.addData(value.set_point, 0)
+        self.pid_graph_j18.addData(value.process_value, 1)
+        self.pid_graph_j18.addData(value.process_value_dot, 2)
+        self.pid_graph_j18.addData(value.error, 3)
+        self.pid_graph_j18.addData(value.command*self.pid_output_scale, 4)
+
+    def j19_pid_cb(self, value):
+        self.pid_graph_j19.addData(value.set_point, 0)
+        self.pid_graph_j19.addData(value.process_value, 1)
+        self.pid_graph_j19.addData(value.process_value_dot, 2)
+        self.pid_graph_j19.addData(value.error, 3)
+        self.pid_graph_j19.addData(value.command*self.pid_output_scale, 4)
+
+    def j20_pid_cb(self, value):
+        self.pid_graph_j20.addData(value.set_point, 0)
+        self.pid_graph_j20.addData(value.process_value, 1)
+        self.pid_graph_j20.addData(value.process_value_dot, 2)
+        self.pid_graph_j20.addData(value.error, 3)
+        self.pid_graph_j20.addData(value.command*self.pid_output_scale, 4)
+
+    def j21_pid_cb(self, value):
+        self.pid_graph_j21.addData(value.set_point, 0)
+        self.pid_graph_j21.addData(value.process_value, 1)
+        self.pid_graph_j21.addData(value.process_value_dot, 2)
+        self.pid_graph_j21.addData(value.error, 3)
+        self.pid_graph_j21.addData(value.command*self.pid_output_scale, 4)
+
+    def j22_pid_cb(self, value):
+        self.pid_graph_j22.addData(value.set_point, 0)
+        self.pid_graph_j22.addData(value.process_value, 1)
+        self.pid_graph_j22.addData(value.process_value_dot, 2)
+        self.pid_graph_j22.addData(value.error, 3)
+        self.pid_graph_j22.addData(value.command*self.pid_output_scale, 4)
+
+    def j23_pid_cb(self, value):
+        self.pid_graph_j23.addData(value.set_point, 0)
+        self.pid_graph_j23.addData(value.process_value, 1)
+        self.pid_graph_j23.addData(value.process_value_dot, 2)
+        self.pid_graph_j23.addData(value.error, 3)
+        self.pid_graph_j23.addData(value.command*self.pid_output_scale, 4)
+
+
     def pid_graphs_cb(self, value):
         self.pid_graph.addData(value.set_point, 0)
         self.pid_graph.addData(value.process_value, 1)
@@ -341,6 +627,7 @@ class SrDataVisualizer(Plugin):
         self.pid_clipped_graph.addData(value.process_value_dot, 2)
         self.pid_clipped_graph.addData(value.error, 3)
         self.pid_clipped_graph.addData(value.command, 4)
+
 
     def create_scene_plugin(self):
         package_path = rospkg.RosPack().get_path('sr_data_visualization')
@@ -406,6 +693,31 @@ class SrDataVisualizer(Plugin):
         self.j21_layout = self._widget.findChild(QVBoxLayout, "j21_layout")
         self.j22_layout = self._widget.findChild(QVBoxLayout, "j22_layout")
         self.j23_layout = self._widget.findChild(QVBoxLayout, "j23_layout")
+
+        self.j0_pid_layout = self._widget.findChild(QVBoxLayout, "j0_layout_2")
+        self.j1_pid_layout = self._widget.findChild(QVBoxLayout, "j1_layout_2")
+        self.j2_pid_layout = self._widget.findChild(QVBoxLayout, "j2_layout_2")
+        self.j3_pid_layout = self._widget.findChild(QVBoxLayout, "j3_layout_2")
+        self.j4_pid_layout = self._widget.findChild(QVBoxLayout, "j4_layout_2")
+        self.j5_pid_layout = self._widget.findChild(QVBoxLayout, "j5_layout_2")
+        self.j6_pid_layout = self._widget.findChild(QVBoxLayout, "j6_layout_2")
+        self.j7_pid_layout = self._widget.findChild(QVBoxLayout, "j7_layout_2")
+        self.j8_pid_layout = self._widget.findChild(QVBoxLayout, "j8_layout_2")
+        self.j9_pid_layout = self._widget.findChild(QVBoxLayout, "j9_layout_2")
+        self.j10_pid_layout = self._widget.findChild(QVBoxLayout, "j10_layout_2")
+        self.j11_pid_layout = self._widget.findChild(QVBoxLayout, "j11_layout_2")
+        self.j12_pid_layout = self._widget.findChild(QVBoxLayout, "j12_layout_2")
+        self.j13_pid_layout = self._widget.findChild(QVBoxLayout, "j13_layout_2")
+        self.j14_pid_layout = self._widget.findChild(QVBoxLayout, "j14_layout_2")
+        self.j15_pid_layout = self._widget.findChild(QVBoxLayout, "j15_layout_2")
+        self.j16_pid_layout = self._widget.findChild(QVBoxLayout, "j16_layout_2")
+        self.j17_pid_layout = self._widget.findChild(QVBoxLayout, "j17_layout_2")
+        self.j18_pid_layout = self._widget.findChild(QVBoxLayout, "j18_layout_2")
+        self.j19_pid_layout = self._widget.findChild(QVBoxLayout, "j19_layout_2")
+        self.j20_pid_layout = self._widget.findChild(QVBoxLayout, "j20_layout_2")
+        self.j21_pid_layout = self._widget.findChild(QVBoxLayout, "j21_layout_2")
+        self.j22_pid_layout = self._widget.findChild(QVBoxLayout, "j22_layout_2")
+        self.j23_pid_layout = self._widget.findChild(QVBoxLayout, "j23_layout_2")
 
 
     def create_menu_bar(self):

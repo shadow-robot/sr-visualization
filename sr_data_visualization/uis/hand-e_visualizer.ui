@@ -102,7 +102,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab_1">
       <attribute name="title">
@@ -129,7 +129,7 @@
           <height>311</height>
          </rect>
         </property>
-        <layout class="QVBoxLayout" name="effort_layout" stretch=""/>
+        <layout class="QVBoxLayout" name="effort_layout"/>
        </widget>
       </widget>
       <widget class="QGroupBox" name="group_box_20">
@@ -153,7 +153,7 @@
           <height>351</height>
          </rect>
         </property>
-        <layout class="QVBoxLayout" name="pid_clipped_layout" stretch=""/>
+        <layout class="QVBoxLayout" name="pid_clipped_layout"/>
        </widget>
       </widget>
       <widget class="QGroupBox" name="group_box_21">
@@ -177,7 +177,7 @@
           <height>311</height>
          </rect>
         </property>
-        <layout class="QVBoxLayout" name="pid_layout" stretch=""/>
+        <layout class="QVBoxLayout" name="pid_layout"/>
        </widget>
       </widget>
       <widget class="QGroupBox" name="group_box_22">
@@ -201,7 +201,7 @@
           <height>351</height>
          </rect>
         </property>
-        <layout class="QVBoxLayout" name="palm_extras_layout" stretch=""/>
+        <layout class="QVBoxLayout" name="palm_extras_layout"/>
        </widget>
       </widget>
       <widget class="QGroupBox" name="group_box_24">
@@ -225,7 +225,7 @@
           <height>311</height>
          </rect>
         </property>
-        <layout class="QVBoxLayout" name="biotac_overview_layout" stretch=""/>
+        <layout class="QVBoxLayout" name="biotac_overview_layout"/>
        </widget>
       </widget>
       <widget class="QGroupBox" name="group_box_25">
@@ -249,7 +249,7 @@
           <height>351</height>
          </rect>
         </property>
-        <layout class="QVBoxLayout" name="pos_vel_eff_layout" stretch=""/>
+        <layout class="QVBoxLayout" name="pos_vel_eff_layout"/>
        </widget>
       </widget>
      </widget>
@@ -257,580 +257,1179 @@
       <attribute name="title">
        <string>All Joints</string>
       </attribute>
-      <widget class="QGroupBox" name="group_box_52">
+      <widget class="QTabWidget" name="tabWidget_2">
        <property name="geometry">
         <rect>
-         <x>1384</x>
-         <y>315</y>
-         <width>340</width>
-         <height>302</height>
+         <x>0</x>
+         <y>0</y>
+         <width>2071</width>
+         <height>1251</height>
         </rect>
        </property>
-       <property name="title">
-        <string>MFJ2</string>
+       <property name="currentIndex">
+        <number>1</number>
        </property>
-       <widget class="QWidget" name="verticalLayoutWidget_119">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>30</y>
-          <width>301</width>
-          <height>241</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="j10_layout"/>
+       <widget class="QWidget" name="tab">
+        <attribute name="title">
+         <string>Position Velocity Effort</string>
+        </attribute>
+        <widget class="QGroupBox" name="group_box_53">
+         <property name="geometry">
+          <rect>
+           <x>1380</x>
+           <y>618</y>
+           <width>340</width>
+           <height>301</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>RFJ4</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_120">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j16_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_52">
+         <property name="geometry">
+          <rect>
+           <x>1380</x>
+           <y>310</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>MFJ2</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_119">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j10_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_61">
+         <property name="geometry">
+          <rect>
+           <x>1034</x>
+           <y>925</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>THJ5</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_128">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j21_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_64">
+         <property name="geometry">
+          <rect>
+           <x>1726</x>
+           <y>925</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>WRJ2</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_131">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j23_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_59">
+         <property name="geometry">
+          <rect>
+           <x>1380</x>
+           <y>925</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>WRJ1</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_126">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j22_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_63">
+         <property name="geometry">
+          <rect>
+           <x>-3</x>
+           <y>925</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>THJ2</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_130">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j18_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_54">
+         <property name="geometry">
+          <rect>
+           <x>343</x>
+           <y>618</y>
+           <width>340</width>
+           <height>301</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>RFJ1</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_121">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j13_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_62">
+         <property name="geometry">
+          <rect>
+           <x>689</x>
+           <y>925</y>
+           <width>339</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>THJ4</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_129">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j20_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_34">
+         <property name="geometry">
+          <rect>
+           <x>343</x>
+           <y>2</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>FFJ2</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_109">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j1_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_33">
+         <property name="geometry">
+          <rect>
+           <x>-3</x>
+           <y>2</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>FFJ1</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_108">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j0_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_35">
+         <property name="geometry">
+          <rect>
+           <x>689</x>
+           <y>2</y>
+           <width>339</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>FFJ3</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_110">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j2_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_41">
+         <property name="geometry">
+          <rect>
+           <x>343</x>
+           <y>310</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>LFJ4</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_116">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j7_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_42">
+         <property name="geometry">
+          <rect>
+           <x>1726</x>
+           <y>310</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>MFJ3</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_117">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j11_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_60">
+         <property name="geometry">
+          <rect>
+           <x>343</x>
+           <y>925</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>THJ3</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_127">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j19_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_36">
+         <property name="geometry">
+          <rect>
+           <x>1034</x>
+           <y>2</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>FFJ4</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_111">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j3_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_51">
+         <property name="geometry">
+          <rect>
+           <x>-3</x>
+           <y>310</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>LFJ3</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_118">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j6_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_39">
+         <property name="geometry">
+          <rect>
+           <x>1034</x>
+           <y>310</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>MFJ1</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_115">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j9_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_40">
+         <property name="geometry">
+          <rect>
+           <x>1726</x>
+           <y>2</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>LFJ2</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_113">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j5_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_38">
+         <property name="geometry">
+          <rect>
+           <x>689</x>
+           <y>310</y>
+           <width>339</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>LFJ5</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_114">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j8_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_37">
+         <property name="geometry">
+          <rect>
+           <x>1380</x>
+           <y>2</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>LFJ1</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_112">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j4_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_56">
+         <property name="geometry">
+          <rect>
+           <x>689</x>
+           <y>618</y>
+           <width>339</width>
+           <height>301</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>RFJ2</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_123">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j14_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_57">
+         <property name="geometry">
+          <rect>
+           <x>-3</x>
+           <y>618</y>
+           <width>340</width>
+           <height>301</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>MFJ4</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_124">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j12_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_58">
+         <property name="geometry">
+          <rect>
+           <x>1726</x>
+           <y>618</y>
+           <width>340</width>
+           <height>301</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>THJ1</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_125">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j17_layout"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_55">
+         <property name="geometry">
+          <rect>
+           <x>1034</x>
+           <y>618</y>
+           <width>340</width>
+           <height>301</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>RFJ3</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_122">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j15_layout"/>
+         </widget>
+        </widget>
        </widget>
-      </widget>
-      <widget class="QGroupBox" name="group_box_61">
-       <property name="geometry">
-        <rect>
-         <x>1038</x>
-         <y>930</y>
-         <width>340</width>
-         <height>302</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>THJ5</string>
-       </property>
-       <widget class="QWidget" name="verticalLayoutWidget_128">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>30</y>
-          <width>301</width>
-          <height>241</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="j21_layout"/>
-       </widget>
-      </widget>
-      <widget class="QGroupBox" name="group_box_64">
-       <property name="geometry">
-        <rect>
-         <x>1730</x>
-         <y>930</y>
-         <width>340</width>
-         <height>302</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>WRJ2</string>
-       </property>
-       <widget class="QWidget" name="verticalLayoutWidget_131">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>30</y>
-          <width>301</width>
-          <height>241</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="j23_layout"/>
-       </widget>
-      </widget>
-      <widget class="QGroupBox" name="group_box_59">
-       <property name="geometry">
-        <rect>
-         <x>1384</x>
-         <y>930</y>
-         <width>340</width>
-         <height>302</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>WRJ1</string>
-       </property>
-       <widget class="QWidget" name="verticalLayoutWidget_126">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>30</y>
-          <width>301</width>
-          <height>241</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="j22_layout"/>
-       </widget>
-      </widget>
-      <widget class="QGroupBox" name="group_box_35">
-       <property name="geometry">
-        <rect>
-         <x>693</x>
-         <y>7</y>
-         <width>339</width>
-         <height>302</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>FFJ3</string>
-       </property>
-       <widget class="QWidget" name="verticalLayoutWidget_110">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>30</y>
-          <width>301</width>
-          <height>241</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="j2_layout"/>
-       </widget>
-      </widget>
-      <widget class="QGroupBox" name="group_box_63">
-       <property name="geometry">
-        <rect>
-         <x>1</x>
-         <y>930</y>
-         <width>340</width>
-         <height>302</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>THJ2</string>
-       </property>
-       <widget class="QWidget" name="verticalLayoutWidget_130">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>30</y>
-          <width>301</width>
-          <height>241</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="j18_layout"/>
-       </widget>
-      </widget>
-      <widget class="QGroupBox" name="group_box_39">
-       <property name="geometry">
-        <rect>
-         <x>1038</x>
-         <y>315</y>
-         <width>340</width>
-         <height>302</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>MFJ1</string>
-       </property>
-       <widget class="QWidget" name="verticalLayoutWidget_115">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>30</y>
-          <width>301</width>
-          <height>241</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="j9_layout"/>
-       </widget>
-      </widget>
-      <widget class="QGroupBox" name="group_box_42">
-       <property name="geometry">
-        <rect>
-         <x>1730</x>
-         <y>315</y>
-         <width>340</width>
-         <height>302</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>MFJ3</string>
-       </property>
-       <widget class="QWidget" name="verticalLayoutWidget_117">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>30</y>
-          <width>301</width>
-          <height>241</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="j11_layout"/>
-       </widget>
-      </widget>
-      <widget class="QGroupBox" name="group_box_51">
-       <property name="geometry">
-        <rect>
-         <x>1</x>
-         <y>315</y>
-         <width>340</width>
-         <height>302</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>LFJ3</string>
-       </property>
-       <widget class="QWidget" name="verticalLayoutWidget_118">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>30</y>
-          <width>301</width>
-          <height>241</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="j6_layout"/>
-       </widget>
-      </widget>
-      <widget class="QGroupBox" name="group_box_58">
-       <property name="geometry">
-        <rect>
-         <x>1730</x>
-         <y>623</y>
-         <width>340</width>
-         <height>301</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>THJ1</string>
-       </property>
-       <widget class="QWidget" name="verticalLayoutWidget_125">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>30</y>
-          <width>301</width>
-          <height>241</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="j17_layout"/>
-       </widget>
-      </widget>
-      <widget class="QGroupBox" name="group_box_53">
-       <property name="geometry">
-        <rect>
-         <x>1384</x>
-         <y>623</y>
-         <width>340</width>
-         <height>301</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>RFJ4</string>
-       </property>
-       <widget class="QWidget" name="verticalLayoutWidget_120">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>30</y>
-          <width>301</width>
-          <height>241</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="j16_layout"/>
-       </widget>
-      </widget>
-      <widget class="QGroupBox" name="group_box_34">
-       <property name="geometry">
-        <rect>
-         <x>347</x>
-         <y>7</y>
-         <width>340</width>
-         <height>302</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>FFJ2</string>
-       </property>
-       <widget class="QWidget" name="verticalLayoutWidget_109">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>30</y>
-          <width>301</width>
-          <height>241</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="j1_layout"/>
-       </widget>
-      </widget>
-      <widget class="QGroupBox" name="group_box_40">
-       <property name="geometry">
-        <rect>
-         <x>1730</x>
-         <y>7</y>
-         <width>340</width>
-         <height>302</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>LFJ2</string>
-       </property>
-       <widget class="QWidget" name="verticalLayoutWidget_113">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>30</y>
-          <width>301</width>
-          <height>241</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="j5_layout"/>
-       </widget>
-      </widget>
-      <widget class="QGroupBox" name="group_box_60">
-       <property name="geometry">
-        <rect>
-         <x>347</x>
-         <y>930</y>
-         <width>340</width>
-         <height>302</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>THJ3</string>
-       </property>
-       <widget class="QWidget" name="verticalLayoutWidget_127">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>30</y>
-          <width>301</width>
-          <height>241</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="j19_layout"/>
-       </widget>
-      </widget>
-      <widget class="QGroupBox" name="group_box_38">
-       <property name="geometry">
-        <rect>
-         <x>693</x>
-         <y>315</y>
-         <width>339</width>
-         <height>302</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>LFJ5</string>
-       </property>
-       <widget class="QWidget" name="verticalLayoutWidget_114">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>30</y>
-          <width>301</width>
-          <height>241</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="j8_layout"/>
-       </widget>
-      </widget>
-      <widget class="QGroupBox" name="group_box_57">
-       <property name="geometry">
-        <rect>
-         <x>1</x>
-         <y>623</y>
-         <width>340</width>
-         <height>301</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>MFJ4</string>
-       </property>
-       <widget class="QWidget" name="verticalLayoutWidget_124">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>30</y>
-          <width>301</width>
-          <height>241</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="j12_layout"/>
-       </widget>
-      </widget>
-      <widget class="QGroupBox" name="group_box_36">
-       <property name="geometry">
-        <rect>
-         <x>1038</x>
-         <y>7</y>
-         <width>340</width>
-         <height>302</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>FFJ4</string>
-       </property>
-       <widget class="QWidget" name="verticalLayoutWidget_111">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>30</y>
-          <width>301</width>
-          <height>241</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="j3_layout"/>
-       </widget>
-      </widget>
-      <widget class="QGroupBox" name="group_box_37">
-       <property name="geometry">
-        <rect>
-         <x>1384</x>
-         <y>7</y>
-         <width>340</width>
-         <height>302</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>LFJ1</string>
-       </property>
-       <widget class="QWidget" name="verticalLayoutWidget_112">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>30</y>
-          <width>301</width>
-          <height>241</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="j4_layout"/>
-       </widget>
-      </widget>
-      <widget class="QGroupBox" name="group_box_54">
-       <property name="geometry">
-        <rect>
-         <x>347</x>
-         <y>623</y>
-         <width>340</width>
-         <height>301</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>RFJ1</string>
-       </property>
-       <widget class="QWidget" name="verticalLayoutWidget_121">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>30</y>
-          <width>301</width>
-          <height>241</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="j13_layout"/>
-       </widget>
-      </widget>
-      <widget class="QGroupBox" name="group_box_62">
-       <property name="geometry">
-        <rect>
-         <x>693</x>
-         <y>930</y>
-         <width>339</width>
-         <height>302</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>THJ4</string>
-       </property>
-       <widget class="QWidget" name="verticalLayoutWidget_129">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>30</y>
-          <width>301</width>
-          <height>241</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="j20_layout"/>
-       </widget>
-      </widget>
-      <widget class="QGroupBox" name="group_box_33">
-       <property name="geometry">
-        <rect>
-         <x>1</x>
-         <y>7</y>
-         <width>340</width>
-         <height>302</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>FFJ1</string>
-       </property>
-       <widget class="QWidget" name="verticalLayoutWidget_108">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>30</y>
-          <width>301</width>
-          <height>241</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="j0_layout"/>
-       </widget>
-      </widget>
-      <widget class="QGroupBox" name="group_box_56">
-       <property name="geometry">
-        <rect>
-         <x>693</x>
-         <y>623</y>
-         <width>339</width>
-         <height>301</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>RFJ2</string>
-       </property>
-       <widget class="QWidget" name="verticalLayoutWidget_123">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>30</y>
-          <width>301</width>
-          <height>241</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="j14_layout"/>
-       </widget>
-      </widget>
-      <widget class="QGroupBox" name="group_box_55">
-       <property name="geometry">
-        <rect>
-         <x>1038</x>
-         <y>623</y>
-         <width>340</width>
-         <height>301</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>RFJ3</string>
-       </property>
-       <widget class="QWidget" name="verticalLayoutWidget_122">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>30</y>
-          <width>301</width>
-          <height>241</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="j15_layout"/>
-       </widget>
-      </widget>
-      <widget class="QGroupBox" name="group_box_41">
-       <property name="geometry">
-        <rect>
-         <x>347</x>
-         <y>315</y>
-         <width>340</width>
-         <height>302</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>LFJ4</string>
-       </property>
-       <widget class="QWidget" name="verticalLayoutWidget_116">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>30</y>
-          <width>301</width>
-          <height>241</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="j7_layout"/>
+       <widget class="QWidget" name="tab_4">
+        <attribute name="title">
+         <string>Control Loops</string>
+        </attribute>
+        <widget class="QGroupBox" name="group_box_65">
+         <property name="geometry">
+          <rect>
+           <x>1381</x>
+           <y>613</y>
+           <width>340</width>
+           <height>301</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>RFJ4</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_132">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j16_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_66">
+         <property name="geometry">
+          <rect>
+           <x>1381</x>
+           <y>305</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>MFJ2</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_133">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j10_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_67">
+         <property name="geometry">
+          <rect>
+           <x>1035</x>
+           <y>920</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>THJ5</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_134">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j21_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_68">
+         <property name="geometry">
+          <rect>
+           <x>1727</x>
+           <y>920</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>WRJ2</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_135">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j23_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_69">
+         <property name="geometry">
+          <rect>
+           <x>1381</x>
+           <y>920</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>WRJ1</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_136">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j22_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_70">
+         <property name="geometry">
+          <rect>
+           <x>-2</x>
+           <y>920</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>THJ2</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_137">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j18_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_71">
+         <property name="geometry">
+          <rect>
+           <x>344</x>
+           <y>613</y>
+           <width>340</width>
+           <height>301</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>RFJ1</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_138">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j13_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_72">
+         <property name="geometry">
+          <rect>
+           <x>690</x>
+           <y>920</y>
+           <width>339</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>THJ4</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_139">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j20_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_43">
+         <property name="geometry">
+          <rect>
+           <x>344</x>
+           <y>-3</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>FFJ2</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_140">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j1_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_44">
+         <property name="geometry">
+          <rect>
+           <x>-2</x>
+           <y>-3</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>FFJ1</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_141">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j0_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_45">
+         <property name="geometry">
+          <rect>
+           <x>690</x>
+           <y>-3</y>
+           <width>339</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>FFJ3</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_142">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j2_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_46">
+         <property name="geometry">
+          <rect>
+           <x>344</x>
+           <y>305</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>LFJ4</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_143">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j7_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_47">
+         <property name="geometry">
+          <rect>
+           <x>1727</x>
+           <y>305</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>MFJ3</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_144">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j11_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_73">
+         <property name="geometry">
+          <rect>
+           <x>344</x>
+           <y>920</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>THJ3</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_145">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j19_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_48">
+         <property name="geometry">
+          <rect>
+           <x>1035</x>
+           <y>-3</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>FFJ4</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_146">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j3_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_74">
+         <property name="geometry">
+          <rect>
+           <x>-2</x>
+           <y>305</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>LFJ3</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_147">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j6_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_49">
+         <property name="geometry">
+          <rect>
+           <x>1035</x>
+           <y>305</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>MFJ1</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_148">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j9_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_50">
+         <property name="geometry">
+          <rect>
+           <x>1727</x>
+           <y>-3</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>LFJ2</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_149">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j5_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_75">
+         <property name="geometry">
+          <rect>
+           <x>690</x>
+           <y>305</y>
+           <width>339</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>LFJ5</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_150">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j8_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_76">
+         <property name="geometry">
+          <rect>
+           <x>1381</x>
+           <y>-3</y>
+           <width>340</width>
+           <height>302</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>LFJ1</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_151">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j4_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_77">
+         <property name="geometry">
+          <rect>
+           <x>690</x>
+           <y>613</y>
+           <width>339</width>
+           <height>301</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>RFJ2</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_152">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j14_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_78">
+         <property name="geometry">
+          <rect>
+           <x>-2</x>
+           <y>613</y>
+           <width>340</width>
+           <height>301</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>MFJ4</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_153">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j12_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_79">
+         <property name="geometry">
+          <rect>
+           <x>1727</x>
+           <y>613</y>
+           <width>340</width>
+           <height>301</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>THJ1</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_154">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j17_layout_2"/>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="group_box_80">
+         <property name="geometry">
+          <rect>
+           <x>1035</x>
+           <y>613</y>
+           <width>340</width>
+           <height>301</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>RFJ3</string>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget_155">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>30</y>
+            <width>301</width>
+            <height>241</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="j15_layout_2"/>
+         </widget>
+        </widget>
        </widget>
       </widget>
      </widget>
@@ -1032,14 +1631,8 @@
       </widget>
      </widget>
     </widget>
-    <zorder>groupBox_3</zorder>
-    <zorder>tabWidget</zorder>
-    <zorder>tabWidget_2</zorder>
    </widget>
   </widget>
-  <zorder>layoutWidget</zorder>
-  <zorder>tabWidget_3</zorder>
-  <zorder>tabWidget_2</zorder>
  </widget>
  <resources/>
  <connections/>
