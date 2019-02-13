@@ -46,6 +46,9 @@ class SrDataVisualizer(Plugin):
             context.add_widget(self._widget)
 
         self._widget.setWindowTitle("Hand E Visualizer")
+        tab_widg = self._widget.findChild(QTabWidget, "tabWidget")
+        print(tab_widg)
+        tab_widg.currentChanged.connect(self.tab_change)
         self.init_widget_children()
         self.create_scene_plugin()
 
@@ -56,6 +59,11 @@ class SrDataVisualizer(Plugin):
         self.create_graphs()
         self.create_subscribers()
         self.attach_graphs()
+
+    def tab_change(self, val):
+        print("triggered")
+        print(val)
+        self._widget.update()
 
     def create_graphs(self):
         #Overview page graphs
@@ -210,8 +218,6 @@ class SrDataVisualizer(Plugin):
         self.sub = rospy.Subscriber('/sh_rh_wrj2_position_controller/state', JointControllerState, self.j19_pid_cb,
                                     queue_size=1)
 
-
-
     def attach_graphs(self):
         self.pid_clipped_layout.addWidget(self.pid_clipped_graph)
         self.pid_layout.addWidget(self.pid_graph)
@@ -272,7 +278,6 @@ class SrDataVisualizer(Plugin):
         self.j17_pid_layout.addWidget(self.pid_graph_j17)
         self.j18_pid_layout.addWidget(self.pid_graph_j18)
         self.j19_pid_layout.addWidget(self.pid_graph_j19)
-
 
     def biotac_all_cb(self, value):
         self.biotac_0_graph.addData(value.tactiles[0].pac0,0)
