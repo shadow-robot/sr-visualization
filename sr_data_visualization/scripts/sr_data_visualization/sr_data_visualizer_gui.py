@@ -146,8 +146,8 @@ class SrDataVisualizer(Plugin):
 
     def create_graphs(self):
         #Overview page graphs
-        self.palm_extras_graph = CustomFigCanvas(10, ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink', 'red', 'magenta'], 0, 36, ['accel x', 'accel y', 'accel z', 'gyro x', 'gyro y', 'gyro z', 'ADC0', 'ADC1', 'ADC2', 'ADC3'], 2)
-        self.effort_graph = CustomFigCanvas(2, ['red', 'cyan', ], -100, 100, ['Commanded Effort', 'Measured Effort'])
+        self.palm_extras_graph = CustomFigCanvas(10, ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink', 'red', 'magenta'], 0, 36, ['accel x', 'accel y', 'accel z', 'gyro x', 'gyro y', 'gyro z', 'ADC0', 'ADC1', 'ADC2', 'ADC3'], 5)
+        self.effort_graph = CustomFigCanvas(2, ['red', 'cyan', ], -100, 100, ['Commanded Effort', 'Measured Effort'], 3)
         self.biotac_overview_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 1000, ['PAC0', 'PAC1', 'PDC', 'TAC', 'TDC'])
         self.pid_clipped_graph = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4, ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
         self.pid_graph = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -300, 300, ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
@@ -199,53 +199,52 @@ class SrDataVisualizer(Plugin):
         self.j23_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale, ['Position', 'Velocity', 'Effort'])
 
         self.pid_graph_j0 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3)
         self.pid_graph_j1 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
-        self.pid_graph_j2 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3)
+        self.pid_graph_j2 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4, ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3)
         self.pid_graph_j3 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3)
         self.pid_graph_j4 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3)
         self.pid_graph_j5 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3)
         self.pid_graph_j6 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3)
         self.pid_graph_j7 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3)
         self.pid_graph_j8 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3)
         self.pid_graph_j9 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3)
         self.pid_graph_j10 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3)
         self.pid_graph_j11 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3)
         self.pid_graph_j12 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3)
         self.pid_graph_j13 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3)
         self.pid_graph_j14 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3)
         self.pid_graph_j15 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3)
         self.pid_graph_j16 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3)
         self.pid_graph_j17 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3)
         self.pid_graph_j18 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3)
         self.pid_graph_j19 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3)
         self.pid_graph_j20 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3)
         self.pid_graph_j21 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3)
         self.pid_graph_j22 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                          ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+                                          ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3)
         self.pid_graph_j23 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                          ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'])
+                                          ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3)
 
     def create_subscribers(self):
         self.sub = rospy.Subscriber('sh_rh_ffj0_position_controller/state', JointControllerState, self.pid_graphs_cb, queue_size=1)
@@ -811,9 +810,10 @@ class SrDataVisualizer(Plugin):
 
 class CustomFigCanvas(FigureCanvas, TimedAnimation):
 ###https://stackoverflow.com/questions/36665850/matplotlib-animation-inside-your-own-pyqt4-gui
-    def __init__(self, num_lines, colour = [], ymin = -1, ymax = 1, legends = [], rows=1):
+    def __init__(self, num_lines, colour = [], ymin = -1, ymax = 1, legends = [], legend_columns='none'):
         self.num_lines = num_lines
-        self.rows = rows
+        if (legend_columns == 'none'):
+            legend_columns=self.num_lines
         self.addedDataArray = []
         n = 0
         while n < self.num_lines:
@@ -833,6 +833,7 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
 
         # The window
         self.fig = Figure(figsize=(3,3), dpi=100)
+        self.fig.patch.set_alpha(0.0)
         self.ax1 = self.fig.add_subplot(111)
 
         # self.ax1 settings
@@ -844,6 +845,9 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         self.line = []
         self.line_head = []
         self.line_tail = []
+        #print("############################")
+        #print("self.legend_columns = ", legend_columns)
+        #print("self.num_lines = ", self.num_lines)
         while i < self.num_lines:
             self.line.append(Line2D([], [], color=colour[i]))
             self.line_tail.append(Line2D([], [], color='red', linewidth=2))
@@ -854,9 +858,9 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
             self.ax1.set_xlim(0, self.xlim - 1)
             self.ax1.set_ylim(ymin, ymax)
             i = i + 1
-
-        self.ax1.legend(self.line, legends, bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
-           ncol=self.num_lines/self.rows, mode="expand", borderaxespad=0., prop={'size': 7})
+#bbox_to_anchor=(0., 1.02, 1., .102)
+        self.ax1.legend(self.line, legends, bbox_to_anchor=(0., 0.82, 1., .082), framealpha=0.2, frameon=False, loc=3,
+           ncol=legend_columns, mode="expand", borderaxespad=0., prop={'size': 7})
 
         FigureCanvas.__init__(self, self.fig)
         TimedAnimation.__init__(self, self.fig, interval = 50, blit = True)

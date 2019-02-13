@@ -102,7 +102,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab_1">
       <attribute name="title">
@@ -267,7 +267,7 @@
         </rect>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
@@ -482,8 +482,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>271</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j1_layout"/>
@@ -506,8 +506,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>271</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j0_layout"/>
@@ -530,8 +530,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>271</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j2_layout"/>
@@ -554,8 +554,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>271</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j7_layout"/>
@@ -626,8 +626,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>271</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j3_layout"/>
@@ -650,8 +650,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>271</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j6_layout"/>
@@ -674,8 +674,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>271</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j9_layout"/>
@@ -698,8 +698,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>271</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j5_layout"/>
@@ -722,8 +722,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>271</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j8_layout"/>
@@ -746,8 +746,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>271</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j4_layout"/>
@@ -871,8 +871,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>271</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j16_layout_2"/>
@@ -895,8 +895,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>271</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j10_layout_2"/>
@@ -919,8 +919,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>261</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j21_layout_2"/>
@@ -943,8 +943,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>261</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j23_layout_2"/>
@@ -967,8 +967,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>261</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j22_layout_2"/>
@@ -991,8 +991,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>261</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j18_layout_2"/>
@@ -1015,8 +1015,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>271</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j13_layout_2"/>
@@ -1039,8 +1039,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>261</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j20_layout_2"/>
@@ -1063,8 +1063,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>271</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j1_layout_2"/>
@@ -1087,8 +1087,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>271</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j0_layout_2"/>
@@ -1111,8 +1111,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>271</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j2_layout_2"/>
@@ -1135,8 +1135,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>271</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j7_layout_2"/>
@@ -1159,8 +1159,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>271</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j11_layout_2"/>
@@ -1183,8 +1183,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>261</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j19_layout_2"/>
@@ -1207,8 +1207,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>271</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j3_layout_2"/>
@@ -1231,8 +1231,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>281</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j6_layout_2"/>
@@ -1255,8 +1255,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>271</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j9_layout_2"/>
@@ -1279,8 +1279,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>271</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j5_layout_2"/>
@@ -1303,8 +1303,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>271</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j8_layout_2"/>
@@ -1327,8 +1327,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>281</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j4_layout_2"/>
@@ -1351,8 +1351,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>271</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j14_layout_2"/>
@@ -1375,8 +1375,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>271</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j12_layout_2"/>
@@ -1399,8 +1399,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>271</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j17_layout_2"/>
@@ -1423,8 +1423,8 @@
            <rect>
             <x>0</x>
             <y>30</y>
-            <width>301</width>
-            <height>241</height>
+            <width>341</width>
+            <height>271</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="j15_layout_2"/>
