@@ -16,7 +16,11 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib.animation import TimedAnimation
 from matplotlib.lines import Line2D
+from multiprocessing.dummy import Pool as ThreadPool
 
+import threading
+
+import time
 import signal
 import rospy
 from control_msgs.msg import JointControllerState
@@ -46,9 +50,9 @@ class SrDataVisualizer(Plugin):
             context.add_widget(self._widget)
 
         self._widget.setWindowTitle("Hand E Visualizer")
-        tab_widg = self._widget.findChild(QTabWidget, "tabWidget")
-        print(tab_widg)
-        tab_widg.currentChanged.connect(self.tab_change)
+        self.tab_widg = self._widget.findChild(QTabWidget, "tabWidget")
+        print(self.tab_widg)
+        self.tab_widg.currentChanged.connect(self.tab_change)
         self.init_widget_children()
         self.create_scene_plugin()
 
@@ -61,9 +65,76 @@ class SrDataVisualizer(Plugin):
         self.attach_graphs()
 
     def tab_change(self, val):
-        print("triggered")
-        print(val)
-        self._widget.update()
+        threading.Thread(target=self.delay_tab_change).start()
+
+    def delay_tab_change(self):
+        time.sleep(.600)
+        self.pid_clipped_graph.update()
+        self.pid_graph_j0.update()
+        self.pid_graph_j1.update()
+        self.pid_graph_j2.update()
+        self.pid_graph_j3.update()
+        self.pid_graph_j4.update()
+        self.pid_graph_j5.update()
+        self.pid_graph_j6.update()
+        self.pid_graph_j7.update()
+        self.pid_graph_j8.update()
+        self.pid_graph_j9.update()
+        self.pid_graph_j10.update()
+        self.pid_graph_j11.update()
+        self.pid_graph_j12.update()
+        self.pid_graph_j13.update()
+        self.pid_graph_j14.update()
+        self.pid_graph_j15.update()
+        self.pid_graph_j16.update()
+        self.pid_graph_j17.update()
+        self.pid_graph_j18.update()
+        self.pid_graph_j19.update()
+        self.pid_graph_j20.update()
+        self.pid_graph_j21.update()
+        self.pid_graph_j22.update()
+        self.pid_graph_j23.update()
+
+        self.j0_graph.update()
+        self.j1_graph.update()
+        self.j2_graph.update()
+        self.j3_graph.update()
+        self.j4_graph.update()
+        self.j5_graph.update()
+        self.j6_graph.update()
+        self.j7_graph.update()
+        self.j8_graph.update()
+        self.j9_graph.update()
+        self.j10_graph.update()
+        self.j11_graph.update()
+        self.j12_graph.update()
+        self.j13_graph.update()
+        self.j14_graph.update()
+        self.j15_graph.update()
+        self.j16_graph.update()
+        self.j17_graph.update()
+        self.j18_graph.update()
+        self.j19_graph.update()
+        self.j20_graph.update()
+        self.j21_graph.update()
+        self.j22_graph.update()
+        self.j23_graph.update()
+
+        self.palm_extras_graph.update()
+        self.effort_graph.update()
+        self.biotac_overview_graph.update()
+        self.pid_clipped_graph.update()
+        self.pid_graph.update()
+        self.pos_vel_eff_graph.update()
+
+        self.biotac_0_graph.update()
+        self.biotac_1_graph.update()
+        self.biotac_2_graph.update()
+        self.biotac_3_graph.update()
+        self.biotac_4_graph.update()
+        self.biotacs_tac_graph.update()
+        self.biotacs_pdc_graph.update()
+        self.biotacs_pac_graph.update()
 
     def create_graphs(self):
         #Overview page graphs
