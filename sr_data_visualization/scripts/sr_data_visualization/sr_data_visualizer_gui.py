@@ -68,8 +68,16 @@ class SrDataVisualizer(Plugin):
         threading.Thread(target=self.delay_tab_change).start()
 
     def delay_tab_change(self):
-        time.sleep(.600)
-        self.pid_clipped_graph.update()
+        time.sleep(.300)
+        self.update_graphs()
+        time.sleep(.300)
+        self.update_graphs()
+        time.sleep(.300)
+        self.update_graphs()
+        time.sleep(.300)
+        self.update_graphs()
+
+    def update_graphs(self):
         self.pid_graph_j0.update()
         self.pid_graph_j1.update()
         self.pid_graph_j2.update()
