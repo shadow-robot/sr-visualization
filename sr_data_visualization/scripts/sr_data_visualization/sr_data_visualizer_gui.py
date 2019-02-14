@@ -16,9 +16,6 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib.animation import TimedAnimation
 from matplotlib.lines import Line2D
-from multiprocessing.dummy import Pool as ThreadPool
-import matplotlib.font_manager as font_manager
-
 import threading
 
 import time
@@ -32,8 +29,6 @@ from std_msgs.msg import Float64MultiArray
 import os
 import rospkg
 import rviz
-import subprocess
-
 
 
 class SrDataVisualizer(Plugin):
@@ -41,30 +36,45 @@ class SrDataVisualizer(Plugin):
         super(SrDataVisualizer, self).__init__(context)
         self.setObjectName("SrDataVisualizer")
         self._widget = QWidget()
-        #self.create_menu_bar()
 
-        ui_file = os.path.join(rospkg.RosPack().get_path(
-            'sr_data_visualization'), 'uis', 'hand-e_visualizer.ui')
+        ui_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'uis', 'hand-e_visualizer_2.ui')
 
         loadUi(ui_file, self._widget)
         if __name__ != "__main__":
             context.add_widget(self._widget)
 
-        self._widget.setWindowTitle("Hand E Visualizer")
-        self.tab_widget_1 = self._widget.findChild(QTabWidget, "tabWidget")
-        self.tab_widget_2 = self._widget.findChild(QTabWidget, "tabWidget_2")
-        #print(self.tab_widg)
-        self.tab_widget_1.currentChanged.connect(self.tab_change)
-        self.tab_widget_2.currentChanged.connect(self.tab_change)
-        self.init_widget_children()
+        self._widget.setWindowTitle("Dexterous Hand Data Visualizer")
+
+        # Set white background color
+        p = self._widget.palette()
+        p.setColor(self._widget.backgroundRole(), Qt.white)
+        self._widget.setPalette(p)
+
+        # Create rviz plugin
         self.create_scene_plugin()
+
+        self.tab_widget_1 = self._widget.findChild(QTabWidget, "tabWidget")
+        # self.tab_widget_2 = self._widget.findChild(QTabWidget, "tabWidget_2")
+        # self.tab_widget_1.currentChanged.connect(self.tab_change)
+        # self.tab_widget_2.currentChanged.connect(self.tab_change)
+
+        p = self.tab_widget_1.palette()
+        stylesheet = """ 
+            QTabWidget>QWidget>QWidget{background: white;}
+            """
+        p.setColor(self.tab_widget_1.backgroundRole(), Qt.white)
+        # self.tab_widget_1.setStyleSheet('QTabBar::tab {background-color: red;}')
+        self.tab_widget_1.setStyleSheet(stylesheet)
+
+
+        self.init_widget_children()
 
         self.j0_graphs_scale = 3.14159
         self.pid_output_scale = 0.013333333
 
         self.j0_graphs_effort_scale = self.j0_graphs_scale/600
         self.create_graphs()
-        self.create_subscribers()
+        # # self.create_subscribers()
         self.attach_graphs()
 
     def tab_change(self, val):
@@ -201,53 +211,53 @@ class SrDataVisualizer(Plugin):
         self.j22_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale, ['Position', 'Velocity', 'Effort'])
         self.j23_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale, ['Position', 'Velocity', 'Effort'])
 
-        self.pid_graph_j0 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        self.pid_graph_j1 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        self.pid_graph_j2 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4, ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3, legend_font_size=5)
-        self.pid_graph_j3 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        self.pid_graph_j4 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        self.pid_graph_j5 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        self.pid_graph_j6 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        self.pid_graph_j7 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        self.pid_graph_j8 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        self.pid_graph_j9 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        self.pid_graph_j10 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        self.pid_graph_j11 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        self.pid_graph_j12 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        self.pid_graph_j13 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        self.pid_graph_j14 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        self.pid_graph_j15 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        self.pid_graph_j16 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        self.pid_graph_j17 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        self.pid_graph_j18 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        self.pid_graph_j19 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        self.pid_graph_j20 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        self.pid_graph_j21 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        self.pid_graph_j22 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                          ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        self.pid_graph_j23 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                          ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        # self.pid_graph_j0 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        # self.pid_graph_j1 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        # self.pid_graph_j2 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4, ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3, legend_font_size=5)
+        # self.pid_graph_j3 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        # self.pid_graph_j4 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        # self.pid_graph_j5 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        # self.pid_graph_j6 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        # self.pid_graph_j7 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        # self.pid_graph_j8 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        # self.pid_graph_j9 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        # self.pid_graph_j10 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        # self.pid_graph_j11 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        # self.pid_graph_j12 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        # self.pid_graph_j13 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        # self.pid_graph_j14 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        # self.pid_graph_j15 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        # self.pid_graph_j16 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        # self.pid_graph_j17 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        # self.pid_graph_j18 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        # self.pid_graph_j19 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        # self.pid_graph_j20 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        # self.pid_graph_j21 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        # self.pid_graph_j22 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        #                                   ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        # self.pid_graph_j23 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        #                                   ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
 
     def create_subscribers(self):
         self.sub = rospy.Subscriber('sh_rh_ffj0_position_controller/state', JointControllerState, self.pid_graphs_cb, queue_size=1)
@@ -300,20 +310,20 @@ class SrDataVisualizer(Plugin):
                                     queue_size=1)
 
     def attach_graphs(self):
-        self.pid_clipped_layout.addWidget(self.pid_clipped_graph)
-        self.pid_layout.addWidget(self.pid_graph)
-        self.pos_vel_eff_layout.addWidget(self.pos_vel_eff_graph)
-        self.palm_extras_layout.addWidget(self.palm_extras_graph)
-        self.biotac_0_layout.addWidget(self.biotac_0_graph)
-        self.biotac_1_layout.addWidget(self.biotac_1_graph)
-        self.biotac_2_layout.addWidget(self.biotac_2_graph)
-        self.biotac_3_layout.addWidget(self.biotac_3_graph)
-        self.biotac_4_layout.addWidget(self.biotac_4_graph)
-        self.biotacs_tac_layout.addWidget(self.biotacs_tac_graph)
-        self.biotacs_pac_layout.addWidget(self.biotacs_pac_graph)
-        self.biotacs_pdc_layout.addWidget(self.biotacs_pdc_graph)
-        self.biotac_overview_layout.addWidget(self.biotac_overview_graph)
-        self.effort_layout.addWidget(self.effort_graph)
+        # self.pid_clipped_layout.addWidget(self.pid_clipped_graph)
+        # self.pid_layout.addWidget(self.pid_graph)
+        # self.pos_vel_eff_layout.addWidget(self.pos_vel_eff_graph)
+        # self.palm_extras_layout.addWidget(self.palm_extras_graph)
+        # self.biotac_0_layout.addWidget(self.biotac_0_graph)
+        # self.biotac_1_layout.addWidget(self.biotac_1_graph)
+        # self.biotac_2_layout.addWidget(self.biotac_2_graph)
+        # self.biotac_3_layout.addWidget(self.biotac_3_graph)
+        # self.biotac_4_layout.addWidget(self.biotac_4_graph)
+        # self.biotacs_tac_layout.addWidget(self.biotacs_tac_graph)
+        # self.biotacs_pac_layout.addWidget(self.biotacs_pac_graph)
+        # self.biotacs_pdc_layout.addWidget(self.biotacs_pdc_graph)
+        # self.biotac_overview_layout.addWidget(self.biotac_overview_graph)
+        # self.effort_layout.addWidget(self.effort_graph)
         self.j0_layout.addWidget(self.j0_graph)
         self.j1_layout.addWidget(self.j1_graph)
         self.j2_layout.addWidget(self.j2_graph)
@@ -339,26 +349,26 @@ class SrDataVisualizer(Plugin):
         self.j22_layout.addWidget(self.j22_graph)
         self.j23_layout.addWidget(self.j23_graph)
 
-        self.j0_pid_layout.addWidget(self.pid_graph_j0)
-        self.j1_pid_layout.addWidget(self.pid_graph_j1)
-        self.j2_pid_layout.addWidget(self.pid_graph_j2)
-        self.j3_pid_layout.addWidget(self.pid_graph_j3)
-        self.j4_pid_layout.addWidget(self.pid_graph_j4)
-        self.j5_pid_layout.addWidget(self.pid_graph_j5)
-        self.j6_pid_layout.addWidget(self.pid_graph_j6)
-        self.j7_pid_layout.addWidget(self.pid_graph_j7)
-        self.j8_pid_layout.addWidget(self.pid_graph_j8)
-        self.j9_pid_layout.addWidget(self.pid_graph_j9)
-        self.j10_pid_layout.addWidget(self.pid_graph_j10)
-        self.j11_pid_layout.addWidget(self.pid_graph_j11)
-        self.j12_pid_layout.addWidget(self.pid_graph_j12)
-        self.j13_pid_layout.addWidget(self.pid_graph_j13)
-        self.j14_pid_layout.addWidget(self.pid_graph_j14)
-        self.j15_pid_layout.addWidget(self.pid_graph_j15)
-        self.j16_pid_layout.addWidget(self.pid_graph_j16)
-        self.j17_pid_layout.addWidget(self.pid_graph_j17)
-        self.j18_pid_layout.addWidget(self.pid_graph_j18)
-        self.j19_pid_layout.addWidget(self.pid_graph_j19)
+        # self.j0_pid_layout.addWidget(self.pid_graph_j0)
+        # self.j1_pid_layout.addWidget(self.pid_graph_j1)
+        # self.j2_pid_layout.addWidget(self.pid_graph_j2)
+        # self.j3_pid_layout.addWidget(self.pid_graph_j3)
+        # self.j4_pid_layout.addWidget(self.pid_graph_j4)
+        # self.j5_pid_layout.addWidget(self.pid_graph_j5)
+        # self.j6_pid_layout.addWidget(self.pid_graph_j6)
+        # self.j7_pid_layout.addWidget(self.pid_graph_j7)
+        # self.j8_pid_layout.addWidget(self.pid_graph_j8)
+        # self.j9_pid_layout.addWidget(self.pid_graph_j9)
+        # self.j10_pid_layout.addWidget(self.pid_graph_j10)
+        # self.j11_pid_layout.addWidget(self.pid_graph_j11)
+        # self.j12_pid_layout.addWidget(self.pid_graph_j12)
+        # self.j13_pid_layout.addWidget(self.pid_graph_j13)
+        # self.j14_pid_layout.addWidget(self.pid_graph_j14)
+        # self.j15_pid_layout.addWidget(self.pid_graph_j15)
+        # self.j16_pid_layout.addWidget(self.pid_graph_j16)
+        # self.j17_pid_layout.addWidget(self.pid_graph_j17)
+        # self.j18_pid_layout.addWidget(self.pid_graph_j18)
+        # self.j19_pid_layout.addWidget(self.pid_graph_j19)
 
     def biotac_all_cb(self, value):
         self.biotac_0_graph.addData(value.tactiles[0].pac0,0)
@@ -732,27 +742,27 @@ class SrDataVisualizer(Plugin):
         self.frame_scene.setHideButtonVisibility(False)
         self.frame_scene.load(config_approach)
 
-        scene_layout = self._widget.findChild(QVBoxLayout, "scene_layout")
+        scene_layout = self._widget.findChild(QVBoxLayout, "scene_layout_2")
         scene_layout.addWidget(self.frame_scene)
 
     def init_widget_children(self):
-        #Overview page
-        self.pid_clipped_layout = self._widget.findChild(QVBoxLayout, "pid_clipped_layout")
-        self.pid_layout         = self._widget.findChild(QVBoxLayout, "pid_layout")
-        self.pos_vel_eff_layout = self._widget.findChild(QVBoxLayout, "pos_vel_eff_layout")
-        self.palm_extras_layout = self._widget.findChild(QVBoxLayout, "palm_extras_layout")
-        self.biotac_overview_layout = self._widget.findChild(QVBoxLayout, "biotac_overview_layout")
-        self.effort_layout = self._widget.findChild(QVBoxLayout, "effort_layout")
-
-        #Biotac page
-        self.biotac_0_layout = self._widget.findChild(QVBoxLayout, "biotac_0_layout")
-        self.biotac_1_layout = self._widget.findChild(QVBoxLayout, "biotac_1_layout")
-        self.biotac_2_layout = self._widget.findChild(QVBoxLayout, "biotac_2_layout")
-        self.biotac_3_layout = self._widget.findChild(QVBoxLayout, "biotac_3_layout")
-        self.biotac_4_layout = self._widget.findChild(QVBoxLayout, "biotac_4_layout")
-        self.biotacs_tac_layout = self._widget.findChild(QVBoxLayout, "biotacs_tac_layout")
-        self.biotacs_pdc_layout = self._widget.findChild(QVBoxLayout, "biotacs_pdc_layout")
-        self.biotacs_pac_layout = self._widget.findChild(QVBoxLayout, "biotacs_pac_layout")
+        # #Overview page
+        # self.pid_clipped_layout = self._widget.findChild(QVBoxLayout, "pid_clipped_layout")
+        # self.pid_layout         = self._widget.findChild(QVBoxLayout, "pid_layout")
+        # self.pos_vel_eff_layout = self._widget.findChild(QVBoxLayout, "pos_vel_eff_layout")
+        # self.palm_extras_layout = self._widget.findChild(QVBoxLayout, "palm_extras_layout")
+        # self.biotac_overview_layout = self._widget.findChild(QVBoxLayout, "biotac_overview_layout")
+        # self.effort_layout = self._widget.findChild(QVBoxLayout, "effort_layout")
+        #
+        # #Biotac page
+        # self.biotac_0_layout = self._widget.findChild(QVBoxLayout, "biotac_0_layout")
+        # self.biotac_1_layout = self._widget.findChild(QVBoxLayout, "biotac_1_layout")
+        # self.biotac_2_layout = self._widget.findChild(QVBoxLayout, "biotac_2_layout")
+        # self.biotac_3_layout = self._widget.findChild(QVBoxLayout, "biotac_3_layout")
+        # self.biotac_4_layout = self._widget.findChild(QVBoxLayout, "biotac_4_layout")
+        # self.biotacs_tac_layout = self._widget.findChild(QVBoxLayout, "biotacs_tac_layout")
+        # self.biotacs_pdc_layout = self._widget.findChild(QVBoxLayout, "biotacs_pdc_layout")
+        # self.biotacs_pac_layout = self._widget.findChild(QVBoxLayout, "biotacs_pac_layout")
 
         #All joints page
         self.j0_layout = self._widget.findChild(QVBoxLayout, "j0_layout")
@@ -780,35 +790,30 @@ class SrDataVisualizer(Plugin):
         self.j22_layout = self._widget.findChild(QVBoxLayout, "j22_layout")
         self.j23_layout = self._widget.findChild(QVBoxLayout, "j23_layout")
 
-        self.j0_pid_layout = self._widget.findChild(QVBoxLayout, "j0_layout_2")
-        self.j1_pid_layout = self._widget.findChild(QVBoxLayout, "j1_layout_2")
-        self.j2_pid_layout = self._widget.findChild(QVBoxLayout, "j2_layout_2")
-        self.j3_pid_layout = self._widget.findChild(QVBoxLayout, "j3_layout_2")
-        self.j4_pid_layout = self._widget.findChild(QVBoxLayout, "j4_layout_2")
-        self.j5_pid_layout = self._widget.findChild(QVBoxLayout, "j5_layout_2")
-        self.j6_pid_layout = self._widget.findChild(QVBoxLayout, "j6_layout_2")
-        self.j7_pid_layout = self._widget.findChild(QVBoxLayout, "j7_layout_2")
-        self.j8_pid_layout = self._widget.findChild(QVBoxLayout, "j8_layout_2")
-        self.j9_pid_layout = self._widget.findChild(QVBoxLayout, "j9_layout_2")
-        self.j10_pid_layout = self._widget.findChild(QVBoxLayout, "j10_layout_2")
-        self.j11_pid_layout = self._widget.findChild(QVBoxLayout, "j11_layout_2")
-        self.j12_pid_layout = self._widget.findChild(QVBoxLayout, "j12_layout_2")
-        self.j13_pid_layout = self._widget.findChild(QVBoxLayout, "j13_layout_2")
-        self.j14_pid_layout = self._widget.findChild(QVBoxLayout, "j14_layout_2")
-        self.j15_pid_layout = self._widget.findChild(QVBoxLayout, "j15_layout_2")
-        self.j16_pid_layout = self._widget.findChild(QVBoxLayout, "j16_layout_2")
-        self.j17_pid_layout = self._widget.findChild(QVBoxLayout, "j17_layout_2")
-        self.j18_pid_layout = self._widget.findChild(QVBoxLayout, "j18_layout_2")
-        self.j19_pid_layout = self._widget.findChild(QVBoxLayout, "j19_layout_2")
-        self.j20_pid_layout = self._widget.findChild(QVBoxLayout, "j20_layout_2")
-        self.j21_pid_layout = self._widget.findChild(QVBoxLayout, "j21_layout_2")
-        self.j22_pid_layout = self._widget.findChild(QVBoxLayout, "j22_layout_2")
-        self.j23_pid_layout = self._widget.findChild(QVBoxLayout, "j23_layout_2")
-
-
-    def create_menu_bar(self):
-        self._widget.myQMenuBar = QMenuBar(self._widget)
-        fileMenu = self._widget.myQMenuBar.addMenu('&File')
+        # self.j0_pid_layout = self._widget.findChild(QVBoxLayout, "j0_layout_2")
+        # self.j1_pid_layout = self._widget.findChild(QVBoxLayout, "j1_layout_2")
+        # self.j2_pid_layout = self._widget.findChild(QVBoxLayout, "j2_layout_2")
+        # self.j3_pid_layout = self._widget.findChild(QVBoxLayout, "j3_layout_2")
+        # self.j4_pid_layout = self._widget.findChild(QVBoxLayout, "j4_layout_2")
+        # self.j5_pid_layout = self._widget.findChild(QVBoxLayout, "j5_layout_2")
+        # self.j6_pid_layout = self._widget.findChild(QVBoxLayout, "j6_layout_2")
+        # self.j7_pid_layout = self._widget.findChild(QVBoxLayout, "j7_layout_2")
+        # self.j8_pid_layout = self._widget.findChild(QVBoxLayout, "j8_layout_2")
+        # self.j9_pid_layout = self._widget.findChild(QVBoxLayout, "j9_layout_2")
+        # self.j10_pid_layout = self._widget.findChild(QVBoxLayout, "j10_layout_2")
+        # self.j11_pid_layout = self._widget.findChild(QVBoxLayout, "j11_layout_2")
+        # self.j12_pid_layout = self._widget.findChild(QVBoxLayout, "j12_layout_2")
+        # self.j13_pid_layout = self._widget.findChild(QVBoxLayout, "j13_layout_2")
+        # self.j14_pid_layout = self._widget.findChild(QVBoxLayout, "j14_layout_2")
+        # self.j15_pid_layout = self._widget.findChild(QVBoxLayout, "j15_layout_2")
+        # self.j16_pid_layout = self._widget.findChild(QVBoxLayout, "j16_layout_2")
+        # self.j17_pid_layout = self._widget.findChild(QVBoxLayout, "j17_layout_2")
+        # self.j18_pid_layout = self._widget.findChild(QVBoxLayout, "j18_layout_2")
+        # self.j19_pid_layout = self._widget.findChild(QVBoxLayout, "j19_layout_2")
+        # self.j20_pid_layout = self._widget.findChild(QVBoxLayout, "j20_layout_2")
+        # self.j21_pid_layout = self._widget.findChild(QVBoxLayout, "j21_layout_2")
+        # self.j22_pid_layout = self._widget.findChild(QVBoxLayout, "j22_layout_2")
+        # self.j23_pid_layout = self._widget.findChild(QVBoxLayout, "j23_layout_2")
 
 
 class CustomFigCanvas(FigureCanvas, TimedAnimation):
@@ -872,8 +877,6 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
 
 
             i = i + 1
-#bbox_to_anchor=(0., 1.02, 1., .102)
-        # #frameon=False,
         self.ax1.legend(self.line, legends, bbox_to_anchor=(0., 1.0, 1., .9), framealpha=0.8, loc=3, ncol=legend_columns, mode="expand", borderaxespad=0., prop={'size': legend_font_size})
 
         FigureCanvas.__init__(self, self.fig)
@@ -893,7 +896,6 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
 
     def addData(self, value, index):
         self.addedDataArray[index].append(value)
-        #self.addedData.append(value)
 
     def zoomIn(self, value):
         bottom = self.ax1.get_ylim()[0]
