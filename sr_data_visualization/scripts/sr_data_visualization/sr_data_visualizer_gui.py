@@ -1414,14 +1414,16 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         self.label_buffer = []
 
         # The window
-        self.fig = Figure(figsize=(3,3), dpi=100)
-        self.fig.patch.set_alpha(0.0)
+        self.fig = Figure(figsize=(3,3), dpi=100, facecolor=(1.0, 1.0, 1.0, 1.0))
+        # self.fig.patch.set_alpha(0.0)
         self.ax1 = self.fig.add_subplot(111)
-        axis_font = {'size': '14'}
-        self.ax1.set_xlabel('time', **axis_font)
         self.x_axis = self.n
         if not(self.xaxis_tick_animation):
             self.ax1.axes.get_xaxis().set_visible(False)
+
+        for tick in self.ax1.yaxis.get_major_ticks():  # shrink the font size of the x tick labels
+            tick.label.set_fontsize(7)
+        self.ax1.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)
 
         self.line = []
         if self.tail_enable:
@@ -1440,9 +1442,8 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
             self.ax1.set_ylim(ymin, ymax)
             i = i + 1
 
-        #bbox_to_anchor=(0., 1.02, 1., .102)
-        # #frameon=False,
-        self.ax1.legend(self.line, legends, bbox_to_anchor=(0., 1.0, 1., .9), framealpha=0.8, loc=3, ncol=legend_columns, mode="expand", borderaxespad=0., prop={'size': legend_font_size})
+        self.fig.subplots_adjust(bottom=0.05, top=0.8, left=0.08, right=0.98)
+        self.ax1.legend(self.line, legends, bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, ncol=legend_columns, mode="expand", borderaxespad=0.5, prop={'size': legend_font_size})
         self.counter = 0
         FigureCanvas.__init__(self, self.fig)
         TimedAnimation.__init__(self, self.fig, interval = 50, blit = not(self.xaxis_tick_animation))
