@@ -91,55 +91,51 @@ class SrDataVisualizer(Plugin):
     def update_graphs(self):
         self.motor_stat_graph_1.update()
 
-        self.pid_graph_j0.update()
-        self.pid_graph_j1.update()
-        self.pid_graph_j2.update()
-        self.pid_graph_j3.update()
-        self.pid_graph_j4.update()
-        self.pid_graph_j5.update()
-        self.pid_graph_j6.update()
-        self.pid_graph_j7.update()
-        self.pid_graph_j8.update()
-        self.pid_graph_j9.update()
-        self.pid_graph_j10.update()
-        self.pid_graph_j11.update()
-        self.pid_graph_j12.update()
-        self.pid_graph_j13.update()
-        self.pid_graph_j14.update()
-        self.pid_graph_j15.update()
-        self.pid_graph_j16.update()
-        self.pid_graph_j17.update()
-        self.pid_graph_j18.update()
-        self.pid_graph_j19.update()
-        self.pid_graph_j20.update()
-        self.pid_graph_j21.update()
-        self.pid_graph_j22.update()
-        self.pid_graph_j23.update()
+        self.pid_graph_thj1.update()
+        self.pid_graph_thj2.update()
+        self.pid_graph_thj3.update()
+        self.pid_graph_thj4.update()
+        self.pid_graph_thj5.update()
+        self.pid_graph_ffj0.update()
+        self.pid_graph_ffj3.update()
+        self.pid_graph_ffj4.update()
+        self.pid_graph_mfj0.update()
+        self.pid_graph_mfj3.update()
+        self.pid_graph_mfj4.update()
+        self.pid_graph_rfj0.update()
+        self.pid_graph_rfj3.update()
+        self.pid_graph_rfj4.update()
+        self.pid_graph_lfj0.update()
+        self.pid_graph_lfj3.update()
+        self.pid_graph_lfj4.update()
+        self.pid_graph_lfj5.update()
+        self.pid_graph_wrj1.update()
+        self.pid_graph_wrj2.update()
 
-        self.j0_graph.update()
-        self.j1_graph.update()
-        self.j2_graph.update()
-        self.j3_graph.update()
-        self.j4_graph.update()
-        self.j5_graph.update()
-        self.j6_graph.update()
-        self.j7_graph.update()
-        self.j8_graph.update()
-        self.j9_graph.update()
-        self.j10_graph.update()
-        self.j11_graph.update()
-        self.j12_graph.update()
-        self.j13_graph.update()
-        self.j14_graph.update()
-        self.j15_graph.update()
-        self.j16_graph.update()
-        self.j17_graph.update()
-        self.j18_graph.update()
-        self.j19_graph.update()
-        self.j20_graph.update()
-        self.j21_graph.update()
-        self.j22_graph.update()
-        self.j23_graph.update()
+        self.thj1_graph.update()
+        self.thj2_graph.update()
+        self.thj3_graph.update()
+        self.thj4_graph.update()
+        self.thj5_graph.update()
+        self.ffj1_graph.update()
+        self.ffj2_graph.update()
+        self.ffj3_graph.update()
+        self.ffj4_graph.update()
+        self.mfj1_graph.update()
+        self.mfj2_graph.update()
+        self.mfj3_graph.update()
+        self.mfj4_graph.update()
+        self.rfj1_graph.update()
+        self.rfj2_graph.update()
+        self.rfj3_graph.update()
+        self.rfj4_graph.update()
+        self.lfj1_graph.update()
+        self.lfj2_graph.update()
+        self.lfj3_graph.update()
+        self.lfj4_graph.update()
+        self.lfj5_graph.update()
+        self.wrj1_graph.update()
+        self.wrj2_graph.update()
 
         self.palm_extras_graph.update()
         self.palm_extras_graph_2.update()
@@ -202,125 +198,113 @@ class SrDataVisualizer(Plugin):
 
         j0_graphs_scale = self.j0_graphs_scale
         # All joints page graphs
-        self.j0_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
+        self.thj1_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
                                         ['Position', 'Velocity', 'Effort'])
-        self.j1_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
+        self.thj2_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
                                         ['Position', 'Velocity', 'Effort'])
-        self.j2_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
+        self.thj3_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
                                         ['Position', 'Velocity', 'Effort'])
-        self.j3_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
+        self.thj4_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
                                         ['Position', 'Velocity', 'Effort'])
-        self.j4_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
+        self.thj5_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
                                         ['Position', 'Velocity', 'Effort'])
-        self.j5_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
+        self.ffj1_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
                                         ['Position', 'Velocity', 'Effort'])
-        self.j6_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
+        self.ffj2_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
                                         ['Position', 'Velocity', 'Effort'])
-        self.j7_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
+        self.ffj3_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
                                         ['Position', 'Velocity', 'Effort'])
-        self.j8_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
+        self.ffj4_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
                                         ['Position', 'Velocity', 'Effort'])
-        self.j9_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
+        self.mfj1_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
                                         ['Position', 'Velocity', 'Effort'])
-        self.j10_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
+        self.mfj2_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
                                          ['Position', 'Velocity', 'Effort'])
-        self.j11_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
+        self.mfj3_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
                                          ['Position', 'Velocity', 'Effort'])
-        self.j12_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
+        self.mfj4_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
                                          ['Position', 'Velocity', 'Effort'])
-        self.j13_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
+        self.rfj1_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
                                          ['Position', 'Velocity', 'Effort'])
-        self.j14_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
+        self.rfj2_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
                                          ['Position', 'Velocity', 'Effort'])
-        self.j15_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
+        self.rfj3_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
                                          ['Position', 'Velocity', 'Effort'])
-        self.j16_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
+        self.rfj4_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
                                          ['Position', 'Velocity', 'Effort'])
-        self.j17_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
+        self.lfj1_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
                                          ['Position', 'Velocity', 'Effort'])
-        self.j18_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
+        self.lfj2_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
                                          ['Position', 'Velocity', 'Effort'])
-        self.j19_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
+        self.lfj3_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
                                          ['Position', 'Velocity', 'Effort'])
-        self.j20_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
+        self.lfj4_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
                                          ['Position', 'Velocity', 'Effort'])
-        self.j21_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
+        self.lfj5_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
                                          ['Position', 'Velocity', 'Effort'])
-        self.j22_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
+        self.wrj1_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
                                          ['Position', 'Velocity', 'Effort'])
-        self.j23_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
+        self.wrj2_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
                                          ['Position', 'Velocity', 'Effort'])
 
-        self.pid_graph_j0 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        self.pid_graph_thj1 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
                                             ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3,
                                             legend_font_size=5)
-        self.pid_graph_j1 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        self.pid_graph_thj2 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
                                             ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3,
                                             legend_font_size=5)
-        self.pid_graph_j2 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        self.pid_graph_thj3 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
                                             ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3,
                                             legend_font_size=5)
-        self.pid_graph_j3 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        self.pid_graph_thj4 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
                                             ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3,
                                             legend_font_size=5)
-        self.pid_graph_j4 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        self.pid_graph_thj5 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
                                             ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3,
                                             legend_font_size=5)
-        self.pid_graph_j5 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        self.pid_graph_ffj0 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
                                             ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3,
                                             legend_font_size=5)
-        self.pid_graph_j6 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        self.pid_graph_ffj3 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
                                             ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3,
                                             legend_font_size=5)
-        self.pid_graph_j7 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        self.pid_graph_ffj4 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
                                             ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3,
                                             legend_font_size=5)
-        self.pid_graph_j8 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        self.pid_graph_mfj0 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
                                             ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3,
                                             legend_font_size=5)
-        self.pid_graph_j9 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                            ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3,
-                                            legend_font_size=5)
-        self.pid_graph_j10 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        self.pid_graph_mfj3 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
                                              ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3,
                                              legend_font_size=5)
-        self.pid_graph_j11 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        self.pid_graph_mfj4 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
                                              ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3,
                                              legend_font_size=5)
-        self.pid_graph_j12 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        self.pid_graph_rfj0 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
                                              ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3,
                                              legend_font_size=5)
-        self.pid_graph_j13 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        self.pid_graph_rfj3 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
                                              ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3,
                                              legend_font_size=5)
-        self.pid_graph_j14 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        self.pid_graph_rfj4 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
                                              ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3,
                                              legend_font_size=5)
-        self.pid_graph_j15 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        self.pid_graph_lfj0 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
                                              ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3,
                                              legend_font_size=5)
-        self.pid_graph_j16 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        self.pid_graph_lfj3 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
                                              ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3,
                                              legend_font_size=5)
-        self.pid_graph_j17 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        self.pid_graph_lfj4 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
                                              ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3,
                                              legend_font_size=5)
-        self.pid_graph_j18 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        self.pid_graph_lfj5 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
                                              ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3,
                                              legend_font_size=5)
-        self.pid_graph_j19 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        self.pid_graph_wrj1 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
                                              ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3,
                                              legend_font_size=5)
-        self.pid_graph_j20 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                             ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3,
-                                             legend_font_size=5)
-        self.pid_graph_j21 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                             ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3,
-                                             legend_font_size=5)
-        self.pid_graph_j22 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-                                             ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3,
-                                             legend_font_size=5)
-        self.pid_graph_j23 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+        self.pid_graph_wrj2 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
                                              ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3,
                                              legend_font_size=5)
 
@@ -331,45 +315,45 @@ class SrDataVisualizer(Plugin):
         self.sub = rospy.Subscriber('/rh/palm_extras', Float64MultiArray, self.palm_extras_cb, queue_size=1)
         self.sub = rospy.Subscriber('/rh/tactile', BiotacAll, self.biotac_all_cb, queue_size=1)
 
-        self.sub = rospy.Subscriber('/sh_rh_ffj0_position_controller/state', JointControllerState, self.j0_pid_cb,
+        self.sub = rospy.Subscriber('/sh_rh_ffj0_position_controller/state', JointControllerState, self.ffj0_pid_cb,
                                     queue_size=1)
-        self.sub = rospy.Subscriber('/sh_rh_ffj3_position_controller/state', JointControllerState, self.j1_pid_cb,
+        self.sub = rospy.Subscriber('/sh_rh_ffj3_position_controller/state', JointControllerState, self.ffj3_pid_cb,
                                     queue_size=1)
-        self.sub = rospy.Subscriber('/sh_rh_ffj4_position_controller/state', JointControllerState, self.j2_pid_cb,
+        self.sub = rospy.Subscriber('/sh_rh_ffj4_position_controller/state', JointControllerState, self.ffj4_pid_cb,
                                     queue_size=1)
-        self.sub = rospy.Subscriber('/sh_rh_lfj0_position_controller/state', JointControllerState, self.j3_pid_cb,
+        self.sub = rospy.Subscriber('/sh_rh_lfj0_position_controller/state', JointControllerState, self.lfj0_pid_cb,
                                     queue_size=1)
-        self.sub = rospy.Subscriber('/sh_rh_lfj3_position_controller/state', JointControllerState, self.j4_pid_cb,
+        self.sub = rospy.Subscriber('/sh_rh_lfj3_position_controller/state', JointControllerState, self.lfj3_pid_cb,
                                     queue_size=1)
-        self.sub = rospy.Subscriber('/sh_rh_lfj4_position_controller/state', JointControllerState, self.j5_pid_cb,
+        self.sub = rospy.Subscriber('/sh_rh_lfj4_position_controller/state', JointControllerState, self.lfj4_pid_cb,
                                     queue_size=1)
-        self.sub = rospy.Subscriber('/sh_rh_lfj5_position_controller/state', JointControllerState, self.j6_pid_cb,
+        self.sub = rospy.Subscriber('/sh_rh_lfj5_position_controller/state', JointControllerState, self.lfj5_pid_cb,
                                     queue_size=1)
-        self.sub = rospy.Subscriber('/sh_rh_mfj0_position_controller/state', JointControllerState, self.j7_pid_cb,
+        self.sub = rospy.Subscriber('/sh_rh_mfj0_position_controller/state', JointControllerState, self.mfj0_pid_cb,
                                     queue_size=1)
-        self.sub = rospy.Subscriber('/sh_rh_mfj3_position_controller/state', JointControllerState, self.j8_pid_cb,
+        self.sub = rospy.Subscriber('/sh_rh_mfj3_position_controller/state', JointControllerState, self.mfj3_pid_cb,
                                     queue_size=1)
-        self.sub = rospy.Subscriber('/sh_rh_mfj4_position_controller/state', JointControllerState, self.j9_pid_cb,
+        self.sub = rospy.Subscriber('/sh_rh_mfj4_position_controller/state', JointControllerState, self.mfj4_pid_cb,
                                     queue_size=1)
-        self.sub = rospy.Subscriber('/sh_rh_rfj0_position_controller/state', JointControllerState, self.j10_pid_cb,
+        self.sub = rospy.Subscriber('/sh_rh_rfj0_position_controller/state', JointControllerState, self.rfj0_pid_cb,
                                     queue_size=1)
-        self.sub = rospy.Subscriber('/sh_rh_rfj3_position_controller/state', JointControllerState, self.j11_pid_cb,
+        self.sub = rospy.Subscriber('/sh_rh_rfj3_position_controller/state', JointControllerState, self.rfj3_pid_cb,
                                     queue_size=1)
-        self.sub = rospy.Subscriber('/sh_rh_rfj4_position_controller/state', JointControllerState, self.j12_pid_cb,
+        self.sub = rospy.Subscriber('/sh_rh_rfj4_position_controller/state', JointControllerState, self.rfj4_pid_cb,
                                     queue_size=1)
-        self.sub = rospy.Subscriber('/sh_rh_thj1_position_controller/state', JointControllerState, self.j13_pid_cb,
+        self.sub = rospy.Subscriber('/sh_rh_thj1_position_controller/state', JointControllerState, self.thj1_pid_cb,
                                     queue_size=1)
-        self.sub = rospy.Subscriber('/sh_rh_thj2_position_controller/state', JointControllerState, self.j14_pid_cb,
+        self.sub = rospy.Subscriber('/sh_rh_thj2_position_controller/state', JointControllerState, self.thj2_pid_cb,
                                     queue_size=1)
-        self.sub = rospy.Subscriber('/sh_rh_thj3_position_controller/state', JointControllerState, self.j15_pid_cb,
+        self.sub = rospy.Subscriber('/sh_rh_thj3_position_controller/state', JointControllerState, self.thj3_pid_cb,
                                     queue_size=1)
-        self.sub = rospy.Subscriber('/sh_rh_thj4_position_controller/state', JointControllerState, self.j16_pid_cb,
+        self.sub = rospy.Subscriber('/sh_rh_thj4_position_controller/state', JointControllerState, self.thj4_pid_cb,
                                     queue_size=1)
-        self.sub = rospy.Subscriber('/sh_rh_thj5_position_controller/state', JointControllerState, self.j17_pid_cb,
+        self.sub = rospy.Subscriber('/sh_rh_thj5_position_controller/state', JointControllerState, self.thj5_pid_cb,
                                     queue_size=1)
-        self.sub = rospy.Subscriber('/sh_rh_wrj1_position_controller/state', JointControllerState, self.j18_pid_cb,
+        self.sub = rospy.Subscriber('/sh_rh_wrj1_position_controller/state', JointControllerState, self.wrj1_pid_cb,
                                     queue_size=1)
-        self.sub = rospy.Subscriber('/sh_rh_wrj2_position_controller/state', JointControllerState, self.j19_pid_cb,
+        self.sub = rospy.Subscriber('/sh_rh_wrj2_position_controller/state', JointControllerState, self.wrj2_pid_cb,
                                     queue_size=1)
 
     def attach_graphs(self):
@@ -385,55 +369,51 @@ class SrDataVisualizer(Plugin):
         self.biotac_3_layout.addWidget(self.biotac_3_graph)
         self.biotac_4_layout.addWidget(self.biotac_4_graph)
 
-        self.j0_layout.addWidget(self.j0_graph)
-        self.j1_layout.addWidget(self.j1_graph)
-        self.j2_layout.addWidget(self.j2_graph)
-        self.j3_layout.addWidget(self.j3_graph)
-        self.j4_layout.addWidget(self.j4_graph)
-        self.j5_layout.addWidget(self.j5_graph)
-        self.j6_layout.addWidget(self.j6_graph)
-        self.j7_layout.addWidget(self.j7_graph)
-        self.j8_layout.addWidget(self.j8_graph)
-        self.j9_layout.addWidget(self.j9_graph)
-        self.j10_layout.addWidget(self.j10_graph)
-        self.j11_layout.addWidget(self.j11_graph)
-        self.j12_layout.addWidget(self.j12_graph)
-        self.j13_layout.addWidget(self.j13_graph)
-        self.j14_layout.addWidget(self.j14_graph)
-        self.j15_layout.addWidget(self.j15_graph)
-        self.j16_layout.addWidget(self.j16_graph)
-        self.j17_layout.addWidget(self.j17_graph)
-        self.j18_layout.addWidget(self.j18_graph)
-        self.j19_layout.addWidget(self.j19_graph)
-        self.j20_layout.addWidget(self.j20_graph)
-        self.j21_layout.addWidget(self.j21_graph)
-        self.j22_layout.addWidget(self.j22_graph)
-        self.j23_layout.addWidget(self.j23_graph)
+        self.thj1_layout.addWidget(self.thj1_graph)
+        self.thj2_layout.addWidget(self.thj2_graph)
+        self.thj3_layout.addWidget(self.thj3_graph)
+        self.thj4_layout.addWidget(self.thj4_graph)
+        self.thj5_layout.addWidget(self.thj5_graph)
+        self.ffj1_layout.addWidget(self.ffj1_graph)
+        self.ffj2_layout.addWidget(self.ffj2_graph)
+        self.ffj3_layout.addWidget(self.ffj3_graph)
+        self.ffj4_layout.addWidget(self.ffj4_graph)
+        self.mfj1_layout.addWidget(self.mfj1_graph)
+        self.mfj2_layout.addWidget(self.mfj2_graph)
+        self.mfj3_layout.addWidget(self.mfj3_graph)
+        self.mfj4_layout.addWidget(self.mfj4_graph)
+        self.rfj1_layout.addWidget(self.rfj1_graph)
+        self.rfj2_layout.addWidget(self.rfj2_graph)
+        self.rfj3_layout.addWidget(self.rfj3_graph)
+        self.rfj4_layout.addWidget(self.rfj4_graph)
+        self.lfj1_layout.addWidget(self.lfj1_graph)
+        self.lfj2_layout.addWidget(self.lfj2_graph)
+        self.lfj3_layout.addWidget(self.lfj3_graph)
+        self.lfj4_layout.addWidget(self.lfj4_graph)
+        self.lfj5_layout.addWidget(self.lfj5_graph)
+        self.wrj1_layout.addWidget(self.wrj1_graph)
+        self.wrj2_layout.addWidget(self.wrj2_graph)
 
-        self.j0_pid_layout.addWidget(self.pid_graph_j0)
-        self.j1_pid_layout.addWidget(self.pid_graph_j1)
-        self.j2_pid_layout.addWidget(self.pid_graph_j2)
-        self.j3_pid_layout.addWidget(self.pid_graph_j3)
-        self.j4_pid_layout.addWidget(self.pid_graph_j4)
-        self.j5_pid_layout.addWidget(self.pid_graph_j5)
-        self.j6_pid_layout.addWidget(self.pid_graph_j6)
-        self.j7_pid_layout.addWidget(self.pid_graph_j7)
-        self.j8_pid_layout.addWidget(self.pid_graph_j8)
-        self.j9_pid_layout.addWidget(self.pid_graph_j9)
-        self.j10_pid_layout.addWidget(self.pid_graph_j10)
-        self.j11_pid_layout.addWidget(self.pid_graph_j11)
-        self.j12_pid_layout.addWidget(self.pid_graph_j12)
-        self.j13_pid_layout.addWidget(self.pid_graph_j13)
-        self.j14_pid_layout.addWidget(self.pid_graph_j14)
-        self.j15_pid_layout.addWidget(self.pid_graph_j15)
-        self.j16_pid_layout.addWidget(self.pid_graph_j16)
-        self.j17_pid_layout.addWidget(self.pid_graph_j17)
-        self.j18_pid_layout.addWidget(self.pid_graph_j18)
-        self.j19_pid_layout.addWidget(self.pid_graph_j19)
-        self.j20_pid_layout.addWidget(self.pid_graph_j20)
-        self.j21_pid_layout.addWidget(self.pid_graph_j21)
-        self.j22_pid_layout.addWidget(self.pid_graph_j22)
-        self.j23_pid_layout.addWidget(self.pid_graph_j23)
+        self.thj1_pid_layout.addWidget(self.pid_graph_thj1)
+        self.thj2_pid_layout.addWidget(self.pid_graph_thj2)
+        self.thj3_pid_layout.addWidget(self.pid_graph_thj3)
+        self.thj4_pid_layout.addWidget(self.pid_graph_thj4)
+        self.thj5_pid_layout.addWidget(self.pid_graph_thj5)
+        self.ffj0_pid_layout.addWidget(self.pid_graph_ffj0)
+        self.ffj3_pid_layout.addWidget(self.pid_graph_ffj3)
+        self.ffj4_pid_layout.addWidget(self.pid_graph_ffj4)
+        self.mfj0_pid_layout.addWidget(self.pid_graph_mfj0)
+        self.mfj3_pid_layout.addWidget(self.pid_graph_mfj3)
+        self.mfj4_pid_layout.addWidget(self.pid_graph_mfj4)
+        self.rfj0_pid_layout.addWidget(self.pid_graph_rfj0)
+        self.rfj3_pid_layout.addWidget(self.pid_graph_rfj3)
+        self.rfj4_pid_layout.addWidget(self.pid_graph_rfj4)
+        self.lfj0_pid_layout.addWidget(self.pid_graph_lfj0)
+        self.lfj3_pid_layout.addWidget(self.pid_graph_lfj3)
+        self.lfj4_pid_layout.addWidget(self.pid_graph_lfj4)
+        self.lfj5_pid_layout.addWidget(self.pid_graph_lfj5)
+        self.wrj1_pid_layout.addWidget(self.pid_graph_wrj1)
+        self.wrj2_pid_layout.addWidget(self.pid_graph_wrj2)
 
     def diag_cb(self, value):
         if len(value.status) > 1:
@@ -511,101 +491,101 @@ class SrDataVisualizer(Plugin):
         self.palm_extras_graph_3.addData(value.data[9], 3)
 
     def joint_state_cb(self, value):
-        self.j0_graph.addData(value.position[0], 0)
-        self.j0_graph.addData(value.velocity[0], 1)
-        self.j0_graph.addData(value.effort[0] * self.j0_graphs_effort_scale, 2)
+        self.ffj1_graph.addData(value.position[0], 0)
+        self.ffj1_graph.addData(value.velocity[0], 1)
+        self.ffj1_graph.addData(value.effort[0] * self.j0_graphs_effort_scale, 2)
 
-        self.j1_graph.addData(value.position[1], 0)
-        self.j1_graph.addData(value.velocity[1], 1)
-        self.j1_graph.addData(value.effort[1] * self.j0_graphs_effort_scale, 2)
+        self.ffj2_graph.addData(value.position[1], 0)
+        self.ffj2_graph.addData(value.velocity[1], 1)
+        self.ffj2_graph.addData(value.effort[1] * self.j0_graphs_effort_scale, 2)
 
-        self.j2_graph.addData(value.position[2], 0)
-        self.j2_graph.addData(value.velocity[2], 1)
-        self.j2_graph.addData(value.effort[2] * self.j0_graphs_effort_scale, 2)
+        self.ffj3_graph.addData(value.position[2], 0)
+        self.ffj3_graph.addData(value.velocity[2], 1)
+        self.ffj3_graph.addData(value.effort[2] * self.j0_graphs_effort_scale, 2)
 
-        self.j3_graph.addData(value.position[3], 0)
-        self.j3_graph.addData(value.velocity[3], 1)
-        self.j3_graph.addData(value.effort[3] * self.j0_graphs_effort_scale, 2)
+        self.ffj4_graph.addData(value.position[3], 0)
+        self.ffj4_graph.addData(value.velocity[3], 1)
+        self.ffj4_graph.addData(value.effort[3] * self.j0_graphs_effort_scale, 2)
 
-        self.j4_graph.addData(value.position[4], 0)
-        self.j4_graph.addData(value.velocity[4], 1)
-        self.j4_graph.addData(value.effort[4] * self.j0_graphs_effort_scale, 2)
+        self.lfj1_graph.addData(value.position[4], 0)
+        self.lfj1_graph.addData(value.velocity[4], 1)
+        self.lfj1_graph.addData(value.effort[4] * self.j0_graphs_effort_scale, 2)
 
-        self.j5_graph.addData(value.position[5], 0)
-        self.j5_graph.addData(value.velocity[5], 1)
-        self.j5_graph.addData(value.effort[5] * self.j0_graphs_effort_scale, 2)
+        self.lfj2_graph.addData(value.position[5], 0)
+        self.lfj2_graph.addData(value.velocity[5], 1)
+        self.lfj2_graph.addData(value.effort[5] * self.j0_graphs_effort_scale, 2)
 
-        self.j6_graph.addData(value.position[6], 0)
-        self.j6_graph.addData(value.velocity[6], 1)
-        self.j6_graph.addData(value.effort[6] * self.j0_graphs_effort_scale, 2)
+        self.lfj3_graph.addData(value.position[6], 0)
+        self.lfj3_graph.addData(value.velocity[6], 1)
+        self.lfj3_graph.addData(value.effort[6] * self.j0_graphs_effort_scale, 2)
 
-        self.j7_graph.addData(value.position[7], 0)
-        self.j7_graph.addData(value.velocity[7], 1)
-        self.j7_graph.addData(value.effort[7] * self.j0_graphs_effort_scale, 2)
+        self.lfj4_graph.addData(value.position[7], 0)
+        self.lfj4_graph.addData(value.velocity[7], 1)
+        self.lfj4_graph.addData(value.effort[7] * self.j0_graphs_effort_scale, 2)
 
-        self.j8_graph.addData(value.position[8], 0)
-        self.j8_graph.addData(value.velocity[8], 1)
-        self.j8_graph.addData(value.effort[8] * self.j0_graphs_effort_scale, 2)
+        self.lfj5_graph.addData(value.position[8], 0)
+        self.lfj5_graph.addData(value.velocity[8], 1)
+        self.lfj5_graph.addData(value.effort[8] * self.j0_graphs_effort_scale, 2)
 
-        self.j9_graph.addData(value.position[9], 0)
-        self.j9_graph.addData(value.velocity[9], 1)
-        self.j9_graph.addData(value.effort[9] * self.j0_graphs_effort_scale, 2)
+        self.mfj1_graph.addData(value.position[9], 0)
+        self.mfj1_graph.addData(value.velocity[9], 1)
+        self.mfj1_graph.addData(value.effort[9] * self.j0_graphs_effort_scale, 2)
 
-        self.j10_graph.addData(value.position[10], 0)
-        self.j10_graph.addData(value.velocity[10], 1)
-        self.j10_graph.addData(value.effort[10] * self.j0_graphs_effort_scale, 2)
+        self.mfj2_graph.addData(value.position[10], 0)
+        self.mfj2_graph.addData(value.velocity[10], 1)
+        self.mfj2_graph.addData(value.effort[10] * self.j0_graphs_effort_scale, 2)
 
-        self.j11_graph.addData(value.position[11], 0)
-        self.j11_graph.addData(value.velocity[11], 1)
-        self.j11_graph.addData(value.effort[11] * self.j0_graphs_effort_scale, 2)
+        self.mfj3_graph.addData(value.position[11], 0)
+        self.mfj3_graph.addData(value.velocity[11], 1)
+        self.mfj3_graph.addData(value.effort[11] * self.j0_graphs_effort_scale, 2)
 
-        self.j12_graph.addData(value.position[12], 0)
-        self.j12_graph.addData(value.velocity[12], 1)
-        self.j12_graph.addData(value.effort[12] * self.j0_graphs_effort_scale, 2)
+        self.mfj4_graph.addData(value.position[12], 0)
+        self.mfj4_graph.addData(value.velocity[12], 1)
+        self.mfj4_graph.addData(value.effort[12] * self.j0_graphs_effort_scale, 2)
 
-        self.j13_graph.addData(value.position[13], 0)
-        self.j13_graph.addData(value.velocity[13], 1)
-        self.j13_graph.addData(value.effort[13] * self.j0_graphs_effort_scale, 2)
+        self.rfj1_graph.addData(value.position[13], 0)
+        self.rfj1_graph.addData(value.velocity[13], 1)
+        self.rfj1_graph.addData(value.effort[13] * self.j0_graphs_effort_scale, 2)
 
-        self.j14_graph.addData(value.position[14], 0)
-        self.j14_graph.addData(value.velocity[14], 1)
-        self.j14_graph.addData(value.effort[14] * self.j0_graphs_effort_scale, 2)
+        self.rfj2_graph.addData(value.position[14], 0)
+        self.rfj2_graph.addData(value.velocity[14], 1)
+        self.rfj2_graph.addData(value.effort[14] * self.j0_graphs_effort_scale, 2)
 
-        self.j15_graph.addData(value.position[15], 0)
-        self.j15_graph.addData(value.velocity[15], 1)
-        self.j15_graph.addData(value.effort[15] * self.j0_graphs_effort_scale, 2)
+        self.rfj3_graph.addData(value.position[15], 0)
+        self.rfj3_graph.addData(value.velocity[15], 1)
+        self.rfj3_graph.addData(value.effort[15] * self.j0_graphs_effort_scale, 2)
 
-        self.j16_graph.addData(value.position[16], 0)
-        self.j16_graph.addData(value.velocity[16], 1)
-        self.j16_graph.addData(value.effort[16] * self.j0_graphs_effort_scale, 2)
+        self.rfj4_graph.addData(value.position[16], 0)
+        self.rfj4_graph.addData(value.velocity[16], 1)
+        self.rfj4_graph.addData(value.effort[16] * self.j0_graphs_effort_scale, 2)
 
-        self.j17_graph.addData(value.position[17], 0)
-        self.j17_graph.addData(value.velocity[17], 1)
-        self.j17_graph.addData(value.effort[17] * self.j0_graphs_effort_scale, 2)
+        self.thj1_graph.addData(value.position[17], 0)
+        self.thj1_graph.addData(value.velocity[17], 1)
+        self.thj1_graph.addData(value.effort[17] * self.j0_graphs_effort_scale, 2)
 
-        self.j18_graph.addData(value.position[18], 0)
-        self.j18_graph.addData(value.velocity[18], 1)
-        self.j18_graph.addData(value.effort[18] * self.j0_graphs_effort_scale, 2)
+        self.thj2_graph.addData(value.position[18], 0)
+        self.thj2_graph.addData(value.velocity[18], 1)
+        self.thj2_graph.addData(value.effort[18] * self.j0_graphs_effort_scale, 2)
 
-        self.j19_graph.addData(value.position[19], 0)
-        self.j19_graph.addData(value.velocity[19], 1)
-        self.j19_graph.addData(value.effort[19] * self.j0_graphs_effort_scale, 2)
+        self.thj3_graph.addData(value.position[19], 0)
+        self.thj3_graph.addData(value.velocity[19], 1)
+        self.thj3_graph.addData(value.effort[19] * self.j0_graphs_effort_scale, 2)
 
-        self.j20_graph.addData(value.position[20], 0)
-        self.j20_graph.addData(value.velocity[20], 1)
-        self.j20_graph.addData(value.effort[20] * self.j0_graphs_effort_scale, 2)
+        self.thj4_graph.addData(value.position[20], 0)
+        self.thj4_graph.addData(value.velocity[20], 1)
+        self.thj4_graph.addData(value.effort[20] * self.j0_graphs_effort_scale, 2)
 
-        self.j21_graph.addData(value.position[21], 0)
-        self.j21_graph.addData(value.velocity[21], 1)
-        self.j21_graph.addData(value.effort[21] * self.j0_graphs_effort_scale, 2)
+        self.thj5_graph.addData(value.position[21], 0)
+        self.thj5_graph.addData(value.velocity[21], 1)
+        self.thj5_graph.addData(value.effort[21] * self.j0_graphs_effort_scale, 2)
 
-        self.j22_graph.addData(value.position[22], 0)
-        self.j22_graph.addData(value.velocity[22], 1)
-        self.j22_graph.addData(value.effort[22] * self.j0_graphs_effort_scale, 2)
+        self.wrj1_graph.addData(value.position[22], 0)
+        self.wrj1_graph.addData(value.velocity[22], 1)
+        self.wrj1_graph.addData(value.effort[22] * self.j0_graphs_effort_scale, 2)
 
-        self.j23_graph.addData(value.position[23], 0)
-        self.j23_graph.addData(value.velocity[23], 1)
-        self.j23_graph.addData(value.effort[23] * self.j0_graphs_effort_scale, 2)
+        self.wrj2_graph.addData(value.position[23], 0)
+        self.wrj2_graph.addData(value.velocity[23], 1)
+        self.wrj2_graph.addData(value.effort[23] * self.j0_graphs_effort_scale, 2)
 
     def mech_stat_cb(self, value):
         self.pos_vel_eff_graph.addData(value.joint_statistics[2].position, 0)
@@ -615,173 +595,146 @@ class SrDataVisualizer(Plugin):
         self.effort_graph.addData(value.actuator_statistics[2].last_commanded_effort, 0)
         self.effort_graph.addData(value.actuator_statistics[2].last_measured_effort, 1)
 
-    def j0_pid_cb(self, value):
-        self.pid_graph_j0.addData(value.set_point, 0)
-        self.pid_graph_j0.addData(value.process_value, 1)
-        self.pid_graph_j0.addData(value.process_value_dot, 2)
-        self.pid_graph_j0.addData(value.error, 3)
-        self.pid_graph_j0.addData(value.command * self.pid_output_scale, 4)
+    def thj1_pid_cb(self, value):
+        self.pid_graph_thj1.addData(value.set_point, 0)
+        self.pid_graph_thj1.addData(value.process_value, 1)
+        self.pid_graph_thj1.addData(value.process_value_dot, 2)
+        self.pid_graph_thj1.addData(value.error, 3)
+        self.pid_graph_thj1.addData(value.command * self.pid_output_scale, 4)
 
-    def j1_pid_cb(self, value):
-        self.pid_graph_j1.addData(value.set_point, 0)
-        self.pid_graph_j1.addData(value.process_value, 1)
-        self.pid_graph_j1.addData(value.process_value_dot, 2)
-        self.pid_graph_j1.addData(value.error, 3)
-        self.pid_graph_j1.addData(value.command * self.pid_output_scale, 4)
+    def thj2_pid_cb(self, value):
+        self.pid_graph_thj2.addData(value.set_point, 0)
+        self.pid_graph_thj2.addData(value.process_value, 1)
+        self.pid_graph_thj2.addData(value.process_value_dot, 2)
+        self.pid_graph_thj2.addData(value.error, 3)
+        self.pid_graph_thj2.addData(value.command * self.pid_output_scale, 4)
 
-    def j2_pid_cb(self, value):
-        self.pid_graph_j2.addData(value.set_point, 0)
-        self.pid_graph_j2.addData(value.process_value, 1)
-        self.pid_graph_j2.addData(value.process_value_dot, 2)
-        self.pid_graph_j2.addData(value.error, 3)
-        self.pid_graph_j2.addData(value.command * self.pid_output_scale, 4)
+    def thj3_pid_cb(self, value):
+        self.pid_graph_thj3.addData(value.set_point, 0)
+        self.pid_graph_thj3.addData(value.process_value, 1)
+        self.pid_graph_thj3.addData(value.process_value_dot, 2)
+        self.pid_graph_thj3.addData(value.error, 3)
+        self.pid_graph_thj3.addData(value.command * self.pid_output_scale, 4)
 
-    def j3_pid_cb(self, value):
-        self.pid_graph_j3.addData(value.set_point, 0)
-        self.pid_graph_j3.addData(value.process_value, 1)
-        self.pid_graph_j3.addData(value.process_value_dot, 2)
-        self.pid_graph_j3.addData(value.error, 3)
-        self.pid_graph_j3.addData(value.command * self.pid_output_scale, 4)
+    def thj4_pid_cb(self, value):
+        self.pid_graph_thj4.addData(value.set_point, 0)
+        self.pid_graph_thj4.addData(value.process_value, 1)
+        self.pid_graph_thj4.addData(value.process_value_dot, 2)
+        self.pid_graph_thj4.addData(value.error, 3)
+        self.pid_graph_thj4.addData(value.command * self.pid_output_scale, 4)
 
-    def j4_pid_cb(self, value):
-        self.pid_graph_j4.addData(value.set_point, 0)
-        self.pid_graph_j4.addData(value.process_value, 1)
-        self.pid_graph_j4.addData(value.process_value_dot, 2)
-        self.pid_graph_j4.addData(value.error, 3)
-        self.pid_graph_j4.addData(value.command * self.pid_output_scale, 4)
+    def thj5_pid_cb(self, value):
+        self.pid_graph_thj5.addData(value.set_point, 0)
+        self.pid_graph_thj5.addData(value.process_value, 1)
+        self.pid_graph_thj5.addData(value.process_value_dot, 2)
+        self.pid_graph_thj5.addData(value.error, 3)
+        self.pid_graph_thj5.addData(value.command * self.pid_output_scale, 4)
 
-    def j5_pid_cb(self, value):
-        self.pid_graph_j5.addData(value.set_point, 0)
-        self.pid_graph_j5.addData(value.process_value, 1)
-        self.pid_graph_j5.addData(value.process_value_dot, 2)
-        self.pid_graph_j5.addData(value.error, 3)
-        self.pid_graph_j5.addData(value.command * self.pid_output_scale, 4)
+    def ffj0_pid_cb(self, value):
+        self.pid_graph_ffj0.addData(value.set_point, 0)
+        self.pid_graph_ffj0.addData(value.process_value, 1)
+        self.pid_graph_ffj0.addData(value.process_value_dot, 2)
+        self.pid_graph_ffj0.addData(value.error, 3)
+        self.pid_graph_ffj0.addData(value.command * self.pid_output_scale, 4)
 
-    def j6_pid_cb(self, value):
-        self.pid_graph_j6.addData(value.set_point, 0)
-        self.pid_graph_j6.addData(value.process_value, 1)
-        self.pid_graph_j6.addData(value.process_value_dot, 2)
-        self.pid_graph_j6.addData(value.error, 3)
-        self.pid_graph_j6.addData(value.command * self.pid_output_scale, 4)
 
-    def j7_pid_cb(self, value):
-        self.pid_graph_j7.addData(value.set_point, 0)
-        self.pid_graph_j7.addData(value.process_value, 1)
-        self.pid_graph_j7.addData(value.process_value_dot, 2)
-        self.pid_graph_j7.addData(value.error, 3)
-        self.pid_graph_j7.addData(value.command * self.pid_output_scale, 4)
+    def ffj3_pid_cb(self, value):
+        self.pid_graph_ffj3.addData(value.set_point, 0)
+        self.pid_graph_ffj3.addData(value.process_value, 1)
+        self.pid_graph_ffj3.addData(value.process_value_dot, 2)
+        self.pid_graph_ffj3.addData(value.error, 3)
+        self.pid_graph_ffj3.addData(value.command * self.pid_output_scale, 4)
 
-    def j8_pid_cb(self, value):
-        self.pid_graph_j8.addData(value.set_point, 0)
-        self.pid_graph_j8.addData(value.process_value, 1)
-        self.pid_graph_j8.addData(value.process_value_dot, 2)
-        self.pid_graph_j8.addData(value.error, 3)
-        self.pid_graph_j8.addData(value.command * self.pid_output_scale, 4)
+    def ffj4_pid_cb(self, value):
+        self.pid_graph_ffj4.addData(value.set_point, 0)
+        self.pid_graph_ffj4.addData(value.process_value, 1)
+        self.pid_graph_ffj4.addData(value.process_value_dot, 2)
+        self.pid_graph_ffj4.addData(value.error, 3)
+        self.pid_graph_ffj4.addData(value.command * self.pid_output_scale, 4)
 
-    def j9_pid_cb(self, value):
-        self.pid_graph_j9.addData(value.set_point, 0)
-        self.pid_graph_j9.addData(value.process_value, 1)
-        self.pid_graph_j9.addData(value.process_value_dot, 2)
-        self.pid_graph_j9.addData(value.error, 3)
-        self.pid_graph_j9.addData(value.command * self.pid_output_scale, 4)
+    def mfj0_pid_cb(self, value):
+        self.pid_graph_mfj0.addData(value.set_point, 0)
+        self.pid_graph_mfj0.addData(value.process_value, 1)
+        self.pid_graph_mfj0.addData(value.process_value_dot, 2)
+        self.pid_graph_mfj0.addData(value.error, 3)
+        self.pid_graph_mfj0.addData(value.command * self.pid_output_scale, 4)
 
-    def j10_pid_cb(self, value):
-        self.pid_graph_j10.addData(value.set_point, 0)
-        self.pid_graph_j10.addData(value.process_value, 1)
-        self.pid_graph_j10.addData(value.process_value_dot, 2)
-        self.pid_graph_j10.addData(value.error, 3)
-        self.pid_graph_j10.addData(value.command * self.pid_output_scale, 4)
+    def mfj3_pid_cb(self, value):
+        self.pid_graph_mfj3.addData(value.set_point, 0)
+        self.pid_graph_mfj3.addData(value.process_value, 1)
+        self.pid_graph_mfj3.addData(value.process_value_dot, 2)
+        self.pid_graph_mfj3.addData(value.error, 3)
+        self.pid_graph_mfj3.addData(value.command * self.pid_output_scale, 4)
 
-    def j11_pid_cb(self, value):
-        self.pid_graph_j11.addData(value.set_point, 0)
-        self.pid_graph_j11.addData(value.process_value, 1)
-        self.pid_graph_j11.addData(value.process_value_dot, 2)
-        self.pid_graph_j11.addData(value.error, 3)
-        self.pid_graph_j11.addData(value.command * self.pid_output_scale, 4)
+    def mfj4_pid_cb(self, value):
+        self.pid_graph_mfj4.addData(value.set_point, 0)
+        self.pid_graph_mfj4.addData(value.process_value, 1)
+        self.pid_graph_mfj4.addData(value.process_value_dot, 2)
+        self.pid_graph_mfj4.addData(value.error, 3)
+        self.pid_graph_mfj4.addData(value.command * self.pid_output_scale, 4)
 
-    def j12_pid_cb(self, value):
-        self.pid_graph_j12.addData(value.set_point, 0)
-        self.pid_graph_j12.addData(value.process_value, 1)
-        self.pid_graph_j12.addData(value.process_value_dot, 2)
-        self.pid_graph_j12.addData(value.error, 3)
-        self.pid_graph_j12.addData(value.command * self.pid_output_scale, 4)
+    def rfj0_pid_cb(self, value):
+        self.pid_graph_rfj0.addData(value.set_point, 0)
+        self.pid_graph_rfj0.addData(value.process_value, 1)
+        self.pid_graph_rfj0.addData(value.process_value_dot, 2)
+        self.pid_graph_rfj0.addData(value.error, 3)
+        self.pid_graph_rfj0.addData(value.command * self.pid_output_scale, 4)
 
-    def j13_pid_cb(self, value):
-        self.pid_graph_j13.addData(value.set_point, 0)
-        self.pid_graph_j13.addData(value.process_value, 1)
-        self.pid_graph_j13.addData(value.process_value_dot, 2)
-        self.pid_graph_j13.addData(value.error, 3)
-        self.pid_graph_j13.addData(value.command * self.pid_output_scale, 4)
+    def rfj3_pid_cb(self, value):
+        self.pid_graph_rfj3.addData(value.set_point, 0)
+        self.pid_graph_rfj3.addData(value.process_value, 1)
+        self.pid_graph_rfj3.addData(value.process_value_dot, 2)
+        self.pid_graph_rfj3.addData(value.error, 3)
+        self.pid_graph_rfj3.addData(value.command * self.pid_output_scale, 4)
 
-    def j14_pid_cb(self, value):
-        self.pid_graph_j14.addData(value.set_point, 0)
-        self.pid_graph_j14.addData(value.process_value, 1)
-        self.pid_graph_j14.addData(value.process_value_dot, 2)
-        self.pid_graph_j14.addData(value.error, 3)
-        self.pid_graph_j14.addData(value.command * self.pid_output_scale, 4)
+    def rfj4_pid_cb(self, value):
+        self.pid_graph_rfj4.addData(value.set_point, 0)
+        self.pid_graph_rfj4.addData(value.process_value, 1)
+        self.pid_graph_rfj4.addData(value.process_value_dot, 2)
+        self.pid_graph_rfj4.addData(value.error, 3)
+        self.pid_graph_rfj4.addData(value.command * self.pid_output_scale, 4)
 
-    def j15_pid_cb(self, value):
-        self.pid_graph_j15.addData(value.set_point, 0)
-        self.pid_graph_j15.addData(value.process_value, 1)
-        self.pid_graph_j15.addData(value.process_value_dot, 2)
-        self.pid_graph_j15.addData(value.error, 3)
-        self.pid_graph_j15.addData(value.command * self.pid_output_scale, 4)
+    def lfj0_pid_cb(self, value):
+        self.pid_graph_lfj0.addData(value.set_point, 0)
+        self.pid_graph_lfj0.addData(value.process_value, 1)
+        self.pid_graph_lfj0.addData(value.process_value_dot, 2)
+        self.pid_graph_lfj0.addData(value.error, 3)
+        self.pid_graph_lfj0.addData(value.command * self.pid_output_scale, 4)
 
-    def j16_pid_cb(self, value):
-        self.pid_graph_j16.addData(value.set_point, 0)
-        self.pid_graph_j16.addData(value.process_value, 1)
-        self.pid_graph_j16.addData(value.process_value_dot, 2)
-        self.pid_graph_j16.addData(value.error, 3)
-        self.pid_graph_j16.addData(value.command * self.pid_output_scale, 4)
+    def lfj3_pid_cb(self, value):
+        self.pid_graph_lfj3.addData(value.set_point, 0)
+        self.pid_graph_lfj3.addData(value.process_value, 1)
+        self.pid_graph_lfj3.addData(value.process_value_dot, 2)
+        self.pid_graph_lfj3.addData(value.error, 3)
+        self.pid_graph_lfj3.addData(value.command * self.pid_output_scale, 4)
 
-    def j17_pid_cb(self, value):
-        self.pid_graph_j17.addData(value.set_point, 0)
-        self.pid_graph_j17.addData(value.process_value, 1)
-        self.pid_graph_j17.addData(value.process_value_dot, 2)
-        self.pid_graph_j17.addData(value.error, 3)
-        self.pid_graph_j17.addData(value.command * self.pid_output_scale, 4)
+    def lfj4_pid_cb(self, value):
+        self.pid_graph_lfj4.addData(value.set_point, 0)
+        self.pid_graph_lfj4.addData(value.process_value, 1)
+        self.pid_graph_lfj4.addData(value.process_value_dot, 2)
+        self.pid_graph_lfj4.addData(value.error, 3)
+        self.pid_graph_lfj4.addData(value.command * self.pid_output_scale, 4)
 
-    def j18_pid_cb(self, value):
-        self.pid_graph_j18.addData(value.set_point, 0)
-        self.pid_graph_j18.addData(value.process_value, 1)
-        self.pid_graph_j18.addData(value.process_value_dot, 2)
-        self.pid_graph_j18.addData(value.error, 3)
-        self.pid_graph_j18.addData(value.command * self.pid_output_scale, 4)
+    def lfj5_pid_cb(self, value):
+        self.pid_graph_lfj5.addData(value.set_point, 0)
+        self.pid_graph_lfj5.addData(value.process_value, 1)
+        self.pid_graph_lfj5.addData(value.process_value_dot, 2)
+        self.pid_graph_lfj5.addData(value.error, 3)
+        self.pid_graph_lfj5.addData(value.command * self.pid_output_scale, 4)
 
-    def j19_pid_cb(self, value):
-        self.pid_graph_j19.addData(value.set_point, 0)
-        self.pid_graph_j19.addData(value.process_value, 1)
-        self.pid_graph_j19.addData(value.process_value_dot, 2)
-        self.pid_graph_j19.addData(value.error, 3)
-        self.pid_graph_j19.addData(value.command * self.pid_output_scale, 4)
+    def wrj1_pid_cb(self, value):
+        self.pid_graph_wrj1.addData(value.set_point, 0)
+        self.pid_graph_wrj1.addData(value.process_value, 1)
+        self.pid_graph_wrj1.addData(value.process_value_dot, 2)
+        self.pid_graph_wrj1.addData(value.error, 3)
+        self.pid_graph_wrj1.addData(value.command * self.pid_output_scale, 4)
 
-    def j20_pid_cb(self, value):
-        self.pid_graph_j20.addData(value.set_point, 0)
-        self.pid_graph_j20.addData(value.process_value, 1)
-        self.pid_graph_j20.addData(value.process_value_dot, 2)
-        self.pid_graph_j20.addData(value.error, 3)
-        self.pid_graph_j20.addData(value.command * self.pid_output_scale, 4)
-
-    def j21_pid_cb(self, value):
-        self.pid_graph_j21.addData(value.set_point, 0)
-        self.pid_graph_j21.addData(value.process_value, 1)
-        self.pid_graph_j21.addData(value.process_value_dot, 2)
-        self.pid_graph_j21.addData(value.error, 3)
-        self.pid_graph_j21.addData(value.command * self.pid_output_scale, 4)
-
-    def j22_pid_cb(self, value):
-        self.pid_graph_j22.addData(value.set_point, 0)
-        self.pid_graph_j22.addData(value.process_value, 1)
-        self.pid_graph_j22.addData(value.process_value_dot, 2)
-        self.pid_graph_j22.addData(value.error, 3)
-        self.pid_graph_j22.addData(value.command * self.pid_output_scale, 4)
-
-    def j23_pid_cb(self, value):
-        self.pid_graph_j23.addData(value.set_point, 0)
-        self.pid_graph_j23.addData(value.process_value, 1)
-        self.pid_graph_j23.addData(value.process_value_dot, 2)
-        self.pid_graph_j23.addData(value.error, 3)
-        self.pid_graph_j23.addData(value.command * self.pid_output_scale, 4)
+    def wrj2_pid_cb(self, value):
+        self.pid_graph_wrj2.addData(value.set_point, 0)
+        self.pid_graph_wrj2.addData(value.process_value, 1)
+        self.pid_graph_wrj2.addData(value.process_value_dot, 2)
+        self.pid_graph_wrj2.addData(value.error, 3)
+        self.pid_graph_wrj2.addData(value.command * self.pid_output_scale, 4)
 
     def pid_graphs_cb(self, value):
         self.pid_graph.addData(value.set_point, 0)
@@ -852,55 +805,51 @@ class SrDataVisualizer(Plugin):
         self.biotacs_pac_layout = self._widget.findChild(QVBoxLayout, "biotacs_pac_layout")
 
         # All joints page
-        self.j0_layout = self._widget.findChild(QVBoxLayout, "j0_layout")
-        self.j1_layout = self._widget.findChild(QVBoxLayout, "j1_layout")
-        self.j2_layout = self._widget.findChild(QVBoxLayout, "j2_layout")
-        self.j3_layout = self._widget.findChild(QVBoxLayout, "j3_layout")
-        self.j4_layout = self._widget.findChild(QVBoxLayout, "j4_layout")
-        self.j5_layout = self._widget.findChild(QVBoxLayout, "j5_layout")
-        self.j6_layout = self._widget.findChild(QVBoxLayout, "j6_layout")
-        self.j7_layout = self._widget.findChild(QVBoxLayout, "j7_layout")
-        self.j8_layout = self._widget.findChild(QVBoxLayout, "j8_layout")
-        self.j9_layout = self._widget.findChild(QVBoxLayout, "j9_layout")
-        self.j10_layout = self._widget.findChild(QVBoxLayout, "j10_layout")
-        self.j11_layout = self._widget.findChild(QVBoxLayout, "j11_layout")
-        self.j12_layout = self._widget.findChild(QVBoxLayout, "j12_layout")
-        self.j13_layout = self._widget.findChild(QVBoxLayout, "j13_layout")
-        self.j14_layout = self._widget.findChild(QVBoxLayout, "j14_layout")
-        self.j15_layout = self._widget.findChild(QVBoxLayout, "j15_layout")
-        self.j16_layout = self._widget.findChild(QVBoxLayout, "j16_layout")
-        self.j17_layout = self._widget.findChild(QVBoxLayout, "j17_layout")
-        self.j18_layout = self._widget.findChild(QVBoxLayout, "j18_layout")
-        self.j19_layout = self._widget.findChild(QVBoxLayout, "j19_layout")
-        self.j20_layout = self._widget.findChild(QVBoxLayout, "j20_layout")
-        self.j21_layout = self._widget.findChild(QVBoxLayout, "j21_layout")
-        self.j22_layout = self._widget.findChild(QVBoxLayout, "j22_layout")
-        self.j23_layout = self._widget.findChild(QVBoxLayout, "j23_layout")
+        self.thj1_layout = self._widget.findChild(QVBoxLayout, "thj1_layout")
+        self.thj2_layout = self._widget.findChild(QVBoxLayout, "thj2_layout")
+        self.thj3_layout = self._widget.findChild(QVBoxLayout, "thj3_layout")
+        self.thj4_layout = self._widget.findChild(QVBoxLayout, "thj4_layout")
+        self.thj5_layout = self._widget.findChild(QVBoxLayout, "thj5_layout")
+        self.ffj1_layout = self._widget.findChild(QVBoxLayout, "ffj1_layout")
+        self.ffj2_layout = self._widget.findChild(QVBoxLayout, "ffj2_layout")
+        self.ffj3_layout = self._widget.findChild(QVBoxLayout, "ffj3_layout")
+        self.ffj4_layout = self._widget.findChild(QVBoxLayout, "ffj4_layout")
+        self.mfj1_layout = self._widget.findChild(QVBoxLayout, "mfj1_layout")
+        self.mfj2_layout = self._widget.findChild(QVBoxLayout, "mfj2_layout")
+        self.mfj3_layout = self._widget.findChild(QVBoxLayout, "mfj3_layout")
+        self.mfj4_layout = self._widget.findChild(QVBoxLayout, "mfj4_layout")
+        self.rfj1_layout = self._widget.findChild(QVBoxLayout, "rfj1_layout")
+        self.rfj2_layout = self._widget.findChild(QVBoxLayout, "rfj2_layout")
+        self.rfj3_layout = self._widget.findChild(QVBoxLayout, "rfj3_layout")
+        self.rfj4_layout = self._widget.findChild(QVBoxLayout, "rfj4_layout")
+        self.lfj1_layout = self._widget.findChild(QVBoxLayout, "lfj1_layout")
+        self.lfj2_layout = self._widget.findChild(QVBoxLayout, "lfj2_layout")
+        self.lfj3_layout = self._widget.findChild(QVBoxLayout, "lfj3_layout")
+        self.lfj4_layout = self._widget.findChild(QVBoxLayout, "lfj4_layout")
+        self.lfj5_layout = self._widget.findChild(QVBoxLayout, "lfj5_layout")
+        self.wrj1_layout = self._widget.findChild(QVBoxLayout, "wrj1_layout")
+        self.wrj2_layout = self._widget.findChild(QVBoxLayout, "wrj2_layout")
 
-        self.j0_pid_layout = self._widget.findChild(QVBoxLayout, "j0_layout_2")
-        self.j1_pid_layout = self._widget.findChild(QVBoxLayout, "j1_layout_2")
-        self.j2_pid_layout = self._widget.findChild(QVBoxLayout, "j2_layout_2")
-        self.j3_pid_layout = self._widget.findChild(QVBoxLayout, "j3_layout_2")
-        self.j4_pid_layout = self._widget.findChild(QVBoxLayout, "j4_layout_2")
-        self.j5_pid_layout = self._widget.findChild(QVBoxLayout, "j5_layout_2")
-        self.j6_pid_layout = self._widget.findChild(QVBoxLayout, "j6_layout_2")
-        self.j7_pid_layout = self._widget.findChild(QVBoxLayout, "j7_layout_2")
-        self.j8_pid_layout = self._widget.findChild(QVBoxLayout, "j8_layout_2")
-        self.j9_pid_layout = self._widget.findChild(QVBoxLayout, "j9_layout_2")
-        self.j10_pid_layout = self._widget.findChild(QVBoxLayout, "j10_layout_2")
-        self.j11_pid_layout = self._widget.findChild(QVBoxLayout, "j11_layout_2")
-        self.j12_pid_layout = self._widget.findChild(QVBoxLayout, "j12_layout_2")
-        self.j13_pid_layout = self._widget.findChild(QVBoxLayout, "j13_layout_2")
-        self.j14_pid_layout = self._widget.findChild(QVBoxLayout, "j14_layout_2")
-        self.j15_pid_layout = self._widget.findChild(QVBoxLayout, "j15_layout_2")
-        self.j16_pid_layout = self._widget.findChild(QVBoxLayout, "j16_layout_2")
-        self.j17_pid_layout = self._widget.findChild(QVBoxLayout, "j17_layout_2")
-        self.j18_pid_layout = self._widget.findChild(QVBoxLayout, "j18_layout_2")
-        self.j19_pid_layout = self._widget.findChild(QVBoxLayout, "j19_layout_2")
-        self.j20_pid_layout = self._widget.findChild(QVBoxLayout, "j20_layout_2")
-        self.j21_pid_layout = self._widget.findChild(QVBoxLayout, "j21_layout_2")
-        self.j22_pid_layout = self._widget.findChild(QVBoxLayout, "j22_layout_2")
-        self.j23_pid_layout = self._widget.findChild(QVBoxLayout, "j23_layout_2")
+        self.thj1_pid_layout = self._widget.findChild(QVBoxLayout, "thj1_layout_2")
+        self.thj2_pid_layout = self._widget.findChild(QVBoxLayout, "thj2_layout_2")
+        self.thj3_pid_layout = self._widget.findChild(QVBoxLayout, "thj3_layout_2")
+        self.thj4_pid_layout = self._widget.findChild(QVBoxLayout, "thj4_layout_2")
+        self.thj5_pid_layout = self._widget.findChild(QVBoxLayout, "thj5_layout_2")
+        self.ffj0_pid_layout = self._widget.findChild(QVBoxLayout, "ffj0_layout_2")
+        self.ffj3_pid_layout = self._widget.findChild(QVBoxLayout, "ffj3_layout_2")
+        self.ffj4_pid_layout = self._widget.findChild(QVBoxLayout, "ffj4_layout_2")
+        self.mfj0_pid_layout = self._widget.findChild(QVBoxLayout, "mfj0_layout_2")
+        self.mfj3_pid_layout = self._widget.findChild(QVBoxLayout, "mfj3_layout_2")
+        self.mfj4_pid_layout = self._widget.findChild(QVBoxLayout, "mfj4_layout_2")
+        self.rfj0_pid_layout = self._widget.findChild(QVBoxLayout, "rfj0_layout_2")
+        self.rfj3_pid_layout = self._widget.findChild(QVBoxLayout, "rfj3_layout_2")
+        self.rfj4_pid_layout = self._widget.findChild(QVBoxLayout, "rfj4_layout_2")
+        self.lfj0_pid_layout = self._widget.findChild(QVBoxLayout, "lfj0_layout_2")
+        self.lfj3_pid_layout = self._widget.findChild(QVBoxLayout, "lfj3_layout_2")
+        self.lfj4_pid_layout = self._widget.findChild(QVBoxLayout, "lfj4_layout_2")
+        self.lfj5_pid_layout = self._widget.findChild(QVBoxLayout, "lfj5_layout_2")
+        self.wrj1_pid_layout = self._widget.findChild(QVBoxLayout, "wrj1_layout_2")
+        self.wrj2_pid_layout = self._widget.findChild(QVBoxLayout, "wrj2_layout_2")
 
 
 class CustomFigCanvas(FigureCanvas, TimedAnimation):

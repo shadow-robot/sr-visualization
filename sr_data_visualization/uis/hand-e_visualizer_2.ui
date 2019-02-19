@@ -37,7 +37,7 @@
         <item row="1" column="0">
          <widget class="QTabWidget" name="tabWidget">
           <property name="currentIndex">
-           <number>2</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="tab_0">
            <attribute name="title">
@@ -58,7 +58,7 @@
                 </widget>
                </item>
                <item row="1" column="0">
-                <layout class="QVBoxLayout" name="j17_layout"/>
+                <layout class="QVBoxLayout" name="thj1_layout"/>
                </item>
                <item row="2" column="0">
                 <widget class="QLabel" name="label_8">
@@ -68,7 +68,7 @@
                 </widget>
                </item>
                <item row="3" column="0">
-                <layout class="QVBoxLayout" name="j18_layout"/>
+                <layout class="QVBoxLayout" name="thj2_layout"/>
                </item>
                <item row="4" column="0">
                 <widget class="QLabel" name="label_9">
@@ -78,7 +78,7 @@
                 </widget>
                </item>
                <item row="5" column="0">
-                <layout class="QVBoxLayout" name="j19_layout"/>
+                <layout class="QVBoxLayout" name="thj3_layout"/>
                </item>
                <item row="6" column="0">
                 <widget class="QLabel" name="label_10">
@@ -88,7 +88,7 @@
                 </widget>
                </item>
                <item row="7" column="0">
-                <layout class="QVBoxLayout" name="j20_layout"/>
+                <layout class="QVBoxLayout" name="thj4_layout"/>
                </item>
                <item row="8" column="0">
                 <widget class="QLabel" name="label_27">
@@ -98,7 +98,7 @@
                 </widget>
                </item>
                <item row="9" column="0">
-                <layout class="QVBoxLayout" name="j21_layout"/>
+                <layout class="QVBoxLayout" name="thj5_layout"/>
                </item>
               </layout>
              </widget>
@@ -109,25 +109,8 @@
                <string>Middle</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_7">
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_15">
-                 <property name="text">
-                  <string>MFJ1</string>
-                 </property>
-                </widget>
-               </item>
                <item row="1" column="0">
-                <layout class="QVBoxLayout" name="j9_layout"/>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_16">
-                 <property name="text">
-                  <string>MFJ2</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <layout class="QVBoxLayout" name="j10_layout"/>
+                <layout class="QVBoxLayout" name="mfj1_layout"/>
                </item>
                <item row="4" column="0">
                 <widget class="QLabel" name="label_17">
@@ -136,9 +119,6 @@
                  </property>
                 </widget>
                </item>
-               <item row="5" column="0">
-                <layout class="QVBoxLayout" name="j11_layout"/>
-               </item>
                <item row="6" column="0">
                 <widget class="QLabel" name="label_18">
                  <property name="text">
@@ -146,8 +126,28 @@
                  </property>
                 </widget>
                </item>
+               <item row="5" column="0">
+                <layout class="QVBoxLayout" name="mfj3_layout"/>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_15">
+                 <property name="text">
+                  <string>MFJ1</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_16">
+                 <property name="text">
+                  <string>MFJ2</string>
+                 </property>
+                </widget>
+               </item>
                <item row="7" column="0">
-                <layout class="QVBoxLayout" name="j12_layout"/>
+                <layout class="QVBoxLayout" name="mfj4_layout"/>
+               </item>
+               <item row="3" column="0">
+                <layout class="QVBoxLayout" name="mfj2_layout"/>
                </item>
               </layout>
              </widget>
@@ -166,10 +166,10 @@
                 </widget>
                </item>
                <item row="3" column="0">
-                <layout class="QVBoxLayout" name="j23_layout"/>
+                <layout class="QVBoxLayout" name="wrj2_layout"/>
                </item>
                <item row="1" column="0">
-                <layout class="QVBoxLayout" name="j22_layout"/>
+                <layout class="QVBoxLayout" name="wrj1_layout"/>
                </item>
                <item row="0" column="0">
                 <widget class="QLabel" name="label_29">
@@ -187,25 +187,18 @@
                <string>Index</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_6">
+               <item row="5" column="0">
+                <layout class="QVBoxLayout" name="ffj3_layout"/>
+               </item>
+               <item row="1" column="0">
+                <layout class="QVBoxLayout" name="ffj1_layout"/>
+               </item>
                <item row="0" column="0">
                 <widget class="QLabel" name="label_11">
                  <property name="text">
                   <string>FFJ1</string>
                  </property>
                 </widget>
-               </item>
-               <item row="1" column="0">
-                <layout class="QVBoxLayout" name="j0_layout"/>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_12">
-                 <property name="text">
-                  <string>FFJ2</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <layout class="QVBoxLayout" name="j1_layout"/>
                </item>
                <item row="4" column="0">
                 <widget class="QLabel" name="label_13">
@@ -214,9 +207,6 @@
                  </property>
                 </widget>
                </item>
-               <item row="5" column="0">
-                <layout class="QVBoxLayout" name="j2_layout"/>
-               </item>
                <item row="6" column="0">
                 <widget class="QLabel" name="label_14">
                  <property name="text">
@@ -224,8 +214,18 @@
                  </property>
                 </widget>
                </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_12">
+                 <property name="text">
+                  <string>FFJ2</string>
+                 </property>
+                </widget>
+               </item>
                <item row="7" column="0">
-                <layout class="QVBoxLayout" name="j3_layout"/>
+                <layout class="QVBoxLayout" name="ffj4_layout"/>
+               </item>
+               <item row="3" column="0">
+                <layout class="QVBoxLayout" name="ffj2_layout"/>
                </item>
               </layout>
              </widget>
@@ -244,7 +244,7 @@
                 </widget>
                </item>
                <item row="1" column="0">
-                <layout class="QVBoxLayout" name="j4_layout"/>
+                <layout class="QVBoxLayout" name="lfj1_layout"/>
                </item>
                <item row="2" column="0">
                 <widget class="QLabel" name="label_24">
@@ -254,7 +254,7 @@
                 </widget>
                </item>
                <item row="3" column="0">
-                <layout class="QVBoxLayout" name="j5_layout"/>
+                <layout class="QVBoxLayout" name="lfj2_layout"/>
                </item>
                <item row="4" column="0">
                 <widget class="QLabel" name="label_25">
@@ -264,7 +264,7 @@
                 </widget>
                </item>
                <item row="5" column="0">
-                <layout class="QVBoxLayout" name="j6_layout"/>
+                <layout class="QVBoxLayout" name="lfj3_layout"/>
                </item>
                <item row="6" column="0">
                 <widget class="QLabel" name="label_26">
@@ -274,7 +274,7 @@
                 </widget>
                </item>
                <item row="7" column="0">
-                <layout class="QVBoxLayout" name="j7_layout"/>
+                <layout class="QVBoxLayout" name="lfj4_layout"/>
                </item>
                <item row="8" column="0">
                 <widget class="QLabel" name="label_28">
@@ -284,7 +284,7 @@
                 </widget>
                </item>
                <item row="9" column="0">
-                <layout class="QVBoxLayout" name="j8_layout"/>
+                <layout class="QVBoxLayout" name="lfj5_layout"/>
                </item>
               </layout>
              </widget>
@@ -295,25 +295,8 @@
                <string>Ring</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_8">
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_19">
-                 <property name="text">
-                  <string>RFJ1</string>
-                 </property>
-                </widget>
-               </item>
                <item row="1" column="0">
-                <layout class="QVBoxLayout" name="j13_layout"/>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_20">
-                 <property name="text">
-                  <string>RFJ2</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <layout class="QVBoxLayout" name="j14_layout"/>
+                <layout class="QVBoxLayout" name="rfj1_layout"/>
                </item>
                <item row="4" column="0">
                 <widget class="QLabel" name="label_21">
@@ -322,8 +305,12 @@
                  </property>
                 </widget>
                </item>
-               <item row="5" column="0">
-                <layout class="QVBoxLayout" name="j15_layout"/>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_20">
+                 <property name="text">
+                  <string>RFJ2</string>
+                 </property>
+                </widget>
                </item>
                <item row="6" column="0">
                 <widget class="QLabel" name="label_22">
@@ -332,8 +319,21 @@
                  </property>
                 </widget>
                </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_19">
+                 <property name="text">
+                  <string>RFJ1</string>
+                 </property>
+                </widget>
+               </item>
                <item row="7" column="0">
-                <layout class="QVBoxLayout" name="j16_layout"/>
+                <layout class="QVBoxLayout" name="rfj4_layout"/>
+               </item>
+               <item row="5" column="0">
+                <layout class="QVBoxLayout" name="rfj3_layout"/>
+               </item>
+               <item row="3" column="0">
+                <layout class="QVBoxLayout" name="rfj2_layout"/>
                </item>
               </layout>
              </widget>
@@ -392,7 +392,7 @@
                 </widget>
                </item>
                <item row="1" column="0">
-                <layout class="QVBoxLayout" name="j17_layout_2"/>
+                <layout class="QVBoxLayout" name="thj1_layout_2"/>
                </item>
                <item row="2" column="0">
                 <widget class="QLabel" name="label_80">
@@ -402,7 +402,7 @@
                 </widget>
                </item>
                <item row="3" column="0">
-                <layout class="QVBoxLayout" name="j18_layout_2"/>
+                <layout class="QVBoxLayout" name="thj2_layout_2"/>
                </item>
                <item row="4" column="0">
                 <widget class="QLabel" name="label_81">
@@ -412,7 +412,7 @@
                 </widget>
                </item>
                <item row="5" column="0">
-                <layout class="QVBoxLayout" name="j19_layout_2"/>
+                <layout class="QVBoxLayout" name="thj3_layout_2"/>
                </item>
                <item row="6" column="0">
                 <widget class="QLabel" name="label_82">
@@ -422,7 +422,7 @@
                 </widget>
                </item>
                <item row="7" column="0">
-                <layout class="QVBoxLayout" name="j20_layout_2"/>
+                <layout class="QVBoxLayout" name="thj4_layout_2"/>
                </item>
                <item row="8" column="0">
                 <widget class="QLabel" name="label_83">
@@ -432,7 +432,7 @@
                 </widget>
                </item>
                <item row="9" column="0">
-                <layout class="QVBoxLayout" name="j21_layout_2"/>
+                <layout class="QVBoxLayout" name="thj5_layout_2"/>
                </item>
               </layout>
              </widget>
@@ -443,45 +443,35 @@
                <string>Index</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_35">
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_99">
-                 <property name="text">
-                  <string>FFJ1</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <layout class="QVBoxLayout" name="j0_layout_2"/>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_100">
-                 <property name="text">
-                  <string>FFJ2</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <layout class="QVBoxLayout" name="j1_layout_2"/>
-               </item>
                <item row="4" column="0">
-                <widget class="QLabel" name="label_101">
-                 <property name="text">
-                  <string>FFJ3</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="5" column="0">
-                <layout class="QVBoxLayout" name="j2_layout_2"/>
-               </item>
-               <item row="6" column="0">
                 <widget class="QLabel" name="label_102">
                  <property name="text">
                   <string>FFJ4</string>
                  </property>
                 </widget>
                </item>
-               <item row="7" column="0">
-                <layout class="QVBoxLayout" name="j3_layout_2"/>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_101">
+                 <property name="text">
+                  <string>FFJ3</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <layout class="QVBoxLayout" name="ffj0_layout_2"/>
+               </item>
+               <item row="3" column="0">
+                <layout class="QVBoxLayout" name="ffj3_layout_2"/>
+               </item>
+               <item row="5" column="0">
+                <layout class="QVBoxLayout" name="ffj4_layout_2"/>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_99">
+                 <property name="text">
+                  <string>FFJ0</string>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>
@@ -492,27 +482,27 @@
                <string>Middle</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_33">
+               <item row="3" column="0">
+                <layout class="QVBoxLayout" name="mfj3_layout_2"/>
+               </item>
                <item row="0" column="0">
                 <widget class="QLabel" name="label_91">
                  <property name="text">
-                  <string>MFJ1</string>
+                  <string>MFJ0</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_94">
+                 <property name="text">
+                  <string>MFJ4</string>
                  </property>
                 </widget>
                </item>
                <item row="1" column="0">
-                <layout class="QVBoxLayout" name="j9_layout_2"/>
+                <layout class="QVBoxLayout" name="mfj0_layout_2"/>
                </item>
                <item row="2" column="0">
-                <widget class="QLabel" name="label_92">
-                 <property name="text">
-                  <string>MFJ2</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <layout class="QVBoxLayout" name="j10_layout_2"/>
-               </item>
-               <item row="4" column="0">
                 <widget class="QLabel" name="label_93">
                  <property name="text">
                   <string>MFJ3</string>
@@ -520,17 +510,7 @@
                 </widget>
                </item>
                <item row="5" column="0">
-                <layout class="QVBoxLayout" name="j11_layout_2"/>
-               </item>
-               <item row="6" column="0">
-                <widget class="QLabel" name="label_94">
-                 <property name="text">
-                  <string>MFJ4</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="7" column="0">
-                <layout class="QVBoxLayout" name="j12_layout_2"/>
+                <layout class="QVBoxLayout" name="mfj4_layout_2"/>
                </item>
               </layout>
              </widget>
@@ -541,27 +521,20 @@
                <string>Ring</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_34">
+               <item row="1" column="0">
+                <layout class="QVBoxLayout" name="rfj0_layout_2"/>
+               </item>
+               <item row="3" column="0">
+                <layout class="QVBoxLayout" name="rfj3_layout_2"/>
+               </item>
                <item row="0" column="0">
                 <widget class="QLabel" name="label_95">
                  <property name="text">
-                  <string>RFJ1</string>
+                  <string>RFJ0</string>
                  </property>
                 </widget>
-               </item>
-               <item row="1" column="0">
-                <layout class="QVBoxLayout" name="j13_layout_2"/>
                </item>
                <item row="2" column="0">
-                <widget class="QLabel" name="label_96">
-                 <property name="text">
-                  <string>RFJ2</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <layout class="QVBoxLayout" name="j14_layout_2"/>
-               </item>
-               <item row="4" column="0">
                 <widget class="QLabel" name="label_97">
                  <property name="text">
                   <string>RFJ3</string>
@@ -569,17 +542,14 @@
                 </widget>
                </item>
                <item row="5" column="0">
-                <layout class="QVBoxLayout" name="j15_layout_2"/>
+                <layout class="QVBoxLayout" name="rfj4_layout_2"/>
                </item>
-               <item row="6" column="0">
+               <item row="4" column="0">
                 <widget class="QLabel" name="label_98">
                  <property name="text">
                   <string>RFJ4</string>
                  </property>
                 </widget>
-               </item>
-               <item row="7" column="0">
-                <layout class="QVBoxLayout" name="j16_layout_2"/>
                </item>
               </layout>
              </widget>
@@ -590,27 +560,27 @@
                <string>Little</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_30">
+               <item row="1" column="0">
+                <layout class="QVBoxLayout" name="lfj0_layout_2"/>
+               </item>
+               <item row="7" column="0">
+                <layout class="QVBoxLayout" name="lfj5_layout_2"/>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="label_88">
+                 <property name="text">
+                  <string>LFJ5</string>
+                 </property>
+                </widget>
+               </item>
                <item row="0" column="0">
                 <widget class="QLabel" name="label_84">
                  <property name="text">
-                  <string>LFJ1</string>
+                  <string>LFJ0</string>
                  </property>
                 </widget>
-               </item>
-               <item row="1" column="0">
-                <layout class="QVBoxLayout" name="j4_layout_2"/>
                </item>
                <item row="2" column="0">
-                <widget class="QLabel" name="label_85">
-                 <property name="text">
-                  <string>LFJ2</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <layout class="QVBoxLayout" name="j5_layout_2"/>
-               </item>
-               <item row="4" column="0">
                 <widget class="QLabel" name="label_86">
                  <property name="text">
                   <string>LFJ3</string>
@@ -618,27 +588,17 @@
                 </widget>
                </item>
                <item row="5" column="0">
-                <layout class="QVBoxLayout" name="j6_layout_2"/>
+                <layout class="QVBoxLayout" name="lfj4_layout_2"/>
                </item>
-               <item row="6" column="0">
+               <item row="4" column="0">
                 <widget class="QLabel" name="label_87">
                  <property name="text">
                   <string>LFJ4</string>
                  </property>
                 </widget>
                </item>
-               <item row="7" column="0">
-                <layout class="QVBoxLayout" name="j7_layout_2"/>
-               </item>
-               <item row="8" column="0">
-                <widget class="QLabel" name="label_88">
-                 <property name="text">
-                  <string>LFJ5</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="9" column="0">
-                <layout class="QVBoxLayout" name="j8_layout_2"/>
+               <item row="3" column="0">
+                <layout class="QVBoxLayout" name="lfj3_layout_2"/>
                </item>
               </layout>
              </widget>
@@ -657,10 +617,10 @@
                 </widget>
                </item>
                <item row="3" column="0">
-                <layout class="QVBoxLayout" name="j23_layout_2"/>
+                <layout class="QVBoxLayout" name="wrj2_layout_2"/>
                </item>
                <item row="1" column="0">
-                <layout class="QVBoxLayout" name="j22_layout_2"/>
+                <layout class="QVBoxLayout" name="wrj1_layout_2"/>
                </item>
                <item row="0" column="0">
                 <widget class="QLabel" name="label_90">
