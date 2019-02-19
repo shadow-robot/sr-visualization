@@ -39,34 +39,20 @@ class SrDataVisualizer(Plugin):
         self.setObjectName("SrDataVisualizer")
         self._widget = QWidget()
 
-        ui_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'uis', 'hand-e_visualizer_2.ui')
+        ui_file = os.path.join(rospkg.RosPack().get_path(
+            'sr_data_visualization'), 'uis', 'hand-e_visualizer.ui')
 
         loadUi(ui_file, self._widget)
         if __name__ != "__main__":
             context.add_widget(self._widget)
 
-        self._widget.setWindowTitle("Dexterous Hand Data Visualizer")
-
-        # Set white background color
-        p = self._widget.palette()
-        p.setColor(self._widget.backgroundRole(), Qt.white)
-        self._widget.setPalette(p)
-
+        self._widget.setWindowTitle("Hand E Visualizer")
         self.tab_widget_1 = self._widget.findChild(QTabWidget, "tabWidget")
-        # self.tab_widget_2 = self._widget.findChild(QTabWidget, "tabWidget_2")
-        # self.tab_widget_4 = self._widget.findChild(QTabWidget, "tabWidget_4")
+        self.tab_widget_2 = self._widget.findChild(QTabWidget, "tabWidget_2")
+        self.tab_widget_4 = self._widget.findChild(QTabWidget, "tabWidget_4")
         self.tab_widget_1.currentChanged.connect(self.tab_change)
-        # self.tab_widget_2.currentChanged.connect(self.tab_change)
-        # self.tab_widget_4.currentChanged.connect(self.tab_change)
-
-        # Change tabs background color
-        p = self.tab_widget_1.palette()
-        stylesheet = """ 
-            QTabWidget>QWidget>QWidget{background: white;}
-            """
-        p.setColor(self.tab_widget_1.backgroundRole(), Qt.white)
-        self.tab_widget_1.setStyleSheet(stylesheet)
-
+        self.tab_widget_2.currentChanged.connect(self.tab_change)
+        self.tab_widget_4.currentChanged.connect(self.tab_change)
         self.init_widget_children()
         self.create_scene_plugin()
 
@@ -78,11 +64,10 @@ class SrDataVisualizer(Plugin):
         self.create_subscribers()
         self.attach_graphs()
 
-        # Why is this here
-        # logo_file = os.path.join(rospkg.RosPack().get_path(
-        #     'sr_data_visualization'), 'uis', 'shadow-logo-tp.png')
-        # pixmap = QPixmap(logo_file)
-        # self.logo_label.setPixmap(pixmap)
+        logo_file = os.path.join(rospkg.RosPack().get_path(
+            'sr_data_visualization'), 'uis', 'shadow-logo-tp.png')
+        pixmap = QPixmap(logo_file)
+        self.logo_label.setPixmap(pixmap)
 
     def diag_cb(self, value):
         # print(type(value.status))
@@ -432,60 +417,60 @@ class SrDataVisualizer(Plugin):
         self.update_graphs()
 
     def update_graphs(self):
-        # self.motor_stat_graph_0.update()
-        # self.motor_stat_graph_1.update()
-        # self.motor_stat_graph_2.update()
-        # self.motor_stat_graph_3.update()
-        # self.motor_stat_graph_4.update()
-        # self.motor_stat_graph_5.update()
-        # self.motor_stat_graph_6.update()
-        # self.motor_stat_graph_7.update()
-        # self.motor_stat_graph_8.update()
-        # self.motor_stat_graph_9.update()
-        # self.motor_stat_graph_10.update()
-        # self.motor_stat_graph_11.update()
-        # self.motor_stat_graph_12.update()
-        # self.motor_stat_graph_13.update()
-        # self.motor_stat_graph_14.update()
-        # self.motor_stat_graph_15.update()
-        # self.motor_stat_graph_16.update()
-        # self.motor_stat_graph_17.update()
-        # self.motor_stat_graph_18.update()
-        # self.motor_stat_graph_19.update()
-        # self.motor_stat_graph_20.update()
-        #
-        #
-        # self.motor_stat_graph_1.update()
-        # self.motor_stat_graph_2.update()
-        # self.motor_stat_graph_3.update()
-        # self.motor_stat_graph_4.update()
-        # self.motor_stat_graph_5.update()
-        # self.motor_stat_graph_6.update()
-        #
-        # self.pid_graph_j0.update()
-        # self.pid_graph_j1.update()
-        # self.pid_graph_j2.update()
-        # self.pid_graph_j3.update()
-        # self.pid_graph_j4.update()
-        # self.pid_graph_j5.update()
-        # self.pid_graph_j6.update()
-        # self.pid_graph_j7.update()
-        # self.pid_graph_j8.update()
-        # self.pid_graph_j9.update()
-        # self.pid_graph_j10.update()
-        # self.pid_graph_j11.update()
-        # self.pid_graph_j12.update()
-        # self.pid_graph_j13.update()
-        # self.pid_graph_j14.update()
-        # self.pid_graph_j15.update()
-        # self.pid_graph_j16.update()
-        # self.pid_graph_j17.update()
-        # self.pid_graph_j18.update()
-        # self.pid_graph_j19.update()
-        # self.pid_graph_j20.update()
-        # self.pid_graph_j21.update()
-        # self.pid_graph_j22.update()
-        # self.pid_graph_j23.update()
+        self.motor_stat_graph_0.update()
+        self.motor_stat_graph_1.update()
+        self.motor_stat_graph_2.update()
+        self.motor_stat_graph_3.update()
+        self.motor_stat_graph_4.update()
+        self.motor_stat_graph_5.update()
+        self.motor_stat_graph_6.update()
+        self.motor_stat_graph_7.update()
+        self.motor_stat_graph_8.update()
+        self.motor_stat_graph_9.update()
+        self.motor_stat_graph_10.update()
+        self.motor_stat_graph_11.update()
+        self.motor_stat_graph_12.update()
+        self.motor_stat_graph_13.update()
+        self.motor_stat_graph_14.update()
+        self.motor_stat_graph_15.update()
+        self.motor_stat_graph_16.update()
+        self.motor_stat_graph_17.update()
+        self.motor_stat_graph_18.update()
+        self.motor_stat_graph_19.update()
+        self.motor_stat_graph_20.update()
+
+
+        self.motor_stat_graph_1.update()
+        self.motor_stat_graph_2.update()
+        self.motor_stat_graph_3.update()
+        self.motor_stat_graph_4.update()
+        self.motor_stat_graph_5.update()
+        self.motor_stat_graph_6.update()
+
+        self.pid_graph_j0.update()
+        self.pid_graph_j1.update()
+        self.pid_graph_j2.update()
+        self.pid_graph_j3.update()
+        self.pid_graph_j4.update()
+        self.pid_graph_j5.update()
+        self.pid_graph_j6.update()
+        self.pid_graph_j7.update()
+        self.pid_graph_j8.update()
+        self.pid_graph_j9.update()
+        self.pid_graph_j10.update()
+        self.pid_graph_j11.update()
+        self.pid_graph_j12.update()
+        self.pid_graph_j13.update()
+        self.pid_graph_j14.update()
+        self.pid_graph_j15.update()
+        self.pid_graph_j16.update()
+        self.pid_graph_j17.update()
+        self.pid_graph_j18.update()
+        self.pid_graph_j19.update()
+        self.pid_graph_j20.update()
+        self.pid_graph_j21.update()
+        self.pid_graph_j22.update()
+        self.pid_graph_j23.update()
 
         self.j0_graph.update()
         self.j1_graph.update()
@@ -512,198 +497,198 @@ class SrDataVisualizer(Plugin):
         self.j22_graph.update()
         self.j23_graph.update()
 
-        # self.palm_extras_graph.update()
-        # self.effort_graph.update()
-        # self.biotac_overview_graph.update()
-        # self.pid_clipped_graph.update()
-        # self.pid_graph.update()
-        # self.pos_vel_eff_graph.update()
-        #
-        # self.biotac_0_graph.update()
-        # self.biotac_1_graph.update()
-        # self.biotac_2_graph.update()
-        # self.biotac_3_graph.update()
-        # self.biotac_4_graph.update()
-        # self.biotacs_tac_graph.update()
-        # self.biotacs_pdc_graph.update()
-        # self.biotacs_pac_graph.update()
+        self.palm_extras_graph.update()
+        self.effort_graph.update()
+        self.biotac_overview_graph.update()
+        self.pid_clipped_graph.update()
+        self.pid_graph.update()
+        self.pos_vel_eff_graph.update()
+
+        self.biotac_0_graph.update()
+        self.biotac_1_graph.update()
+        self.biotac_2_graph.update()
+        self.biotac_3_graph.update()
+        self.biotac_4_graph.update()
+        self.biotacs_tac_graph.update()
+        self.biotacs_pdc_graph.update()
+        self.biotacs_pac_graph.update()
 
     def create_graphs(self):
-        # self.motor_stat_graph_0 = CustomFigCanvas(11,
-        #                                           ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
-        #                                            'red', 'magenta', 'red'], -500, 1000,
-        #                                           ['Strain Gauge Left * 1/15', 'Strain Gauge Right', 'Measured PWM',
-        #                                            'Measured Current', 'Measured Voltage', 'Measured Effort',
-        #                                            'Temperature', 'Unfiltered position', 'Unfiltered force',
-        #                                            'Last Commanded Effort', 'Encoder Position'], legend_columns=3, legend_font_size=7, tail_enable=False)
-        #
-        # self.motor_stat_graph_1 = CustomFigCanvas(11,
-        #                                           ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
-        #                                            'red', 'magenta', 'red'], -30, 30,
-        #                                           ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
-        #                                            'Measured Current', 'Measured Voltage', 'Measured Effort',
-        #                                            'Temperature', 'Unfiltered position', 'Unfiltered force',
-        #                                            'Last Commanded Effort', 'Encoder Position'], legend_columns=3, legend_font_size=7, tail_enable=False)
-        # self.motor_stat_graph_2 = CustomFigCanvas(11,
-        #                                           ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
-        #                                            'red', 'magenta', 'red'], -30, 30,
-        #                                           ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
-        #                                            'Measured Current', 'Measured Voltage', 'Measured Effort',
-        #                                            'Temperature', 'Unfiltered position', 'Unfiltered force',
-        #                                            'Last Commanded Effort', 'Encoder Position'], legend_columns=3, legend_font_size=8, tail_enable=False)
-        # self.motor_stat_graph_3 = CustomFigCanvas(11,
-        #                                           ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
-        #                                            'red', 'magenta', 'red'], -30, 30,
-        #                                           ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
-        #                                            'Measured Current', 'Measured Voltage', 'Measured Effort',
-        #                                            'Temperature', 'Unfiltered position', 'Unfiltered force',
-        #                                            'Last Commanded Effort', 'Encoder Position'], legend_columns=3, legend_font_size=8, tail_enable=False)
-        # self.motor_stat_graph_4 = CustomFigCanvas(11,
-        #                                           ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
-        #                                            'red', 'magenta', 'red'], -30, 30,
-        #                                           ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
-        #                                            'Measured Current', 'Measured Voltage', 'Measured Effort',
-        #                                            'Temperature', 'Unfiltered position', 'Unfiltered force',
-        #                                            'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
-        # self.motor_stat_graph_5 = CustomFigCanvas(11,
-        #                                           ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
-        #                                            'red', 'magenta', 'red'], -30, 30,
-        #                                           ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
-        #                                            'Measured Current', 'Measured Voltage', 'Measured Effort',
-        #                                            'Temperature', 'Unfiltered position', 'Unfiltered force',
-        #                                            'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
-        # self.motor_stat_graph_6 = CustomFigCanvas(11,
-        #                                           ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
-        #                                            'red', 'magenta', 'red'], -30, 30,
-        #                                           ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
-        #                                            'Measured Current', 'Measured Voltage', 'Measured Effort',
-        #                                            'Temperature', 'Unfiltered position', 'Unfiltered force',
-        #                                            'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
-        # self.motor_stat_graph_7 = CustomFigCanvas(11,
-        #                                           ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
-        #                                            'red', 'magenta', 'red'], -30, 30,
-        #                                           ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
-        #                                            'Measured Current', 'Measured Voltage', 'Measured Effort',
-        #                                            'Temperature', 'Unfiltered position', 'Unfiltered force',
-        #                                            'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
-        # self.motor_stat_graph_8 = CustomFigCanvas(11,
-        #                                           ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
-        #                                            'red', 'magenta', 'red'], -30, 30,
-        #                                           ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
-        #                                            'Measured Current', 'Measured Voltage', 'Measured Effort',
-        #                                            'Temperature', 'Unfiltered position', 'Unfiltered force',
-        #                                            'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
-        # self.motor_stat_graph_9 = CustomFigCanvas(11,
-        #                                           ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
-        #                                            'red', 'magenta', 'red'], -30, 30,
-        #                                           ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
-        #                                            'Measured Current', 'Measured Voltage', 'Measured Effort',
-        #                                            'Temperature', 'Unfiltered position', 'Unfiltered force',
-        #                                            'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
-        # self.motor_stat_graph_10 = CustomFigCanvas(11,
-        #                                           ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
-        #                                            'red', 'magenta', 'red'], -30, 30,
-        #                                           ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
-        #                                            'Measured Current', 'Measured Voltage', 'Measured Effort',
-        #                                            'Temperature', 'Unfiltered position', 'Unfiltered force',
-        #                                            'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
-        # self.motor_stat_graph_11 = CustomFigCanvas(11,
-        #                                           ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
-        #                                            'red', 'magenta', 'red'], -30, 30,
-        #                                           ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
-        #                                            'Measured Current', 'Measured Voltage', 'Measured Effort',
-        #                                            'Temperature', 'Unfiltered position', 'Unfiltered force',
-        #                                            'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
-        # self.motor_stat_graph_12 = CustomFigCanvas(11,
-        #                                           ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
-        #                                            'red', 'magenta', 'red'], -30, 30,
-        #                                           ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
-        #                                            'Measured Current', 'Measured Voltage', 'Measured Effort',
-        #                                            'Temperature', 'Unfiltered position', 'Unfiltered force',
-        #                                            'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
-        # self.motor_stat_graph_13 = CustomFigCanvas(11,
-        #                                           ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
-        #                                            'red', 'magenta', 'red'], -30, 30,
-        #                                           ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
-        #                                            'Measured Current', 'Measured Voltage', 'Measured Effort',
-        #                                            'Temperature', 'Unfiltered position', 'Unfiltered force',
-        #                                            'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
-        # self.motor_stat_graph_14 = CustomFigCanvas(11,
-        #                                           ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
-        #                                            'red', 'magenta', 'red'], -30, 30,
-        #                                           ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
-        #                                            'Measured Current', 'Measured Voltage', 'Measured Effort',
-        #                                            'Temperature', 'Unfiltered position', 'Unfiltered force',
-        #                                            'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
-        # self.motor_stat_graph_15 = CustomFigCanvas(11,
-        #                                           ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
-        #                                            'red', 'magenta', 'red'], -30, 30,
-        #                                           ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
-        #                                            'Measured Current', 'Measured Voltage', 'Measured Effort',
-        #                                            'Temperature', 'Unfiltered position', 'Unfiltered force',
-        #                                            'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
-        # self.motor_stat_graph_16 = CustomFigCanvas(11,
-        #                                           ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
-        #                                            'red', 'magenta', 'red'], -30, 30,
-        #                                           ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
-        #                                            'Measured Current', 'Measured Voltage', 'Measured Effort',
-        #                                            'Temperature', 'Unfiltered position', 'Unfiltered force',
-        #                                            'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
-        # self.motor_stat_graph_17 = CustomFigCanvas(11,
-        #                                           ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
-        #                                            'red', 'magenta', 'red'], -30, 30,
-        #                                           ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
-        #                                            'Measured Current', 'Measured Voltage', 'Measured Effort',
-        #                                            'Temperature', 'Unfiltered position', 'Unfiltered force',
-        #                                            'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
-        # self.motor_stat_graph_18 = CustomFigCanvas(11,
-        #                                           ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
-        #                                            'red', 'magenta', 'red'], -30, 30,
-        #                                           ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
-        #                                            'Measured Current', 'Measured Voltage', 'Measured Effort',
-        #                                            'Temperature', 'Unfiltered position', 'Unfiltered force',
-        #                                            'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
-        # self.motor_stat_graph_19 = CustomFigCanvas(11,
-        #                                           ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
-        #                                            'red', 'magenta', 'red'], -30, 30,
-        #                                           ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
-        #                                            'Measured Current', 'Measured Voltage', 'Measured Effort',
-        #                                            'Temperature', 'Unfiltered position', 'Unfiltered force',
-        #                                            'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
-        # self.motor_stat_graph_20 = CustomFigCanvas(11,
-        #                                           ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
-        #                                            'red', 'magenta', 'red'], -30, 30,
-        #                                           ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
-        #                                            'Measured Current', 'Measured Voltage', 'Measured Effort',
-        #                                            'Temperature', 'Unfiltered position', 'Unfiltered force',
-        #                                            'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
-        #
-        #
-        # #Overview page graphs
-        # self.palm_extras_graph = CustomFigCanvas(10, ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink', 'red', 'magenta'], 0, 36, ['accel x', 'accel y', 'accel z', 'gyro x', 'gyro y', 'gyro z', 'ADC0', 'ADC1', 'ADC2', 'ADC3'], 5, legend_font_size=11)
-        # self.effort_graph = CustomFigCanvas(2, ['red', 'cyan', ], -100, 100, ['Commanded Effort', 'Measured Effort'], 3, legend_font_size=11)
-        # self.biotac_overview_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 1000, ['PAC0', 'PAC1', 'PDC', 'TAC', 'TDC'], legend_font_size=11)
-        # self.pid_clipped_graph = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4, ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_font_size=11)
-        # self.pid_graph = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -300, 300, ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_font_size=11)
-        # self.pos_vel_eff_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -100, 100, ['Position', 'Velocity', 'Effort'], legend_font_size=11)
-        #
-        # #Biotac page graphs
-        # self.biotac_0_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 1000,
-        #                                       ['PAC0', 'PAC1', 'PDC', 'TAC', 'TDC'])
-        # self.biotac_2_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 1000,
-        #                                       ['PAC0', 'PAC1', 'PDC', 'TAC', 'TDC'])
-        # self.biotac_1_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 1000,
-        #                                       ['PAC0', 'PAC1', 'PDC', 'TAC', 'TDC'])
-        # self.biotac_3_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 1000,
-        #                                       ['PAC0', 'PAC1', 'PDC', 'TAC', 'TDC'])
-        # self.biotac_4_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 1000,
-        #                                       ['PAC0', 'PAC1', 'PDC', 'TAC', 'TDC'])
-        # self.biotacs_tac_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 34000,
-        #                                          ['biotac_0', 'biotac_1', 'biotac_2', 'biotac_3', 'biotac_4'], legend_font_size=8)
-        # self.biotacs_pdc_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 20000,
-        #                                          ['biotac_0', 'biotac_1', 'biotac_2', 'biotac_3', 'biotac_4'], legend_font_size=8)
-        # self.biotacs_pac_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 1000,
-        #                                          ['biotac_0', 'biotac_1', 'biotac_2', 'biotac_3', 'biotac_4'], legend_font_size=8)
+        self.motor_stat_graph_0 = CustomFigCanvas(11,
+                                                  ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
+                                                   'red', 'magenta', 'red'], -500, 1000,
+                                                  ['Strain Gauge Left * 1/15', 'Strain Gauge Right', 'Measured PWM',
+                                                   'Measured Current', 'Measured Voltage', 'Measured Effort',
+                                                   'Temperature', 'Unfiltered position', 'Unfiltered force',
+                                                   'Last Commanded Effort', 'Encoder Position'], legend_columns=3, legend_font_size=7, tail_enable=False)
+
+        self.motor_stat_graph_1 = CustomFigCanvas(11,
+                                                  ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
+                                                   'red', 'magenta', 'red'], -30, 30,
+                                                  ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
+                                                   'Measured Current', 'Measured Voltage', 'Measured Effort',
+                                                   'Temperature', 'Unfiltered position', 'Unfiltered force',
+                                                   'Last Commanded Effort', 'Encoder Position'], legend_columns=3, legend_font_size=7, tail_enable=False)
+        self.motor_stat_graph_2 = CustomFigCanvas(11,
+                                                  ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
+                                                   'red', 'magenta', 'red'], -30, 30,
+                                                  ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
+                                                   'Measured Current', 'Measured Voltage', 'Measured Effort',
+                                                   'Temperature', 'Unfiltered position', 'Unfiltered force',
+                                                   'Last Commanded Effort', 'Encoder Position'], legend_columns=3, legend_font_size=8, tail_enable=False)
+        self.motor_stat_graph_3 = CustomFigCanvas(11,
+                                                  ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
+                                                   'red', 'magenta', 'red'], -30, 30,
+                                                  ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
+                                                   'Measured Current', 'Measured Voltage', 'Measured Effort',
+                                                   'Temperature', 'Unfiltered position', 'Unfiltered force',
+                                                   'Last Commanded Effort', 'Encoder Position'], legend_columns=3, legend_font_size=8, tail_enable=False)
+        self.motor_stat_graph_4 = CustomFigCanvas(11,
+                                                  ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
+                                                   'red', 'magenta', 'red'], -30, 30,
+                                                  ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
+                                                   'Measured Current', 'Measured Voltage', 'Measured Effort',
+                                                   'Temperature', 'Unfiltered position', 'Unfiltered force',
+                                                   'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
+        self.motor_stat_graph_5 = CustomFigCanvas(11,
+                                                  ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
+                                                   'red', 'magenta', 'red'], -30, 30,
+                                                  ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
+                                                   'Measured Current', 'Measured Voltage', 'Measured Effort',
+                                                   'Temperature', 'Unfiltered position', 'Unfiltered force',
+                                                   'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
+        self.motor_stat_graph_6 = CustomFigCanvas(11,
+                                                  ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
+                                                   'red', 'magenta', 'red'], -30, 30,
+                                                  ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
+                                                   'Measured Current', 'Measured Voltage', 'Measured Effort',
+                                                   'Temperature', 'Unfiltered position', 'Unfiltered force',
+                                                   'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
+        self.motor_stat_graph_7 = CustomFigCanvas(11,
+                                                  ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
+                                                   'red', 'magenta', 'red'], -30, 30,
+                                                  ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
+                                                   'Measured Current', 'Measured Voltage', 'Measured Effort',
+                                                   'Temperature', 'Unfiltered position', 'Unfiltered force',
+                                                   'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
+        self.motor_stat_graph_8 = CustomFigCanvas(11,
+                                                  ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
+                                                   'red', 'magenta', 'red'], -30, 30,
+                                                  ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
+                                                   'Measured Current', 'Measured Voltage', 'Measured Effort',
+                                                   'Temperature', 'Unfiltered position', 'Unfiltered force',
+                                                   'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
+        self.motor_stat_graph_9 = CustomFigCanvas(11,
+                                                  ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
+                                                   'red', 'magenta', 'red'], -30, 30,
+                                                  ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
+                                                   'Measured Current', 'Measured Voltage', 'Measured Effort',
+                                                   'Temperature', 'Unfiltered position', 'Unfiltered force',
+                                                   'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
+        self.motor_stat_graph_10 = CustomFigCanvas(11,
+                                                  ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
+                                                   'red', 'magenta', 'red'], -30, 30,
+                                                  ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
+                                                   'Measured Current', 'Measured Voltage', 'Measured Effort',
+                                                   'Temperature', 'Unfiltered position', 'Unfiltered force',
+                                                   'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
+        self.motor_stat_graph_11 = CustomFigCanvas(11,
+                                                  ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
+                                                   'red', 'magenta', 'red'], -30, 30,
+                                                  ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
+                                                   'Measured Current', 'Measured Voltage', 'Measured Effort',
+                                                   'Temperature', 'Unfiltered position', 'Unfiltered force',
+                                                   'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
+        self.motor_stat_graph_12 = CustomFigCanvas(11,
+                                                  ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
+                                                   'red', 'magenta', 'red'], -30, 30,
+                                                  ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
+                                                   'Measured Current', 'Measured Voltage', 'Measured Effort',
+                                                   'Temperature', 'Unfiltered position', 'Unfiltered force',
+                                                   'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
+        self.motor_stat_graph_13 = CustomFigCanvas(11,
+                                                  ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
+                                                   'red', 'magenta', 'red'], -30, 30,
+                                                  ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
+                                                   'Measured Current', 'Measured Voltage', 'Measured Effort',
+                                                   'Temperature', 'Unfiltered position', 'Unfiltered force',
+                                                   'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
+        self.motor_stat_graph_14 = CustomFigCanvas(11,
+                                                  ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
+                                                   'red', 'magenta', 'red'], -30, 30,
+                                                  ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
+                                                   'Measured Current', 'Measured Voltage', 'Measured Effort',
+                                                   'Temperature', 'Unfiltered position', 'Unfiltered force',
+                                                   'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
+        self.motor_stat_graph_15 = CustomFigCanvas(11,
+                                                  ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
+                                                   'red', 'magenta', 'red'], -30, 30,
+                                                  ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
+                                                   'Measured Current', 'Measured Voltage', 'Measured Effort',
+                                                   'Temperature', 'Unfiltered position', 'Unfiltered force',
+                                                   'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
+        self.motor_stat_graph_16 = CustomFigCanvas(11,
+                                                  ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
+                                                   'red', 'magenta', 'red'], -30, 30,
+                                                  ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
+                                                   'Measured Current', 'Measured Voltage', 'Measured Effort',
+                                                   'Temperature', 'Unfiltered position', 'Unfiltered force',
+                                                   'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
+        self.motor_stat_graph_17 = CustomFigCanvas(11,
+                                                  ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
+                                                   'red', 'magenta', 'red'], -30, 30,
+                                                  ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
+                                                   'Measured Current', 'Measured Voltage', 'Measured Effort',
+                                                   'Temperature', 'Unfiltered position', 'Unfiltered force',
+                                                   'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
+        self.motor_stat_graph_18 = CustomFigCanvas(11,
+                                                  ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
+                                                   'red', 'magenta', 'red'], -30, 30,
+                                                  ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
+                                                   'Measured Current', 'Measured Voltage', 'Measured Effort',
+                                                   'Temperature', 'Unfiltered position', 'Unfiltered force',
+                                                   'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
+        self.motor_stat_graph_19 = CustomFigCanvas(11,
+                                                  ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
+                                                   'red', 'magenta', 'red'], -30, 30,
+                                                  ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
+                                                   'Measured Current', 'Measured Voltage', 'Measured Effort',
+                                                   'Temperature', 'Unfiltered position', 'Unfiltered force',
+                                                   'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
+        self.motor_stat_graph_20 = CustomFigCanvas(11,
+                                                  ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink',
+                                                   'red', 'magenta', 'red'], -30, 30,
+                                                  ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM',
+                                                   'Measured Current', 'Measured Voltage', 'Measured Effort',
+                                                   'Temperature', 'Unfiltered position', 'Unfiltered force',
+                                                   'Last Commanded Effort', 'Encoder Position'], legend_columns=4, legend_font_size=6, tail_enable=False)
+
+
+        #Overview page graphs
+        self.palm_extras_graph = CustomFigCanvas(10, ['red', 'cyan', 'green', 'purple', 'yellow', 'blue', 'green', 'pink', 'red', 'magenta'], 0, 36, ['accel x', 'accel y', 'accel z', 'gyro x', 'gyro y', 'gyro z', 'ADC0', 'ADC1', 'ADC2', 'ADC3'], 5, legend_font_size=11)
+        self.effort_graph = CustomFigCanvas(2, ['red', 'cyan', ], -100, 100, ['Commanded Effort', 'Measured Effort'], legend_columns=3, legend_font_size=11)
+        self.biotac_overview_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 1000, ['PAC0', 'PAC1', 'PDC', 'TAC', 'TDC'], legend_font_size=11)
+        self.pid_clipped_graph = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4, ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_font_size=11)
+        self.pid_graph = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -300, 300, ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_font_size=11)
+        self.pos_vel_eff_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -100, 100, ['Position', 'Velocity', 'Effort'], legend_font_size=11)
+
+        #Biotac page graphs
+        self.biotac_0_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 1000,
+                                              ['PAC0', 'PAC1', 'PDC', 'TAC', 'TDC'])
+        self.biotac_2_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 1000,
+                                              ['PAC0', 'PAC1', 'PDC', 'TAC', 'TDC'])
+        self.biotac_1_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 1000,
+                                              ['PAC0', 'PAC1', 'PDC', 'TAC', 'TDC'])
+        self.biotac_3_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 1000,
+                                              ['PAC0', 'PAC1', 'PDC', 'TAC', 'TDC'])
+        self.biotac_4_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 1000,
+                                              ['PAC0', 'PAC1', 'PDC', 'TAC', 'TDC'])
+        self.biotacs_tac_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 34000,
+                                                 ['biotac_0', 'biotac_1', 'biotac_2', 'biotac_3', 'biotac_4'], legend_font_size=8)
+        self.biotacs_pdc_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 20000,
+                                                 ['biotac_0', 'biotac_1', 'biotac_2', 'biotac_3', 'biotac_4'], legend_font_size=8)
+        self.biotacs_pac_graph = CustomFigCanvas(5, ['red', 'cyan', 'green', 'purple', 'blue'], 0, 1000,
+                                                 ['biotac_0', 'biotac_1', 'biotac_2', 'biotac_3', 'biotac_4'], legend_font_size=8)
 
         j0_graphs_scale = self.j0_graphs_scale
         #All joints page graphs
@@ -732,143 +717,144 @@ class SrDataVisualizer(Plugin):
         self.j22_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale, ['Position', 'Velocity', 'Effort'])
         self.j23_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale, ['Position', 'Velocity', 'Effort'])
 
-        # self.pid_graph_j0 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        # self.pid_graph_j1 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        # self.pid_graph_j2 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4, ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], 3, legend_font_size=5)
-        # self.pid_graph_j3 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        # self.pid_graph_j4 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        # self.pid_graph_j5 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        # self.pid_graph_j6 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        # self.pid_graph_j7 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        # self.pid_graph_j8 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        # self.pid_graph_j9 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        # self.pid_graph_j10 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        # self.pid_graph_j11 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        # self.pid_graph_j12 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        # self.pid_graph_j13 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        # self.pid_graph_j14 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        # self.pid_graph_j15 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        # self.pid_graph_j16 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        # self.pid_graph_j17 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        # self.pid_graph_j18 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        # self.pid_graph_j19 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        # self.pid_graph_j20 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        # self.pid_graph_j21 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-        #                                  ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        # self.pid_graph_j22 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-        #                                   ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
-        # self.pid_graph_j23 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
-        #                                   ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        self.pid_graph_j0 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        self.pid_graph_j1 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        self.pid_graph_j2 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        self.pid_graph_j3 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        self.pid_graph_j4 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        self.pid_graph_j5 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        self.pid_graph_j6 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        self.pid_graph_j7 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        self.pid_graph_j8 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        self.pid_graph_j9 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        self.pid_graph_j10 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        self.pid_graph_j11 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        self.pid_graph_j12 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        self.pid_graph_j13 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        self.pid_graph_j14 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        self.pid_graph_j15 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        self.pid_graph_j16 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        self.pid_graph_j17 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        self.pid_graph_j18 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        self.pid_graph_j19 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        self.pid_graph_j20 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        self.pid_graph_j21 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                         ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        self.pid_graph_j22 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                          ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
+        self.pid_graph_j23 = CustomFigCanvas(5, ['red', 'blue', 'green', 'purple', 'cyan'], -4, 4,
+                                          ['Setpoint', 'Input', 'dInput/dt', 'Error', 'Output'], legend_columns=3, legend_font_size=5)
 
     def create_subscribers(self):
-        # self.sub = rospy.Subscriber('diagnostics', DiagnosticArray, self.diag_cb, queue_size=1)
-        # self.sub = rospy.Subscriber('sh_rh_ffj0_position_controller/state', JointControllerState, self.pid_graphs_cb, queue_size=1)
-        # self.sub = rospy.Subscriber('mechanism_statistics', MechanismStatistics, self.mech_stat_cb, queue_size=1)
+        self.sub = rospy.Subscriber('diagnostics', DiagnosticArray, self.diag_cb, queue_size=1)
+        self.sub = rospy.Subscriber('sh_rh_ffj0_position_controller/state', JointControllerState, self.pid_graphs_cb, queue_size=1)
+        self.sub = rospy.Subscriber('mechanism_statistics', MechanismStatistics, self.mech_stat_cb, queue_size=1)
         #self.sub = rospy.Subscriber('mechanism_statistics', MechanismStatistics, self.mech_stat_cb_two, queue_size=1)
         self.sub = rospy.Subscriber('joint_states', JointState, self.joint_state_cb, queue_size=1)
-        # self.sub = rospy.Subscriber('/rh/palm_extras', Float64MultiArray, self.palm_extras_cb, queue_size=1)
-        # self.sub = rospy.Subscriber('/rh/tactile', BiotacAll, self.biotac_all_cb, queue_size=1)
-        #
-        # self.sub = rospy.Subscriber('sh_rh_ffj0_position_controller/state', JointControllerState, self.pid_graphs_cb, queue_size=1)
-        #
-        # self.sub = rospy.Subscriber('/sh_rh_ffj0_position_controller/state', JointControllerState, self.j0_pid_cb,
-        #                             queue_size=1)
-        # self.sub = rospy.Subscriber('/sh_rh_ffj3_position_controller/state', JointControllerState, self.j1_pid_cb,
-        #                             queue_size=1)
-        # self.sub = rospy.Subscriber('/sh_rh_ffj4_position_controller/state', JointControllerState, self.j2_pid_cb,
-        #                             queue_size=1)
-        # self.sub = rospy.Subscriber('/sh_rh_lfj0_position_controller/state', JointControllerState, self.j3_pid_cb,
-        #                             queue_size=1)
-        # self.sub = rospy.Subscriber('/sh_rh_lfj3_position_controller/state', JointControllerState, self.j4_pid_cb,
-        #                             queue_size=1)
-        # self.sub = rospy.Subscriber('/sh_rh_lfj4_position_controller/state', JointControllerState, self.j5_pid_cb,
-        #                             queue_size=1)
-        # self.sub = rospy.Subscriber('/sh_rh_lfj5_position_controller/state', JointControllerState, self.j6_pid_cb,
-        #                             queue_size=1)
-        # self.sub = rospy.Subscriber('/sh_rh_mfj0_position_controller/state', JointControllerState, self.j7_pid_cb,
-        #                             queue_size=1)
-        # self.sub = rospy.Subscriber('/sh_rh_mfj3_position_controller/state', JointControllerState, self.j8_pid_cb,
-        #                             queue_size=1)
-        # self.sub = rospy.Subscriber('/sh_rh_mfj4_position_controller/state', JointControllerState, self.j9_pid_cb,
-        #                             queue_size=1)
-        # self.sub = rospy.Subscriber('/sh_rh_rfj0_position_controller/state', JointControllerState, self.j10_pid_cb,
-        #                             queue_size=1)
-        # self.sub = rospy.Subscriber('/sh_rh_rfj3_position_controller/state', JointControllerState, self.j11_pid_cb,
-        #                             queue_size=1)
-        # self.sub = rospy.Subscriber('/sh_rh_rfj4_position_controller/state', JointControllerState, self.j12_pid_cb,
-        #                             queue_size=1)
-        # self.sub = rospy.Subscriber('/sh_rh_thj1_position_controller/state', JointControllerState, self.j13_pid_cb,
-        #                             queue_size=1)
-        # self.sub = rospy.Subscriber('/sh_rh_thj2_position_controller/state', JointControllerState, self.j14_pid_cb,
-        #                             queue_size=1)
-        # self.sub = rospy.Subscriber('/sh_rh_thj3_position_controller/state', JointControllerState, self.j15_pid_cb,
-        #                             queue_size=1)
-        # self.sub = rospy.Subscriber('/sh_rh_thj4_position_controller/state', JointControllerState, self.j16_pid_cb,
-        #                             queue_size=1)
-        # self.sub = rospy.Subscriber('/sh_rh_thj5_position_controller/state', JointControllerState, self.j17_pid_cb,
-        #                             queue_size=1)
-        # self.sub = rospy.Subscriber('/sh_rh_wrj1_position_controller/state', JointControllerState, self.j18_pid_cb,
-        #                             queue_size=1)
-        # self.sub = rospy.Subscriber('/sh_rh_wrj2_position_controller/state', JointControllerState, self.j19_pid_cb,
-        #                             queue_size=1)
+        self.sub = rospy.Subscriber('/rh/palm_extras', Float64MultiArray, self.palm_extras_cb, queue_size=1)
+        self.sub = rospy.Subscriber('/rh/tactile', BiotacAll, self.biotac_all_cb, queue_size=1)
+
+        self.sub = rospy.Subscriber('sh_rh_ffj0_position_controller/state', JointControllerState, self.pid_graphs_cb, queue_size=1)
+
+        self.sub = rospy.Subscriber('/sh_rh_ffj0_position_controller/state', JointControllerState, self.j0_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_ffj3_position_controller/state', JointControllerState, self.j1_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_ffj4_position_controller/state', JointControllerState, self.j2_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_lfj0_position_controller/state', JointControllerState, self.j3_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_lfj3_position_controller/state', JointControllerState, self.j4_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_lfj4_position_controller/state', JointControllerState, self.j5_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_lfj5_position_controller/state', JointControllerState, self.j6_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_mfj0_position_controller/state', JointControllerState, self.j7_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_mfj3_position_controller/state', JointControllerState, self.j8_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_mfj4_position_controller/state', JointControllerState, self.j9_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_rfj0_position_controller/state', JointControllerState, self.j10_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_rfj3_position_controller/state', JointControllerState, self.j11_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_rfj4_position_controller/state', JointControllerState, self.j12_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_thj1_position_controller/state', JointControllerState, self.j13_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_thj2_position_controller/state', JointControllerState, self.j14_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_thj3_position_controller/state', JointControllerState, self.j15_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_thj4_position_controller/state', JointControllerState, self.j16_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_thj5_position_controller/state', JointControllerState, self.j17_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_wrj1_position_controller/state', JointControllerState, self.j18_pid_cb,
+                                    queue_size=1)
+        self.sub = rospy.Subscriber('/sh_rh_wrj2_position_controller/state', JointControllerState, self.j19_pid_cb,
+                                    queue_size=1)
 
     def attach_graphs(self):
-        # self.motor_stat_layout_0.addWidget(self.motor_stat_graph_0)
-        #
-        # self.motor_stat_layout_1.addWidget(self.motor_stat_graph_1)
-        # self.motor_stat_layout_2.addWidget(self.motor_stat_graph_2)
-        # self.motor_stat_layout_3.addWidget(self.motor_stat_graph_3)
-        # self.motor_stat_layout_4.addWidget(self.motor_stat_graph_4)
-        # self.motor_stat_layout_5.addWidget(self.motor_stat_graph_5)
-        # self.motor_stat_layout_6.addWidget(self.motor_stat_graph_6)
-        # self.motor_stat_layout_7.addWidget(self.motor_stat_graph_7)
-        # self.motor_stat_layout_8.addWidget(self.motor_stat_graph_8)
-        # self.motor_stat_layout_9.addWidget(self.motor_stat_graph_9)
-        # self.motor_stat_layout_10.addWidget(self.motor_stat_graph_10)
-        # self.motor_stat_layout_11.addWidget(self.motor_stat_graph_11)
-        # self.motor_stat_layout_12.addWidget(self.motor_stat_graph_12)
-        # self.motor_stat_layout_13.addWidget(self.motor_stat_graph_13)
-        # self.motor_stat_layout_14.addWidget(self.motor_stat_graph_14)
-        # self.motor_stat_layout_15.addWidget(self.motor_stat_graph_15)
-        # self.motor_stat_layout_16.addWidget(self.motor_stat_graph_16)
-        # self.motor_stat_layout_17.addWidget(self.motor_stat_graph_17)
-        # self.motor_stat_layout_18.addWidget(self.motor_stat_graph_18)
-        # self.motor_stat_layout_19.addWidget(self.motor_stat_graph_19)
-        # self.motor_stat_layout_20.addWidget(self.motor_stat_graph_20)
-        # self.pid_clipped_layout.addWidget(self.pid_clipped_graph)
-        # self.pid_layout.addWidget(self.pid_graph)
-        # self.pos_vel_eff_layout.addWidget(self.pos_vel_eff_graph)
-        # self.palm_extras_layout.addWidget(self.palm_extras_graph)
-        # self.biotac_0_layout.addWidget(self.biotac_0_graph)
-        # self.biotac_1_layout.addWidget(self.biotac_1_graph)
-        # self.biotac_2_layout.addWidget(self.biotac_2_graph)
-        # self.biotac_3_layout.addWidget(self.biotac_3_graph)
-        # self.biotac_4_layout.addWidget(self.biotac_4_graph)
-        # self.biotacs_tac_layout.addWidget(self.biotacs_tac_graph)
-        # self.biotacs_pac_layout.addWidget(self.biotacs_pac_graph)
-        # self.biotacs_pdc_layout.addWidget(self.biotacs_pdc_graph)
-        # self.biotac_overview_layout.addWidget(self.biotac_overview_graph)
-        # self.effort_layout.addWidget(self.effort_graph)
+        self.motor_stat_layout_0.addWidget(self.motor_stat_graph_0)
+
+        self.motor_stat_layout_1.addWidget(self.motor_stat_graph_1)
+        self.motor_stat_layout_2.addWidget(self.motor_stat_graph_2)
+        self.motor_stat_layout_3.addWidget(self.motor_stat_graph_3)
+        self.motor_stat_layout_4.addWidget(self.motor_stat_graph_4)
+        self.motor_stat_layout_5.addWidget(self.motor_stat_graph_5)
+        self.motor_stat_layout_6.addWidget(self.motor_stat_graph_6)
+        self.motor_stat_layout_7.addWidget(self.motor_stat_graph_7)
+        self.motor_stat_layout_8.addWidget(self.motor_stat_graph_8)
+        self.motor_stat_layout_9.addWidget(self.motor_stat_graph_9)
+        self.motor_stat_layout_10.addWidget(self.motor_stat_graph_10)
+        self.motor_stat_layout_11.addWidget(self.motor_stat_graph_11)
+        self.motor_stat_layout_12.addWidget(self.motor_stat_graph_12)
+        self.motor_stat_layout_13.addWidget(self.motor_stat_graph_13)
+        self.motor_stat_layout_14.addWidget(self.motor_stat_graph_14)
+        self.motor_stat_layout_15.addWidget(self.motor_stat_graph_15)
+        self.motor_stat_layout_16.addWidget(self.motor_stat_graph_16)
+        self.motor_stat_layout_17.addWidget(self.motor_stat_graph_17)
+        self.motor_stat_layout_18.addWidget(self.motor_stat_graph_18)
+        self.motor_stat_layout_19.addWidget(self.motor_stat_graph_19)
+        self.motor_stat_layout_20.addWidget(self.motor_stat_graph_20)
+        self.pid_clipped_layout.addWidget(self.pid_clipped_graph)
+        self.pid_layout.addWidget(self.pid_graph)
+        self.pos_vel_eff_layout.addWidget(self.pos_vel_eff_graph)
+        self.palm_extras_layout.addWidget(self.palm_extras_graph)
+        self.biotac_0_layout.addWidget(self.biotac_0_graph)
+        self.biotac_1_layout.addWidget(self.biotac_1_graph)
+        self.biotac_2_layout.addWidget(self.biotac_2_graph)
+        self.biotac_3_layout.addWidget(self.biotac_3_graph)
+        self.biotac_4_layout.addWidget(self.biotac_4_graph)
+        self.biotacs_tac_layout.addWidget(self.biotacs_tac_graph)
+        self.biotacs_pac_layout.addWidget(self.biotacs_pac_graph)
+        self.biotacs_pdc_layout.addWidget(self.biotacs_pdc_graph)
+        self.biotac_overview_layout.addWidget(self.biotac_overview_graph)
+        self.effort_layout.addWidget(self.effort_graph)
         self.j0_layout.addWidget(self.j0_graph)
         self.j1_layout.addWidget(self.j1_graph)
         self.j2_layout.addWidget(self.j2_graph)
@@ -894,26 +880,26 @@ class SrDataVisualizer(Plugin):
         self.j22_layout.addWidget(self.j22_graph)
         self.j23_layout.addWidget(self.j23_graph)
 
-        # self.j0_pid_layout.addWidget(self.pid_graph_j0)
-        # self.j1_pid_layout.addWidget(self.pid_graph_j1)
-        # self.j2_pid_layout.addWidget(self.pid_graph_j2)
-        # self.j3_pid_layout.addWidget(self.pid_graph_j3)
-        # self.j4_pid_layout.addWidget(self.pid_graph_j4)
-        # self.j5_pid_layout.addWidget(self.pid_graph_j5)
-        # self.j6_pid_layout.addWidget(self.pid_graph_j6)
-        # self.j7_pid_layout.addWidget(self.pid_graph_j7)
-        # self.j8_pid_layout.addWidget(self.pid_graph_j8)
-        # self.j9_pid_layout.addWidget(self.pid_graph_j9)
-        # self.j10_pid_layout.addWidget(self.pid_graph_j10)
-        # self.j11_pid_layout.addWidget(self.pid_graph_j11)
-        # self.j12_pid_layout.addWidget(self.pid_graph_j12)
-        # self.j13_pid_layout.addWidget(self.pid_graph_j13)
-        # self.j14_pid_layout.addWidget(self.pid_graph_j14)
-        # self.j15_pid_layout.addWidget(self.pid_graph_j15)
-        # self.j16_pid_layout.addWidget(self.pid_graph_j16)
-        # self.j17_pid_layout.addWidget(self.pid_graph_j17)
-        # self.j18_pid_layout.addWidget(self.pid_graph_j18)
-        # self.j19_pid_layout.addWidget(self.pid_graph_j19)
+        self.j0_pid_layout.addWidget(self.pid_graph_j0)
+        self.j1_pid_layout.addWidget(self.pid_graph_j1)
+        self.j2_pid_layout.addWidget(self.pid_graph_j2)
+        self.j3_pid_layout.addWidget(self.pid_graph_j3)
+        self.j4_pid_layout.addWidget(self.pid_graph_j4)
+        self.j5_pid_layout.addWidget(self.pid_graph_j5)
+        self.j6_pid_layout.addWidget(self.pid_graph_j6)
+        self.j7_pid_layout.addWidget(self.pid_graph_j7)
+        self.j8_pid_layout.addWidget(self.pid_graph_j8)
+        self.j9_pid_layout.addWidget(self.pid_graph_j9)
+        self.j10_pid_layout.addWidget(self.pid_graph_j10)
+        self.j11_pid_layout.addWidget(self.pid_graph_j11)
+        self.j12_pid_layout.addWidget(self.pid_graph_j12)
+        self.j13_pid_layout.addWidget(self.pid_graph_j13)
+        self.j14_pid_layout.addWidget(self.pid_graph_j14)
+        self.j15_pid_layout.addWidget(self.pid_graph_j15)
+        self.j16_pid_layout.addWidget(self.pid_graph_j16)
+        self.j17_pid_layout.addWidget(self.pid_graph_j17)
+        self.j18_pid_layout.addWidget(self.pid_graph_j18)
+        self.j19_pid_layout.addWidget(self.pid_graph_j19)
 
     def biotac_all_cb(self, value):
         self.biotac_0_graph.addData(value.tactiles[0].pac0,0)
@@ -1286,7 +1272,7 @@ class SrDataVisualizer(Plugin):
         self.frame_scene.setHideButtonVisibility(False)
         self.frame_scene.load(config_approach)
 
-        scene_layout = self._widget.findChild(QVBoxLayout, "scene_layout_2")
+        scene_layout = self._widget.findChild(QVBoxLayout, "scene_layout")
         scene_layout.addWidget(self.frame_scene)
 
     def init_widget_children(self):
@@ -1315,23 +1301,24 @@ class SrDataVisualizer(Plugin):
         self.motor_stat_layout_20 = self._widget.findChild(QVBoxLayout, "motor_stat_layout_20")
         self.motor_stat_layout_18 = self._widget.findChild(QVBoxLayout, "motor_stat_layout_23")
 
-        # #Overview page
-        # self.pid_clipped_layout = self._widget.findChild(QVBoxLayout, "pid_clipped_layout")
-        # self.pid_layout         = self._widget.findChild(QVBoxLayout, "pid_layout")
-        # self.pos_vel_eff_layout = self._widget.findChild(QVBoxLayout, "pos_vel_eff_layout")
-        # self.palm_extras_layout = self._widget.findChild(QVBoxLayout, "palm_extras_layout")
-        # self.biotac_overview_layout = self._widget.findChild(QVBoxLayout, "biotac_overview_layout")
-        # self.effort_layout = self._widget.findChild(QVBoxLayout, "effort_layout")
-        #
-        # #Biotac page
-        # self.biotac_0_layout = self._widget.findChild(QVBoxLayout, "biotac_0_layout")
-        # self.biotac_1_layout = self._widget.findChild(QVBoxLayout, "biotac_1_layout")
-        # self.biotac_2_layout = self._widget.findChild(QVBoxLayout, "biotac_2_layout")
-        # self.biotac_3_layout = self._widget.findChild(QVBoxLayout, "biotac_3_layout")
-        # self.biotac_4_layout = self._widget.findChild(QVBoxLayout, "biotac_4_layout")
-        # self.biotacs_tac_layout = self._widget.findChild(QVBoxLayout, "biotacs_tac_layout")
-        # self.biotacs_pdc_layout = self._widget.findChild(QVBoxLayout, "biotacs_pdc_layout")
-        # self.biotacs_pac_layout = self._widget.findChild(QVBoxLayout, "biotacs_pac_layout")
+
+        #Overview page
+        self.pid_clipped_layout = self._widget.findChild(QVBoxLayout, "pid_clipped_layout")
+        self.pid_layout         = self._widget.findChild(QVBoxLayout, "pid_layout")
+        self.pos_vel_eff_layout = self._widget.findChild(QVBoxLayout, "pos_vel_eff_layout")
+        self.palm_extras_layout = self._widget.findChild(QVBoxLayout, "palm_extras_layout")
+        self.biotac_overview_layout = self._widget.findChild(QVBoxLayout, "biotac_overview_layout")
+        self.effort_layout = self._widget.findChild(QVBoxLayout, "effort_layout")
+
+        #Biotac page
+        self.biotac_0_layout = self._widget.findChild(QVBoxLayout, "biotac_0_layout")
+        self.biotac_1_layout = self._widget.findChild(QVBoxLayout, "biotac_1_layout")
+        self.biotac_2_layout = self._widget.findChild(QVBoxLayout, "biotac_2_layout")
+        self.biotac_3_layout = self._widget.findChild(QVBoxLayout, "biotac_3_layout")
+        self.biotac_4_layout = self._widget.findChild(QVBoxLayout, "biotac_4_layout")
+        self.biotacs_tac_layout = self._widget.findChild(QVBoxLayout, "biotacs_tac_layout")
+        self.biotacs_pdc_layout = self._widget.findChild(QVBoxLayout, "biotacs_pdc_layout")
+        self.biotacs_pac_layout = self._widget.findChild(QVBoxLayout, "biotacs_pac_layout")
 
         #All joints page
         self.j0_layout = self._widget.findChild(QVBoxLayout, "j0_layout")
@@ -1359,30 +1346,35 @@ class SrDataVisualizer(Plugin):
         self.j22_layout = self._widget.findChild(QVBoxLayout, "j22_layout")
         self.j23_layout = self._widget.findChild(QVBoxLayout, "j23_layout")
 
-        # self.j0_pid_layout = self._widget.findChild(QVBoxLayout, "j0_layout_2")
-        # self.j1_pid_layout = self._widget.findChild(QVBoxLayout, "j1_layout_2")
-        # self.j2_pid_layout = self._widget.findChild(QVBoxLayout, "j2_layout_2")
-        # self.j3_pid_layout = self._widget.findChild(QVBoxLayout, "j3_layout_2")
-        # self.j4_pid_layout = self._widget.findChild(QVBoxLayout, "j4_layout_2")
-        # self.j5_pid_layout = self._widget.findChild(QVBoxLayout, "j5_layout_2")
-        # self.j6_pid_layout = self._widget.findChild(QVBoxLayout, "j6_layout_2")
-        # self.j7_pid_layout = self._widget.findChild(QVBoxLayout, "j7_layout_2")
-        # self.j8_pid_layout = self._widget.findChild(QVBoxLayout, "j8_layout_2")
-        # self.j9_pid_layout = self._widget.findChild(QVBoxLayout, "j9_layout_2")
-        # self.j10_pid_layout = self._widget.findChild(QVBoxLayout, "j10_layout_2")
-        # self.j11_pid_layout = self._widget.findChild(QVBoxLayout, "j11_layout_2")
-        # self.j12_pid_layout = self._widget.findChild(QVBoxLayout, "j12_layout_2")
-        # self.j13_pid_layout = self._widget.findChild(QVBoxLayout, "j13_layout_2")
-        # self.j14_pid_layout = self._widget.findChild(QVBoxLayout, "j14_layout_2")
-        # self.j15_pid_layout = self._widget.findChild(QVBoxLayout, "j15_layout_2")
-        # self.j16_pid_layout = self._widget.findChild(QVBoxLayout, "j16_layout_2")
-        # self.j17_pid_layout = self._widget.findChild(QVBoxLayout, "j17_layout_2")
-        # self.j18_pid_layout = self._widget.findChild(QVBoxLayout, "j18_layout_2")
-        # self.j19_pid_layout = self._widget.findChild(QVBoxLayout, "j19_layout_2")
-        # self.j20_pid_layout = self._widget.findChild(QVBoxLayout, "j20_layout_2")
-        # self.j21_pid_layout = self._widget.findChild(QVBoxLayout, "j21_layout_2")
-        # self.j22_pid_layout = self._widget.findChild(QVBoxLayout, "j22_layout_2")
-        # self.j23_pid_layout = self._widget.findChild(QVBoxLayout, "j23_layout_2")
+        self.j0_pid_layout = self._widget.findChild(QVBoxLayout, "j0_layout_2")
+        self.j1_pid_layout = self._widget.findChild(QVBoxLayout, "j1_layout_2")
+        self.j2_pid_layout = self._widget.findChild(QVBoxLayout, "j2_layout_2")
+        self.j3_pid_layout = self._widget.findChild(QVBoxLayout, "j3_layout_2")
+        self.j4_pid_layout = self._widget.findChild(QVBoxLayout, "j4_layout_2")
+        self.j5_pid_layout = self._widget.findChild(QVBoxLayout, "j5_layout_2")
+        self.j6_pid_layout = self._widget.findChild(QVBoxLayout, "j6_layout_2")
+        self.j7_pid_layout = self._widget.findChild(QVBoxLayout, "j7_layout_2")
+        self.j8_pid_layout = self._widget.findChild(QVBoxLayout, "j8_layout_2")
+        self.j9_pid_layout = self._widget.findChild(QVBoxLayout, "j9_layout_2")
+        self.j10_pid_layout = self._widget.findChild(QVBoxLayout, "j10_layout_2")
+        self.j11_pid_layout = self._widget.findChild(QVBoxLayout, "j11_layout_2")
+        self.j12_pid_layout = self._widget.findChild(QVBoxLayout, "j12_layout_2")
+        self.j13_pid_layout = self._widget.findChild(QVBoxLayout, "j13_layout_2")
+        self.j14_pid_layout = self._widget.findChild(QVBoxLayout, "j14_layout_2")
+        self.j15_pid_layout = self._widget.findChild(QVBoxLayout, "j15_layout_2")
+        self.j16_pid_layout = self._widget.findChild(QVBoxLayout, "j16_layout_2")
+        self.j17_pid_layout = self._widget.findChild(QVBoxLayout, "j17_layout_2")
+        self.j18_pid_layout = self._widget.findChild(QVBoxLayout, "j18_layout_2")
+        self.j19_pid_layout = self._widget.findChild(QVBoxLayout, "j19_layout_2")
+        self.j20_pid_layout = self._widget.findChild(QVBoxLayout, "j20_layout_2")
+        self.j21_pid_layout = self._widget.findChild(QVBoxLayout, "j21_layout_2")
+        self.j22_pid_layout = self._widget.findChild(QVBoxLayout, "j22_layout_2")
+        self.j23_pid_layout = self._widget.findChild(QVBoxLayout, "j23_layout_2")
+
+
+    def create_menu_bar(self):
+        self._widget.myQMenuBar = QMenuBar(self._widget)
+        fileMenu = self._widget.myQMenuBar.addMenu('&File')
 
 
 class CustomFigCanvas(FigureCanvas, TimedAnimation):
@@ -1414,16 +1406,14 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         self.label_buffer = []
 
         # The window
-        self.fig = Figure(figsize=(3,3), dpi=100, facecolor=(1.0, 1.0, 1.0, 1.0))
-        # self.fig.patch.set_alpha(0.0)
+        self.fig = Figure(figsize=(3,3), dpi=100)
+        self.fig.patch.set_alpha(0.0)
         self.ax1 = self.fig.add_subplot(111)
+        axis_font = {'size': '14'}
+        self.ax1.set_xlabel('time', **axis_font)
         self.x_axis = self.n
         if not(self.xaxis_tick_animation):
             self.ax1.axes.get_xaxis().set_visible(False)
-
-        for tick in self.ax1.yaxis.get_major_ticks():  # shrink the font size of the x tick labels
-            tick.label.set_fontsize(7)
-        self.ax1.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)
 
         self.line = []
         if self.tail_enable:
@@ -1442,8 +1432,9 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
             self.ax1.set_ylim(ymin, ymax)
             i = i + 1
 
-        self.fig.subplots_adjust(bottom=0.05, top=0.8, left=0.08, right=0.98)
-        self.ax1.legend(self.line, legends, bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, ncol=legend_columns, mode="expand", borderaxespad=0.5, prop={'size': legend_font_size})
+        #bbox_to_anchor=(0., 1.02, 1., .102)
+        # #frameon=False,
+        self.ax1.legend(self.line, legends, bbox_to_anchor=(0., 1.0, 1., .9), framealpha=0.8, loc=3, ncol=legend_columns, mode="expand", borderaxespad=0., prop={'size': legend_font_size})
         self.counter = 0
         FigureCanvas.__init__(self, self.fig)
         TimedAnimation.__init__(self, self.fig, interval = 50, blit = not(self.xaxis_tick_animation))

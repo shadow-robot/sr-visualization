@@ -1,6 +1,6 @@
 Panels:
   - Class: rviz/Displays
-    Help Height: 138
+    Help Height: 84
     Name: Displays
     Property Tree Widget:
       Expanded:
@@ -50,104 +50,183 @@ Visualization Manager:
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
       Value: true
-    - Class: rviz/TF
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
       Enabled: true
-      Frame Timeout: 15
-      Frames:
-        All Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
         rh_ffdistal:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
         rh_ffknuckle:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
         rh_ffmiddle:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
         rh_ffproximal:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
+        rh_fftip:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         rh_forearm:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
+        rh_imu:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         rh_lfdistal:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
         rh_lfknuckle:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
         rh_lfmetacarpal:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
         rh_lfmiddle:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
         rh_lfproximal:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
+        rh_lftip:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        rh_manipulator:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         rh_mfdistal:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
         rh_mfknuckle:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
         rh_mfmiddle:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
         rh_mfproximal:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
+        rh_mftip:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         rh_palm:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
         rh_rfdistal:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
         rh_rfknuckle:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
         rh_rfmiddle:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
         rh_rfproximal:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
+        rh_rftip:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         rh_thbase:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
         rh_thdistal:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
         rh_thhub:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
         rh_thmiddle:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
         rh_thproximal:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
+        rh_thtip:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         rh_wrist:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
-      Marker Scale: 0.0500000007
-      Name: TF
-      Show Arrows: true
-      Show Axes: true
-      Show Names: true
-      Tree:
-        rh_forearm:
-          rh_wrist:
-            rh_palm:
-              rh_ffknuckle:
-                rh_ffproximal:
-                  rh_ffmiddle:
-                    rh_ffdistal:
-                      {}
-              rh_lfmetacarpal:
-                rh_lfknuckle:
-                  rh_lfproximal:
-                    rh_lfmiddle:
-                      rh_lfdistal:
-                        {}
-              rh_mfknuckle:
-                rh_mfproximal:
-                  rh_mfmiddle:
-                    rh_mfdistal:
-                      {}
-              rh_rfknuckle:
-                rh_rfproximal:
-                  rh_rfmiddle:
-                    rh_rfdistal:
-                      {}
-              rh_thbase:
-                rh_thproximal:
-                  rh_thhub:
-                    rh_thmiddle:
-                      rh_thdistal:
-                        {}
+        world:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+      Name: RobotModel
+      Robot Description: robot_description
+      TF Prefix: ""
       Update Interval: 0
       Value: true
   Enabled: true
   Global Options:
-    Background Color: 48; 48; 48
+    Background Color: 216; 216; 216
     Default Light: true
-    Fixed Frame: rh_forearm
+    Fixed Frame: world
     Frame Rate: 30
   Name: root
   Tools:
@@ -168,25 +247,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 0.677662134
+      Distance: 0.758981586
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.00749567524
-        Y: 0.0943128169
-        Z: 0.20134455
+        X: 0.0066649206
+        Y: 0.0903576687
+        Z: 0.213402718
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.38539809
+      Pitch: 0.0603983141
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.77358294
+      Yaw: 4.71858168
     Saved: ~
 Window Geometry:
   Displays:

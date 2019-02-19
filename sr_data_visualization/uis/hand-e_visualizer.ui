@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>2650</width>
-    <height>1523</height>
+    <width>2744</width>
+    <height>1566</height>
    </rect>
   </property>
   <property name="font">
@@ -35,937 +35,1339 @@
       <attribute name="title">
        <string>Visual and Graphs</string>
       </attribute>
-      <widget class="QGroupBox" name="groupBox_3">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>10</y>
-         <width>2611</width>
-         <height>1451</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string/>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_11">
-        <item row="1" column="0">
-         <widget class="QGroupBox" name="groupBox">
-          <property name="minimumSize">
-           <size>
-            <width>450</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="title">
-           <string>rviz</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_12">
-           <item row="0" column="0">
-            <layout class="QVBoxLayout" name="scene_layout"/>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="1" column="2">
-         <widget class="QTabWidget" name="tabWidget">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-            <horstretch>1</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="currentIndex">
-           <number>2</number>
-          </property>
-          <widget class="QWidget" name="tab_1">
-           <attribute name="title">
-            <string>Overview</string>
-           </attribute>
-           <layout class="QGridLayout" name="gridLayout_26">
-            <item row="0" column="0">
-             <widget class="QGroupBox" name="group_box_20">
-              <property name="title">
-               <string>PID (clipped)</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_28">
-               <item row="0" column="0">
-                <layout class="QVBoxLayout" name="pid_clipped_layout"/>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QGroupBox" name="group_box_25">
-              <property name="title">
-               <string>Position Velocity Effort</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_29">
-               <item row="0" column="0">
-                <layout class="QVBoxLayout" name="pos_vel_eff_layout"/>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QGroupBox" name="group_box_22">
-              <property name="title">
-               <string>Palm Extras</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_31">
-               <item row="0" column="0">
-                <layout class="QVBoxLayout" name="palm_extras_layout"/>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QGroupBox" name="group_box_21">
-              <property name="title">
-               <string>PID</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_27">
-               <item row="0" column="0">
-                <layout class="QVBoxLayout" name="pid_layout"/>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QGroupBox" name="group_box_9">
-              <property name="title">
-               <string>Commanded vs Measured effort</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_30">
-               <item row="0" column="0">
-                <layout class="QVBoxLayout" name="effort_layout"/>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="1" column="2">
-             <widget class="QGroupBox" name="group_box_24">
-              <property name="title">
-               <string>Biotac</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_32">
-               <item row="0" column="0">
-                <layout class="QVBoxLayout" name="biotac_overview_layout"/>
-               </item>
-              </layout>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="tab_2">
-           <attribute name="title">
-            <string>All Joints</string>
-           </attribute>
-           <layout class="QGridLayout" name="gridLayout_8">
-            <item row="0" column="0">
-             <widget class="QTabWidget" name="tabWidget_2">
-              <property name="font">
-               <font>
-                <pointsize>8</pointsize>
-               </font>
-              </property>
-              <property name="currentIndex">
-               <number>0</number>
-              </property>
-              <widget class="QWidget" name="tab">
-               <attribute name="title">
-                <string>Position Velocity Effort</string>
-               </attribute>
-               <layout class="QGridLayout" name="gridLayout_13">
-                <item row="0" column="0">
-                 <widget class="QGroupBox" name="group_box_33">
-                  <property name="title">
-                   <string>FFJ1</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_14">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j0_layout"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="0" column="1">
-                 <widget class="QGroupBox" name="group_box_34">
-                  <property name="title">
-                   <string>FFJ2</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_15">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j1_layout"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="0" column="2">
-                 <widget class="QGroupBox" name="group_box_35">
-                  <property name="title">
-                   <string>FFJ3</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_16">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j2_layout"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="0" column="3">
-                 <widget class="QGroupBox" name="group_box_36">
-                  <property name="title">
-                   <string>FFJ4</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_17">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j3_layout"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="0" column="4">
-                 <widget class="QGroupBox" name="group_box_37">
-                  <property name="title">
-                   <string>LFJ1</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_18">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j4_layout"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="0" column="5">
-                 <widget class="QGroupBox" name="group_box_40">
-                  <property name="title">
-                   <string>LFJ2</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_19">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j5_layout"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="1" column="0">
-                 <widget class="QGroupBox" name="group_box_51">
-                  <property name="title">
-                   <string>LFJ3</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_20">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j6_layout"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="1" column="1">
-                 <widget class="QGroupBox" name="group_box_41">
-                  <property name="title">
-                   <string>LFJ4</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_21">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j7_layout"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="1" column="2">
-                 <widget class="QGroupBox" name="group_box_38">
-                  <property name="title">
-                   <string>LFJ5</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_22">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j8_layout"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="1" column="3">
-                 <widget class="QGroupBox" name="group_box_39">
-                  <property name="title">
-                   <string>MFJ1</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_23">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j9_layout"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="1" column="4">
-                 <widget class="QGroupBox" name="group_box_52">
-                  <property name="title">
-                   <string>MFJ2</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_44">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j10_layout"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="1" column="5">
-                 <widget class="QGroupBox" name="group_box_42">
-                  <property name="title">
-                   <string>MFJ3</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_45">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j11_layout"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="2" column="0">
-                 <widget class="QGroupBox" name="group_box_57">
-                  <property name="title">
-                   <string>MFJ4</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_24">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j12_layout"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="2" column="1">
-                 <widget class="QGroupBox" name="group_box_54">
-                  <property name="title">
-                   <string>RFJ1</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_33">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j13_layout"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="2" column="2">
-                 <widget class="QGroupBox" name="group_box_56">
-                  <property name="title">
-                   <string>RFJ2</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_34">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j14_layout"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="2" column="3">
-                 <widget class="QGroupBox" name="group_box_55">
-                  <property name="title">
-                   <string>RFJ3</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_35">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j15_layout"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="2" column="4">
-                 <widget class="QGroupBox" name="group_box_53">
-                  <property name="title">
-                   <string>RFJ4</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_43">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j16_layout"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="2" column="5">
-                 <widget class="QGroupBox" name="group_box_58">
-                  <property name="title">
-                   <string>THJ1</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_42">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j17_layout"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="3" column="0">
-                 <widget class="QGroupBox" name="group_box_63">
-                  <property name="title">
-                   <string>THJ2</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_39">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j18_layout"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="3" column="1">
-                 <widget class="QGroupBox" name="group_box_60">
-                  <property name="title">
-                   <string>THJ3</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_38">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j19_layout"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="3" column="2">
-                 <widget class="QGroupBox" name="group_box_62">
-                  <property name="title">
-                   <string>THJ4</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_37">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j20_layout"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="3" column="3">
-                 <widget class="QGroupBox" name="group_box_61">
-                  <property name="title">
-                   <string>THJ5</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_36">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j21_layout"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="3" column="4">
-                 <widget class="QGroupBox" name="group_box_59">
-                  <property name="title">
-                   <string>WRJ1</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_40">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j22_layout"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="3" column="5">
-                 <widget class="QGroupBox" name="group_box_64">
-                  <property name="title">
-                   <string>WRJ2</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_41">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j23_layout"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-              <widget class="QWidget" name="tab_4">
-               <attribute name="title">
-                <string>Control Loops</string>
-               </attribute>
-               <layout class="QGridLayout" name="gridLayout">
-                <item row="0" column="0">
-                 <widget class="QGroupBox" name="group_box_44">
-                  <property name="font">
-                   <font>
-                    <pointsize>8</pointsize>
-                   </font>
-                  </property>
-                  <property name="title">
-                   <string>FFJ1</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_4">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j0_layout_2"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="0" column="1">
-                 <widget class="QGroupBox" name="group_box_43">
-                  <property name="font">
-                   <font>
-                    <pointsize>8</pointsize>
-                   </font>
-                  </property>
-                  <property name="title">
-                   <string>FFJ2</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_6">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j1_layout_2"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="0" column="2">
-                 <widget class="QGroupBox" name="group_box_45">
-                  <property name="font">
-                   <font>
-                    <pointsize>8</pointsize>
-                   </font>
-                  </property>
-                  <property name="title">
-                   <string>FFJ3</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_7">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j2_layout_2"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="0" column="3">
-                 <widget class="QGroupBox" name="group_box_48">
-                  <property name="font">
-                   <font>
-                    <pointsize>8</pointsize>
-                   </font>
-                  </property>
-                  <property name="title">
-                   <string>FFJ4</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_61">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j3_layout_2"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="0" column="4">
-                 <widget class="QGroupBox" name="group_box_76">
-                  <property name="title">
-                   <string>LFJ1</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_55">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j4_layout_2"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="0" column="5">
-                 <widget class="QGroupBox" name="group_box_50">
-                  <property name="title">
-                   <string>LFJ2</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_60">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j5_layout_2"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="1" column="0">
-                 <widget class="QGroupBox" name="group_box_74">
-                  <property name="font">
-                   <font>
-                    <pointsize>8</pointsize>
-                   </font>
-                  </property>
-                  <property name="title">
-                   <string>LFJ3</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_52">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j6_layout_2"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="1" column="1">
-                 <widget class="QGroupBox" name="group_box_46">
-                  <property name="font">
-                   <font>
-                    <pointsize>8</pointsize>
-                   </font>
-                  </property>
-                  <property name="title">
-                   <string>LFJ4</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_51">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j7_layout_2"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="1" column="2">
-                 <widget class="QGroupBox" name="group_box_75">
-                  <property name="font">
-                   <font>
-                    <pointsize>8</pointsize>
-                   </font>
-                  </property>
-                  <property name="title">
-                   <string>LFJ5</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_54">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j8_layout_2"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="1" column="3">
-                 <widget class="QGroupBox" name="group_box_49">
-                  <property name="font">
-                   <font>
-                    <pointsize>8</pointsize>
-                   </font>
-                  </property>
-                  <property name="title">
-                   <string>MFJ1</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_59">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j9_layout_2"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="1" column="4">
-                 <widget class="QGroupBox" name="group_box_66">
-                  <property name="title">
-                   <string>MFJ2</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_58">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j10_layout_2"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="1" column="5">
-                 <widget class="QGroupBox" name="group_box_47">
-                  <property name="title">
-                   <string>MFJ3</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_57">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j11_layout_2"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="2" column="0">
-                 <widget class="QGroupBox" name="group_box_78">
-                  <property name="font">
-                   <font>
-                    <pointsize>8</pointsize>
-                   </font>
-                  </property>
-                  <property name="title">
-                   <string>MFJ4</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_50">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j12_layout_2"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="2" column="1">
-                 <widget class="QGroupBox" name="group_box_71">
-                  <property name="font">
-                   <font>
-                    <pointsize>8</pointsize>
-                   </font>
-                  </property>
-                  <property name="title">
-                   <string>RFJ1</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_49">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j13_layout_2"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="2" column="2">
-                 <widget class="QGroupBox" name="group_box_77">
-                  <property name="font">
-                   <font>
-                    <pointsize>8</pointsize>
-                   </font>
-                  </property>
-                  <property name="title">
-                   <string>RFJ2</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_53">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j14_layout_2"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="2" column="3">
-                 <widget class="QGroupBox" name="group_box_80">
-                  <property name="font">
-                   <font>
-                    <pointsize>8</pointsize>
-                   </font>
-                  </property>
-                  <property name="title">
-                   <string>RFJ3</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_5">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j15_layout_2"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="2" column="4">
-                 <widget class="QGroupBox" name="group_box_65">
-                  <property name="title">
-                   <string>RFJ4</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_9">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j16_layout_2"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="2" column="5">
-                 <widget class="QGroupBox" name="group_box_79">
-                  <property name="title">
-                   <string>THJ1</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_56">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j17_layout_2"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="3" column="0">
-                 <widget class="QGroupBox" name="group_box_70">
-                  <property name="font">
-                   <font>
-                    <pointsize>8</pointsize>
-                   </font>
-                  </property>
-                  <property name="title">
-                   <string>THJ2</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_48">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j18_layout_2"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="3" column="1">
-                 <widget class="QGroupBox" name="group_box_73">
-                  <property name="font">
-                   <font>
-                    <pointsize>8</pointsize>
-                   </font>
-                  </property>
-                  <property name="title">
-                   <string>THJ3</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_47">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j19_layout_2"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="3" column="2">
-                 <widget class="QGroupBox" name="group_box_72">
-                  <property name="font">
-                   <font>
-                    <pointsize>8</pointsize>
-                   </font>
-                  </property>
-                  <property name="title">
-                   <string>THJ4</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_46">
-                   <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="j20_layout_2"/>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </widget>
-            </item>
-           </layout>
-           <zorder>tabWidget_2</zorder>
-           <zorder>group_box_69</zorder>
-          </widget>
-          <widget class="QWidget" name="tab_3">
-           <attribute name="title">
-            <string>Biotacs</string>
-           </attribute>
-           <layout class="QGridLayout" name="gridLayout_62">
-            <item row="0" column="2">
-             <widget class="QGroupBox" name="groupBox_12">
-              <property name="font">
-               <font>
-                <pointsize>8</pointsize>
-               </font>
-              </property>
-              <property name="title">
-               <string>biotac_2</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_69">
-               <item row="0" column="0">
-                <layout class="QVBoxLayout" name="biotac_2_layout"/>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="1" column="2" rowspan="3">
-             <widget class="QGroupBox" name="groupBox_14">
-              <property name="font">
-               <font>
-                <pointsize>8</pointsize>
-               </font>
-              </property>
-              <property name="title">
-               <string>biotacs temperature ac</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_70">
-               <item row="0" column="0">
-                <layout class="QVBoxLayout" name="biotacs_tac_layout"/>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="3" column="0" colspan="2">
-             <widget class="QGroupBox" name="groupBox_13">
-              <property name="font">
-               <font>
-                <pointsize>8</pointsize>
-               </font>
-              </property>
-              <property name="title">
-               <string>biotacs pressure dc</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_63">
-               <item row="0" column="0">
-                <layout class="QVBoxLayout" name="biotacs_pdc_layout"/>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QGroupBox" name="groupBox_7">
-              <property name="font">
-               <font>
-                <pointsize>8</pointsize>
-               </font>
-              </property>
-              <property name="title">
-               <string>biotac_0</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_68">
-               <item row="0" column="0">
-                <layout class="QVBoxLayout" name="biotac_0_layout"/>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QGroupBox" name="groupBox_8">
-              <property name="font">
-               <font>
-                <pointsize>8</pointsize>
-               </font>
-              </property>
-              <property name="title">
-               <string>biotac_1</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_67">
-               <item row="0" column="0">
-                <layout class="QVBoxLayout" name="biotac_1_layout"/>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QGroupBox" name="groupBox_10">
-              <property name="font">
-               <font>
-                <pointsize>8</pointsize>
-               </font>
-              </property>
-              <property name="title">
-               <string>biotac_4</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_66">
-               <item row="0" column="0">
-                <layout class="QVBoxLayout" name="biotac_4_layout"/>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="2" column="0" colspan="2">
-             <widget class="QGroupBox" name="groupBox_11">
-              <property name="font">
-               <font>
-                <pointsize>8</pointsize>
-               </font>
-              </property>
-              <property name="title">
-               <string>biotacs pressure ac</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_64">
-               <item row="0" column="0">
-                <layout class="QVBoxLayout" name="biotacs_pac_layout"/>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QGroupBox" name="groupBox_9">
-              <property name="font">
-               <font>
-                <pointsize>8</pointsize>
-               </font>
-              </property>
-              <property name="title">
-               <string>biotac_3</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_65">
-               <item row="0" column="0">
-                <layout class="QVBoxLayout" name="biotac_3_layout"/>
-               </item>
-              </layout>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </widget>
-        </item>
-       </layout>
-      </widget>
+      <layout class="QGridLayout" name="gridLayout_97">
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="groupBox_3">
+         <property name="title">
+          <string/>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_11">
+          <item row="1" column="0">
+           <widget class="QGroupBox" name="groupBox">
+            <property name="minimumSize">
+             <size>
+              <width>450</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="title">
+             <string>rviz</string>
+            </property>
+            <widget class="QWidget" name="">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>30</y>
+               <width>428</width>
+               <height>1231</height>
+              </rect>
+             </property>
+             <layout class="QVBoxLayout" name="scene_layout"/>
+            </widget>
+            <widget class="QLabel" name="label">
+             <property name="geometry">
+              <rect>
+               <x>50</x>
+               <y>1230</y>
+               <width>381</width>
+               <height>121</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>TextLabel</string>
+             </property>
+            </widget>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="1" column="2">
+           <widget class="QTabWidget" name="tabWidget">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>1</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="currentIndex">
+             <number>1</number>
+            </property>
+            <widget class="QWidget" name="tab_1">
+             <attribute name="title">
+              <string>Overview</string>
+             </attribute>
+             <layout class="QGridLayout" name="gridLayout_26">
+              <item row="0" column="0">
+               <widget class="QGroupBox" name="group_box_20">
+                <property name="title">
+                 <string>PID (clipped)</string>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_28">
+                 <item row="0" column="0">
+                  <layout class="QVBoxLayout" name="pid_clipped_layout"/>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QGroupBox" name="group_box_25">
+                <property name="title">
+                 <string>Position Velocity Effort</string>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_29">
+                 <item row="0" column="0">
+                  <layout class="QVBoxLayout" name="pos_vel_eff_layout"/>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QGroupBox" name="group_box_22">
+                <property name="title">
+                 <string>Palm Extras</string>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_31">
+                 <item row="0" column="0">
+                  <layout class="QVBoxLayout" name="palm_extras_layout"/>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QGroupBox" name="group_box_21">
+                <property name="title">
+                 <string>PID</string>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_27">
+                 <item row="0" column="0">
+                  <layout class="QVBoxLayout" name="pid_layout"/>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QGroupBox" name="group_box_9">
+                <property name="title">
+                 <string>Commanded vs Measured effort</string>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_30">
+                 <item row="0" column="0">
+                  <layout class="QVBoxLayout" name="effort_layout"/>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QGroupBox" name="group_box_24">
+                <property name="title">
+                 <string>Biotac</string>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_32">
+                 <item row="0" column="0">
+                  <layout class="QVBoxLayout" name="biotac_overview_layout"/>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="tab_2">
+             <attribute name="title">
+              <string>All Joints</string>
+             </attribute>
+             <layout class="QGridLayout" name="gridLayout_8">
+              <item row="0" column="0">
+               <widget class="QTabWidget" name="tabWidget_2">
+                <property name="font">
+                 <font>
+                  <pointsize>8</pointsize>
+                 </font>
+                </property>
+                <property name="currentIndex">
+                 <number>2</number>
+                </property>
+                <widget class="QWidget" name="tab">
+                 <attribute name="title">
+                  <string>Position Velocity Effort</string>
+                 </attribute>
+                 <layout class="QGridLayout" name="gridLayout_13">
+                  <item row="0" column="0">
+                   <widget class="QGroupBox" name="group_box_33">
+                    <property name="title">
+                     <string>FFJ1</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_14">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j0_layout"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QGroupBox" name="group_box_34">
+                    <property name="title">
+                     <string>FFJ2</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_15">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j1_layout"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="0" column="2">
+                   <widget class="QGroupBox" name="group_box_35">
+                    <property name="title">
+                     <string>FFJ3</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_16">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j2_layout"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="0" column="3">
+                   <widget class="QGroupBox" name="group_box_36">
+                    <property name="title">
+                     <string>FFJ4</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_17">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j3_layout"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="0" column="4">
+                   <widget class="QGroupBox" name="group_box_37">
+                    <property name="title">
+                     <string>LFJ1</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_18">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j4_layout"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="0" column="5">
+                   <widget class="QGroupBox" name="group_box_40">
+                    <property name="title">
+                     <string>LFJ2</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_19">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j5_layout"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QGroupBox" name="group_box_51">
+                    <property name="title">
+                     <string>LFJ3</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_20">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j6_layout"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QGroupBox" name="group_box_41">
+                    <property name="title">
+                     <string>LFJ4</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_21">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j7_layout"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="1" column="2">
+                   <widget class="QGroupBox" name="group_box_38">
+                    <property name="title">
+                     <string>LFJ5</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_22">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j8_layout"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="1" column="3">
+                   <widget class="QGroupBox" name="group_box_39">
+                    <property name="title">
+                     <string>MFJ1</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_23">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j9_layout"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="1" column="4">
+                   <widget class="QGroupBox" name="group_box_52">
+                    <property name="title">
+                     <string>MFJ2</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_44">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j10_layout"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="1" column="5">
+                   <widget class="QGroupBox" name="group_box_42">
+                    <property name="title">
+                     <string>MFJ3</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_45">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j11_layout"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QGroupBox" name="group_box_57">
+                    <property name="title">
+                     <string>MFJ4</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_24">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j12_layout"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QGroupBox" name="group_box_54">
+                    <property name="title">
+                     <string>RFJ1</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_33">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j13_layout"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="2" column="2">
+                   <widget class="QGroupBox" name="group_box_56">
+                    <property name="title">
+                     <string>RFJ2</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_34">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j14_layout"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="2" column="3">
+                   <widget class="QGroupBox" name="group_box_55">
+                    <property name="title">
+                     <string>RFJ3</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_35">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j15_layout"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="2" column="4">
+                   <widget class="QGroupBox" name="group_box_53">
+                    <property name="title">
+                     <string>RFJ4</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_43">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j16_layout"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="2" column="5">
+                   <widget class="QGroupBox" name="group_box_58">
+                    <property name="title">
+                     <string>THJ1</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_42">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j17_layout"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QGroupBox" name="group_box_63">
+                    <property name="title">
+                     <string>THJ2</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_39">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j18_layout"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QGroupBox" name="group_box_60">
+                    <property name="title">
+                     <string>THJ3</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_38">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j19_layout"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="3" column="2">
+                   <widget class="QGroupBox" name="group_box_62">
+                    <property name="title">
+                     <string>THJ4</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_37">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j20_layout"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="3" column="3">
+                   <widget class="QGroupBox" name="group_box_61">
+                    <property name="title">
+                     <string>THJ5</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_36">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j21_layout"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="3" column="4">
+                   <widget class="QGroupBox" name="group_box_59">
+                    <property name="title">
+                     <string>WRJ1</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_40">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j22_layout"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="3" column="5">
+                   <widget class="QGroupBox" name="group_box_64">
+                    <property name="title">
+                     <string>WRJ2</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_41">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j23_layout"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_4">
+                 <attribute name="title">
+                  <string>Control Loops</string>
+                 </attribute>
+                 <layout class="QGridLayout" name="gridLayout">
+                  <item row="0" column="0">
+                   <widget class="QGroupBox" name="group_box_44">
+                    <property name="font">
+                     <font>
+                      <pointsize>8</pointsize>
+                     </font>
+                    </property>
+                    <property name="title">
+                     <string>FFJ0</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_4">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j0_layout_2"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QGroupBox" name="group_box_43">
+                    <property name="font">
+                     <font>
+                      <pointsize>8</pointsize>
+                     </font>
+                    </property>
+                    <property name="title">
+                     <string>FFJ3</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_6">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j1_layout_2"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="0" column="2">
+                   <widget class="QGroupBox" name="group_box_45">
+                    <property name="font">
+                     <font>
+                      <pointsize>8</pointsize>
+                     </font>
+                    </property>
+                    <property name="title">
+                     <string>FFJ4</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_7">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j2_layout_2"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="0" column="3">
+                   <widget class="QGroupBox" name="group_box_48">
+                    <property name="font">
+                     <font>
+                      <pointsize>8</pointsize>
+                     </font>
+                    </property>
+                    <property name="title">
+                     <string>LFJ0</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_61">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j3_layout_2"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="0" column="4">
+                   <widget class="QGroupBox" name="group_box_76">
+                    <property name="title">
+                     <string>JFJ3</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_55">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j4_layout_2"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="0" column="5">
+                   <widget class="QGroupBox" name="group_box_50">
+                    <property name="title">
+                     <string>LFJ4</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_60">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j5_layout_2"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QGroupBox" name="group_box_74">
+                    <property name="font">
+                     <font>
+                      <pointsize>8</pointsize>
+                     </font>
+                    </property>
+                    <property name="title">
+                     <string>LFJ5</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_52">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j6_layout_2"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QGroupBox" name="group_box_46">
+                    <property name="font">
+                     <font>
+                      <pointsize>8</pointsize>
+                     </font>
+                    </property>
+                    <property name="title">
+                     <string>MFJ0</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_51">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j7_layout_2"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="1" column="2">
+                   <widget class="QGroupBox" name="group_box_75">
+                    <property name="font">
+                     <font>
+                      <pointsize>8</pointsize>
+                     </font>
+                    </property>
+                    <property name="title">
+                     <string>MFJ3</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_54">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j8_layout_2"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="1" column="3">
+                   <widget class="QGroupBox" name="group_box_49">
+                    <property name="font">
+                     <font>
+                      <pointsize>8</pointsize>
+                     </font>
+                    </property>
+                    <property name="title">
+                     <string>MFJ4</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_59">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j9_layout_2"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="1" column="4">
+                   <widget class="QGroupBox" name="group_box_66">
+                    <property name="title">
+                     <string>RFJ0</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_58">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j10_layout_2"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="1" column="5">
+                   <widget class="QGroupBox" name="group_box_47">
+                    <property name="title">
+                     <string>RFJ3</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_57">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j11_layout_2"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QGroupBox" name="group_box_78">
+                    <property name="font">
+                     <font>
+                      <pointsize>8</pointsize>
+                     </font>
+                    </property>
+                    <property name="title">
+                     <string>RFJ4</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_50">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j12_layout_2"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QGroupBox" name="group_box_71">
+                    <property name="font">
+                     <font>
+                      <pointsize>8</pointsize>
+                     </font>
+                    </property>
+                    <property name="title">
+                     <string>THJ1</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_49">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j13_layout_2"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="2" column="2">
+                   <widget class="QGroupBox" name="group_box_77">
+                    <property name="font">
+                     <font>
+                      <pointsize>8</pointsize>
+                     </font>
+                    </property>
+                    <property name="title">
+                     <string>THJ2</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_53">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j14_layout_2"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="2" column="3">
+                   <widget class="QGroupBox" name="group_box_80">
+                    <property name="font">
+                     <font>
+                      <pointsize>8</pointsize>
+                     </font>
+                    </property>
+                    <property name="title">
+                     <string>THJ3</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_5">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j15_layout_2"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="2" column="4">
+                   <widget class="QGroupBox" name="group_box_65">
+                    <property name="title">
+                     <string>THJ4</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_9">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j16_layout_2"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="2" column="5">
+                   <widget class="QGroupBox" name="group_box_79">
+                    <property name="title">
+                     <string>THJ5</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_56">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j17_layout_2"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QGroupBox" name="group_box_70">
+                    <property name="font">
+                     <font>
+                      <pointsize>8</pointsize>
+                     </font>
+                    </property>
+                    <property name="title">
+                     <string>WRJ1</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_48">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j18_layout_2"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QGroupBox" name="group_box_73">
+                    <property name="font">
+                     <font>
+                      <pointsize>8</pointsize>
+                     </font>
+                    </property>
+                    <property name="title">
+                     <string>WRJ2</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_47">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="j19_layout_2"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_5">
+                 <attribute name="title">
+                  <string>Motor Stats</string>
+                 </attribute>
+                 <layout class="QGridLayout" name="gridLayout_2">
+                  <item row="0" column="0">
+                   <widget class="QTabWidget" name="tabWidget_4">
+                    <property name="currentIndex">
+                     <number>1</number>
+                    </property>
+                    <widget class="QWidget" name="tab_10">
+                     <attribute name="title">
+                      <string>1 to 3</string>
+                     </attribute>
+                     <layout class="QGridLayout" name="gridLayout_75">
+                      <item row="0" column="2">
+                       <widget class="QGroupBox" name="group_box_81">
+                        <property name="font">
+                         <font>
+                          <pointsize>8</pointsize>
+                         </font>
+                        </property>
+                        <property name="title">
+                         <string>FFJ0</string>
+                        </property>
+                        <layout class="QGridLayout" name="gridLayout_72">
+                         <item row="0" column="0">
+                          <layout class="QVBoxLayout" name="motor_stat_layout_3"/>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item row="0" column="1">
+                       <widget class="QGroupBox" name="group_box_68">
+                        <property name="font">
+                         <font>
+                          <pointsize>8</pointsize>
+                         </font>
+                        </property>
+                        <property name="title">
+                         <string>FFJ0</string>
+                        </property>
+                        <layout class="QGridLayout" name="gridLayout_12">
+                         <item row="0" column="0">
+                          <layout class="QVBoxLayout" name="motor_stat_layout_2"/>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item row="0" column="0">
+                       <widget class="QGroupBox" name="group_box_67">
+                        <property name="font">
+                         <font>
+                          <pointsize>8</pointsize>
+                         </font>
+                        </property>
+                        <property name="title">
+                         <string>FFJ0</string>
+                        </property>
+                        <layout class="QGridLayout" name="gridLayout_10">
+                         <item row="0" column="0">
+                          <layout class="QVBoxLayout" name="motor_stat_layout_1"/>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                    <widget class="QWidget" name="tab_13">
+                     <attribute name="title">
+                      <string>4 to 9</string>
+                     </attribute>
+                     <layout class="QGridLayout" name="gridLayout_96">
+                      <item row="0" column="2">
+                       <widget class="QGroupBox" name="group_box_88">
+                        <property name="font">
+                         <font>
+                          <pointsize>8</pointsize>
+                         </font>
+                        </property>
+                        <property name="title">
+                         <string>FFJ0</string>
+                        </property>
+                        <layout class="QGridLayout" name="gridLayout_78">
+                         <item row="0" column="0">
+                          <layout class="QVBoxLayout" name="motor_stat_layout_6"/>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item row="0" column="1">
+                       <widget class="QGroupBox" name="group_box_86">
+                        <property name="font">
+                         <font>
+                          <pointsize>8</pointsize>
+                         </font>
+                        </property>
+                        <property name="title">
+                         <string>FFJ0</string>
+                        </property>
+                        <layout class="QGridLayout" name="gridLayout_73">
+                         <item row="0" column="0">
+                          <layout class="QVBoxLayout" name="motor_stat_layout_5"/>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item row="1" column="2">
+                       <widget class="QGroupBox" name="group_box_85">
+                        <property name="font">
+                         <font>
+                          <pointsize>8</pointsize>
+                         </font>
+                        </property>
+                        <property name="title">
+                         <string>FFJ0</string>
+                        </property>
+                        <layout class="QGridLayout" name="gridLayout_77">
+                         <item row="0" column="0">
+                          <layout class="QVBoxLayout" name="motor_stat_layout_9"/>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item row="1" column="0">
+                       <widget class="QGroupBox" name="group_box_89">
+                        <property name="font">
+                         <font>
+                          <pointsize>8</pointsize>
+                         </font>
+                        </property>
+                        <property name="title">
+                         <string>FFJ0</string>
+                        </property>
+                        <layout class="QGridLayout" name="gridLayout_79">
+                         <item row="0" column="0">
+                          <layout class="QVBoxLayout" name="motor_stat_layout_7"/>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item row="1" column="1">
+                       <widget class="QGroupBox" name="group_box_84">
+                        <property name="font">
+                         <font>
+                          <pointsize>8</pointsize>
+                         </font>
+                        </property>
+                        <property name="title">
+                         <string>FFJ0</string>
+                        </property>
+                        <layout class="QGridLayout" name="gridLayout_76">
+                         <item row="0" column="0">
+                          <layout class="QVBoxLayout" name="motor_stat_layout_8"/>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item row="0" column="0">
+                       <widget class="QGroupBox" name="group_box_87">
+                        <property name="font">
+                         <font>
+                          <pointsize>8</pointsize>
+                         </font>
+                        </property>
+                        <property name="title">
+                         <string>FFJ0</string>
+                        </property>
+                        <layout class="QGridLayout" name="gridLayout_71">
+                         <item row="0" column="0">
+                          <layout class="QVBoxLayout" name="motor_stat_layout_4"/>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                    <widget class="QWidget" name="tab_11">
+                     <attribute name="title">
+                      <string>10 to 15</string>
+                     </attribute>
+                     <layout class="QGridLayout" name="gridLayout_46">
+                      <item row="0" column="0">
+                       <widget class="QGroupBox" name="group_box_96">
+                        <property name="font">
+                         <font>
+                          <pointsize>8</pointsize>
+                         </font>
+                        </property>
+                        <property name="title">
+                         <string>FFJ0</string>
+                        </property>
+                        <layout class="QGridLayout" name="gridLayout_80">
+                         <item row="0" column="0">
+                          <layout class="QVBoxLayout" name="motor_stat_layout_10"/>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item row="0" column="1">
+                       <widget class="QGroupBox" name="group_box_100">
+                        <property name="font">
+                         <font>
+                          <pointsize>8</pointsize>
+                         </font>
+                        </property>
+                        <property name="title">
+                         <string>FFJ0</string>
+                        </property>
+                        <layout class="QGridLayout" name="gridLayout_94">
+                         <item row="0" column="0">
+                          <layout class="QVBoxLayout" name="motor_stat_layout_11"/>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item row="0" column="2">
+                       <widget class="QGroupBox" name="group_box_101">
+                        <property name="font">
+                         <font>
+                          <pointsize>8</pointsize>
+                         </font>
+                        </property>
+                        <property name="title">
+                         <string>FFJ0</string>
+                        </property>
+                        <layout class="QGridLayout" name="gridLayout_98">
+                         <item row="0" column="0">
+                          <layout class="QVBoxLayout" name="motor_stat_layout_12"/>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item row="1" column="0">
+                       <widget class="QGroupBox" name="group_box_98">
+                        <property name="font">
+                         <font>
+                          <pointsize>8</pointsize>
+                         </font>
+                        </property>
+                        <property name="title">
+                         <string>FFJ0</string>
+                        </property>
+                        <layout class="QGridLayout" name="gridLayout_92">
+                         <item row="0" column="0">
+                          <layout class="QVBoxLayout" name="motor_stat_layout_13"/>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item row="1" column="1">
+                       <widget class="QGroupBox" name="group_box_97">
+                        <property name="font">
+                         <font>
+                          <pointsize>8</pointsize>
+                         </font>
+                        </property>
+                        <property name="title">
+                         <string>FFJ0</string>
+                        </property>
+                        <layout class="QGridLayout" name="gridLayout_89">
+                         <item row="0" column="0">
+                          <layout class="QVBoxLayout" name="motor_stat_layout_14"/>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item row="1" column="2">
+                       <widget class="QGroupBox" name="group_box_99">
+                        <property name="font">
+                         <font>
+                          <pointsize>8</pointsize>
+                         </font>
+                        </property>
+                        <property name="title">
+                         <string>FFJ0</string>
+                        </property>
+                        <layout class="QGridLayout" name="gridLayout_93">
+                         <item row="0" column="0">
+                          <layout class="QVBoxLayout" name="motor_stat_layout_15"/>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                    <widget class="QWidget" name="tab_12">
+                     <attribute name="title">
+                      <string>15 to 20</string>
+                     </attribute>
+                     <layout class="QGridLayout" name="gridLayout_95">
+                      <item row="0" column="0">
+                       <widget class="QGroupBox" name="group_box_93">
+                        <property name="font">
+                         <font>
+                          <pointsize>8</pointsize>
+                         </font>
+                        </property>
+                        <property name="title">
+                         <string>FFJ0</string>
+                        </property>
+                        <layout class="QGridLayout" name="gridLayout_85">
+                         <item row="0" column="0">
+                          <layout class="QVBoxLayout" name="motor_stat_layout_16"/>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item row="1" column="0">
+                       <widget class="QGroupBox" name="group_box_95">
+                        <property name="font">
+                         <font>
+                          <pointsize>8</pointsize>
+                         </font>
+                        </property>
+                        <property name="title">
+                         <string>FFJ0</string>
+                        </property>
+                        <layout class="QGridLayout" name="gridLayout_87">
+                         <item row="0" column="0">
+                          <layout class="QVBoxLayout" name="motor_stat_layout_20"/>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item row="0" column="2">
+                       <widget class="QGroupBox" name="group_box_94">
+                        <property name="font">
+                         <font>
+                          <pointsize>8</pointsize>
+                         </font>
+                        </property>
+                        <property name="title">
+                         <string>FFJ0</string>
+                        </property>
+                        <layout class="QGridLayout" name="gridLayout_81">
+                         <item row="0" column="0">
+                          <layout class="QVBoxLayout" name="motor_stat_layout_19"/>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item row="0" column="1">
+                       <widget class="QGroupBox" name="group_box_92">
+                        <property name="font">
+                         <font>
+                          <pointsize>8</pointsize>
+                         </font>
+                        </property>
+                        <property name="title">
+                         <string>FFJ0</string>
+                        </property>
+                        <layout class="QGridLayout" name="gridLayout_84">
+                         <item row="0" column="0">
+                          <layout class="QVBoxLayout" name="motor_stat_layout_17"/>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item row="1" column="1">
+                       <widget class="QGroupBox" name="group_box_90">
+                        <property name="font">
+                         <font>
+                          <pointsize>8</pointsize>
+                         </font>
+                        </property>
+                        <property name="title">
+                         <string>FFJ0</string>
+                        </property>
+                        <layout class="QGridLayout" name="gridLayout_82">
+                         <item row="0" column="0">
+                          <layout class="QVBoxLayout" name="motor_stat_layout_23"/>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="tab_7">
+                 <attribute name="title">
+                  <string>used for testing</string>
+                 </attribute>
+                 <layout class="QGridLayout" name="gridLayout_3">
+                  <item row="0" column="0">
+                   <widget class="QGroupBox" name="group_box_83">
+                    <property name="font">
+                     <font>
+                      <pointsize>8</pointsize>
+                     </font>
+                    </property>
+                    <property name="title">
+                     <string>used for testing</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_74">
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="motor_stat_layout_0"/>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="tab_3">
+             <attribute name="title">
+              <string>Biotacs</string>
+             </attribute>
+             <layout class="QGridLayout" name="gridLayout_62">
+              <item row="0" column="2">
+               <widget class="QGroupBox" name="groupBox_12">
+                <property name="font">
+                 <font>
+                  <pointsize>8</pointsize>
+                 </font>
+                </property>
+                <property name="title">
+                 <string>biotac_2</string>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_69">
+                 <item row="0" column="0">
+                  <layout class="QVBoxLayout" name="biotac_2_layout"/>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="1" column="2" rowspan="3">
+               <widget class="QGroupBox" name="groupBox_14">
+                <property name="font">
+                 <font>
+                  <pointsize>8</pointsize>
+                 </font>
+                </property>
+                <property name="title">
+                 <string>biotacs temperature ac</string>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_70">
+                 <item row="0" column="0">
+                  <layout class="QVBoxLayout" name="biotacs_tac_layout"/>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="3" column="0" colspan="2">
+               <widget class="QGroupBox" name="groupBox_13">
+                <property name="font">
+                 <font>
+                  <pointsize>8</pointsize>
+                 </font>
+                </property>
+                <property name="title">
+                 <string>biotacs pressure dc</string>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_63">
+                 <item row="0" column="0">
+                  <layout class="QVBoxLayout" name="biotacs_pdc_layout"/>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QGroupBox" name="groupBox_7">
+                <property name="font">
+                 <font>
+                  <pointsize>8</pointsize>
+                 </font>
+                </property>
+                <property name="title">
+                 <string>biotac_0</string>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_68">
+                 <item row="0" column="0">
+                  <layout class="QVBoxLayout" name="biotac_0_layout"/>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QGroupBox" name="groupBox_8">
+                <property name="font">
+                 <font>
+                  <pointsize>8</pointsize>
+                 </font>
+                </property>
+                <property name="title">
+                 <string>biotac_1</string>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_67">
+                 <item row="0" column="0">
+                  <layout class="QVBoxLayout" name="biotac_1_layout"/>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QGroupBox" name="groupBox_10">
+                <property name="font">
+                 <font>
+                  <pointsize>8</pointsize>
+                 </font>
+                </property>
+                <property name="title">
+                 <string>biotac_4</string>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_66">
+                 <item row="0" column="0">
+                  <layout class="QVBoxLayout" name="biotac_4_layout"/>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="2" column="0" colspan="2">
+               <widget class="QGroupBox" name="groupBox_11">
+                <property name="font">
+                 <font>
+                  <pointsize>8</pointsize>
+                 </font>
+                </property>
+                <property name="title">
+                 <string>biotacs pressure ac</string>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_64">
+                 <item row="0" column="0">
+                  <layout class="QVBoxLayout" name="biotacs_pac_layout"/>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QGroupBox" name="groupBox_9">
+                <property name="font">
+                 <font>
+                  <pointsize>8</pointsize>
+                 </font>
+                </property>
+                <property name="title">
+                 <string>biotac_3</string>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_65">
+                 <item row="0" column="0">
+                  <layout class="QVBoxLayout" name="biotac_3_layout"/>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </widget>
    </item>
