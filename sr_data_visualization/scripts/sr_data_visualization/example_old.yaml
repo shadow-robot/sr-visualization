@@ -1,0 +1,18 @@
+---
+graphs:
+  
+  - type: pos_vel_eff
+    lines: [position, velocity, effort]
+    ranges: [[-500, 500], [-100, 1000], [-10, 10]]
+    graph_names: [graph_one, graph_two, graph_three, graph_four, graph_five, graph_six, graph_seven]
+    topic_namespace: /joint_states
+    message_type: JointState
+
+  - type: other_graphs
+    num_graphs: 3
+    lines: [line_one, line_two, line_three]
+    ranges: [[-500, 500], [-1000, 1000], [-10, 10]]
+    graph_names: [graph_one, graph_two, graph_three]
+    topics:
+
+
