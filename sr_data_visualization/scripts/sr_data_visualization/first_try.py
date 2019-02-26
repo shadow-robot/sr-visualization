@@ -31,23 +31,6 @@ import rospkg
 
 from sensor_msgs.msg import JointState
 
-
-# class CustomFigCanvas():
-#     def __init__(self, num_lines, colour = [], ymin = -1, ymax = 1, graph_title="uhoh", ranges=[], legends = [], legend_columns='none', legend_font_size=7, num_ticks=4, xaxis_tick_animation=False, tail_enable=True):
-#         self.num_lines = num_lines
-#         print(num_lines)
-#         print(colour)
-#         print("ymin:", ymin)
-#         print("ymax:", ymax)
-#         print(graph_title)
-#         print(ranges)
-
-
-
-
-
-
-
 class SrDataVisualizer(Plugin):
     def __init__(self, context):
         self.init_complete = False
@@ -72,16 +55,12 @@ class SrDataVisualizer(Plugin):
         p.setColor(self.tab_widget_1.backgroundRole(), Qt.white)
         self.tab_widget_1.setStyleSheet(stylesheet)
 
- #       self.init_widget_children()
 
 
         self.j0_graphs_scale = 3.14159
         self.pid_output_scale = 0.013333333
 
         self.j0_graphs_effort_scale = self.j0_graphs_scale / 600
-        # self.create_graphs()
-        # self.create_subscribers()
-        # self.attach_graphs()
 
         self.radio_button_velocity = self._widget.findChild(QRadioButton, "radioButton_3")
         self.radio_button_all = self._widget.findChild(QRadioButton, "radioButton_4")
@@ -99,7 +78,6 @@ class SrDataVisualizer(Plugin):
                 self.my_func(data_loaded)
             except yaml.YAMLError as exc:
                 print(exc)
-        data_loaded_hold = data_loaded
         self.init_complete = True
 
 
@@ -114,88 +92,64 @@ class SrDataVisualizer(Plugin):
 
         if b.text() == "Velocity (rad/s)":
             if b.isChecked() == True:
-                self.change_to_vel_graphs()
+                self.change_to_single_graph('Velocity', 1)
                 print b.text() + " is selected"
             else:
                 print b.text() + " is deselected"
 
         if b.text() == "Effort":
             if b.isChecked() == True:
-                self.change_to_eff_graphs()
+                self.change_to_single_graph('Effort', 2)
                 print b.text() + " is selected"
             else:
                 print b.text() + " is deselected"
 
         if b.text() == "position (rad)":
             if b.isChecked() == True:
-                self.change_to_pos_graphs()
+                #self.change_to_pos_graphs()
+                self.change_to_single_graph('Position', 0)
                 print b.text() + " is selected"
             else:
                 print b.text() + " is deselected"
 
 
-    def change_to_vel_graphs(self):
+
+    def change_to_single_graph(self, legend_name, line_number):
         i = 0
         temp = self.graph_dict[self.graph_names_global[0]].num_lines
         while i <= self.graph_dict[self.graph_names_global[0]].num_lines:
-            # for graph in self.graph_names_global:
             self.graph_dict[self.graph_names_global[i]].enabled = False
-            self.graph_dict[self.graph_names_global[i]].line_to_plot = 1
+            self.graph_dict[self.graph_names_global[i]].line_to_plot = line_number
             self.graph_dict[self.graph_names_global[i]].plot_all = False
-            # self.graph_dict[self.graph_names_global[i]].num_lines = 1
+            self.graph_dict[self.graph_names_global[i]].ax1.yaxis.set_tick_params(which='both', labelbottom=True)
+            self.graph_dict[self.graph_names_global[i]].ymin = self.global_yaml["graphs"][0]["ranges"][line_number][0]
+            self.graph_dict[self.graph_names_global[i]].ymax = self.global_yaml["graphs"][0]["ranges"][line_number][1]
             self.graph_dict[self.graph_names_global[i]].re_init()
-
-            self.graph_dict[self.graph_names_global[i]].ax1.legend(self.graph_dict[self.graph_names_global[i]].line, ['Velocity'], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5, prop={'size': 7})
-            self.graph_dict[self.graph_names_global[i]].enabled = True
-            self.graph_dict[self.graph_names_global[i]].update()
-            self.graph_dict[self.graph_names_global[i]].draw()
-            i += 1
-
-    def change_to_eff_graphs(self):
-        i = 0
-        temp = self.graph_dict[self.graph_names_global[0]].num_lines
-        while i <= self.graph_dict[self.graph_names_global[0]].num_lines:
-            # for graph in self.graph_names_global:
-            self.graph_dict[self.graph_names_global[i]].enabled = False
-            self.graph_dict[self.graph_names_global[i]].line_to_plot = 2
-            self.graph_dict[self.graph_names_global[i]].plot_all = False
-            # self.graph_dict[self.graph_names_global[i]].num_lines = 1
-            self.graph_dict[self.graph_names_global[i]].re_init()
-
-            self.graph_dict[self.graph_names_global[i]].ax1.legend(self.graph_dict[self.graph_names_global[i]].line, ['Effort'], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5, prop={'size': 7})
-            self.graph_dict[self.graph_names_global[i]].enabled = True
-            self.graph_dict[self.graph_names_global[i]].update()
-            self.graph_dict[self.graph_names_global[i]].draw()
-            i += 1
-
-    def change_to_pos_graphs(self):
-        i = 0
-        temp = self.graph_dict[self.graph_names_global[0]].num_lines
-        while i <= self.graph_dict[self.graph_names_global[0]].num_lines:
-            # for graph in self.graph_names_global:
-            self.graph_dict[self.graph_names_global[i]].enabled = False
-            self.graph_dict[self.graph_names_global[i]].line_to_plot = 0
-            self.graph_dict[self.graph_names_global[i]].plot_all = False
-            # self.graph_dict[self.graph_names_global[i]].num_lines = 1
-            self.graph_dict[self.graph_names_global[i]].re_init()
-
-            self.graph_dict[self.graph_names_global[i]].ax1.legend(self.graph_dict[self.graph_names_global[i]].line, ['Position'], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5, prop={'size': 7})
+            self.graph_dict[self.graph_names_global[i]].ax1.legend(self.graph_dict[self.graph_names_global[i]].line, [legend_name], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5, prop={'size': 7})
             self.graph_dict[self.graph_names_global[i]].enabled = True
             self.graph_dict[self.graph_names_global[i]].update()
             self.graph_dict[self.graph_names_global[i]].draw()
             i += 1
 
     def change_to_all_graphs(self):
+        ymin = 0
+        ymax = 0
+        i = 0
+        while i < len(self.global_yaml["graphs"][0]["ranges"]):
+            if (self.global_yaml["graphs"][0]["ranges"][i][0] < ymin and self.global_yaml["graphs"][0]["ranges"][i][1] > ymax):
+                ymin = self.global_yaml["graphs"][0]["ranges"][i][0]
+                ymax = self.global_yaml["graphs"][0]["ranges"][i][1]
+            i += 1
         i = 0
         #for each graph
-        while i < self.graph_dict[self.graph_names_global[0]].num_lines:
+        while i <= self.graph_dict[self.graph_names_global[0]].num_lines:
+            self.graph_dict[self.graph_names_global[i]].ymin = ymin
+            self.graph_dict[self.graph_names_global[i]].ymax = ymax
             # for graph in self.graph_names_global:
             self.graph_dict[self.graph_names_global[i]].enabled = False
             self.graph_dict[self.graph_names_global[i]].plot_all = True
-
-            self.graph_dict[self.graph_names_global[i]].num_lines = 3
+            self.graph_dict[self.graph_names_global[i]].ax1.yaxis.set_tick_params(which='both', labelbottom=False)
             self.graph_dict[self.graph_names_global[i]].re_init()
-
             self.graph_dict[self.graph_names_global[i]].ax1.legend(self.graph_dict[self.graph_names_global[i]].line, ['Position', 'Velocity', 'Effort'], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3,  mode="expand", borderaxespad=0.5, ncol=3, prop={'size': 7})
             self.graph_dict[self.graph_names_global[i]].enabled = True
             self.graph_dict[self.graph_names_global[i]].update()
@@ -209,6 +163,7 @@ class SrDataVisualizer(Plugin):
         tmp = data["graphs"]
         self.graph_dict = {}
         self.subs = []
+        self.global_yaml = data
         for graphs in data["graphs"]:
             self.graph_names_global = graphs["graph_names"]
             print "------------------------"
@@ -216,11 +171,12 @@ class SrDataVisualizer(Plugin):
             ymin = 0
             ymax = 0
             i = 0
-            while i < len(graphs["ranges"]) - 1:
+            while i < len(graphs["ranges"]):
                 if (graphs["ranges"][i][0] < ymin and graphs["ranges"][i][1] > ymax):
                     ymin = graphs["ranges"][i][0]
                     ymax = graphs["ranges"][i][1]
                 i += 1
+            self.graph_scales_global = ymax
             i = 0
             #create_graphs
             while i < (len(graphs["graph_names"])):
@@ -242,28 +198,31 @@ class SrDataVisualizer(Plugin):
                 x.addWidget(self.graph_dict[graphs["graph_names"][i]])
                 i += 1
 
-        #
-        # self.thj1_layout.addWidget(self.thj1_graph)
-        # self.thj2_layout.addWidget(self.thj2_graph)
-        # self.thj3_layout.addWidget(self.thj3_graph)
-        # self.thj4_layout.addWidget(self.thj4_graph)
-        # self.thj5_layout.addWidget(self.thj5_graph)
-        # self.ffj1_layout.addWidget(self.ffj1_graph)
 
     def joint_state_cb(self, value):
         if self.init_complete:
-
             j = 0
             #for each graph
             while j < len(self.graph_names_global):
-                i = 0
-                #for each line
-                while i < self.graph_dict[self.graph_names_global[j]].num_lines:
-                    self.graph_dict[self.graph_names_global[j]].addData(value.position[17+j], 0)
-                    self.graph_dict[self.graph_names_global[j]].addData(value.velocity[17+j], 1)
-                    self.graph_dict[self.graph_names_global[j]].addData(value.effort[17+j]*self.j0_graphs_effort_scale, 2)
-                    i += 1
-                j += 1
+                if self.graph_dict[self.graph_names_global[j]].plot_all:
+                    ymax = self.graph_scales_global
+                    i = 0
+                    #for each line
+                    while i < self.graph_dict[self.graph_names_global[j]].num_lines:
+                        self.graph_dict[self.graph_names_global[j]].addData(value.position[17+j]*(ymax/self.global_yaml["graphs"][0]["ranges"][0][1]), 0)
+                        self.graph_dict[self.graph_names_global[j]].addData(value.velocity[17+j]*(ymax/self.global_yaml["graphs"][0]["ranges"][1][1]), 1)
+                        self.graph_dict[self.graph_names_global[j]].addData(value.effort[17+j]*(ymax/self.global_yaml["graphs"][0]["ranges"][2][1]), 2)
+                        i += 1
+                    j += 1
+                else:
+                    i = 0
+                    #for each line
+                    while i < self.graph_dict[self.graph_names_global[j]].num_lines:
+                        self.graph_dict[self.graph_names_global[j]].addData(value.position[17+j], 0)
+                        self.graph_dict[self.graph_names_global[j]].addData(value.velocity[17+j], 1)
+                        self.graph_dict[self.graph_names_global[j]].addData(value.effort[17+j], 2)
+                        i += 1
+                    j += 1
             #     self.thj1_graph.addData(value.velocity[17], 0)
             # else:
             #     self.thj1_graph.addData(value.position[17], 0)
@@ -320,6 +279,7 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         for tick in self.ax1.yaxis.get_major_ticks():
             tick.label.set_fontsize(7)
         self.ax1.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)
+        self.ax1.yaxis.set_tick_params(which='both', labelbottom=False)
 
         self.line = []
         if self.tail_enable:

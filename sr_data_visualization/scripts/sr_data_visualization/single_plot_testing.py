@@ -230,6 +230,8 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
             self.y.append((self.n * 0.0) + 50)
             n = n + 1
 
+
+
         self.label_buffer = []
 
         # The window
@@ -237,6 +239,7 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         # self.fig.patch.set_alpha(0.0)
         self.ax1 = self.fig.add_subplot(111)
         self.x_axis = self.n
+
         if not (self.xaxis_tick_animation):
             self.ax1.axes.get_xaxis().set_visible(False)
 

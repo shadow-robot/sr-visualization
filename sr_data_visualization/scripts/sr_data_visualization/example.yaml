@@ -3,7 +3,7 @@ graphs:
   
   - type: pos_vel_eff
     lines: [position, velocity, effort]
-    ranges: [[-3.14, 3.14], [-3.14, 3.14], [-3.14, 3.14]]
+    ranges: [[-3.14, 3.14], [-3.14, 3.14], [-200, 200]]
     graph_names: [thj1, thj2, thj3, thj4]
     colours: [red, blue, green]
     topic_namespace: /joint_states
