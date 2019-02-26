@@ -107,9 +107,9 @@ class SrDataVisualizer(Plugin):
         # self.thj1_graph.legends = ['Velocity']
         # self.thj1_graph.colour = ['blue']
         self.thj1_graph.enabled = False
-        self.thj1_graph.num_lines = 1
+        self.thj1_graph.line_to_plot = 1
+        self.thj1_graph.plot_all = False
         self.thj1_graph.re_init()
-
         self.thj1_graph.ax1.legend(self.thj1_graph.line, ['Velocity'], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3,  mode="expand", borderaxespad=0.5)
         self.thj1_graph.enabled = True
         self.thj1_graph.update()
@@ -121,7 +121,7 @@ class SrDataVisualizer(Plugin):
         # self.thj1_graph.colour = ['red', 'blue', 'green']
         print("in ag func")
         self.thj1_graph.enabled = False
-        self.thj1_graph.num_lines = 3
+        self.thj1_graph.plot_all = True
         self.thj1_graph.re_init()
         self.thj1_graph.ax1.legend(self.thj1_graph.line, ['Position', 'Velocity', 'Effort'], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3,  mode="expand", borderaxespad=0.5, ncol=3)
         #self.thj1_graph.update()
@@ -183,12 +183,9 @@ class SrDataVisualizer(Plugin):
 
     def joint_state_cb(self, value):
 
-        if self.radio_button_velocity.isChecked():
-            self.thj1_graph.addData(value.velocity[17], 0)
-        else:
-            self.thj1_graph.addData(value.position[17], 0)
-            self.thj1_graph.addData(value.velocity[17], 1)
-            self.thj1_graph.addData(value.effort[17] * self.j0_graphs_effort_scale, 2)
+        self.thj1_graph.addData(value.position[17], 0)
+        self.thj1_graph.addData(value.velocity[17], 1)
+        self.thj1_graph.addData(value.effort[17] * self.j0_graphs_effort_scale, 2)
 
 
     def init_widget_children(self):
@@ -201,6 +198,8 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
     # Inspired by: https://stackoverflow.com/questions/36665850/matplotlib-animation-inside-your-own-pyqt4-gui
     def __init__(self, num_lines, colour=[], ymin=-1, ymax=1, legends=[], legend_columns='none', legend_font_size=7,
                  num_ticks=4, xaxis_tick_animation=False, tail_enable=True, enabled=True):
+        self.plot_all = True
+        self.line_to_plot = None
         self.enabled = enabled
         self.legends = legends
         self.num_lines = num_lines
@@ -275,18 +274,33 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         if self.tail_enable:
             self.line_head = []
             self.line_tail = []
-        i = 0
-        while i < self.num_lines:
-            self.line.append(Line2D([], [], color=self.colour[i]))
-            if self.tail_enable:
-                self.line_tail.append(Line2D([], [], color='red', linewidth=2))
-                self.line_head.append(Line2D([], [], color='red', marker='o', markeredgecolor='r'))
-                self.ax1.add_line(self.line_tail[i])
-                self.ax1.add_line(self.line_head[i])
-            self.ax1.add_line(self.line[i])
-            self.ax1.set_xlim(0, self.xlim - 1)
-            self.ax1.set_ylim(self.ymin, self.ymax)
-            i = i + 1
+
+        if self.plot_all:
+            i = 0
+            while i < self.num_lines:
+                self.line.append(Line2D([], [], color=self.colour[i]))
+                if self.tail_enable:
+                    self.line_tail.append(Line2D([], [], color='red', linewidth=2))
+                    self.line_head.append(Line2D([], [], color='red', marker='o', markeredgecolor='r'))
+                    self.ax1.add_line(self.line_tail[i])
+                    self.ax1.add_line(self.line_head[i])
+                self.ax1.add_line(self.line[i])
+                self.ax1.set_xlim(0, self.xlim - 1)
+                self.ax1.set_ylim(self.ymin, self.ymax)
+                i = i + 1
+        else:
+            i = 0
+            while i < self.num_lines:
+                self.line.append(Line2D([], [], color=self.colour[self.line_to_plot]))
+                if self.tail_enable:
+                    self.line_tail.append(Line2D([], [], color='red', linewidth=2))
+                    self.line_head.append(Line2D([], [], color='red', marker='o', markeredgecolor='r'))
+                    self.ax1.add_line(self.line_tail[i])
+                    self.ax1.add_line(self.line_head[i])
+                self.ax1.add_line(self.line[i])
+                self.ax1.set_xlim(0, self.xlim - 1)
+                self.ax1.set_ylim(self.ymin, self.ymax)
+                i = i + 1
 
     def new_frame_seq(self):
         return iter(range(self.n.size))
@@ -321,8 +335,25 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
                     self.y[i][-1] = self.addedDataArray[i][0]
                     del (self.addedDataArray[i][0])
                 i = i + 1
-            i = 0
-            while i < self.num_lines:
+            if self.plot_all:
+                i = 0
+                while i < self.num_lines:
+                    self.line[i].set_data(self.n[0: self.n.size - margin], self.y[i][0: self.n.size - margin])
+                    if self.tail_enable:
+                        self.line_tail[i].set_data(np.append(self.n[-10:-1 - margin], self.n[-1 - margin]),
+                                                   np.append(self.y[i][-10:-1 - margin], self.y[i][-1 - margin]))
+                        self.line_head[i].set_data(self.n[-1 - margin], self.y[i][-1 - margin])
+                    self._drawn_artists = []
+                    for l in self.line:
+                        self._drawn_artists.append(l)
+                    if self.tail_enable:
+                        for l in self.line_tail:
+                            self._drawn_artists.append(l)
+                        for l in self.line_head:
+                            self._drawn_artists.append(l)
+                    i = i + 1
+            else:
+                i = self.line_to_plot
                 self.line[i].set_data(self.n[0: self.n.size - margin], self.y[i][0: self.n.size - margin])
                 if self.tail_enable:
                     self.line_tail[i].set_data(np.append(self.n[-10:-1 - margin], self.n[-1 - margin]),
@@ -336,7 +367,6 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
                         self._drawn_artists.append(l)
                     for l in self.line_head:
                         self._drawn_artists.append(l)
-                i = i + 1
 
             if self.xaxis_tick_animation:
                 time_from_start = int((rospy.get_rostime() - self.start_time).to_sec())

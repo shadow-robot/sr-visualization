@@ -50,6 +50,7 @@ from sensor_msgs.msg import JointState
 
 class SrDataVisualizer(Plugin):
     def __init__(self, context):
+        self.init_complete = False
         super(SrDataVisualizer, self).__init__(context)
         self.setObjectName("SrDataVisualizer")
         self._widget = QWidget()
@@ -84,8 +85,12 @@ class SrDataVisualizer(Plugin):
 
         self.radio_button_velocity = self._widget.findChild(QRadioButton, "radioButton_3")
         self.radio_button_all = self._widget.findChild(QRadioButton, "radioButton_4")
+        self.radio_button_position = self._widget.findChild(QRadioButton, "radioButton")
+        self.radio_button_effort = self._widget.findChild(QRadioButton, "radioButton_2")
 
         self.radio_button_velocity.toggled.connect(lambda: self.joint_states_button(self.radio_button_velocity))
+        self.radio_button_position.toggled.connect(lambda: self.joint_states_button(self.radio_button_position))
+        self.radio_button_effort.toggled.connect(lambda: self.joint_states_button(self.radio_button_effort))
         self.radio_button_all.toggled.connect(lambda: self.joint_states_button(self.radio_button_all))
 
         with open("example.yaml", 'r') as stream:
@@ -94,7 +99,8 @@ class SrDataVisualizer(Plugin):
                 self.my_func(data_loaded)
             except yaml.YAMLError as exc:
                 print(exc)
-
+        data_loaded_hold = data_loaded
+        self.init_complete = True
 
 
     def joint_states_button(self, b):
@@ -106,7 +112,6 @@ class SrDataVisualizer(Plugin):
             else:
                 print b.text() + " is deselected"
 
-
         if b.text() == "Velocity (rad/s)":
             if b.isChecked() == True:
                 self.change_to_vel_graphs()
@@ -114,29 +119,84 @@ class SrDataVisualizer(Plugin):
             else:
                 print b.text() + " is deselected"
 
+        if b.text() == "Effort":
+            if b.isChecked() == True:
+                self.change_to_eff_graphs()
+                print b.text() + " is selected"
+            else:
+                print b.text() + " is deselected"
+
+        if b.text() == "position (rad)":
+            if b.isChecked() == True:
+                self.change_to_pos_graphs()
+                print b.text() + " is selected"
+            else:
+                print b.text() + " is deselected"
+
 
     def change_to_vel_graphs(self):
         i = 0
-        while i < self.graph_dict[self.graph_names_global[0]].num_lines:
+        temp = self.graph_dict[self.graph_names_global[0]].num_lines
+        while i <= self.graph_dict[self.graph_names_global[0]].num_lines:
             # for graph in self.graph_names_global:
             self.graph_dict[self.graph_names_global[i]].enabled = False
-            self.graph_dict[self.graph_names_global[i]].num_lines = 1
-            self.graph_dict[self.graph_names_global[i]].ax1.legend(self.graph_dict[self.graph_names_global[i]].line, ['Velocity'], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3,  mode="expand", borderaxespad=0.5 )
+            self.graph_dict[self.graph_names_global[i]].line_to_plot = 1
+            self.graph_dict[self.graph_names_global[i]].plot_all = False
+            # self.graph_dict[self.graph_names_global[i]].num_lines = 1
             self.graph_dict[self.graph_names_global[i]].re_init()
+
+            self.graph_dict[self.graph_names_global[i]].ax1.legend(self.graph_dict[self.graph_names_global[i]].line, ['Velocity'], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5, prop={'size': 7})
             self.graph_dict[self.graph_names_global[i]].enabled = True
             self.graph_dict[self.graph_names_global[i]].update()
             self.graph_dict[self.graph_names_global[i]].draw()
             i += 1
 
+    def change_to_eff_graphs(self):
+        i = 0
+        temp = self.graph_dict[self.graph_names_global[0]].num_lines
+        while i <= self.graph_dict[self.graph_names_global[0]].num_lines:
+            # for graph in self.graph_names_global:
+            self.graph_dict[self.graph_names_global[i]].enabled = False
+            self.graph_dict[self.graph_names_global[i]].line_to_plot = 2
+            self.graph_dict[self.graph_names_global[i]].plot_all = False
+            # self.graph_dict[self.graph_names_global[i]].num_lines = 1
+            self.graph_dict[self.graph_names_global[i]].re_init()
+
+            self.graph_dict[self.graph_names_global[i]].ax1.legend(self.graph_dict[self.graph_names_global[i]].line, ['Effort'], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5, prop={'size': 7})
+            self.graph_dict[self.graph_names_global[i]].enabled = True
+            self.graph_dict[self.graph_names_global[i]].update()
+            self.graph_dict[self.graph_names_global[i]].draw()
+            i += 1
+
+    def change_to_pos_graphs(self):
+        i = 0
+        temp = self.graph_dict[self.graph_names_global[0]].num_lines
+        while i <= self.graph_dict[self.graph_names_global[0]].num_lines:
+            # for graph in self.graph_names_global:
+            self.graph_dict[self.graph_names_global[i]].enabled = False
+            self.graph_dict[self.graph_names_global[i]].line_to_plot = 0
+            self.graph_dict[self.graph_names_global[i]].plot_all = False
+            # self.graph_dict[self.graph_names_global[i]].num_lines = 1
+            self.graph_dict[self.graph_names_global[i]].re_init()
+
+            self.graph_dict[self.graph_names_global[i]].ax1.legend(self.graph_dict[self.graph_names_global[i]].line, ['Position'], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5, prop={'size': 7})
+            self.graph_dict[self.graph_names_global[i]].enabled = True
+            self.graph_dict[self.graph_names_global[i]].update()
+            self.graph_dict[self.graph_names_global[i]].draw()
+            i += 1
 
     def change_to_all_graphs(self):
         i = 0
+        #for each graph
         while i < self.graph_dict[self.graph_names_global[0]].num_lines:
             # for graph in self.graph_names_global:
             self.graph_dict[self.graph_names_global[i]].enabled = False
-            self.graph_dict[self.graph_names_global[i]].num_lines = 1
-            self.graph_dict[self.graph_names_global[i]].ax1.legend(self.graph_dict[self.graph_names_global[i]].line, ['Position', 'Velocity', 'Effort'], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3,  mode="expand", borderaxespad=0.5 )
+            self.graph_dict[self.graph_names_global[i]].plot_all = True
+
+            self.graph_dict[self.graph_names_global[i]].num_lines = 3
             self.graph_dict[self.graph_names_global[i]].re_init()
+
+            self.graph_dict[self.graph_names_global[i]].ax1.legend(self.graph_dict[self.graph_names_global[i]].line, ['Position', 'Velocity', 'Effort'], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3,  mode="expand", borderaxespad=0.5, ncol=3, prop={'size': 7})
             self.graph_dict[self.graph_names_global[i]].enabled = True
             self.graph_dict[self.graph_names_global[i]].update()
             self.graph_dict[self.graph_names_global[i]].draw()
@@ -144,24 +204,15 @@ class SrDataVisualizer(Plugin):
 
 
     def my_func(self, data):
+
         # print(data["graphs"])
         tmp = data["graphs"]
         self.graph_dict = {}
-        subs = []
+        self.subs = []
         for graphs in data["graphs"]:
             self.graph_names_global = graphs["graph_names"]
             print "------------------------"
-            # print "type: ", graphs["type"]
-            # print "number of graphs: ", len(graphs["graph_names"])
-            # print "lines: "
-            # for line in graphs["lines"]:
-            #     print"\t", (line)
-            # print("ranges: ")
-            # for range in graphs["ranges"]:
-            #     print(range)
-            # print(graphs["ranges"][0][0])
-            subs.append(rospy.Subscriber(graphs["topic_namespace"], JointState, self.joint_state_cb, queue_size=1))
-
+            self.subs.append(rospy.Subscriber(graphs["topic_namespace"], JointState, self.joint_state_cb, queue_size=1))
             ymin = 0
             ymax = 0
             i = 0
@@ -176,6 +227,7 @@ class SrDataVisualizer(Plugin):
                 self.graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]), colour=graphs["colours"], ymin=ymin, ymax=ymax, ranges=graphs["ranges"], graph_title=graphs["graph_names"][i], legends=graphs["lines"], legend_columns=len(graphs["lines"]), legend_font_size = 7, num_ticks = 4, xaxis_tick_animation = False, tail_enable = True, enabled = True)
                 i += 1
             i = 0
+
             #init_widget_children
             lay_dic = {}
             while i < (len(graphs["graph_names"])):
@@ -199,27 +251,31 @@ class SrDataVisualizer(Plugin):
         # self.ffj1_layout.addWidget(self.ffj1_graph)
 
     def joint_state_cb(self, value):
-        i = 0
-        if self.radio_button_velocity.isChecked():
-            while i < self.graph_dict[self.graph_names_global[0]].num_lines:
-                self.graph_dict[self.graph_names_global[i]].addData(value.velocity[17], 1)
-                i += 1
-        else:
-            while i < self.graph_dict[self.graph_names_global[0]].num_lines:
-                self.graph_dict[self.graph_names_global[i]].addData(value.velocity[17], 0)
-                self.graph_dict[self.graph_names_global[i]].addData(value.velocity[17], 1)
-                self.graph_dict[self.graph_names_global[i]].addData(value.velocity[17], 2)
-                i += 1
-        #     self.thj1_graph.addData(value.velocity[17], 0)
-        # else:
-        #     self.thj1_graph.addData(value.position[17], 0)
-        #     self.thj1_graph.addData(value.velocity[17], 1)
-        #     self.thj1_graph.addData(value.effort[17] * self.j0_graphs_effort_scale, 2)
+        if self.init_complete:
+
+            j = 0
+            #for each graph
+            while j < len(self.graph_names_global):
+                i = 0
+                #for each line
+                while i < self.graph_dict[self.graph_names_global[j]].num_lines:
+                    self.graph_dict[self.graph_names_global[j]].addData(value.position[17+j], 0)
+                    self.graph_dict[self.graph_names_global[j]].addData(value.velocity[17+j], 1)
+                    self.graph_dict[self.graph_names_global[j]].addData(value.effort[17+j]*self.j0_graphs_effort_scale, 2)
+                    i += 1
+                j += 1
+            #     self.thj1_graph.addData(value.velocity[17], 0)
+            # else:
+            #     self.thj1_graph.addData(value.position[17], 0)
+            #     self.thj1_graph.addData(value.velocity[17], 1)
+            #     self.thj1_graph.addData(value.effort[17] * self.j0_graphs_effort_scale, 2)
 
 class CustomFigCanvas(FigureCanvas, TimedAnimation):
     # Inspired by: https://stackoverflow.com/questions/36665850/matplotlib-animation-inside-your-own-pyqt4-gui
     def __init__(self, num_lines, colour=[], ymin=-1, ymax=1, legends=[], legend_columns='none', legend_font_size=7,
                  num_ticks=4, xaxis_tick_animation=False, tail_enable=True, enabled=True, ranges=[], graph_title="oops"):
+        self.plot_all = True
+        self.line_to_plot = None
         self.enabled = enabled
         self.legends = legends
         self.num_lines = num_lines
@@ -294,18 +350,33 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         if self.tail_enable:
             self.line_head = []
             self.line_tail = []
-        i = 0
-        while i < self.num_lines:
-            self.line.append(Line2D([], [], color=self.colour[i]))
-            if self.tail_enable:
-                self.line_tail.append(Line2D([], [], color='red', linewidth=2))
-                self.line_head.append(Line2D([], [], color='red', marker='o', markeredgecolor='r'))
-                self.ax1.add_line(self.line_tail[i])
-                self.ax1.add_line(self.line_head[i])
-            self.ax1.add_line(self.line[i])
-            self.ax1.set_xlim(0, self.xlim - 1)
-            self.ax1.set_ylim(self.ymin, self.ymax)
-            i = i + 1
+
+        if self.plot_all:
+            i = 0
+            while i < self.num_lines:
+                self.line.append(Line2D([], [], color=self.colour[i]))
+                if self.tail_enable:
+                    self.line_tail.append(Line2D([], [], color='red', linewidth=2))
+                    self.line_head.append(Line2D([], [], color='red', marker='o', markeredgecolor='r'))
+                    self.ax1.add_line(self.line_tail[i])
+                    self.ax1.add_line(self.line_head[i])
+                self.ax1.add_line(self.line[i])
+                self.ax1.set_xlim(0, self.xlim - 1)
+                self.ax1.set_ylim(self.ymin, self.ymax)
+                i = i + 1
+        else:
+            i = 0
+            while i < self.num_lines:
+                self.line.append(Line2D([], [], color=self.colour[self.line_to_plot]))
+                if self.tail_enable:
+                    self.line_tail.append(Line2D([], [], color='red', linewidth=2))
+                    self.line_head.append(Line2D([], [], color='red', marker='o', markeredgecolor='r'))
+                    self.ax1.add_line(self.line_tail[i])
+                    self.ax1.add_line(self.line_head[i])
+                self.ax1.add_line(self.line[i])
+                self.ax1.set_xlim(0, self.xlim - 1)
+                self.ax1.set_ylim(self.ymin, self.ymax)
+                i = i + 1
 
     def new_frame_seq(self):
         return iter(range(self.n.size))
@@ -340,8 +411,25 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
                     self.y[i][-1] = self.addedDataArray[i][0]
                     del (self.addedDataArray[i][0])
                 i = i + 1
-            i = 0
-            while i < self.num_lines:
+            if self.plot_all:
+                i = 0
+                while i < self.num_lines:
+                    self.line[i].set_data(self.n[0: self.n.size - margin], self.y[i][0: self.n.size - margin])
+                    if self.tail_enable:
+                        self.line_tail[i].set_data(np.append(self.n[-10:-1 - margin], self.n[-1 - margin]),
+                                                   np.append(self.y[i][-10:-1 - margin], self.y[i][-1 - margin]))
+                        self.line_head[i].set_data(self.n[-1 - margin], self.y[i][-1 - margin])
+                    self._drawn_artists = []
+                    for l in self.line:
+                        self._drawn_artists.append(l)
+                    if self.tail_enable:
+                        for l in self.line_tail:
+                            self._drawn_artists.append(l)
+                        for l in self.line_head:
+                            self._drawn_artists.append(l)
+                    i = i + 1
+            else:
+                i = self.line_to_plot
                 self.line[i].set_data(self.n[0: self.n.size - margin], self.y[i][0: self.n.size - margin])
                 if self.tail_enable:
                     self.line_tail[i].set_data(np.append(self.n[-10:-1 - margin], self.n[-1 - margin]),
@@ -355,7 +443,6 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
                         self._drawn_artists.append(l)
                     for l in self.line_head:
                         self._drawn_artists.append(l)
-                i = i + 1
 
             if self.xaxis_tick_animation:
                 time_from_start = int((rospy.get_rostime() - self.start_time).to_sec())
@@ -371,7 +458,6 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
                     i = i + 1
                 self.ax1.set_xticks(x)
                 self.ax1.set_xticklabels([int(i / int(self.xlim / self.num_ticks)) + time_from_start for i in x])
-
 
 if __name__ == "__main__":
     rospy.init_node("hand_e_visualizer")

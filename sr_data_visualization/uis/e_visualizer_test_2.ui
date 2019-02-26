@@ -354,7 +354,7 @@
                <item row="1" column="0">
                 <widget class="QRadioButton" name="radioButton">
                  <property name="text">
-                  <string>Position (rad)</string>
+                  <string>position (rad)</string>
                  </property>
                  <property name="checked">
                   <bool>false</bool>
