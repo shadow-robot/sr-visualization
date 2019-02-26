@@ -28,12 +28,14 @@ import os
 import signal
 import rospy
 import rospkg
+import string
 
 from sensor_msgs.msg import JointState
 
 class SrDataVisualizer(Plugin):
     def __init__(self, context):
         self.init_complete = False
+        self.first_run = True
         super(SrDataVisualizer, self).__init__(context)
         self.setObjectName("SrDataVisualizer")
         self._widget = QWidget()
@@ -54,13 +56,6 @@ class SrDataVisualizer(Plugin):
             """
         p.setColor(self.tab_widget_1.backgroundRole(), Qt.white)
         self.tab_widget_1.setStyleSheet(stylesheet)
-
-
-
-        self.j0_graphs_scale = 3.14159
-        self.pid_output_scale = 0.013333333
-
-        self.j0_graphs_effort_scale = self.j0_graphs_scale / 600
 
         self.radio_button_velocity = self._widget.findChild(QRadioButton, "radioButton_3")
         self.radio_button_all = self._widget.findChild(QRadioButton, "radioButton_4")
@@ -116,8 +111,8 @@ class SrDataVisualizer(Plugin):
 
     def change_to_single_graph(self, legend_name, line_number):
         i = 0
-        temp = self.graph_dict[self.graph_names_global[0]].num_lines
-        while i <= self.graph_dict[self.graph_names_global[0]].num_lines:
+        temp = len(self.graph_names_global)
+        while i < len(self.graph_names_global):
             self.graph_dict[self.graph_names_global[i]].enabled = False
             self.graph_dict[self.graph_names_global[i]].line_to_plot = line_number
             self.graph_dict[self.graph_names_global[i]].plot_all = False
@@ -131,6 +126,7 @@ class SrDataVisualizer(Plugin):
             self.graph_dict[self.graph_names_global[i]].draw()
             i += 1
 
+    # TODO: remove redundant code in change_to_all_graphs and change_to_single_graph
     def change_to_all_graphs(self):
         ymin = 0
         ymax = 0
@@ -142,7 +138,7 @@ class SrDataVisualizer(Plugin):
             i += 1
         i = 0
         #for each graph
-        while i <= self.graph_dict[self.graph_names_global[0]].num_lines:
+        while i < len(self.graph_names_global):
             self.graph_dict[self.graph_names_global[i]].ymin = ymin
             self.graph_dict[self.graph_names_global[i]].ymax = ymax
             # for graph in self.graph_names_global:
@@ -200,34 +196,61 @@ class SrDataVisualizer(Plugin):
 
 
     def joint_state_cb(self, value):
+        if self.first_run:
+            #Create map of jointstates (so we can do joint_state.values.position[joint_state_data_map["rh_FFJ1"]]
+            self.joint_state_data_map = {}
+            i = 0
+            while i < len(value.name):
+                self.joint_state_data_map[value.name[i]] = i
+                i += 1
+            self.first_run = False
         if self.init_complete:
-            j = 0
-            #for each graph
-            while j < len(self.graph_names_global):
-                if self.graph_dict[self.graph_names_global[j]].plot_all:
-                    ymax = self.graph_scales_global
-                    i = 0
-                    #for each line
-                    while i < self.graph_dict[self.graph_names_global[j]].num_lines:
-                        self.graph_dict[self.graph_names_global[j]].addData(value.position[17+j]*(ymax/self.global_yaml["graphs"][0]["ranges"][0][1]), 0)
-                        self.graph_dict[self.graph_names_global[j]].addData(value.velocity[17+j]*(ymax/self.global_yaml["graphs"][0]["ranges"][1][1]), 1)
-                        self.graph_dict[self.graph_names_global[j]].addData(value.effort[17+j]*(ymax/self.global_yaml["graphs"][0]["ranges"][2][1]), 2)
-                        i += 1
-                    j += 1
-                else:
-                    i = 0
-                    #for each line
-                    while i < self.graph_dict[self.graph_names_global[j]].num_lines:
-                        self.graph_dict[self.graph_names_global[j]].addData(value.position[17+j], 0)
-                        self.graph_dict[self.graph_names_global[j]].addData(value.velocity[17+j], 1)
-                        self.graph_dict[self.graph_names_global[j]].addData(value.effort[17+j], 2)
-                        i += 1
-                    j += 1
-            #     self.thj1_graph.addData(value.velocity[17], 0)
-            # else:
-            #     self.thj1_graph.addData(value.position[17], 0)
-            #     self.thj1_graph.addData(value.velocity[17], 1)
-            #     self.thj1_graph.addData(value.effort[17] * self.j0_graphs_effort_scale, 2)
+            if True:
+                j = 0
+                # for each graph
+                while j < len(self.graph_names_global):
+                    if self.graph_dict[self.graph_names_global[j]].plot_all:
+                        ymax = self.graph_scales_global
+                        # for each line
+                        temp = (ymax / self.global_yaml["graphs"][0]["ranges"][0][1])
+                        tmp2 = value.velocity[self.joint_state_data_map['rh_' + string.upper('thj4')]]
+                        tmp3 = value.velocity[self.joint_state_data_map['rh_' + string.upper('thj5')]]
+                        tmp4 = value.position[self.joint_state_data_map['rh_' + string.upper('thj4')]]
+                        tmp5 = value.position[self.joint_state_data_map['rh_' + string.upper('thj5')]]
+                        self.graph_dict[self.graph_names_global[j]].addData(value.position[self.joint_state_data_map['rh_' + string.upper(self.graph_names_global[j])]] * (ymax / self.global_yaml["graphs"][0]["ranges"][0][1]), 0)
+                        self.graph_dict[self.graph_names_global[j]].addData(value.velocity[self.joint_state_data_map['rh_' + string.upper(self.graph_names_global[j])]] * (ymax / self.global_yaml["graphs"][0]["ranges"][1][1]), 1)
+                        self.graph_dict[self.graph_names_global[j]].addData(value.effort[self.joint_state_data_map['rh_' + string.upper(self.graph_names_global[j])]] * (ymax / self.global_yaml["graphs"][0]["ranges"][2][1]), 2)
+                        j += 1
+                    else:
+                        # for each line
+                        self.graph_dict[self.graph_names_global[j]].addData(value.position[self.joint_state_data_map['rh_' + string.upper(self.graph_names_global[j])]], 0)
+                        self.graph_dict[self.graph_names_global[j]].addData(value.velocity[self.joint_state_data_map['rh_' + string.upper(self.graph_names_global[j])]], 1)
+                        self.graph_dict[self.graph_names_global[j]].addData(value.effort[self.joint_state_data_map['rh_' + string.upper(self.graph_names_global[j])]], 2)
+                        j += 1
+            else:
+                j = 0
+                # for each graph
+                while j < len(self.graph_names_global):
+                    if self.graph_dict[self.graph_names_global[j]].plot_all:
+                        ymax = self.graph_scales_global
+                        i = 0
+                        # for each line
+                        while i < self.graph_dict[self.graph_names_global[j]].num_lines:
+                            self.graph_dict[self.graph_names_global[j]].addData(value.position[17 + j] * (ymax / self.global_yaml["graphs"][0]["ranges"][0][1]), 0)
+                            self.graph_dict[self.graph_names_global[j]].addData(value.velocity[17 + j] * (ymax / self.global_yaml["graphs"][0]["ranges"][1][1]), 1)
+                            self.graph_dict[self.graph_names_global[j]].addData(value.effort[17 + j] * (ymax / self.global_yaml["graphs"][0]["ranges"][2][1]), 2)
+                            i += 1
+                        j += 1
+                    else:
+                        i = 0
+                        # for each line
+                        while i < self.graph_dict[self.graph_names_global[j]].num_lines:
+                            self.graph_dict[self.graph_names_global[j]].addData(value.position[17 + j], 0)
+                            self.graph_dict[self.graph_names_global[j]].addData(value.velocity[17 + j], 1)
+                            self.graph_dict[self.graph_names_global[j]].addData(value.effort[17 + j], 2)
+                            i += 1
+                        j += 1
+
 
 class CustomFigCanvas(FigureCanvas, TimedAnimation):
     # Inspired by: https://stackoverflow.com/questions/36665850/matplotlib-animation-inside-your-own-pyqt4-gui
