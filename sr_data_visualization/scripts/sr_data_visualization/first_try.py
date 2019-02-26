@@ -115,19 +115,19 @@ class SrDataVisualizer(Plugin):
 
     def change_to_single_graph(self, legend_name, line_number):
         i = 0
-        temp = len(self.graph_names_global)
-        while i < len(self.graph_names_global):
-            self.graph_dict[self.graph_names_global[i]].enabled = False
-            self.graph_dict[self.graph_names_global[i]].line_to_plot = line_number
-            self.graph_dict[self.graph_names_global[i]].plot_all = False
-            self.graph_dict[self.graph_names_global[i]].ax1.yaxis.set_tick_params(which='both', labelbottom=True)
-            self.graph_dict[self.graph_names_global[i]].ymin = self.global_yaml["graphs"][0]["ranges"][line_number][0]
-            self.graph_dict[self.graph_names_global[i]].ymax = self.global_yaml["graphs"][0]["ranges"][line_number][1]
-            self.graph_dict[self.graph_names_global[i]].re_init()
-            self.graph_dict[self.graph_names_global[i]].ax1.legend(self.graph_dict[self.graph_names_global[i]].line, [legend_name], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5, prop={'size': 7})
-            self.graph_dict[self.graph_names_global[i]].enabled = True
-            self.graph_dict[self.graph_names_global[i]].update()
-            self.graph_dict[self.graph_names_global[i]].draw()
+        temp = len(self.graph_names_joint_states)
+        while i < len(self.graph_names_joint_states):
+            self.graph_dict_joint_states[self.graph_names_joint_states[i]].enabled = False
+            self.graph_dict_joint_states[self.graph_names_joint_states[i]].line_to_plot = line_number
+            self.graph_dict_joint_states[self.graph_names_joint_states[i]].plot_all = False
+            self.graph_dict_joint_states[self.graph_names_joint_states[i]].ax1.yaxis.set_tick_params(which='both', labelbottom=True)
+            self.graph_dict_joint_states[self.graph_names_joint_states[i]].ymin = self.global_yaml["graphs"][0]["ranges"][line_number][0]
+            self.graph_dict_joint_states[self.graph_names_joint_states[i]].ymax = self.global_yaml["graphs"][0]["ranges"][line_number][1]
+            self.graph_dict_joint_states[self.graph_names_joint_states[i]].re_init()
+            self.graph_dict_joint_states[self.graph_names_joint_states[i]].ax1.legend(self.graph_dict_joint_states[self.graph_names_joint_states[i]].line, [legend_name], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5, prop={'size': 7})
+            self.graph_dict_joint_states[self.graph_names_joint_states[i]].enabled = True
+            self.graph_dict_joint_states[self.graph_names_joint_states[i]].update()
+            self.graph_dict_joint_states[self.graph_names_joint_states[i]].draw()
             i += 1
 
     # TODO: remove redundant code in change_to_all_graphs and change_to_single_graph
@@ -142,48 +142,104 @@ class SrDataVisualizer(Plugin):
             i += 1
         i = 0
         #for each graph
-        while i < len(self.graph_names_global):
-            self.graph_dict[self.graph_names_global[i]].ymin = ymin
-            self.graph_dict[self.graph_names_global[i]].ymax = ymax
-            # for graph in self.graph_names_global:
-            self.graph_dict[self.graph_names_global[i]].enabled = False
-            self.graph_dict[self.graph_names_global[i]].plot_all = True
-            self.graph_dict[self.graph_names_global[i]].ax1.yaxis.set_tick_params(which='both', labelbottom=False)
-            self.graph_dict[self.graph_names_global[i]].re_init()
-            self.graph_dict[self.graph_names_global[i]].ax1.legend(self.graph_dict[self.graph_names_global[i]].line, ['Position', 'Velocity', 'Effort'], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3,  mode="expand", borderaxespad=0.5, ncol=3, prop={'size': 7})
-            self.graph_dict[self.graph_names_global[i]].enabled = True
-            self.graph_dict[self.graph_names_global[i]].update()
-            self.graph_dict[self.graph_names_global[i]].draw()
+        while i < len(self.graph_names_joint_states):
+            self.graph_dict_joint_states[self.graph_names_joint_states[i]].ymin = ymin
+            self.graph_dict_joint_states[self.graph_names_joint_states[i]].ymax = ymax
+            # for graph in self.graph_names_joint_states:
+            self.graph_dict_joint_states[self.graph_names_joint_states[i]].enabled = False
+            self.graph_dict_joint_states[self.graph_names_joint_states[i]].plot_all = True
+            self.graph_dict_joint_states[self.graph_names_joint_states[i]].ax1.yaxis.set_tick_params(which='both', labelbottom=False)
+            self.graph_dict_joint_states[self.graph_names_joint_states[i]].re_init()
+            self.graph_dict_joint_states[self.graph_names_joint_states[i]].ax1.legend(self.graph_dict_joint_states[self.graph_names_joint_states[i]].line, ['Position', 'Velocity', 'Effort'], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3,  mode="expand", borderaxespad=0.5, ncol=3, prop={'size': 7})
+            self.graph_dict_joint_states[self.graph_names_joint_states[i]].enabled = True
+            self.graph_dict_joint_states[self.graph_names_joint_states[i]].update()
+            self.graph_dict_joint_states[self.graph_names_joint_states[i]].draw()
             i += 1
     # TODO: make this work!
-    # def make_control_loop_callback(self, data):
-    #     def _callback:
-    #         #do function things here
-    #         self.pid_graph_lfj4.addData(data.set_point, 0)
-    #         self.pid_graph_lfj4.addData(data.process_value, 1)
-    #         self.pid_graph_lfj4.addData(data.process_value_dot, 2)
-    #         self.pid_graph_lfj4.addData(data.error, 3)
-    #         self.pid_graph_lfj4.addData(data.command * self.pid_output_scale, 4)
-    #         self.graph_dict[self.graph_names_global[j]].addData(value.velocity[self.joint_state_data_map['rh_' + string.upper(self.graph_names_global[j])]] * (ymax / self.global_yaml["graphs"][0]["ranges"][1][1]), 1)
-    #
-    #     return _callback
+
+
+    def make_control_loop_callback(self, name, data):
+        #print(data)
+        #print(dater)
+        #print(self.probably_shouldnt_do_this)
+        #cb_name = self.probably_shouldnt_do_this
+        def _callback(name, data):
+            print("ohai")
+            print("name: ", name)
+        return _callback
+
+    # def callback(self, data, name):
+    #     print("ohai")
+    #     # x = cb_name
+    #     # print(x)
+    #     #print("data:", data)
+    #     print("name: ", name)
 
     def my_func(self, data):
         # print(data["graphs"])
         tmp = data["graphs"]
-        self.graph_dict = {}
+        self.graph_dict_joint_states = {}
+        self.graph_dict_control_loops = {}
         self.subs = []
+        self.control_loop_callbacks = []
+        control_loop_cbs = []
+        self.control_loop_callbacks_dict = {}
         self.global_yaml = data
         for graphs in data["graphs"]:
             if graphs["type"] == 'control_loops':
+                self.graph_names_control_loops = graphs["graph_names"]
+                #self.callbacks = {name: self.make_control_loop_callback for name in graphs["graph_names"]}
+
                 i = 0
                 while i < len(graphs["graph_names"]):
                     sub_namespace = graphs["topic_namespace_start"] + graphs["graph_names"][i] + graphs["topic_namespace_end"]
-                    self.subs.append(rospy.Subscriber(sub_namespace, JointControllerState, self.make_control_loop_callback, queue_size=1))
+                    #                   self.subs.append(rospy.Subscriber(sub_namespace, JointControllerState, self.make_control_loop_callback, queue_size=1))
                     print(sub_namespace)
+                    self.probably_shouldnt_do_this = graphs["graph_names"][i]
+                   # self.control_loop_callbacks.append(self.callback(name=self.probably_shouldnt_do_this, dater=0))
+                    temp_cb = self.make_control_loop_callback(name="ffj0", data=0)
+                    #self.subs.append(rospy.Subscriber(sub_namespace, JointControllerState, control_loop_cbs.append(self.make_control_loop_callback), queue_size=1))
+                    #self.subs.append(rospy.Subscriber(sub_namespace, JointControllerState, self.control_loop_callbacks.append(self.make_control_loop_callback), queue_size=1))
+                    #self.subs.append(rospy.Subscriber(sub_namespace, JointControllerState, self.control_loop_callbacks.append(self.make_control_loop_callback), queue_size=1))
+                    #self.subs.append(rospy.Subscriber(sub_namespace, JointControllerState, self.callbacks[graphs["graph_names"][i]], queue_size=1))
+                    self.subs.append(rospy.Subscriber(sub_namespace, JointControllerState, callback=temp_cb, callback_args=graphs["graph_names"][i], queue_size=1))
+                    self.control_loop_callbacks.append(temp_cb)
+
+
                     i += 1
-            else:
-                self.graph_names_global = graphs["graph_names"]
+                ymin = 0
+                ymax = 0
+                i = 0
+                while i < len(graphs["ranges"]):
+                    if (graphs["ranges"][i][0] < ymin and graphs["ranges"][i][1] > ymax):
+                        ymin = graphs["ranges"][i][0]
+                        ymax = graphs["ranges"][i][1]
+                    i += 1
+                self.graph_scales_control_loops = ymax
+                i = 0
+
+                # create_graphs
+                while i < (len(graphs["graph_names"])):
+                    self.graph_dict_control_loops[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]), colour=graphs["colours"], ymin=ymin, ymax=ymax, ranges=graphs["ranges"], graph_title=graphs["graph_names"][i], legends=graphs["lines"], legend_columns=len(graphs["lines"]), legend_font_size=7, num_ticks=4, xaxis_tick_animation=False, tail_enable=True, enabled=True)
+                    i += 1
+                i = 0
+
+                # init_widget_children
+                lay_dic = {}
+                while i < (len(graphs["graph_names"])):
+                    layout = graphs["graph_names"][i] + "_layout_ctrl"
+                    lay_dic[graphs["graph_names"][i]] = self._widget.findChild(QVBoxLayout, layout)
+                    i += 1
+
+                # attach_graphs
+                i = 0
+                while i < (len(graphs["graph_names"])):
+                    x = lay_dic.get(graphs["graph_names"][i])
+                    x.addWidget(self.graph_dict_control_loops[graphs["graph_names"][i]])
+                    i += 1
+
+            elif graphs["type"] == 'pos_vel_eff':
+                self.graph_names_joint_states = graphs["graph_names"]
                 print "------------------------"
                 self.subs.append(rospy.Subscriber(graphs["topic_namespace"], JointState, self.joint_state_cb, queue_size=1))
                 ymin = 0
@@ -194,11 +250,12 @@ class SrDataVisualizer(Plugin):
                         ymin = graphs["ranges"][i][0]
                         ymax = graphs["ranges"][i][1]
                     i += 1
-                self.graph_scales_global = ymax
+                self.graph_scales_joint_states = ymax
                 i = 0
+
                 #create_graphs
                 while i < (len(graphs["graph_names"])):
-                    self.graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]), colour=graphs["colours"], ymin=ymin, ymax=ymax, ranges=graphs["ranges"], graph_title=graphs["graph_names"][i], legends=graphs["lines"], legend_columns=len(graphs["lines"]), legend_font_size = 7, num_ticks = 4, xaxis_tick_animation = False, tail_enable = True, enabled = True)
+                    self.graph_dict_joint_states[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]), colour=graphs["colours"], ymin=ymin, ymax=ymax, ranges=graphs["ranges"], graph_title=graphs["graph_names"][i], legends=graphs["lines"], legend_columns=len(graphs["lines"]), legend_font_size = 7, num_ticks = 4, xaxis_tick_animation = False, tail_enable = True, enabled = True)
                     i += 1
                 i = 0
 
@@ -213,7 +270,7 @@ class SrDataVisualizer(Plugin):
                 i = 0
                 while i < (len(graphs["graph_names"])):
                     x = lay_dic.get(graphs["graph_names"][i])
-                    x.addWidget(self.graph_dict[graphs["graph_names"][i]])
+                    x.addWidget(self.graph_dict_joint_states[graphs["graph_names"][i]])
                     i += 1
 
 
@@ -229,19 +286,19 @@ class SrDataVisualizer(Plugin):
         if self.init_complete:
             j = 0
             # for each graph
-            while j < len(self.graph_names_global):
-                if self.graph_dict[self.graph_names_global[j]].plot_all:
-                    ymax = self.graph_scales_global
+            while j < len(self.graph_names_joint_states):
+                if self.graph_dict_joint_states[self.graph_names_joint_states[j]].plot_all:
+                    ymax = self.graph_scales_joint_states
                     # for each line
-                    self.graph_dict[self.graph_names_global[j]].addData(value.position[self.joint_state_data_map['rh_' + string.upper(self.graph_names_global[j])]] * (ymax / self.global_yaml["graphs"][0]["ranges"][0][1]), 0)
-                    self.graph_dict[self.graph_names_global[j]].addData(value.velocity[self.joint_state_data_map['rh_' + string.upper(self.graph_names_global[j])]] * (ymax / self.global_yaml["graphs"][0]["ranges"][1][1]), 1)
-                    self.graph_dict[self.graph_names_global[j]].addData(value.effort[self.joint_state_data_map['rh_' + string.upper(self.graph_names_global[j])]] * (ymax / self.global_yaml["graphs"][0]["ranges"][2][1]), 2)
+                    self.graph_dict_joint_states[self.graph_names_joint_states[j]].addData(value.position[self.joint_state_data_map['rh_' + string.upper(self.graph_names_joint_states[j])]] * (ymax / self.global_yaml["graphs"][0]["ranges"][0][1]), 0)
+                    self.graph_dict_joint_states[self.graph_names_joint_states[j]].addData(value.velocity[self.joint_state_data_map['rh_' + string.upper(self.graph_names_joint_states[j])]] * (ymax / self.global_yaml["graphs"][0]["ranges"][1][1]), 1)
+                    self.graph_dict_joint_states[self.graph_names_joint_states[j]].addData(value.effort[self.joint_state_data_map['rh_' + string.upper(self.graph_names_joint_states[j])]] * (ymax / self.global_yaml["graphs"][0]["ranges"][2][1]), 2)
                     j += 1
                 else:
                     # for each line
-                    self.graph_dict[self.graph_names_global[j]].addData(value.position[self.joint_state_data_map['rh_' + string.upper(self.graph_names_global[j])]], 0)
-                    self.graph_dict[self.graph_names_global[j]].addData(value.velocity[self.joint_state_data_map['rh_' + string.upper(self.graph_names_global[j])]], 1)
-                    self.graph_dict[self.graph_names_global[j]].addData(value.effort[self.joint_state_data_map['rh_' + string.upper(self.graph_names_global[j])]], 2)
+                    self.graph_dict_joint_states[self.graph_names_joint_states[j]].addData(value.position[self.joint_state_data_map['rh_' + string.upper(self.graph_names_joint_states[j])]], 0)
+                    self.graph_dict_joint_states[self.graph_names_joint_states[j]].addData(value.velocity[self.joint_state_data_map['rh_' + string.upper(self.graph_names_joint_states[j])]], 1)
+                    self.graph_dict_joint_states[self.graph_names_joint_states[j]].addData(value.effort[self.joint_state_data_map['rh_' + string.upper(self.graph_names_joint_states[j])]], 2)
                     j += 1
 
 
