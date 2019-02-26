@@ -9,4 +9,12 @@ graphs:
     topic_namespace: /joint_states
     message_type: JointState
 
+  - type: control_loops
+    lines: [Setpoint, Input, dInput/dt, Error, Output]
+    ranges: [[-4, 4], [-4, 4], [-4, 4], [-4, 4], [-75, 75]]
+    graph_names: [ffj0, ffj3, ffj4]
+    colours: [red, blue, green, purple, cyan]
+    topic_namespace_start: /sh_rh_
+    topic_namespace_end: _position_controller/state
+    message_type: JointControllerState
 
