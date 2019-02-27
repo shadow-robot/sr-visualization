@@ -70,19 +70,78 @@ class SrDataVisualizer(Plugin):
         self.init_complete = True
 
     def setup_radio_buttons(self):
-        self.radio_button_velocity = self._widget.findChild(QRadioButton, "radioButton_3")
-        self.radio_button_all = self._widget.findChild(QRadioButton, "radioButton_4")
-        self.radio_button_position = self._widget.findChild(QRadioButton, "radioButton")
-        self.radio_button_effort = self._widget.findChild(QRadioButton, "radioButton_2")
+        self.radio_button_velocity = self._widget.findChild(QRadioButton, "radioButton_velocity")
+        self.radio_button_all = self._widget.findChild(QRadioButton, "radioButton_all")
+        self.radio_button_position = self._widget.findChild(QRadioButton, "radioButton_position")
+        self.radio_button_effort = self._widget.findChild(QRadioButton, "radioButton_effort")
+
+        self.radio_button_setpoint = self._widget.findChild(QRadioButton, "radioButton_setpoint")
+        self.radio_button_input = self._widget.findChild(QRadioButton, "radioButton_input")
+        self.radio_button_dInput = self._widget.findChild(QRadioButton, "radioButton_dInput")
+        self.radio_button_error = self._widget.findChild(QRadioButton, "radioButton_error")
+        self.radio_button_output = self._widget.findChild(QRadioButton, "radioButton_output")
+        self.radio_button_ctrl_all = self._widget.findChild(QRadioButton, "radioButton_ctrl_all")
+
+        self.radio_button_setpoint.toggled.connect(lambda: self.control_loop_buttons(self.radio_button_setpoint))
+        self.radio_button_input.toggled.connect(lambda: self.control_loop_buttons(self.radio_button_input))
+        self.radio_button_dInput.toggled.connect(lambda: self.control_loop_buttons(self.radio_button_dInput))
+        self.radio_button_error.toggled.connect(lambda: self.control_loop_buttons(self.radio_button_error))
+        self.radio_button_output.toggled.connect(lambda: self.control_loop_buttons(self.radio_button_output))
+        self.radio_button_ctrl_all.toggled.connect(lambda: self.control_loop_buttons(self.radio_button_ctrl_all))
 
         self.radio_button_velocity.toggled.connect(lambda: self.joint_states_button(self.radio_button_velocity))
         self.radio_button_position.toggled.connect(lambda: self.joint_states_button(self.radio_button_position))
         self.radio_button_effort.toggled.connect(lambda: self.joint_states_button(self.radio_button_effort))
         self.radio_button_all.toggled.connect(lambda: self.joint_states_button(self.radio_button_all))
 
+    def control_loop_buttons(self, b):
+        if b.text() == "All":
+            if b.isChecked() == True:
+                self.change_to_all_graphs()
+                print b.text() + " is selected"
+            else:
+                print b.text() + " is deselected"
+
+        if b.text() == "Setpoint":
+            if b.isChecked() == True:
+                self.change_to_single_graph('Velocity', 1)
+                print b.text() + " is selected"
+            else:
+                print b.text() + " is deselected"
+
+        if b.text() == "Input":
+            if b.isChecked() == True:
+                self.change_to_single_graph('Effort', 2)
+                print b.text() + " is selected"
+            else:
+                print b.text() + " is deselected"
+
+        if b.text() == "dInput/dt":
+            if b.isChecked() == True:
+                # self.change_to_pos_graphs()
+                self.change_to_single_graph('Position', 0)
+                print b.text() + " is selected"
+            else:
+                print b.text() + " is deselected"
+
+        if b.text() == "Error":
+            if b.isChecked() == True:
+                # self.change_to_pos_graphs()
+                self.change_to_single_graph('Position', 0)
+                print b.text() + " is selected"
+            else:
+                print b.text() + " is deselected"
+
+
+        if b.text() == "Output":
+            if b.isChecked() == True:
+                # self.change_to_pos_graphs()
+                self.change_to_single_graph('Position', 0)
+                print b.text() + " is selected"
+            else:
+                print b.text() + " is deselected"
 
     def joint_states_button(self, b):
-
         if b.text() == "all":
             if b.isChecked() == True:
                 self.change_to_all_graphs()
@@ -157,23 +216,14 @@ class SrDataVisualizer(Plugin):
             i += 1
     # TODO: make this work!
 
-
-    def make_control_loop_callback(self, name, data):
-        #print(data)
-        #print(dater)
-        #print(self.probably_shouldnt_do_this)
-        #cb_name = self.probably_shouldnt_do_this
-        def _callback(name, data):
-            print("ohai")
-            print("name: ", name)
+    def make_controll_loop_callback(self, graph):
+        def _callback(value):
+            graph.addData(value.set_point, 0)
+            graph.addData(value.process_value, 1)
+            graph.addData(value.process_value_dot, 2)
+            graph.addData(value.error, 3)
+            graph.addData(value.command, 4)
         return _callback
-
-    # def callback(self, data, name):
-    #     print("ohai")
-    #     # x = cb_name
-    #     # print(x)
-    #     #print("data:", data)
-    #     print("name: ", name)
 
     def my_func(self, data):
         # print(data["graphs"])
@@ -181,32 +231,11 @@ class SrDataVisualizer(Plugin):
         self.graph_dict_joint_states = {}
         self.graph_dict_control_loops = {}
         self.subs = []
-        self.control_loop_callbacks = []
-        control_loop_cbs = []
-        self.control_loop_callbacks_dict = {}
         self.global_yaml = data
         for graphs in data["graphs"]:
             if graphs["type"] == 'control_loops':
                 self.graph_names_control_loops = graphs["graph_names"]
                 #self.callbacks = {name: self.make_control_loop_callback for name in graphs["graph_names"]}
-
-                i = 0
-                while i < len(graphs["graph_names"]):
-                    sub_namespace = graphs["topic_namespace_start"] + graphs["graph_names"][i] + graphs["topic_namespace_end"]
-                    #                   self.subs.append(rospy.Subscriber(sub_namespace, JointControllerState, self.make_control_loop_callback, queue_size=1))
-                    print(sub_namespace)
-                    self.probably_shouldnt_do_this = graphs["graph_names"][i]
-                   # self.control_loop_callbacks.append(self.callback(name=self.probably_shouldnt_do_this, dater=0))
-                    temp_cb = self.make_control_loop_callback(name="ffj0", data=0)
-                    #self.subs.append(rospy.Subscriber(sub_namespace, JointControllerState, control_loop_cbs.append(self.make_control_loop_callback), queue_size=1))
-                    #self.subs.append(rospy.Subscriber(sub_namespace, JointControllerState, self.control_loop_callbacks.append(self.make_control_loop_callback), queue_size=1))
-                    #self.subs.append(rospy.Subscriber(sub_namespace, JointControllerState, self.control_loop_callbacks.append(self.make_control_loop_callback), queue_size=1))
-                    #self.subs.append(rospy.Subscriber(sub_namespace, JointControllerState, self.callbacks[graphs["graph_names"][i]], queue_size=1))
-                    self.subs.append(rospy.Subscriber(sub_namespace, JointControllerState, callback=temp_cb, callback_args=graphs["graph_names"][i], queue_size=1))
-                    self.control_loop_callbacks.append(temp_cb)
-
-
-                    i += 1
                 ymin = 0
                 ymax = 0
                 i = 0
@@ -224,8 +253,19 @@ class SrDataVisualizer(Plugin):
                     i += 1
                 i = 0
 
+                #create subscribers
+                i = 0
+                while i < len(graphs["graph_names"]):
+                    sub_namespace = graphs["topic_namespace_start"] + graphs["graph_names"][i] + graphs["topic_namespace_end"]
+                    #                   self.subs.append(rospy.Subscriber(sub_namespace, JointControllerState, self.make_control_loop_callback, queue_size=1))
+                    print(sub_namespace)
+                    self.subs.append(rospy.Subscriber(sub_namespace, JointControllerState, self.make_controll_loop_callback(self.graph_dict_control_loops[graphs["graph_names"][i]]), queue_size=1))
+
+                    i += 1
+
                 # init_widget_children
                 lay_dic = {}
+                i = 0
                 while i < (len(graphs["graph_names"])):
                     layout = graphs["graph_names"][i] + "_layout_ctrl"
                     lay_dic[graphs["graph_names"][i]] = self._widget.findChild(QVBoxLayout, layout)
@@ -283,6 +323,7 @@ class SrDataVisualizer(Plugin):
                 self.joint_state_data_map[value.name[i]] = i
                 i += 1
             self.first_run = False
+        # Only add data to graphs once they've all been created
         if self.init_complete:
             j = 0
             # for each graph

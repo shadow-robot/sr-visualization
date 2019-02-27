@@ -345,14 +345,14 @@
               </property>
               <layout class="QGridLayout" name="gridLayout_14">
                <item row="3" column="0">
-                <widget class="QRadioButton" name="radioButton_3">
+                <widget class="QRadioButton" name="radioButton_velocity">
                  <property name="text">
                   <string>Velocity (rad/s)</string>
                  </property>
                 </widget>
                </item>
                <item row="1" column="0">
-                <widget class="QRadioButton" name="radioButton">
+                <widget class="QRadioButton" name="radioButton_position">
                  <property name="text">
                   <string>position (rad)</string>
                  </property>
@@ -362,14 +362,14 @@
                 </widget>
                </item>
                <item row="2" column="0">
-                <widget class="QRadioButton" name="radioButton_2">
+                <widget class="QRadioButton" name="radioButton_effort">
                  <property name="text">
                   <string>Effort</string>
                  </property>
                 </widget>
                </item>
                <item row="4" column="0">
-                <widget class="QRadioButton" name="radioButton_4">
+                <widget class="QRadioButton" name="radioButton_all">
                  <property name="text">
                   <string>all</string>
                  </property>
@@ -647,16 +647,9 @@
               <property name="title">
                <string>Display</string>
               </property>
-              <layout class="QGridLayout" name="gridLayout_31">
-               <item row="4" column="0">
-                <widget class="QRadioButton" name="radioButton_13">
-                 <property name="text">
-                  <string>Error</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QRadioButton" name="radioButton_10">
+              <layout class="QGridLayout" name="gridLayout_12">
+               <item row="0" column="0">
+                <widget class="QRadioButton" name="radioButton_setpoint">
                  <property name="text">
                   <string>Setpoint</string>
                  </property>
@@ -665,24 +658,38 @@
                  </property>
                 </widget>
                </item>
-               <item row="3" column="0">
-                <widget class="QRadioButton" name="radioButton_11">
-                 <property name="text">
-                  <string>dInput/dt</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QRadioButton" name="radioButton_12">
+               <item row="1" column="0">
+                <widget class="QRadioButton" name="radioButton_input">
                  <property name="text">
                   <string>Input</string>
                  </property>
                 </widget>
                </item>
-               <item row="5" column="0">
-                <widget class="QRadioButton" name="radioButton_14">
+               <item row="2" column="0">
+                <widget class="QRadioButton" name="radioButton_dInput">
+                 <property name="text">
+                  <string>dInput/dt</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QRadioButton" name="radioButton_error">
+                 <property name="text">
+                  <string>Error</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QRadioButton" name="radioButton_output">
                  <property name="text">
                   <string>Output</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0">
+                <widget class="QRadioButton" name="radioButton_ctrl_all">
+                 <property name="text">
+                  <string>All</string>
                  </property>
                 </widget>
                </item>
