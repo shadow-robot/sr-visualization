@@ -11,7 +11,7 @@ graphs:
 
   - type: control_loops
     lines: [Setpoint, Input, dInput/dt, Error, Output]
-    ranges: [[-4, 4], [-4, 4], [-4, 4], [-4, 4], [-400, 400]]
+    ranges: [[-4, 4], [-4, 4], [-4, 4], [-4, 4], [-600, 600]]
     graph_names: [ffj0, ffj3, ffj4, mfj0, mfj3, mfj4]
     colours: [red, blue, green, purple, cyan]
     topic_namespace_start: /sh_rh_
