@@ -34,6 +34,7 @@ import time
 
 from sensor_msgs.msg import JointState
 from control_msgs.msg import JointControllerState
+from diagnostic_msgs.msg import DiagnosticArray
 
 class SrDataVisualizer(Plugin):
     def __init__(self, context):
@@ -61,7 +62,6 @@ class SrDataVisualizer(Plugin):
         self.tab_widget_main.setStyleSheet(stylesheet)
         self.tab_widget_main.currentChanged.connect(self.tab_change)
 
-
         self.setup_radio_buttons()
 
         with open("example.yaml", 'r') as stream:
@@ -72,8 +72,29 @@ class SrDataVisualizer(Plugin):
                 print(exc)
         self.init_complete = True
 
-    def tab_change(self, val):
+    def tab_change(self, tab_index):
+        self.hide_tabs(tab_index)
         threading.Thread(target=self.delay_tab_change).start()
+
+    def hide_tabs(self, tab_index):
+        if tab_index == 0:
+            self.enable_graphs(["pos_vel_eff"])
+            self.disable_graphs(["control_loops"])
+        elif tab_index == 1:
+            self.disable_graphs(["pos_vel_eff"])
+            self.enable_graphs(["control_loops"])
+        elif tab_index == 2:
+            self.disable_graphs(["pos_vel_eff", "control_loops"])
+
+    def enable_graphs(self, graph_type):
+        for element in graph_type:
+            for key, graph in self.graph_dict_global[element].iteritems():
+                graph.enabled = True
+
+    def disable_graphs(self, graph_type):
+        for element in graph_type:
+            for key, graph in self.graph_dict_global[element].iteritems():
+                graph.enabled = False
 
     def delay_tab_change(self):
         time.sleep(.300)
@@ -219,7 +240,7 @@ class SrDataVisualizer(Plugin):
             self.graph_dict_global[type][self.graph_names_global[type][i]].draw()
             i += 1
 
-    def make_controll_loop_callback(self, graph):
+    def make_control_loop_callbacks(self, graph):
         def _callback(value):
             if graph.plot_all:
                 ymin, ymax = self.find_max_range(self.global_yaml["graphs"][1])
@@ -245,92 +266,8 @@ class SrDataVisualizer(Plugin):
                 ymin = graphs["ranges"][i][0]
                 ymax = graphs["ranges"][i][1]
             i += 1
-        scales = []
-        scales.append(ymin)
-        scales.append(ymax)
+        scales = [ymin, ymax]
         return scales
-
-    #
-    # def my_func(self, data):
-    #     self.graph_dict_joint_states = {}
-    #     self.graph_dict_control_loops = {}
-    #     self.graph_dict_global = {}
-    #     self.control_loop_callback_dict = {}
-    #     self.subs = []
-    #     self.global_yaml = data
-    #     self.graph_names_global = {}
-    #     for graphs in data["graphs"]:
-    #         ymin, ymax = self.find_max_range(graphs)
-    #         if graphs["type"] == 'control_loops':
-    #             self.graph_names_control_loops = graphs["graph_names"]
-    #             self.graph_names_global[graphs["type"]] = graphs["graph_names"]
-    #             i = 0
-    #             # create_graphs
-    #             temp_graph_dict = {}
-    #             while i < (len(graphs["graph_names"])):
-    #                 temp_graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]), colour=graphs["colours"], ymin=ymin, ymax=ymax, ranges=graphs["ranges"], graph_title=graphs["graph_names"][i], legends=graphs["lines"], legend_columns=len(graphs["lines"]), legend_font_size=7, num_ticks=4, xaxis_tick_animation=False, tail_enable=True, enabled=True)
-    #                 i += 1
-    #             self.graph_dict_global[graphs["type"]] = temp_graph_dict
-    #
-    #             #create subscribers
-    #             i = 0
-    #             while i < len(graphs["graph_names"]):
-    #                 sub_namespace = graphs["topic_namespace_start"] + graphs["graph_names"][i] + graphs["topic_namespace_end"]
-    #                 #                   self.subs.append(rospy.Subscriber(sub_namespace, JointControllerState, self.make_control_loop_callback, queue_size=1))
-    #                 print(sub_namespace)
-    #                 tmp_callback = self.make_controll_loop_callback(self.graph_dict_global["control_loops"][graphs["graph_names"][i]])
-    #                 self.subs.append(rospy.Subscriber(sub_namespace, JointControllerState, callback=tmp_callback, queue_size=1))
-    #                 self.control_loop_callback_dict[graphs["graph_names"][i]] = tmp_callback
-    #                 i += 1
-    #
-    #             # init_widget_children
-    #             lay_dic = {}
-    #             i = 0
-    #             while i < (len(graphs["graph_names"])):
-    #                 layout = graphs["graph_names"][i] + "_layout_ctrl"
-    #                 lay_dic[graphs["graph_names"][i]] = self._widget.findChild(QVBoxLayout, layout)
-    #                 i += 1
-    #
-    #             # attach_graphs
-    #             i = 0
-    #             while i < (len(graphs["graph_names"])):
-    #                 x = lay_dic.get(graphs["graph_names"][i])
-    #                 #x.addWidget(self.graph_dict_global["control_loops"][graphs["graph_names"][i]])
-    #                 x.addWidget(self.graph_dict_global[graphs["type"]][graphs["graph_names"][i]])
-    #                 i += 1
-    #
-    #         elif graphs["type"] == 'pos_vel_eff':
-    #             self.graph_names_joint_states = graphs["graph_names"]
-    #             self.graph_names_global[graphs["type"]] = graphs["graph_names"]
-    #
-    #             print "------------------------"
-    #             self.subs.append(rospy.Subscriber(graphs["topic_namespace"], JointState, self.joint_state_cb, queue_size=1))
-    #             ymin, ymax = self.find_max_range(graphs)
-    #             i = 0
-    #
-    #             # #create_graphs
-    #             temp_graph_dict = {}
-    #             while i < (len(graphs["graph_names"])):
-    #                 temp_graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]), colour=graphs["colours"], ymin=ymin, ymax=ymax, ranges=graphs["ranges"], graph_title=graphs["graph_names"][i], legends=graphs["lines"], legend_columns=len(graphs["lines"]), legend_font_size=7, num_ticks=4, xaxis_tick_animation=False, tail_enable=True, enabled=True)
-    #                 i += 1
-    #             self.graph_dict_global[graphs["type"]] = temp_graph_dict
-    #
-    #             #init_widget_children
-    #             i = 0
-    #             lay_dic = {}
-    #             while i < (len(graphs["graph_names"])):
-    #                 layout = graphs["graph_names"][i] + "_layout"
-    #                 lay_dic[graphs["graph_names"][i]] = self._widget.findChild(QVBoxLayout, layout)
-    #                 i += 1
-    #
-    #             #attach_graphs
-    #             i = 0
-    #             while i < (len(graphs["graph_names"])):
-    #                 x = lay_dic.get(graphs["graph_names"][i])
-    #                 x.addWidget(self.graph_dict_global[graphs["type"]][graphs["graph_names"][i]])
-    #                 i += 1
-    #
-
 
     def my_func(self, data):
         self.graph_dict_global = {}
@@ -345,7 +282,7 @@ class SrDataVisualizer(Plugin):
             # create_graphs
             temp_graph_dict = {}
             while i < (len(graphs["graph_names"])):
-                temp_graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]), colour=graphs["colours"], ymin=ymin, ymax=ymax, ranges=graphs["ranges"], graph_title=graphs["graph_names"][i], legends=graphs["lines"], legend_columns=len(graphs["lines"]), legend_font_size=7, num_ticks=4, xaxis_tick_animation=False, tail_enable=True, enabled=True)
+                temp_graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]), colour=graphs["colours"], ymin=ymin, ymax=ymax, ranges=graphs["ranges"], graph_title=graphs["graph_names"][i], legends=graphs["lines"], legend_columns=len(graphs["lines"]), legend_font_size=7, num_ticks=4, xaxis_tick_animation=False, tail_enable=False, enabled=True)
                 i += 1
             self.graph_dict_global[graphs["type"]] = temp_graph_dict
 
@@ -354,12 +291,15 @@ class SrDataVisualizer(Plugin):
                 i = 0
                 while i < len(graphs["graph_names"]):
                     sub_namespace = graphs["topic_namespace_start"] + graphs["graph_names"][i] + graphs["topic_namespace_end"]
-                    tmp_callback = self.make_controll_loop_callback(self.graph_dict_global["control_loops"][graphs["graph_names"][i]])
+                    tmp_callback = self.make_control_loop_callbacks(self.graph_dict_global["control_loops"][graphs["graph_names"][i]])
                     self.subs.append(rospy.Subscriber(sub_namespace, JointControllerState, callback=tmp_callback, queue_size=1))
                     self.control_loop_callback_dict[graphs["graph_names"][i]] = tmp_callback
                     i += 1
             elif graphs["type"] == "pos_vel_eff":
                 self.subs.append(rospy.Subscriber(graphs["topic_namespace"], JointState, self.joint_state_cb, queue_size=1))
+            elif graphs["type"] == "motor_stat":
+                self.subs.append(rospy.Subscriber(graphs["topic_namespace"], DiagnosticArray, self.diagnostic_cb, queue_size=1))
+
 
             # init_widget_children
             lay_dic = {}
@@ -369,6 +309,8 @@ class SrDataVisualizer(Plugin):
                     layout = graphs["graph_names"][i] + "_layout"
                 elif graphs["type"] == "control_loops":
                     layout = graphs["graph_names"][i] + "_layout_ctrl"
+                elif graphs["type"] == "motor_stat":
+                    layout = graphs["graph_names"][i] + "_layout_motor_stat"
                 lay_dic[graphs["graph_names"][i]] = self._widget.findChild(QVBoxLayout, layout)
                 i += 1
 
@@ -377,7 +319,6 @@ class SrDataVisualizer(Plugin):
             tmp = (len(graphs["graph_names"]))
             while i < (len(graphs["graph_names"])):
                 x = lay_dic.get(graphs["graph_names"][i])
-                #x.addWidget(self.graph_dict_global["control_loops"][graphs["graph_names"][i]])
                 x.addWidget(self.graph_dict_global[graphs["type"]][graphs["graph_names"][i]])
                 i += 1
 
@@ -402,6 +343,27 @@ class SrDataVisualizer(Plugin):
                     self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][j]].addData(value.position[self.joint_state_data_map['rh_' + string.upper(self.graph_names_global["pos_vel_eff"][j])]] * (ymax / self.global_yaml["graphs"][0]["ranges"][0][1]), 0)
                     self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][j]].addData(value.velocity[self.joint_state_data_map['rh_' + string.upper(self.graph_names_global["pos_vel_eff"][j])]] * (ymax / self.global_yaml["graphs"][0]["ranges"][1][1]), 1)
                     self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][j]].addData(value.effort[self.joint_state_data_map['rh_' + string.upper(self.graph_names_global["pos_vel_eff"][j])]] * (ymax / self.global_yaml["graphs"][0]["ranges"][2][1]), 2)
+                    j += 1
+                else:
+                    # for each line
+                    self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][j]].addData(value.position[self.joint_state_data_map['rh_' + string.upper(self.graph_names_global["pos_vel_eff"][j])]], 0)
+                    self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][j]].addData(value.velocity[self.joint_state_data_map['rh_' + string.upper(self.graph_names_global["pos_vel_eff"][j])]], 1)
+                    self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][j]].addData(value.effort[self.joint_state_data_map['rh_' + string.upper(self.graph_names_global["pos_vel_eff"][j])]], 2)
+                    j += 1
+
+    def diagnostic_cb(self, value):
+        # Only add data to graphs once they've all been created
+        if self.init_complete:
+            j = 0
+            # for each graph
+            while j < len(self.graph_names_global["pos_vel_eff"]):
+                if self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][j]].plot_all:
+                    ymin, ymax = self.find_max_range(self.global_yaml["graphs"][0])
+
+                    # for each line
+                    self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][j]].addData(value.position[self.joint_state_data_map['rh_' + string.upper(self.graph_names_global["pos_vel_eff"][j])]] * (ymax / self.global_yaml["graphs"][2]["ranges"][0][1]), 0)
+                    self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][j]].addData(value.velocity[self.joint_state_data_map['rh_' + string.upper(self.graph_names_global["pos_vel_eff"][j])]] * (ymax / self.global_yaml["graphs"][2]["ranges"][1][1]), 1)
+                    self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][j]].addData(value.effort[self.joint_state_data_map['rh_' + string.upper(self.graph_names_global["pos_vel_eff"][j])]] * (ymax / self.global_yaml["graphs"][2]["ranges"][2][1]), 2)
                     j += 1
                 else:
                     # for each line

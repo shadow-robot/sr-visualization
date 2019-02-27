@@ -12,7 +12,8 @@ graphs:
   - type: control_loops
     lines: [Setpoint, Input, dInput/dt, Error, Output]
     ranges: [[-4, 4], [-4, 4], [-4, 4], [-4, 4], [-600, 600]]
-    graph_names: [ffj0, ffj3, ffj4, mfj0, mfj3, mfj4]
+    graph_names: [ffj0, ffj3, ffj4, mfj0, mfj3, mfj4, thj1, thj2, thj3, thj4, thj5, rfj0, rfj3, rfj4, lfj0, lfj3, lfj4, lfj5, wrj1, wrj2]
+    #graph_names: [ffj0, ffj3, ffj4, mfj0, mfj3]
     colours: [red, blue, green, purple, cyan]
     topic_namespace_start: /sh_rh_
     topic_namespace_end: _position_controller/state
