@@ -60,7 +60,6 @@ class SrDataVisualizer(Plugin):
 
         self.setup_radio_buttons()
 
-
         with open("example.yaml", 'r') as stream:
             try:
                 data_loaded = yaml.load(stream)
@@ -97,21 +96,21 @@ class SrDataVisualizer(Plugin):
     def control_loop_buttons(self, b):
         if b.text() == "All":
             if b.isChecked() == True:
-                self.change_to_all_graphs()
+                self.change_to_all_graphs_ctrl()
                 print b.text() + " is selected"
             else:
                 print b.text() + " is deselected"
 
         if b.text() == "Setpoint":
             if b.isChecked() == True:
-                self.change_to_single_graph('Velocity', 1)
+                self.change_to_single_graph_ctrl('Setpoint', 0)
                 print b.text() + " is selected"
             else:
                 print b.text() + " is deselected"
 
         if b.text() == "Input":
             if b.isChecked() == True:
-                self.change_to_single_graph('Effort', 2)
+                self.change_to_single_graph_ctrl('Input', 1)
                 print b.text() + " is selected"
             else:
                 print b.text() + " is deselected"
@@ -119,7 +118,7 @@ class SrDataVisualizer(Plugin):
         if b.text() == "dInput/dt":
             if b.isChecked() == True:
                 # self.change_to_pos_graphs()
-                self.change_to_single_graph('Position', 0)
+                self.change_to_single_graph_ctrl('dInput/dt', 2)
                 print b.text() + " is selected"
             else:
                 print b.text() + " is deselected"
@@ -127,7 +126,7 @@ class SrDataVisualizer(Plugin):
         if b.text() == "Error":
             if b.isChecked() == True:
                 # self.change_to_pos_graphs()
-                self.change_to_single_graph('Position', 0)
+                self.change_to_single_graph_ctrl('Error', 3)
                 print b.text() + " is selected"
             else:
                 print b.text() + " is deselected"
@@ -136,7 +135,7 @@ class SrDataVisualizer(Plugin):
         if b.text() == "Output":
             if b.isChecked() == True:
                 # self.change_to_pos_graphs()
-                self.change_to_single_graph('Position', 0)
+                self.change_to_single_graph_ctrl('Output', 4)
                 print b.text() + " is selected"
             else:
                 print b.text() + " is deselected"
@@ -170,6 +169,48 @@ class SrDataVisualizer(Plugin):
                 print b.text() + " is selected"
             else:
                 print b.text() + " is deselected"
+
+    def change_to_all_graphs_ctrl(self):
+        ymin = 0
+        ymax = 0
+        i = 0
+        while i < len(self.global_yaml["graphs"][1]["ranges"]):
+            if (self.global_yaml["graphs"][1]["ranges"][i][0] < ymin and self.global_yaml["graphs"][1]["ranges"][i][1] > ymax):
+                ymin = self.global_yaml["graphs"][1]["ranges"][i][0]
+                ymax = self.global_yaml["graphs"][1]["ranges"][i][1]
+            i += 1
+        i = 0
+        # for each graph
+        while i < len(self.graph_names_control_loops):
+            self.graph_dict_control_loops[self.graph_names_control_loops[i]].ymin = ymin
+            self.graph_dict_control_loops[self.graph_names_control_loops[i]].ymax = ymax
+            # for graph in self.graph_names_control_loops:
+            self.graph_dict_control_loops[self.graph_names_control_loops[i]].enabled = False
+            self.graph_dict_control_loops[self.graph_names_control_loops[i]].plot_all = True
+            self.graph_dict_control_loops[self.graph_names_control_loops[i]].ax1.yaxis.set_tick_params(which='both', labelbottom=False)
+            self.graph_dict_control_loops[self.graph_names_control_loops[i]].re_init()
+            self.graph_dict_control_loops[self.graph_names_control_loops[i]].ax1.legend(self.graph_dict_control_loops[self.graph_names_control_loops[i]].line, self.global_yaml["graphs"][1]["lines"], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5, ncol=3, prop={'size': 7})
+            self.graph_dict_control_loops[self.graph_names_control_loops[i]].enabled = True
+            self.graph_dict_control_loops[self.graph_names_control_loops[i]].update()
+            self.graph_dict_control_loops[self.graph_names_control_loops[i]].draw()
+            i += 1
+
+    def change_to_single_graph_ctrl(self, legend_name, line_number):
+        i = 0
+        temp = len(self.graph_names_control_loops)
+        while i < len(self.graph_names_control_loops):
+            self.graph_dict_control_loops[self.graph_names_control_loops[i]].enabled = False
+            self.graph_dict_control_loops[self.graph_names_control_loops[i]].line_to_plot = line_number
+            self.graph_dict_control_loops[self.graph_names_control_loops[i]].plot_all = False
+            self.graph_dict_control_loops[self.graph_names_control_loops[i]].ax1.yaxis.set_tick_params(which='both', labelbottom=True)
+            self.graph_dict_control_loops[self.graph_names_control_loops[i]].ymin = self.global_yaml["graphs"][1]["ranges"][line_number][0]
+            self.graph_dict_control_loops[self.graph_names_control_loops[i]].ymax = self.global_yaml["graphs"][1]["ranges"][line_number][1]
+            self.graph_dict_control_loops[self.graph_names_control_loops[i]].re_init()
+            self.graph_dict_control_loops[self.graph_names_control_loops[i]].ax1.legend(self.graph_dict_control_loops[self.graph_names_control_loops[i]].line, [legend_name], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5, prop={'size': 7})
+            self.graph_dict_control_loops[self.graph_names_control_loops[i]].enabled = True
+            self.graph_dict_control_loops[self.graph_names_control_loops[i]].update()
+            self.graph_dict_control_loops[self.graph_names_control_loops[i]].draw()
+            i += 1
 
 
     def change_to_single_graph(self, legend_name, line_number):
@@ -209,33 +250,39 @@ class SrDataVisualizer(Plugin):
             self.graph_dict_joint_states[self.graph_names_joint_states[i]].plot_all = True
             self.graph_dict_joint_states[self.graph_names_joint_states[i]].ax1.yaxis.set_tick_params(which='both', labelbottom=False)
             self.graph_dict_joint_states[self.graph_names_joint_states[i]].re_init()
-            self.graph_dict_joint_states[self.graph_names_joint_states[i]].ax1.legend(self.graph_dict_joint_states[self.graph_names_joint_states[i]].line, ['Position', 'Velocity', 'Effort'], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3,  mode="expand", borderaxespad=0.5, ncol=3, prop={'size': 7})
+            self.graph_dict_joint_states[self.graph_names_joint_states[i]].ax1.legend(self.graph_dict_joint_states[self.graph_names_joint_states[i]].line, self.global_yaml["graphs"][0]["lines"], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3,  mode="expand", borderaxespad=0.5, ncol=3, prop={'size': 7})
             self.graph_dict_joint_states[self.graph_names_joint_states[i]].enabled = True
             self.graph_dict_joint_states[self.graph_names_joint_states[i]].update()
             self.graph_dict_joint_states[self.graph_names_joint_states[i]].draw()
             i += 1
-    # TODO: make this work!
 
     def make_controll_loop_callback(self, graph):
         def _callback(value):
-            graph.addData(value.set_point, 0)
-            graph.addData(value.process_value, 1)
-            graph.addData(value.process_value_dot, 2)
-            graph.addData(value.error, 3)
-            graph.addData(value.command, 4)
+            if graph.plot_all:
+                ymax = self.graph_scales_control_loops
+                graph.addData(value.set_point * (ymax / self.global_yaml["graphs"][1]["ranges"][0][1]), 0)
+                graph.addData(value.process_value * (ymax / self.global_yaml["graphs"][1]["ranges"][1][1]), 1)
+                graph.addData(value.process_value_dot * (ymax / self.global_yaml["graphs"][1]["ranges"][2][1]), 2)
+                graph.addData(value.error * (ymax / self.global_yaml["graphs"][1]["ranges"][3][1]), 3)
+                graph.addData(value.command * (ymax / self.global_yaml["graphs"][1]["ranges"][4][1]), 4)
+            else:
+                graph.addData(value.set_point, 0)
+                graph.addData(value.process_value, 1)
+                graph.addData(value.process_value_dot, 2)
+                graph.addData(value.error, 3)
+                graph.addData(value.command, 4)
         return _callback
 
+
     def my_func(self, data):
-        # print(data["graphs"])
-        tmp = data["graphs"]
         self.graph_dict_joint_states = {}
         self.graph_dict_control_loops = {}
+        self.control_loop_callback_dict = {}
         self.subs = []
         self.global_yaml = data
         for graphs in data["graphs"]:
             if graphs["type"] == 'control_loops':
                 self.graph_names_control_loops = graphs["graph_names"]
-                #self.callbacks = {name: self.make_control_loop_callback for name in graphs["graph_names"]}
                 ymin = 0
                 ymax = 0
                 i = 0
@@ -259,8 +306,9 @@ class SrDataVisualizer(Plugin):
                     sub_namespace = graphs["topic_namespace_start"] + graphs["graph_names"][i] + graphs["topic_namespace_end"]
                     #                   self.subs.append(rospy.Subscriber(sub_namespace, JointControllerState, self.make_control_loop_callback, queue_size=1))
                     print(sub_namespace)
-                    self.subs.append(rospy.Subscriber(sub_namespace, JointControllerState, self.make_controll_loop_callback(self.graph_dict_control_loops[graphs["graph_names"][i]]), queue_size=1))
-
+                    tmp_callback = self.make_controll_loop_callback(self.graph_dict_control_loops[graphs["graph_names"][i]])
+                    self.subs.append(rospy.Subscriber(sub_namespace, JointControllerState, callback=tmp_callback, queue_size=1))
+                    self.control_loop_callback_dict[graphs["graph_names"][i]] = tmp_callback
                     i += 1
 
                 # init_widget_children

@@ -17,10 +17,18 @@ def func(name):
     return func2
 
 
+control_loop_callback_dict = {}
+
 rospy.init_node("dynamic_testing_3")
 
-sub = rospy.Subscriber('/sh_rh_ffj0_position_controller/state', JointControllerState, callback=func(("graph_name")),  queue_size=1)
+tmp_func = func("name1")
 
-sub = rospy.Subscriber('/sh_rh_ffj3_position_controller/state', JointControllerState, callback=func(("graph_name2")),  queue_size=1)
+sub = rospy.Subscriber('/sh_rh_ffj0_position_controller/state', JointControllerState, callback=tmp_func,  queue_size=1)
+control_loop_callback_dict["name1"] = tmp_func
+
+tmp_func = func("name2")
+
+sub = rospy.Subscriber('/sh_rh_ffj3_position_controller/state', JointControllerState, callback=tmp_func,  queue_size=1)
+control_loop_callback_dict["name2"] = tmp_func
 
 rospy.spin()
