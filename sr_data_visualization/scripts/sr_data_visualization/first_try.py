@@ -119,46 +119,43 @@ class SrDataVisualizer(Plugin):
     def control_loop_buttons(self, b):
         if b.text() == "All":
             if b.isChecked() == True:
-                self.change_to_all_graphs_ctrl()
+                self.change_graphs(all=True, type="control_loops")
                 print b.text() + " is selected"
             else:
                 print b.text() + " is deselected"
 
         if b.text() == "Setpoint":
             if b.isChecked() == True:
-                self.change_to_single_graph_ctrl('Setpoint', 0)
+                self.change_graphs(all=False, legend_name=['Setpoint'], line_number=0, type="control_loops")
                 print b.text() + " is selected"
             else:
                 print b.text() + " is deselected"
 
         if b.text() == "Input":
             if b.isChecked() == True:
-                self.change_to_single_graph_ctrl('Input', 1)
+                self.change_graphs(all=False, legend_name=['Input'], line_number=1, type="control_loops")
                 print b.text() + " is selected"
             else:
                 print b.text() + " is deselected"
 
         if b.text() == "dInput/dt":
             if b.isChecked() == True:
-                # self.change_to_pos_graphs()
-                self.change_to_single_graph_ctrl('dInput/dt', 2)
+                self.change_graphs(all=False, legend_name=['dInput/dt'], line_number=2, type="control_loops")
                 print b.text() + " is selected"
             else:
                 print b.text() + " is deselected"
 
         if b.text() == "Error":
             if b.isChecked() == True:
-                # self.change_to_pos_graphs()
-                self.change_to_single_graph_ctrl('Error', 3)
+                self.change_graphs(all=False, legend_name=['Error'], line_number=3, type="control_loops")
                 print b.text() + " is selected"
             else:
                 print b.text() + " is deselected"
 
-
         if b.text() == "Output":
             if b.isChecked() == True:
                 # self.change_to_pos_graphs()
-                self.change_to_single_graph_ctrl('Output', 4)
+                self.change_graphs(all=False, legend_name=['Output'], line_number=4, type="control_loops")
                 print b.text() + " is selected"
             else:
                 print b.text() + " is deselected"
@@ -166,103 +163,60 @@ class SrDataVisualizer(Plugin):
     def joint_states_button(self, b):
         if b.text() == "all":
             if b.isChecked() == True:
-                self.change_to_all_graphs()
+                self.change_graphs(all=True, type="pos_vel_eff")
                 print b.text() + " is selected"
             else:
                 print b.text() + " is deselected"
 
         if b.text() == "Velocity (rad/s)":
             if b.isChecked() == True:
-                self.change_to_single_graph('Velocity', 1)
+                self.change_graphs(all=False, legend_name=['Velocity'], line_number=1, type="pos_vel_eff")
                 print b.text() + " is selected"
             else:
                 print b.text() + " is deselected"
 
         if b.text() == "Effort":
             if b.isChecked() == True:
-                self.change_to_single_graph('Effort', 2)
+                self.change_graphs(all=False, legend_name=['Effort'], line_number=2, type="pos_vel_eff")
                 print b.text() + " is selected"
             else:
                 print b.text() + " is deselected"
 
         if b.text() == "position (rad)":
             if b.isChecked() == True:
-                #self.change_to_pos_graphs()
-                self.change_to_single_graph('Position', 0)
+                self.change_graphs(all=False, legend_name=['Position'], line_number=0, type="pos_vel_eff")
                 print b.text() + " is selected"
             else:
                 print b.text() + " is deselected"
 
-    def change_to_all_graphs_ctrl(self):
-        ymin, ymax = self.find_max_range(self.global_yaml["graphs"][1])
+    def change_graphs(self, all, **kwargs):
+        if kwargs["type"] == "pos_vel_eff":
+            index = 0
+        elif kwargs["type"] == "control_loops":
+            index = 1
         i = 0
-        # for each graph
-        while i < len(self.graph_names_global["control_loops"]):
-            self.graph_dict_global["control_loops"][self.graph_names_global["control_loops"][i]].ymin = ymin
-            self.graph_dict_global["control_loops"][self.graph_names_global["control_loops"][i]].ymax = ymax
-            # for graph in self.graph_names_global["control_loops"]:
-            self.graph_dict_global["control_loops"][self.graph_names_global["control_loops"][i]].enabled = False
-            self.graph_dict_global["control_loops"][self.graph_names_global["control_loops"][i]].plot_all = True
-            self.graph_dict_global["control_loops"][self.graph_names_global["control_loops"][i]].ax1.yaxis.set_tick_params(which='both', labelbottom=False)
-            self.graph_dict_global["control_loops"][self.graph_names_global["control_loops"][i]].re_init()
-            self.graph_dict_global["control_loops"][self.graph_names_global["control_loops"][i]].ax1.legend(self.graph_dict_global["control_loops"][self.graph_names_global["control_loops"][i]].line, self.global_yaml["graphs"][1]["lines"], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5, ncol=3, prop={'size': 7})
-            self.graph_dict_global["control_loops"][self.graph_names_global["control_loops"][i]].enabled = True
-            self.graph_dict_global["control_loops"][self.graph_names_global["control_loops"][i]].update()
-            self.graph_dict_global["control_loops"][self.graph_names_global["control_loops"][i]].draw()
-            i += 1
-
-    def change_to_single_graph_ctrl(self, legend_name, line_number):
-        i = 0
-        temp = len(self.graph_names_global["control_loops"])
-        while i < len(self.graph_names_global["control_loops"]):
-            self.graph_dict_global["control_loops"][self.graph_names_global["control_loops"][i]].enabled = False
-            self.graph_dict_global["control_loops"][self.graph_names_global["control_loops"][i]].line_to_plot = line_number
-            self.graph_dict_global["control_loops"][self.graph_names_global["control_loops"][i]].plot_all = False
-            self.graph_dict_global["control_loops"][self.graph_names_global["control_loops"][i]].ax1.yaxis.set_tick_params(which='both', labelbottom=True)
-            self.graph_dict_global["control_loops"][self.graph_names_global["control_loops"][i]].ymin = self.global_yaml["graphs"][1]["ranges"][line_number][0]
-            self.graph_dict_global["control_loops"][self.graph_names_global["control_loops"][i]].ymax = self.global_yaml["graphs"][1]["ranges"][line_number][1]
-            self.graph_dict_global["control_loops"][self.graph_names_global["control_loops"][i]].re_init()
-            self.graph_dict_global["control_loops"][self.graph_names_global["control_loops"][i]].ax1.legend(self.graph_dict_global["control_loops"][self.graph_names_global["control_loops"][i]].line, [legend_name], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5, prop={'size': 7})
-            self.graph_dict_global["control_loops"][self.graph_names_global["control_loops"][i]].enabled = True
-            self.graph_dict_global["control_loops"][self.graph_names_global["control_loops"][i]].update()
-            self.graph_dict_global["control_loops"][self.graph_names_global["control_loops"][i]].draw()
-            i += 1
-
-
-    def change_to_single_graph(self, legend_name, line_number):
-        i = 0
-        temp = len(self.graph_names_global["pos_vel_eff"])
-        while i < len(self.graph_names_global["pos_vel_eff"]):
-            self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][i]].enabled = False
-            self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][i]].line_to_plot = line_number
-            self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][i]].plot_all = False
-            self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][i]].ax1.yaxis.set_tick_params(which='both', labelbottom=True)
-            self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][i]].ymin = self.global_yaml["graphs"][0]["ranges"][line_number][0]
-            self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][i]].ymax = self.global_yaml["graphs"][0]["ranges"][line_number][1]
-            self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][i]].re_init()
-            self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][i]].ax1.legend(self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][i]].line, [legend_name], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5, prop={'size': 7})
-            self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][i]].enabled = True
-            self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][i]].update()
-            self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][i]].draw()
-            i += 1
-
-    # TODO: remove redundant code in change_to_all_graphs and change_to_single_graph
-    def change_to_all_graphs(self):
-        ymin, ymax = self.find_max_range(self.global_yaml["graphs"][0])
-        i = 0
-        #for each graph
-        while i < len(self.graph_names_global["pos_vel_eff"]):
-            self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][i]].ymin = ymin
-            self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][i]].ymax = ymax
-            # for graph in self.graph_names_global["pos_vel_eff"]:
-            self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][i]].enabled = False
-            self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][i]].plot_all = True
-            self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][i]].ax1.yaxis.set_tick_params(which='both', labelbottom=False)
-            self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][i]].re_init()
-            self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][i]].ax1.legend(self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][i]].line, self.global_yaml["graphs"][0]["lines"], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3,  mode="expand", borderaxespad=0.5, ncol=3, prop={'size': 7})
-            self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][i]].enabled = True
-            self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][i]].update()
-            self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][i]].draw()
+        type = kwargs["type"]
+        while i < len(self.graph_names_global[type]):
+            self.graph_dict_global[type][self.graph_names_global[type][i]].enabled = False
+            if all:
+                ymin, ymax = self.find_max_range(self.global_yaml["graphs"][index])
+                self.graph_dict_global[type][self.graph_names_global[type][i]].ymin = ymin
+                self.graph_dict_global[type][self.graph_names_global[type][i]].ymax = ymax
+                self.graph_dict_global[type][self.graph_names_global[type][i]].plot_all = True
+                self.graph_dict_global[type][self.graph_names_global[type][i]].ax1.yaxis.set_tick_params(which='both', labelbottom=False)
+                self.graph_dict_global[type][self.graph_names_global[type][i]].re_init()
+                self.graph_dict_global[type][self.graph_names_global[type][i]].ax1.legend(self.graph_dict_global[type][self.graph_names_global[type][i]].line, self.global_yaml["graphs"][index]["lines"], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5, ncol=3, prop={'size': 7})
+            else:
+                self.graph_dict_global[type][self.graph_names_global[type][i]].ymin = self.global_yaml["graphs"][index]["ranges"][kwargs["line_number"]][0]
+                self.graph_dict_global[type][self.graph_names_global[type][i]].ymax = self.global_yaml["graphs"][index]["ranges"][kwargs["line_number"]][1]
+                self.graph_dict_global[type][self.graph_names_global[type][i]].line_to_plot = kwargs["line_number"]
+                self.graph_dict_global[type][self.graph_names_global[type][i]].plot_all = False
+                self.graph_dict_global[type][self.graph_names_global[type][i]].ax1.yaxis.set_tick_params(which='both', labelbottom=True)
+                self.graph_dict_global[type][self.graph_names_global[type][i]].re_init()
+                self.graph_dict_global[type][self.graph_names_global[type][i]].ax1.legend(self.graph_dict_global[type][self.graph_names_global[type][i]].line, kwargs["legend_name"], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5,  prop={'size': 7})
+            self.graph_dict_global[type][self.graph_names_global[type][i]].enabled = True
+            self.graph_dict_global[type][self.graph_names_global[type][i]].update()
+            self.graph_dict_global[type][self.graph_names_global[type][i]].draw()
             i += 1
 
     def make_controll_loop_callback(self, graph):
