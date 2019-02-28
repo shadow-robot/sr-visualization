@@ -80,6 +80,7 @@ class SrDataVisualizer(Plugin):
             except yaml.YAMLError as exc:
                 print(exc)
 
+        # TODO: Is this still needed?
         self.tabWidget_motor_stats.setCurrentIndex(0)  # to open the first tab
         self.tabWidget_motor_stats.setCurrentIndex(1)  # to open the first tab
         self.tabWidget_motor_stats.setCurrentIndex(2)  # to open the first tab
@@ -91,6 +92,7 @@ class SrDataVisualizer(Plugin):
 
         self.init_complete = True
 
+# TODO: Urgent! Refactor to try and fix graph updating problems
 ##############################################################################################################
 ################################ REFACTOR EVERYTHING FROM HERE...  ###########################################
 ##############################################################################################################
@@ -293,6 +295,7 @@ class SrDataVisualizer(Plugin):
                     print b.text() + " is deselected"
         return motor_stat_button
 
+    # TODO: Refactor into dynamic function array
     def motor_stat_buttons(self, b):
         if b.text() == "All":
             if b.isChecked() == True:
@@ -308,6 +311,7 @@ class SrDataVisualizer(Plugin):
             else:
                 print b.text() + " is deselected"
 
+    # TODO: Refactor into dynamic function array
     def control_loop_buttons(self, b):
         if b.text() == "All":
             if b.isChecked() == True:
@@ -352,6 +356,7 @@ class SrDataVisualizer(Plugin):
             else:
                 print b.text() + " is deselected"
 
+    # TODO: Refactor into dynamic function array
     def joint_states_button(self, b):
         if b.text() == "all":
             if b.isChecked() == True:
