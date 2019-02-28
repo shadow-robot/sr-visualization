@@ -705,21 +705,21 @@
            <attribute name="title">
             <string>Motor Stats</string>
            </attribute>
-           <layout class="QGridLayout" name="gridLayout_13">
+           <layout class="QGridLayout" name="gridLayout_23">
             <item row="0" column="0">
-             <widget class="QTabWidget" name="tabWidget">
+             <widget class="QTabWidget" name="tabWidget_motor_stats">
               <property name="currentIndex">
-               <number>0</number>
+               <number>2</number>
               </property>
               <widget class="QWidget" name="tab_3">
                <attribute name="title">
-                <string>Tab 1</string>
+                <string>Thumb</string>
                </attribute>
                <layout class="QHBoxLayout" name="horizontalLayout">
                 <item>
                  <widget class="QGroupBox" name="groupBox_19">
                   <property name="title">
-                   <string>Thumb</string>
+                   <string>THJ1</string>
                   </property>
                   <layout class="QGridLayout" name="gridLayout_19">
                    <item row="0" column="0">
@@ -731,7 +731,7 @@
                 <item>
                  <widget class="QGroupBox" name="groupBox_18">
                   <property name="title">
-                   <string>Thumb</string>
+                   <string>THJ2</string>
                   </property>
                   <layout class="QGridLayout" name="gridLayout_18">
                    <item row="0" column="0">
@@ -743,7 +743,7 @@
                 <item>
                  <widget class="QGroupBox" name="groupBox_20">
                   <property name="title">
-                   <string>Thumb</string>
+                   <string>THJ3</string>
                   </property>
                   <layout class="QGridLayout" name="gridLayout_20">
                    <item row="0" column="0">
@@ -755,7 +755,7 @@
                 <item>
                  <widget class="QGroupBox" name="groupBox_21">
                   <property name="title">
-                   <string>Thumb</string>
+                   <string>THJ4</string>
                   </property>
                   <layout class="QGridLayout" name="gridLayout_21">
                    <item row="0" column="0">
@@ -767,7 +767,7 @@
                 <item>
                  <widget class="QGroupBox" name="groupBox_22">
                   <property name="title">
-                   <string>Thumb</string>
+                   <string>THJ5</string>
                   </property>
                   <layout class="QGridLayout" name="gridLayout_22">
                    <item row="0" column="0">
@@ -778,19 +778,62 @@
                 </item>
                </layout>
               </widget>
+              <widget class="QWidget" name="tab_5">
+               <attribute name="title">
+                <string>Index</string>
+               </attribute>
+               <layout class="QHBoxLayout" name="horizontalLayout_3">
+                <item>
+                 <widget class="QGroupBox" name="groupBox_27">
+                  <property name="title">
+                   <string>FFJ0</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_25">
+                   <item row="0" column="0">
+                    <layout class="QVBoxLayout" name="ffj0_layout_motor_stat"/>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="groupBox_28">
+                  <property name="title">
+                   <string>FFJ3</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_26">
+                   <item row="0" column="0">
+                    <layout class="QVBoxLayout" name="ffj3_layout_motor_stat"/>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="groupBox_26">
+                  <property name="title">
+                   <string>FFJ4</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_24">
+                   <item row="0" column="0">
+                    <layout class="QVBoxLayout" name="ffj4_layout_motor_stat"/>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
               <widget class="QWidget" name="tab_4">
                <attribute name="title">
-                <string>Tab 2</string>
+                <string>Middle</string>
                </attribute>
                <layout class="QHBoxLayout" name="horizontalLayout_2">
                 <item>
                  <widget class="QGroupBox" name="groupBox_15">
                   <property name="title">
-                   <string>Thumb</string>
+                   <string>MFJ0</string>
                   </property>
                   <layout class="QGridLayout" name="gridLayout_15">
                    <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="thj1_layout_ctrl_3"/>
+                    <layout class="QVBoxLayout" name="mfj0_layout_motor_stat"/>
                    </item>
                   </layout>
                  </widget>
@@ -798,11 +841,11 @@
                 <item>
                  <widget class="QGroupBox" name="groupBox_16">
                   <property name="title">
-                   <string>Thumb</string>
+                   <string>MFJ3</string>
                   </property>
                   <layout class="QGridLayout" name="gridLayout_16">
                    <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="thj1_layout_ctrl_4"/>
+                    <layout class="QVBoxLayout" name="mfj3_layout_motor_stat"/>
                    </item>
                   </layout>
                  </widget>
@@ -810,17 +853,263 @@
                 <item>
                  <widget class="QGroupBox" name="groupBox_17">
                   <property name="title">
-                   <string>Thumb</string>
+                   <string>MFJ4</string>
                   </property>
                   <layout class="QGridLayout" name="gridLayout_17">
                    <item row="0" column="0">
-                    <layout class="QVBoxLayout" name="thj1_layout_ctrl_5"/>
+                    <layout class="QVBoxLayout" name="mfj4_layout_motor_stat"/>
                    </item>
                   </layout>
                  </widget>
                 </item>
                </layout>
               </widget>
+              <widget class="QWidget" name="tab_6">
+               <attribute name="title">
+                <string>Ring</string>
+               </attribute>
+               <layout class="QHBoxLayout" name="horizontalLayout_4">
+                <item>
+                 <widget class="QGroupBox" name="groupBox_30">
+                  <property name="title">
+                   <string>RFJ0</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_28">
+                   <item row="0" column="0">
+                    <layout class="QVBoxLayout" name="rfj0_layout_motor_stat"/>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="groupBox_31">
+                  <property name="title">
+                   <string>RFJ3</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_31">
+                   <item row="0" column="0">
+                    <layout class="QVBoxLayout" name="rfj3_layout_motor_stat"/>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="groupBox_29">
+                  <property name="title">
+                   <string>RFJ4</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_27">
+                   <item row="0" column="0">
+                    <layout class="QVBoxLayout" name="rfj4_layout_motor_stat"/>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="tab_7">
+               <attribute name="title">
+                <string>Little</string>
+               </attribute>
+               <layout class="QHBoxLayout" name="horizontalLayout_5">
+                <item>
+                 <widget class="QGroupBox" name="groupBox_33">
+                  <property name="title">
+                   <string>LFJ0</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_37">
+                   <item row="0" column="0">
+                    <layout class="QVBoxLayout" name="lfj0_layout_motor_stat"/>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="groupBox_34">
+                  <property name="title">
+                   <string>LFJ3</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_38">
+                   <item row="0" column="0">
+                    <layout class="QVBoxLayout" name="lfj3_layout_motor_stat"/>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="groupBox_32">
+                  <property name="title">
+                   <string>LFJ4</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_36">
+                   <item row="0" column="0">
+                    <layout class="QVBoxLayout" name="lfj4_layout_motor_stat"/>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="groupBox_35">
+                  <property name="title">
+                   <string>LFJ5</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_39">
+                   <item row="0" column="0">
+                    <layout class="QVBoxLayout" name="lfj5_layout_motor_stat"/>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="tab_8">
+               <attribute name="title">
+                <string>Wrist</string>
+               </attribute>
+               <layout class="QHBoxLayout" name="horizontalLayout_6">
+                <item>
+                 <widget class="QGroupBox" name="groupBox_37">
+                  <property name="title">
+                   <string>WRJ1</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_41">
+                   <item row="0" column="0">
+                    <layout class="QVBoxLayout" name="wrj1_layout_motor_stat"/>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="groupBox_36">
+                  <property name="title">
+                   <string>WRJ2</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_40">
+                   <item row="0" column="0">
+                    <layout class="QVBoxLayout" name="wrj2_layout_motor_stat"/>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QGroupBox" name="groupBox_25">
+              <property name="title">
+               <string>Display</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout">
+               <item>
+                <widget class="QRadioButton" name="radioButton_all_motor_stat">
+                 <property name="text">
+                  <string>All</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radioButton_strain_gauge_left">
+                 <property name="text">
+                  <string>Strain Gauge Left</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radioButton_strain_gauge_right">
+                 <property name="text">
+                  <string>Strain Gauge Right</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radioButton_measured_pwm">
+                 <property name="text">
+                  <string>Measured PWM</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radioButton_measured_current">
+                 <property name="text">
+                  <string>Measured Current</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radioButton_measured_voltage">
+                 <property name="text">
+                  <string>Measured Voltage</string>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radioButton_measured_effort">
+                 <property name="text">
+                  <string>Measured Effort</string>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radioButton_temperature">
+                 <property name="text">
+                  <string>Temperature</string>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radioButton_unfiltered_position">
+                 <property name="text">
+                  <string>Unfiltered position</string>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radioButton_unfiltered_force">
+                 <property name="text">
+                  <string>Unfiltered force</string>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radioButton_last_commanded_effort">
+                 <property name="text">
+                  <string>Last Commanded Effort</string>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radioButton_encoder_position">
+                 <property name="text">
+                  <string>Encoder Position</string>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </widget>
             </item>
            </layout>

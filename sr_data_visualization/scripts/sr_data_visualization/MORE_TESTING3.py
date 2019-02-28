@@ -120,7 +120,7 @@ def funcs(data):
     global motor_stat_vals
     motor_stat_vals = data
 
-with open("motor_stat_keys.yaml", 'r') as stream:
+with open("mech_stat_val_keys.yaml", 'r') as stream:
     try:
         data_loaded = yaml.load(stream)
         my_func(data_loaded)
