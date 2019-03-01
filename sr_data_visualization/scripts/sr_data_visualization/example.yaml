@@ -2,7 +2,7 @@
 graphs:
   
   - type: pos_vel_eff
-    lines: [position, velocity, effort]
+    lines: [Position (rad), Velocity (rad/s), Effort]
     ranges: [[-3.14, 3.14], [-3.14, 3.14], [-600, 600]]
     graph_names: [thj1, thj2, thj3, thj4, thj5, ffj1, ffj2, ffj3, ffj4, mfj1, mfj2, mfj3, mfj4, rfj1, rfj2, rfj3, rfj4, lfj1, lfj2, lfj3, lfj4, lfj5, wrj1, wrj2]
     colours: [red, blue, green]

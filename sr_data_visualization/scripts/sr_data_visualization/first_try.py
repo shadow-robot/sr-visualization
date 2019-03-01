@@ -76,8 +76,6 @@ class SrDataVisualizer(Plugin):
         self.tab_widget_main.currentChanged.connect(self.tab_change)
         self.tabWidget_motor_stats.currentChanged.connect(self.tab_change_mstat)
 
-        self.setup_radio_buttons()
-
         with open("mech_stat_val_keys.yaml", 'r') as stream:
             try:
                 self.motor_stat_keys = yaml.load(stream)
@@ -87,12 +85,12 @@ class SrDataVisualizer(Plugin):
         with open("example.yaml", 'r') as stream:
             try:
                 data_loaded = yaml.load(stream)
-                self.my_func(data_loaded)
+                self.initialize(data_loaded)
             except yaml.YAMLError as exc:
                 print(exc)
 
-        # TODO: Is this still needed?
-        #Yup, everything goes wrong without this
+        self.setup_radio_buttons()
+
         self.tabWidget_motor_stats.setCurrentIndex(0)
         self.tabWidget_motor_stats.setCurrentIndex(1)
         self.tabWidget_motor_stats.setCurrentIndex(2)
@@ -101,40 +99,17 @@ class SrDataVisualizer(Plugin):
         self.tabWidget_motor_stats.setCurrentIndex(5)
         self.tabWidget_motor_stats.setCurrentIndex(0)
 
-
         self.init_complete = True
+        # TODO: refresh graphs on resize?
 
-# TODO: Urgent! Refactor to try and fix graph updating problems
-##############################################################################################################
-################################ REFACTOR EVERYTHING FROM HERE...  ###########################################
-##############################################################################################################
-    @timeit
     def tab_change_mstat(self, tab_index):
         self.hide_and_refresh(tab_index, "motor_stat")
 
     def tab_change(self, tab_index):
         self.hide_and_refresh(tab_index, "main")
-        # threading.Thread(target=self.delay_tab_change(4, tab_index, "main")).start()
 
     def hide_and_refresh(self, tab_index, tab_type):
         self.hide_tabs(tab_index, tab_type)
-    #refresh?
-    #     self.refresh_remaining_tabs(tab_index, tab_type)
-    #
-    # def refresh_remaining_tabs(self, tab_index, tab_type):
-    #     if tab_type == "main":
-    #         if tab_index == 0:
-    #             tab_group = "pos_vel_eff"
-    #         elif tab_index == 1:
-    #             tab_group = "control_loops"
-    #         elif tab_index == 2:
-    #             tab_group = "motor_stat"
-    #     else:
-    #         tab_group = tab_type
-    #     x = [value for key, value in self.graph_dict_global[tab_group].items() if value.enabled is True]
-    #     for graph in x:
-    #         graph.update()
-
 
     def hide_tabs(self, tab_index, tab):
         print tab_index, tab
@@ -179,7 +154,6 @@ class SrDataVisualizer(Plugin):
         for graph in x:
             graph.enabled = False
 
-
     def disable_graphs(self, graph_type, disable):
         for element in graph_type:
             if not disable:
@@ -190,54 +164,6 @@ class SrDataVisualizer(Plugin):
                 print key
                 graph.enabled = not disable
 
-
-    def delay_tab_change(self, number_of_times, tab_index, tab_group):
-        i = 0
-        while i < number_of_times:
-            time.sleep(.300)
-            self.update_graphs(tab_index, tab_group)
-            i += 1
-        # time.sleep(.300)
-        # self.update_graphs()
-        # time.sleep(.300)
-        # self.update_graphs()
-        # time.sleep(.300)
-        # self.update_graphs()
-
-    def update_specific(self, group):
-        x = [value for key, value in self.graph_dict_global["motor_stat"].items() if group in key]
-        print key, group
-        s = 3
-        for graph in x:
-            graph.update()
-            #graph.draw()
-
-
-    def update_graphs(self, tab_index, tab_group):
-        if tab_group == "motor_stat":
-            if tab_index == 0:
-                self.update_specific("thj")
-            elif tab_index == 1:
-                self.update_specific("ffj")
-            elif tab_index == 2:
-                self.update_specific("mfj")
-            elif tab_index == 3:
-                self.update_specific("rfj")
-            elif tab_index == 4:
-                self.update_specific("lfj")
-            elif tab_index == 5:
-                self.update_specific("wrj")
-        elif tab_group == "main":
-            s = 2
-            for graphs in self.graph_dict_global.iteritems():
-                for key, graph in graphs[1].iteritems():
-                    #print key
-                    graph.update()
-                    graph.draw()
-
-##############################################################################################################
-##################################### TO HERE ################################################################
-##############################################################################################################
     def setup_radio_buttons(self):
         self.radio_button_velocity = self._widget.findChild(QRadioButton, "radioButton_velocity")
         self.radio_button_all = self._widget.findChild(QRadioButton, "radioButton_all")
@@ -264,154 +190,69 @@ class SrDataVisualizer(Plugin):
         self.radioButton_last_commanded_effort = self._widget.findChild(QRadioButton, "radioButton_last_commanded_effort")
         self.radioButton_encoder_position = self._widget.findChild(QRadioButton, "radioButton_encoder_position")
 
-        self.radioButton_all_motor_stat.toggled.connect(lambda: self.motor_stat_buttons(self.radioButton_all_motor_stat))
+        self.radio_button_list = []
+        j = 0
+        while j < len(self.global_yaml["graphs"]):
+            i = 0
+            while i < len(self.global_yaml["graphs"][j]["lines"]):
+                tmp = self.make_all_button_functions(i, all=False, type=j)
+                self.radio_button_list.append(tmp)
+                i += 1
+            tmp = self.make_all_button_functions(i, all=True, type=j)
+            self.radio_button_list.append(tmp)
+            j += 1
 
-        # self.radioButton_strain_gauge_left.toggled.connect(lambda: self.motor_stat_buttons(self.radioButton_strain_gauge_left))
-        # self.radioButton_strain_gauge_right.toggled.connect(lambda: self.motor_stat_buttons(self.radioButton_strain_gauge_right))
-        # self.radioButton_measured_pwm.toggled.connect(lambda: self.motor_stat_buttons(self.radioButton_measured_pwm))
-        # self.radioButton_measured_current.toggled.connect(lambda: self.motor_stat_buttons(self.radioButton_measured_current))
-        # self.radioButton_measured_voltage.toggled.connect(lambda: self.motor_stat_buttons(self.radioButton_measured_voltage))
-        # self.radioButton_measured_effort.toggled.connect(lambda: self.motor_stat_buttons(self.radioButton_measured_effort))
-        # self.radioButton_temperature.toggled.connect(lambda: self.motor_stat_buttons(self.radioButton_temperature))
-        # self.radioButton_unfiltered_position.toggled.connect(lambda: self.motor_stat_buttons(self.radioButton_unfiltered_position))
+        self.radio_button_position.toggled.connect(lambda: self.radio_button_list[0](self.radio_button_position))
+        self.radio_button_velocity.toggled.connect(lambda: self.radio_button_list[1](self.radio_button_velocity))
+        self.radio_button_effort.toggled.connect(lambda: self.radio_button_list[2](self.radio_button_effort))
+        self.radio_button_all.toggled.connect(lambda: self.radio_button_list[3](self.radio_button_all))
 
-        i = 0
-        self.motor_stat_button_list = []
-        #while i < len(self.motor_stat_keys[1][self.global_yaml["graphs"][2]["lines"][i]]):
-        while i < 11:
-            tmp = self.make_motor_stat_button_functions(i)
-            self.motor_stat_button_list.append(tmp)
-            i += 1
+        self.radio_button_setpoint.toggled.connect(lambda: self.radio_button_list[4](self.radio_button_setpoint))
+        self.radio_button_input.toggled.connect(lambda: self.radio_button_list[5](self.radio_button_input))
+        self.radio_button_dInput.toggled.connect(lambda: self.radio_button_list[6](self.radio_button_dInput))
+        self.radio_button_error.toggled.connect(lambda: self.radio_button_list[7](self.radio_button_error))
+        self.radio_button_output.toggled.connect(lambda: self.radio_button_list[8](self.radio_button_output))
+        self.radio_button_ctrl_all.toggled.connect(lambda: self.radio_button_list[9](self.radio_button_ctrl_all))
 
-        #self.radioButton_strain_gauge_left.toggled.connect(lambda: self.motor_stat_button_list[0](self.radioButton_strain_gauge_left))
-        self.radioButton_strain_gauge_left.toggled.connect(lambda: self.motor_stat_buttons(self.radioButton_strain_gauge_left))
+        self.radioButton_strain_gauge_left.toggled.connect(lambda: self.radio_button_list[10](self.radioButton_strain_gauge_left))
+        self.radioButton_strain_gauge_right.toggled.connect(lambda: self.radio_button_list[11](self.radioButton_strain_gauge_right))
+        self.radioButton_measured_pwm.toggled.connect(lambda: self.radio_button_list[12](self.radioButton_measured_pwm))
+        self.radioButton_measured_current.toggled.connect(lambda: self.radio_button_list[13](self.radioButton_measured_current))
+        self.radioButton_measured_voltage.toggled.connect(lambda: self.radio_button_list[14](self.radioButton_measured_voltage))
+        self.radioButton_measured_effort.toggled.connect(lambda: self.radio_button_list[15](self.radioButton_measured_effort))
+        self.radioButton_temperature.toggled.connect(lambda: self.radio_button_list[16](self.radioButton_temperature))
+        self.radioButton_unfiltered_position.toggled.connect(lambda: self.radio_button_list[17](self.radioButton_unfiltered_position))
+        self.radioButton_unfiltered_force.toggled.connect(lambda: self.radio_button_list[18](self.radioButton_unfiltered_force))
+        self.radioButton_last_commanded_effort.toggled.connect(lambda: self.radio_button_list[19](self.radioButton_last_commanded_effort))
+        self.radioButton_encoder_position.toggled.connect(lambda: self.radio_button_list[20](self.radioButton_encoder_position))
+        self.radioButton_all_motor_stat.toggled.connect(lambda: self.radio_button_list[21](self.radioButton_all_motor_stat))
 
-        self.radioButton_strain_gauge_right.toggled.connect(lambda: self.motor_stat_button_list[1](self.radioButton_strain_gauge_right))
-        self.radioButton_measured_pwm.toggled.connect(lambda: self.motor_stat_button_list[2](self.radioButton_measured_pwm))
-        self.radioButton_measured_current.toggled.connect(lambda: self.motor_stat_button_list[3](self.radioButton_measured_current))
-        self.radioButton_measured_voltage.toggled.connect(lambda: self.motor_stat_button_list[4](self.radioButton_measured_voltage))
-        self.radioButton_measured_effort.toggled.connect(lambda: self.motor_stat_button_list[5](self.radioButton_measured_effort))
-        self.radioButton_temperature.toggled.connect(lambda: self.motor_stat_button_list[6](self.radioButton_temperature))
-        self.radioButton_unfiltered_position.toggled.connect(lambda: self.motor_stat_button_list[7](self.radioButton_unfiltered_position))
-        self.radioButton_unfiltered_force.toggled.connect(lambda: self.motor_stat_button_list[8](self.radioButton_unfiltered_force))
-        self.radioButton_last_commanded_effort.toggled.connect(lambda: self.motor_stat_button_list[9](self.radioButton_last_commanded_effort))
-        self.radioButton_encoder_position.toggled.connect(lambda: self.motor_stat_button_list[10](self.radioButton_encoder_position))
+    def make_all_button_functions(self, i, all, type):
+        if type == 0:
+            graph_type = "pos_vel_eff"
+        elif type == 1:
+            graph_type = "control_loops"
+        elif type == 2:
+            graph_type = "motor_stat"
 
-        self.radio_button_setpoint.toggled.connect(lambda: self.control_loop_buttons(self.radio_button_setpoint))
-        self.radio_button_input.toggled.connect(lambda: self.control_loop_buttons(self.radio_button_input))
-        self.radio_button_dInput.toggled.connect(lambda: self.control_loop_buttons(self.radio_button_dInput))
-        self.radio_button_error.toggled.connect(lambda: self.control_loop_buttons(self.radio_button_error))
-        self.radio_button_output.toggled.connect(lambda: self.control_loop_buttons(self.radio_button_output))
-        self.radio_button_ctrl_all.toggled.connect(lambda: self.control_loop_buttons(self.radio_button_ctrl_all))
+        if all and graph_type == "pos_vel_eff":
+            number_of_columns = 3
+        elif all and graph_type == "control_loops":
+            number_of_columns = 3
+        elif all and graph_type == "motor_stat":
+            number_of_columns = 1
 
-        self.radio_button_velocity.toggled.connect(lambda: self.joint_states_button(self.radio_button_velocity))
-        self.radio_button_position.toggled.connect(lambda: self.joint_states_button(self.radio_button_position))
-        self.radio_button_effort.toggled.connect(lambda: self.joint_states_button(self.radio_button_effort))
-        self.radio_button_all.toggled.connect(lambda: self.joint_states_button(self.radio_button_all))
-
-
-
-    def make_motor_stat_button_functions(self, i):
-        def motor_stat_button(b):
-            if b.text() == self.global_yaml["graphs"][2]["lines"][i]:
-                if b.isChecked() == True:
-                    self.change_graphs(all=False, legend_name=[self.global_yaml["graphs"][2]["lines"][i]], line_number=i, type="motor_stat", ncol=1)
-                    print b.text() + " is selected"
-                else:
-                    print b.text() + " is deselected"
-        return motor_stat_button
-
-    # TODO: Refactor into dynamic function array
-    def motor_stat_buttons(self, b):
-        if b.text() == "All":
-            if b.isChecked() == True:
-                self.change_graphs(all=True, type="motor_stat", ncol=1)
-                print b.text() + " is selected"
-            else:
-                print b.text() + " is deselected"
-
-        if b.text() == "Strain Gauge Left":
-            if b.isChecked() == True:
-                self.change_graphs(all=False, legend_name=['Strain Gauge Left'], line_number=0, type="motor_stat")
-                print b.text() + " is selected"
-            else:
-                print b.text() + " is deselected"
-
-    # TODO: Refactor into dynamic function array
-    
-    def control_loop_buttons(self, b):
-        if b.text() == "All":
-            if b.isChecked() == True:
-                self.change_graphs(all=True, type="control_loops")
-                print b.text() + " is selected"
-            else:
-                print b.text() + " is deselected"
-
-        if b.text() == "Setpoint":
-            if b.isChecked() == True:
-                self.change_graphs(all=False, legend_name=['Setpoint'], line_number=0, type="control_loops")
-                print b.text() + " is selected"
-            else:
-                print b.text() + " is deselected"
-
-        if b.text() == "Input":
-            if b.isChecked() == True:
-                self.change_graphs(all=False, legend_name=['Input'], line_number=1, type="control_loops")
-                print b.text() + " is selected"
-            else:
-                print b.text() + " is deselected"
-
-        if b.text() == "dInput/dt":
-            if b.isChecked() == True:
-                self.change_graphs(all=False, legend_name=['dInput/dt'], line_number=2, type="control_loops")
-                print b.text() + " is selected"
-            else:
-                print b.text() + " is deselected"
-
-        if b.text() == "Error":
-            if b.isChecked() == True:
-                self.change_graphs(all=False, legend_name=['Error'], line_number=3, type="control_loops")
-                print b.text() + " is selected"
-            else:
-                print b.text() + " is deselected"
-
-        if b.text() == "Output":
-            if b.isChecked() == True:
-                # self.change_to_pos_graphs()
-                self.change_graphs(all=False, legend_name=['Output'], line_number=4, type="control_loops")
-                print b.text() + " is selected"
-            else:
-                print b.text() + " is deselected"
-
-    # TODO: Refactor into dynamic function array
-    def joint_states_button(self, b):
-        if b.text() == "all":
-            if b.isChecked() == True:
-                self.change_graphs(all=True, type="pos_vel_eff")
-                print b.text() + " is selected"
-            else:
-                print b.text() + " is deselected"
-
-        if b.text() == "Velocity (rad/s)":
-            if b.isChecked() == True:
-                self.change_graphs(all=False, legend_name=['Velocity'], line_number=1, type="pos_vel_eff")
-                print b.text() + " is selected"
-            else:
-                print b.text() + " is deselected"
-
-        if b.text() == "Effort":
-            if b.isChecked() == True:
-                self.change_graphs(all=False, legend_name=['Effort'], line_number=2, type="pos_vel_eff")
-                print b.text() + " is selected"
-            else:
-                print b.text() + " is deselected"
-
-        if b.text() == "position (rad)":
-            if b.isChecked() == True:
-                self.change_graphs(all=False, legend_name=['Position'], line_number=0, type="pos_vel_eff")
-                print b.text() + " is selected"
-            else:
-                print b.text() + " is deselected"
+        if all:
+            def button_function(b):
+                if b.text() == "All":
+                    if b.isChecked():
+                        self.change_graphs(all=True, type=graph_type, ncol=number_of_columns)
+        else:
+            def button_function(b):
+                if b.text() == self.global_yaml["graphs"][type]["lines"][i]:
+                    if b.isChecked():
+                        self.change_graphs(all=False, legend_name=[self.global_yaml["graphs"][type]["lines"][i]], line_number=i, type=graph_type, ncol=1)
+        return button_function
 
     def change_graphs(self, all, **kwargs):
         # t0 = time.time()
@@ -478,14 +319,14 @@ class SrDataVisualizer(Plugin):
         ymax = 0
         i = 0
         while i < len(graphs["ranges"]):
-            if (graphs["ranges"][i][0] < ymin and graphs["ranges"][i][1] > ymax):
+            if graphs["ranges"][i][0] < ymin and graphs["ranges"][i][1] > ymax:
                 ymin = graphs["ranges"][i][0]
                 ymax = graphs["ranges"][i][1]
             i += 1
         scales = [ymin, ymax]
         return scales
 
-    def my_func(self, data):
+    def initialize(self, data):
         self.graph_dict_global = {}
         self.control_loop_callback_dict = {}
         self.subs = []
@@ -494,6 +335,7 @@ class SrDataVisualizer(Plugin):
         for graphs in data["graphs"]:
             ymin, ymax = self.find_max_range(graphs)
             self.graph_names_global[graphs["type"]] = graphs["graph_names"]
+
             # create_graphs
             temp_graph_dict = {}
             i = 0
@@ -538,7 +380,7 @@ class SrDataVisualizer(Plugin):
 
     def joint_state_cb(self, value):
         if self.first_run:
-            #Creates map of jointstates (so we can do joint_state.values.position[joint_state_data_map["rh_FFJ1"]]
+            # Creates map of jointstates (so we can do joint_state.values.position[joint_state_data_map["rh_FFJ1"]]
             self.joint_state_data_map = {}
             i = 0
             while i < len(value.name):
@@ -576,15 +418,23 @@ class SrDataVisualizer(Plugin):
                     while j < len(self.motor_stat_keys[1]):
                         ymin, ymax = self.find_max_range(self.global_yaml["graphs"][2])
                         graph = self.graph_dict_global["motor_stat"][self.graph_names_global["motor_stat"][i]]
-                        status_key_key = self.graph_names_global["motor_stat"][i]
-                        status_key = self.motor_stat_keys[0][string.upper(status_key_key)]
-                        data_point = data.status[status_key]
-
-                        lin_num_key = self.global_yaml["graphs"][2]["lines"][j]
-                        lin_num = self.motor_stat_keys[1][lin_num_key]
-
-                        data_values = data_point.values[lin_num]
-                        data_value = data_values.value
+                        # status_key_key = self.graph_names_global["motor_stat"][i]
+                        # status_key = self.motor_stat_keys[0][string.upper(status_key_key)]
+                        # data_point = data.status[status_key]
+                        #
+                        # lin_num_key = self.global_yaml["graphs"][2]["lines"][j]
+                        # lin_num = self.motor_stat_keys[1][lin_num_key]
+                        #
+                        # data_values = data_point.values[lin_num]
+                        # data_value = data_values.value
+                        # scale = float(ymax / self.global_yaml["graphs"][2]["ranges"][j][1])
+                        # if self.graph_dict_global["motor_stat"][self.graph_names_global["motor_stat"][i]].plot_all:
+                        #     graph.addData(float(data_value)*scale, j)
+                        # else:
+                        #     graph.addData(float(data_value), j)
+                        data_point = data.status[self.motor_stat_keys[0][string.upper(self.graph_names_global["motor_stat"][i])]]
+                        line_number = self.motor_stat_keys[1][self.global_yaml["graphs"][2]["lines"][j]]
+                        data_value = data_point.values[line_number].value
                         scale = float(ymax / self.global_yaml["graphs"][2]["ranges"][j][1])
                         if self.graph_dict_global["motor_stat"][self.graph_names_global["motor_stat"][i]].plot_all:
                             graph.addData(float(data_value)*scale, j)

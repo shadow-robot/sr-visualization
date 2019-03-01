@@ -37,7 +37,7 @@
         <item row="1" column="0">
          <widget class="QTabWidget" name="tabWidget_main">
           <property name="currentIndex">
-           <number>2</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="tab_0">
            <attribute name="title">
@@ -354,7 +354,7 @@
                <item row="1" column="0">
                 <widget class="QRadioButton" name="radioButton_position">
                  <property name="text">
-                  <string>position (rad)</string>
+                  <string>Position (rad)</string>
                  </property>
                  <property name="checked">
                   <bool>false</bool>
@@ -371,7 +371,7 @@
                <item row="4" column="0">
                 <widget class="QRadioButton" name="radioButton_all">
                  <property name="text">
-                  <string>all</string>
+                  <string>All</string>
                  </property>
                  <property name="checked">
                   <bool>true</bool>
