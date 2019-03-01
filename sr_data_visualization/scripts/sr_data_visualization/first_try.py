@@ -36,6 +36,17 @@ from sensor_msgs.msg import JointState
 from control_msgs.msg import JointControllerState
 from diagnostic_msgs.msg import DiagnosticArray
 
+def timeit(method):
+    def timed(*args, **kw):
+        ts = time.time()
+        result = method(*args, **kw)
+        te = time.time()
+
+        print '%r  %2.2f ms' % \
+              (method.__name__, (te - ts) * 1000)
+        return result
+    return timed
+
 class SrDataVisualizer(Plugin):
     def __init__(self, context):
         self.init_complete = False
@@ -81,13 +92,14 @@ class SrDataVisualizer(Plugin):
                 print(exc)
 
         # TODO: Is this still needed?
-        self.tabWidget_motor_stats.setCurrentIndex(0)  # to open the first tab
-        self.tabWidget_motor_stats.setCurrentIndex(1)  # to open the first tab
-        self.tabWidget_motor_stats.setCurrentIndex(2)  # to open the first tab
-        self.tabWidget_motor_stats.setCurrentIndex(3)  # to open the first tab
-        self.tabWidget_motor_stats.setCurrentIndex(4)  # to open the first tab
-        self.tabWidget_motor_stats.setCurrentIndex(5)  # to open the first tab
-        self.tabWidget_motor_stats.setCurrentIndex(0)  # to open the first tab
+        #Yup, everything goes wrong without this
+        self.tabWidget_motor_stats.setCurrentIndex(0)
+        self.tabWidget_motor_stats.setCurrentIndex(1)
+        self.tabWidget_motor_stats.setCurrentIndex(2)
+        self.tabWidget_motor_stats.setCurrentIndex(3)
+        self.tabWidget_motor_stats.setCurrentIndex(4)
+        self.tabWidget_motor_stats.setCurrentIndex(5)
+        self.tabWidget_motor_stats.setCurrentIndex(0)
 
 
         self.init_complete = True
@@ -96,7 +108,7 @@ class SrDataVisualizer(Plugin):
 ##############################################################################################################
 ################################ REFACTOR EVERYTHING FROM HERE...  ###########################################
 ##############################################################################################################
-
+    @timeit
     def tab_change_mstat(self, tab_index):
         self.hide_and_refresh(tab_index, "motor_stat")
 
@@ -106,34 +118,35 @@ class SrDataVisualizer(Plugin):
 
     def hide_and_refresh(self, tab_index, tab_type):
         self.hide_tabs(tab_index, tab_type)
-        self.refresh_remaining_tabs(tab_index, tab_type)
-
-    def refresh_remaining_tabs(self, tab_index, tab_type):
-        if tab_type == "main":
-            if tab_index == 0:
-                tab_group = "pos_vel_eff"
-            elif tab_index == 1:
-                tab_group = "control_loops"
-            elif tab_index == 2:
-                tab_group = "motor_stat"
-        else:
-            tab_group = tab_type
-        x = [value for key, value in self.graph_dict_global[tab_group].items() if value.enabled is True]
-        for graph in x:
-            graph.update()
+    #refresh?
+    #     self.refresh_remaining_tabs(tab_index, tab_type)
+    #
+    # def refresh_remaining_tabs(self, tab_index, tab_type):
+    #     if tab_type == "main":
+    #         if tab_index == 0:
+    #             tab_group = "pos_vel_eff"
+    #         elif tab_index == 1:
+    #             tab_group = "control_loops"
+    #         elif tab_index == 2:
+    #             tab_group = "motor_stat"
+    #     else:
+    #         tab_group = tab_type
+    #     x = [value for key, value in self.graph_dict_global[tab_group].items() if value.enabled is True]
+    #     for graph in x:
+    #         graph.update()
 
 
     def hide_tabs(self, tab_index, tab):
         print tab_index, tab
         if tab == "main":
             if tab_index == 0:
-                self.disable_graphs(["control_loops", "motor_stat"])
-                self.enable_graphs(["pos_vel_eff"])
+                self.disable_graphs(["control_loops", "motor_stat"], True)
+                self.disable_graphs(["pos_vel_eff"], False)
             elif tab_index == 1:
-                self.disable_graphs(["pos_vel_eff", "motor_stat"])
-                self.enable_graphs(["control_loops"])
+                self.disable_graphs(["pos_vel_eff", "motor_stat"], True)
+                self.disable_graphs(["control_loops"], False)
             elif tab_index == 2:
-                self.disable_graphs(["pos_vel_eff", "control_loops"])
+                self.disable_graphs(["pos_vel_eff", "control_loops"], True)
 
                 # TODO: instead of enable all motorstat, should get motor stat tab index and enable just those
                 self.show_specific_motor_stat_tabs()
@@ -160,32 +173,23 @@ class SrDataVisualizer(Plugin):
 
     def hide_all_but(self, joint_group):
         x = [value for key, value in self.graph_dict_global["motor_stat"].items() if joint_group in key]
-        keys = [key for key, value in self.graph_dict_global["motor_stat"].items() if joint_group in key]
-        print "enabling the following graphs:", keys
         for graph in x:
             graph.enabled = True
         x = [value for key, value in self.graph_dict_global["motor_stat"].items() if joint_group not in key]
-        keys = [key for key, value in self.graph_dict_global["motor_stat"].items() if joint_group not in key]
-
-        print "disabling the following graphs:", keys
-
         for graph in x:
             graph.enabled = False
 
 
-    def enable_graphs(self, graph_type):
+    def disable_graphs(self, graph_type, disable):
         for element in graph_type:
-            print "enabling the following graphs in ", element, ": "
+            if not disable:
+                print "Enabling the following graphs in ", element, ": "
+            else:
+                print "Disabling the following graphs in ", element, ": "
             for key, graph in self.graph_dict_global[element].iteritems():
                 print key
-                graph.enabled = True
+                graph.enabled = not disable
 
-    def disable_graphs(self, graph_type):
-        for element in graph_type:
-            print "disabling the following graphs in ", element, ": "
-            for key, graph in self.graph_dict_global[element].iteritems():
-                print key
-                graph.enabled = False
 
     def delay_tab_change(self, number_of_times, tab_index, tab_group):
         i = 0
@@ -234,7 +238,6 @@ class SrDataVisualizer(Plugin):
 ##############################################################################################################
 ##################################### TO HERE ################################################################
 ##############################################################################################################
-
     def setup_radio_buttons(self):
         self.radio_button_velocity = self._widget.findChild(QRadioButton, "radioButton_velocity")
         self.radio_button_all = self._widget.findChild(QRadioButton, "radioButton_all")
@@ -309,16 +312,10 @@ class SrDataVisualizer(Plugin):
 
 
     def make_motor_stat_button_functions(self, i):
-        #print(i)
         def motor_stat_button(b):
-            # print("btest", b.text())
-            # print "line_number", i
-            # print("global_yaml_line[i]: ", self.global_yaml["graphs"][2]["lines"][i])
             if b.text() == self.global_yaml["graphs"][2]["lines"][i]:
                 if b.isChecked() == True:
                     self.change_graphs(all=False, legend_name=[self.global_yaml["graphs"][2]["lines"][i]], line_number=i, type="motor_stat", ncol=1)
-                    #self.delay_tab_change(5)
-                    #self.update_graphs()
                     print b.text() + " is selected"
                 else:
                     print b.text() + " is deselected"
@@ -341,6 +338,7 @@ class SrDataVisualizer(Plugin):
                 print b.text() + " is deselected"
 
     # TODO: Refactor into dynamic function array
+    
     def control_loop_buttons(self, b):
         if b.text() == "All":
             if b.isChecked() == True:
@@ -416,6 +414,7 @@ class SrDataVisualizer(Plugin):
                 print b.text() + " is deselected"
 
     def change_graphs(self, all, **kwargs):
+        # t0 = time.time()
         if kwargs["type"] == "pos_vel_eff":
             index = 0
         elif kwargs["type"] == "control_loops":
@@ -426,13 +425,14 @@ class SrDataVisualizer(Plugin):
             ncols = 3
         else:
             ncols = kwargs["ncol"]
-        #print"ncols = ", ncols
 
-        i = 0
         type = kwargs["type"]
+        # TODO: speed this up. update/draw double the time taken to run this function. Only update/draw graphs we can see?
+        i = 0
         while i < len(self.graph_names_global[type]):
             #self.graph_dict_global[type][self.graph_names_global[type][i]].enabled = False
             if all:
+                # TODO: Store max/min somewhere? only takes approx 10uS to find_max_range, but it's a shame to call it all the time
                 ymin, ymax = self.find_max_range(self.global_yaml["graphs"][index])
                 self.graph_dict_global[type][self.graph_names_global[type][i]].ymin = ymin
                 self.graph_dict_global[type][self.graph_names_global[type][i]].ymax = ymax
@@ -441,11 +441,6 @@ class SrDataVisualizer(Plugin):
                 self.graph_dict_global[type][self.graph_names_global[type][i]].re_init()
                 self.graph_dict_global[type][self.graph_names_global[type][i]].ax1.legend(self.graph_dict_global[type][self.graph_names_global[type][i]].line, self.global_yaml["graphs"][index]["lines"], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5, ncol=ncols, prop={'size': 7})
             else:
-                # print "line_name: ", self.global_yaml["graphs"][index]["ranges"][kwargs["line_number"]][1]
-                # tmp = kwargs["line_number"]
-                # print "line_number", tmp
-                # name = kwargs["legend_name"][0]
-                # print "name:", name
                 self.graph_dict_global[type][self.graph_names_global[type][i]].ymin = self.global_yaml["graphs"][index]["ranges"][kwargs["line_number"]][0]
                 self.graph_dict_global[type][self.graph_names_global[type][i]].ymax = self.global_yaml["graphs"][index]["ranges"][kwargs["line_number"]][1]
                 self.graph_dict_global[type][self.graph_names_global[type][i]].line_to_plot = kwargs["line_number"]
@@ -457,6 +452,9 @@ class SrDataVisualizer(Plugin):
             self.graph_dict_global[type][self.graph_names_global[type][i]].update()
             self.graph_dict_global[type][self.graph_names_global[type][i]].draw()
             i += 1
+        # t1 = time.time()
+        # total = t1 - t0
+        # print "Time taken for graph change: ", total
 
     def make_control_loop_callbacks(self, graph):
         def _callback(value):
@@ -496,9 +494,9 @@ class SrDataVisualizer(Plugin):
         for graphs in data["graphs"]:
             ymin, ymax = self.find_max_range(graphs)
             self.graph_names_global[graphs["type"]] = graphs["graph_names"]
-            i = 0
             # create_graphs
             temp_graph_dict = {}
+            i = 0
             while i < (len(graphs["graph_names"])):
                 temp_graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]), colour=graphs["colours"], ymin=ymin, ymax=ymax, ranges=graphs["ranges"], graph_title=graphs["graph_names"][i], legends=graphs["lines"], legend_columns=len(graphs["lines"]), legend_font_size=7, num_ticks=4, xaxis_tick_animation=False, tail_enable=False, enabled=True)
                 i += 1
@@ -517,7 +515,6 @@ class SrDataVisualizer(Plugin):
                 self.subs.append(rospy.Subscriber(graphs["topic_namespace"], JointState, self.joint_state_cb, queue_size=1))
             elif graphs["type"] == "motor_stat":
                 self.subs.append(rospy.Subscriber(graphs["topic_namespace"], DiagnosticArray, self.diagnostic_cb, queue_size=1))
-
 
             # init_widget_children
             lay_dic = {}
@@ -541,7 +538,7 @@ class SrDataVisualizer(Plugin):
 
     def joint_state_cb(self, value):
         if self.first_run:
-            #Create map of jointstates (so we can do joint_state.values.position[joint_state_data_map["rh_FFJ1"]]
+            #Creates map of jointstates (so we can do joint_state.values.position[joint_state_data_map["rh_FFJ1"]]
             self.joint_state_data_map = {}
             i = 0
             while i < len(value.name):
@@ -574,12 +571,9 @@ class SrDataVisualizer(Plugin):
             if len(data.status) > 1:
                 # for each joint_name / graph
                 i = 0
-                while i < len(self.graph_names_global["motor_stat"]):  # i iterate from 0 to give joint names            #j iterate from 0 to give line numbers
-                    #print"i: ", i
+                while i < len(self.graph_names_global["motor_stat"]):  # i iterate from 0 to give joint names  #j iterate from 0 to give line numbers
                     j = 0
                     while j < len(self.motor_stat_keys[1]):
-                        #print"J: ", j
-
                         ymin, ymax = self.find_max_range(self.global_yaml["graphs"][2])
                         graph = self.graph_dict_global["motor_stat"][self.graph_names_global["motor_stat"][i]]
                         status_key_key = self.graph_names_global["motor_stat"][i]
@@ -592,25 +586,10 @@ class SrDataVisualizer(Plugin):
                         data_values = data_point.values[lin_num]
                         data_value = data_values.value
                         scale = float(ymax / self.global_yaml["graphs"][2]["ranges"][j][1])
-                        # print "-----------"
-                        # print repr(data_value)
-                        # print repr(scale)
-                        # print repr(float(data_value)*scale)
-                        if j == 3:
-                            hold = scale
                         if self.graph_dict_global["motor_stat"][self.graph_names_global["motor_stat"][i]].plot_all:
                             graph.addData(float(data_value)*scale, j)
                         else:
                             graph.addData(float(data_value), j)
-                        #
-                        # ymin, ymax = self.find_max_range(self.global_yaml["graphs"][2])
-                        # tmp2 = (ymax / self.global_yaml["graphs"][2]["ranges"][j][1])
-                        # tmp1 = data.status[self.motor_stat_keys[0][string.upper(self.graph_names_global["motor_stat"][i])]].values[self.motor_stat_keys[1][self.global_yaml["graphs"][2]["lines"][i]]].value
-                        # if self.graph_dict_global["motor_stat"][self.graph_names_global["motor_stat"][i]].plot_all:
-                        #     self.graph_dict_global["motor_stat"][self.graph_names_global["motor_stat"][i]].addData(data.status[self.motor_stat_keys[0][string.upper(self.graph_names_global["motor_stat"][i])]].values[self.motor_stat_keys[1][self.global_yaml["graphs"][2]["lines"][i]]].value * (ymax / self.global_yaml["graphs"][2]["ranges"][j][1]), j)
-                        # else:
-                        #     self.graph_dict_global["motor_stat"][self.graph_names_global["motor_stat"][i]].addData(data.status[self.motor_stat_keys[0][string.upper(self.graph_names_global["motor_stat"][i])]].values[self.motor_stat_keys[1][self.global_yaml["graphs"][2]["lines"][i]]].value, j)
-
                         j += 1
                     i += 1
 
