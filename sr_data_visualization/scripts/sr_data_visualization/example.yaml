@@ -21,7 +21,7 @@ graphs:
 
   - type: motor_stat
     lines: ['Strain Gauge Left', 'Strain Gauge Right', 'Measured PWM', 'Measured Current', 'Measured Voltage', 'Measured Effort', 'Temperature', 'Unfiltered position', 'Unfiltered force', 'Last Commanded Effort', 'Encoder Position']
-    ranges: [[-450, 450], [-450, 450], [-300, 300], [0, 0.8], [-40, 40], [-1000, 1000], [0, 35], [-300, 300], [-450, 450], [-600, 600], [-6, 6]]  
+    ranges: [[-550, 550], [-550, 550], [-300, 300], [0, 0.8], [-40, 40], [-1000, 1000], [0, 35], [-300, 300], [-450, 450], [-600, 600], [-6, 6]]  
     graph_names: [ffj0, ffj3, ffj4, mfj0, mfj3, mfj4, thj1, thj2, thj3, thj4, thj5, rfj0, rfj3, rfj4, lfj0, lfj3, lfj4, lfj5, wrj1, wrj2]
     #graph_names: [thj1, thj2, thj3, thj4, thj5, mfj0, mfj3]
     #graph_names: [thj1, mfj0, mfj3]

@@ -111,6 +111,7 @@ class SrDataVisualizer(Plugin):
     def hide_and_refresh(self, tab_index, tab_type):
         self.hide_tabs(tab_index, tab_type)
 
+    @timeit
     def hide_tabs(self, tab_index, tab):
         print tab_index, tab
         if tab == "main":
@@ -156,10 +157,10 @@ class SrDataVisualizer(Plugin):
 
     def disable_graphs(self, graph_type, disable):
         for element in graph_type:
-            if not disable:
-                print "Enabling the following graphs in ", element, ": "
-            else:
-                print "Disabling the following graphs in ", element, ": "
+            # if not disable:
+            #     print "Enabling the following graphs in ", element, ": "
+            # else:
+            #     print "Disabling the following graphs in ", element, ": "
             for key, graph in self.graph_dict_global[element].iteritems():
                 print key
                 graph.enabled = not disable
@@ -255,7 +256,6 @@ class SrDataVisualizer(Plugin):
         return button_function
 
     def change_graphs(self, all, **kwargs):
-        # t0 = time.time()
         if kwargs["type"] == "pos_vel_eff":
             index = 0
         elif kwargs["type"] == "control_loops":
@@ -293,9 +293,7 @@ class SrDataVisualizer(Plugin):
             self.graph_dict_global[type][self.graph_names_global[type][i]].update()
             self.graph_dict_global[type][self.graph_names_global[type][i]].draw()
             i += 1
-        # t1 = time.time()
-        # total = t1 - t0
-        # print "Time taken for graph change: ", total
+
 
     def make_control_loop_callbacks(self, graph):
         def _callback(value):
