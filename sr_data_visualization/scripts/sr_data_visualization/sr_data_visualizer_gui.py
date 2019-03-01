@@ -112,7 +112,7 @@ class SrDataVisualizer(Plugin):
         self.tabWidget_motor_stats.setCurrentIndex(0)
 
         self.change_graphs(all=True, type="motor_stat", ncol=1)
-        self.include_tactile_plugin()
+        #self.include_tactile_plugin()
 
         self.init_complete = True
         # TODO: refresh graphs on resize?
@@ -464,7 +464,7 @@ class SrDataVisualizer(Plugin):
             # attach_graphs
             i = 0
             while i < (len(graphs["graph_names"])):
-                print graphs["graph_names"][i]
+                #print graphs["graph_names"][i]
                 x = lay_dic.get(graphs["graph_names"][i])
                 x.addWidget(self.graph_dict_global[graphs["type"]][graphs["graph_names"][i]])
                 i += 1
