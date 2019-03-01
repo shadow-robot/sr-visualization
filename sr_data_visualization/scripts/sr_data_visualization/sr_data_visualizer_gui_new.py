@@ -32,6 +32,9 @@ from sr_robot_msgs.msg import BiotacAll
 from sensor_msgs.msg import JointState
 from std_msgs.msg import Float64MultiArray
 
+# Biotacs
+from sr_gui_biotac.biotac import SrGuiBiotac
+
 
 class SrDataVisualizer(Plugin):
     def __init__(self, context):
@@ -55,7 +58,6 @@ class SrDataVisualizer(Plugin):
         self.tab_widget_1 = self._widget.findChild(QTabWidget, "tabWidget")
         self.tab_widget_1.currentChanged.connect(self.tab_change)
 
-
         # Change tabs background color
         p = self.tab_widget_1.palette()
         stylesheet = """ 
@@ -76,115 +78,7 @@ class SrDataVisualizer(Plugin):
         self.create_subscribers()
         self.attach_graphs()
 
-        self.radio_button_position = self._widget.findChild(QRadioButton, "radioButton_4")
-        self.radio_button_effort = self._widget.findChild(QRadioButton, "radioButton")
-        self.radio_button_velocity = self._widget.findChild(QRadioButton, "radioButton_2")
-        self.radio_button_all = self._widget.findChild(QRadioButton, "radioButton_3")
-
-        self.radio_button_position.toggled.connect(lambda: self.joint_states_button(self.radio_button_position))
-        self.radio_button_effort.toggled.connect(lambda: self.joint_states_button(self.radio_button_effort))
-        self.radio_button_velocity.toggled.connect(lambda: self.joint_states_button(self.radio_button_velocity))
-        self.radio_button_all.toggled.connect(lambda: self.joint_states_button(self.radio_button_all))
-
-
-    def joint_states_button(self, b):
-        if b.text() == "Velocity (rad/s)":
-            if b.isChecked() == True:
-                self.change_to_vel_graphs()
-                print b.text() + " is selected"
-            else:
-                print b.text() + " is deselected"
-
-        if b.text() == "Position (rad)":
-            if b.isChecked() == True:
-                print b.text() + " is selected"
-            else:
-                print b.text() + " is deselected"
-
-        if b.text() == "All":
-            if b.isChecked() == True:
-                self.change_to_all_graphs()
-                print b.text() + " is selected"
-            else:
-                print b.text() + " is deselected"
-
-        if b.text() == "Effort":
-            if b.isChecked() == True:
-                print b.text() + " is selected"
-            else:
-                print b.text() + " is deselected"
-
-        # self._widget.removeWidget(self.thj1_graph)
-        # self.thj1_graph.deleteLater()
-        # self.thj1_graph = None
-
-        # self.thj1_graph
-        #
-        # self.thj2_graph
-        #
-        # self.thj3_graph
-        #
-        # self.thj4_graph
-        #
-        # self.thj5_graph
-
-    def change_to_vel_graphs(self):
-        #j0_graphs_scale = self.j0_graphs_scale
-
-        #self.destroy_graph()
-        #self.thj1_graph = CustomFigCanvas(1, ['blue'], -j0_graphs_scale, j0_graphs_scale,
-                                       # ['Velocity'])
-        #def __init__(self, num_lines, colour=[], ymin=-1, ymax=1, legends=[], legend_columns='none', legend_font_size=7,
-                   #  num_ticks=4, xaxis_tick_animation=False, tail_enable=True):
-
-        #self.thj1_graph.__init__(1, ['blue'], -j0_graphs_scale, j0_graphs_scale,
-                      #                  ['Velocity'])
-        self.thj1_graph.num_lines = 1
-        self.thj1_graph.legends = ['Velocity']
-        self.thj1_graph.colour = ['blue']
-        self.thj1_graph.re_init()
-        self.thj1_graph.update()
-
-        #self.thj1_layout.addWidget(self.thj1_graph)
-
-        #
-        # self.thj2_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
-        #                                 ['Position', 'Velocity', 'Effort'])
-        # self.thj3_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
-        #                                 ['Position', 'Velocity', 'Effort'])
-        # self.thj4_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
-        #                                 ['Position', 'Velocity', 'Effort'])
-        # self.thj5_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
-        #                                 ['Position', 'Velocity', 'Effort'])
-    def change_to_all_graphs(self):
-        #j0_graphs_scale = self.j0_graphs_scale
-
-        #self.destroy_graph()
-        #self.thj1_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
-                                     #   ['Position', 'Velocity', 'Effort'])
-        #self.thj1_graph.__init__(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
-                                      #  ['Position', 'Velocity', 'Effort'])
-        self.thj1_graph.num_lines = 3
-        self.thj1_graph.legends = ['Position', 'Velocity', 'Effort']
-        self.thj1_graph.colour = ['red', 'blue', 'green']
-        self.thj1_graph.re_init()
-        self.thj1_graph.update()
-
-        #self.thj1_layout.addWidget(self.thj1_graph)
-
-        # self.thj2_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
-        #                                 ['Position', 'Velocity', 'Effort'])
-        # self.thj3_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
-        #                                 ['Position', 'Velocity', 'Effort'])
-        # self.thj4_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
-        #                                 ['Position', 'Velocity', 'Effort'])
-        # self.thj5_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
-        #                                 ['Position', 'Velocity', 'Effort'])
-
-    def destroy_graph(self):
-        self.thj1_layout.removeWidget(self.thj1_graph)
-        self.thj1_graph.deleteLater()
-        self.thj1_graph = None
+        self.include_tactile_plugin()
 
     def tab_change(self, val):
         threading.Thread(target=self.delay_tab_change).start()
@@ -309,7 +203,6 @@ class SrDataVisualizer(Plugin):
 
         j0_graphs_scale = self.j0_graphs_scale
         # All joints page graphs
-
         self.thj1_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
                                         ['Position', 'Velocity', 'Effort'])
         self.thj2_graph = CustomFigCanvas(3, ['red', 'blue', 'green'], -j0_graphs_scale, j0_graphs_scale,
@@ -671,13 +564,9 @@ class SrDataVisualizer(Plugin):
         self.rfj4_graph.addData(value.velocity[16], 1)
         self.rfj4_graph.addData(value.effort[16] * self.j0_graphs_effort_scale, 2)
 
-####################################################################################################################################################################################
-        if self.radio_button_velocity.isChecked():
-            self.thj1_graph.addData(value.velocity[17], 0)
-        else:
-            self.thj1_graph.addData(value.position[17], 0)
-            self.thj1_graph.addData(value.velocity[17], 1)
-            self.thj1_graph.addData(value.effort[17] * self.j0_graphs_effort_scale, 2)
+        self.thj1_graph.addData(value.position[17], 0)
+        self.thj1_graph.addData(value.velocity[17], 1)
+        self.thj1_graph.addData(value.effort[17] * self.j0_graphs_effort_scale, 2)
 
         self.thj2_graph.addData(value.position[18], 0)
         self.thj2_graph.addData(value.velocity[18], 1)
@@ -902,8 +791,6 @@ class SrDataVisualizer(Plugin):
         scene_layout.addWidget(frame_scene)
 
     def init_widget_children(self):
-
-
         # Motor
         self.motor_stat_layout_1 = self._widget.findChild(QVBoxLayout, "motor_stat_layout_1")
 
@@ -969,21 +856,41 @@ class SrDataVisualizer(Plugin):
         self.wrj1_pid_layout = self._widget.findChild(QVBoxLayout, "wrj1_layout_2")
         self.wrj2_pid_layout = self._widget.findChild(QVBoxLayout, "wrj2_layout_2")
 
+    def include_tactile_plugin(self):
+        tactile_gui = SrGuiBiotac(None, rqt_plugin=False)
+
+        tactile_gui._widget = self._widget
+        self.timer = QTimer(self._widget)
+        self.timer.timeout.connect(self._widget.scrollAreaWidgetContents.update)
+        self._widget.scrollAreaWidgetContents.paintEvent = tactile_gui.paintEvent
+
+        for hand in tactile_gui._hand_parameters.mapping:
+            self._widget.select_prefix.addItem(
+                tactile_gui._hand_parameters.mapping[hand])
+        if not tactile_gui._hand_parameters.mapping:
+            rospy.logerr("No hand detected")
+            # QMessageBox.warning(
+            #     self._widget, "warning", "No hand is detected")
+        else:
+            self._widget.select_prefix.setCurrentIndex(0)
+
+        self._widget.select_prefix.activated['QString'].connect(tactile_gui.subscribe_to_topic)
+
+        self.timer.start(50)
+
+        # Change background color
+        p = self._widget.scrollArea.palette()
+        stylesheet = """ QScrollArea>QWidget>QWidget{background: white;}"""
+        self._widget.scrollArea.setStyleSheet(stylesheet)
 
 class CustomFigCanvas(FigureCanvas, TimedAnimation):
-    # Inspired by: https://stackoverflow.com/questions/36665850/matplotlib-animation-inside-your-own-pyqt4-gui
+    # Taken from: ttps://stackoverflow.com/questions/36665850/matplotlib-animation-inside-your-own-pyqt4-gui
     def __init__(self, num_lines, colour=[], ymin=-1, ymax=1, legends=[], legend_columns='none', legend_font_size=7,
                  num_ticks=4, xaxis_tick_animation=False, tail_enable=True):
-        self.legends = legends
         self.num_lines = num_lines
         self.num_ticks = num_ticks
         self.tail_enable = tail_enable
-        self.legend_columns = legend_columns
-        self.legend_font_size = legend_font_size
         self.xaxis_tick_animation = xaxis_tick_animation
-        self.ymin = ymin
-        self.ymax = ymax
-        self.colour = colour
         if (legend_columns == 'none'):
             legend_columns = self.num_lines
         self.addedDataArray = []
@@ -1024,7 +931,7 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
             self.line_tail = []
         i = 0
         while i < self.num_lines:
-            self.line.append(Line2D([], [], color=self.colour[i]))
+            self.line.append(Line2D([], [], color=colour[i]))
             if self.tail_enable:
                 self.line_tail.append(Line2D([], [], color='red', linewidth=2))
                 self.line_head.append(Line2D([], [], color='red', marker='o', markeredgecolor='r'))
@@ -1036,69 +943,11 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
             i = i + 1
 
         self.fig.subplots_adjust(bottom=0.05, top=0.8, left=0.08, right=0.98)
-        self.ax1.legend(self.line, self.legends, bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3,
+        self.ax1.legend(self.line, legends, bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3,
                         ncol=legend_columns, mode="expand", borderaxespad=0.5, prop={'size': legend_font_size})
         self.counter = 0
         FigureCanvas.__init__(self, self.fig)
         TimedAnimation.__init__(self, self.fig, interval=50, blit=not (self.xaxis_tick_animation))
-
-    def re_init(self):
-        print("self.numlines", self.num_lines)
-        self.addedDataArray = []
-        n = 0
-        self.start_time = rospy.get_rostime()
-        while n < self.num_lines:
-            addedData = []
-            self.addedDataArray.append(addedData)
-            n = n + 1
-
-        # The data
-        self.xlim = 200
-        self.n = np.linspace(0, self.xlim - 1, self.xlim)
-        self.y = []
-        n = 0
-        while n < self.num_lines:
-            self.y.append((self.n * 0.0) + 50)
-            n = n + 1
-
-        self.label_buffer = []
-
-        # The window
-        #self.fig = Figure(figsize=(3, 3), dpi=100, facecolor=(1.0, 1.0, 1.0, 1.0))
-        # self.fig.patch.set_alpha(0.0)
-        #self.ax1 = self.fig.add_subplot(111)
-        self.x_axis = self.n
-        if not (self.xaxis_tick_animation):
-            self.ax1.axes.get_xaxis().set_visible(False)
-
-        # # Shrink the font size of the x tick labels
-        # for tick in self.ax1.yaxis.get_major_ticks():
-        #     tick.label.set_fontsize(7)
-        # self.ax1.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)
-
-        self.line = []
-        if self.tail_enable:
-            self.line_head = []
-            self.line_tail = []
-        i = 0
-        while i < self.num_lines:
-            self.line.append(Line2D([], [], color=self.colour[i]))
-            if self.tail_enable:
-                self.line_tail.append(Line2D([], [], color='red', linewidth=2))
-                self.line_head.append(Line2D([], [], color='red', marker='o', markeredgecolor='r'))
-                self.ax1.add_line(self.line_tail[i])
-                self.ax1.add_line(self.line_head[i])
-            self.ax1.add_line(self.line[i])
-            self.ax1.set_xlim(0, self.xlim - 1)
-            self.ax1.set_ylim(self.ymin, self.ymax)
-            i = i + 1
-
-        #self.fig.subplots_adjust(bottom=0.05, top=0.8, left=0.08, right=0.98)
-        self.ax1.legend(self.line, self.legends, bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3,
-                        ncol=self.legend_columns, mode="expand", borderaxespad=0.5, prop={'size': self.legend_font_size})
-        self.counter = 0
-        #FigureCanvas.__init__(self, self.fig)
-        # TimedAnimation.__init__(self, self.fig, interval=50, blit=not (self.xaxis_tick_animation))
 
     def new_frame_seq(self):
         return iter(range(self.n.size))
@@ -1117,7 +966,6 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
 
     def addData(self, value, index):
         self.addedDataArray[index].append(value)
-
 
     def _step(self, *args):
         TimedAnimation._step(self, *args)
@@ -1172,5 +1020,6 @@ if __name__ == "__main__":
         rospy.logwarn("This program works best at a screen resolution of 2880x1620")
     planner_benchmarking_gui = SrDataVisualizer(None)
     planner_benchmarking_gui._widget.show()
+
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     sys.exit(app.exec_())
