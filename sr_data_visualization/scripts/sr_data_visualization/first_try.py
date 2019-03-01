@@ -99,19 +99,44 @@ class SrDataVisualizer(Plugin):
 
     def tab_change_mstat(self, tab_index):
         #self.radioButton_all_motor_stat.setChecked(True)
-        self.hide_tabs(tab_index, "motor_stat")
-        print "refreshing motor stat graphs"
-        if self.init_complete:
-            threading.Thread(target=self.delay_tab_change(4, tab_index, "motor_stat")).start()
+        self.hide_and_refresh(tab_index, "motor_stat")
+        # self.hide_tabs(tab_index, "motor_stat")
+        # print "refreshing motor stat graphs"
+        # if self.init_complete:
+        #     threading.Thread(target=self.delay_tab_change(4, tab_index, "motor_stat")).start()
 
     def tab_change(self, tab_index):
-        self.hide_tabs(tab_index, "main")
-        print "refreshing main graphs"
-        threading.Thread(target=self.delay_tab_change(4, tab_index, "main")).start()
+        self.hide_and_refresh(tab_index, "main")
+        # self.hide_tabs(tab_index, "main")
+        # print "refreshing main graphs"
+        # threading.Thread(target=self.delay_tab_change(4, tab_index, "main")).start()
+
+    def hide_and_refresh(self, tab_index, tab_type):
+        print "##########################################################"
+        self.hide_tabs(tab_index, tab_type)
+        self.refresh_remaining_tabs(tab_index, tab_type)
+
+    def refresh_remaining_tabs(self, tab_index, tab_type):
+        print "tab_type: ", tab_type, "tab_index", tab_index
+        if tab_type == "main":
+            if tab_index == 0:
+                tab_group = "pos_vel_eff"
+            elif tab_index == 1:
+                tab_group = "control_loops"
+            elif tab_index == 2:
+                tab_group = "motor_stat"
+        else:
+            tab_group = tab_type
+        print "tab_group", tab_group
+        x = [value for key, value in self.graph_dict_global[tab_group].items() if value.enabled is True]
+
+        for graph in x:
+            graph.update()
+        # for graph in x:
+        #     graph.update()
 
     def hide_tabs(self, tab_index, tab):
-        #print"tab: ", tab
-        #print"tab_index", tab_index
+        print tab_index, tab
         if tab == "main":
             if tab_index == 0:
                 self.disable_graphs(["control_loops", "motor_stat"])
@@ -121,11 +146,17 @@ class SrDataVisualizer(Plugin):
                 self.enable_graphs(["control_loops"])
             elif tab_index == 2:
                 self.disable_graphs(["pos_vel_eff", "control_loops"])
-                self.enable_graphs(["motor_stat"])
-        elif tab == "motor_stat":
-                self.enable_disable_motor_stat_graphs(tab_index)
 
-    def enable_disable_motor_stat_graphs(self, tab_index):
+                # TODO: instead of enable all motorstat, should get motor stat tab index and enable just those
+                self.show_specific_motor_stat_tabs()
+
+        elif tab == "motor_stat":
+            print "sub mstat tab change"
+            self.show_specific_motor_stat_tabs()
+
+    def show_specific_motor_stat_tabs(self):
+        tab_index = self.tabWidget_motor_stats.currentIndex()
+        print "sub mstat tab index: ", tab_index
         if tab_index == 0:
             self.hide_all_but("thj")
         elif tab_index == 1:
@@ -141,21 +172,31 @@ class SrDataVisualizer(Plugin):
 
     def hide_all_but(self, joint_group):
         x = [value for key, value in self.graph_dict_global["motor_stat"].items() if joint_group in key]
+        keys = [key for key, value in self.graph_dict_global["motor_stat"].items() if joint_group in key]
+        print "enabling the following graphs:", keys
         for graph in x:
             graph.enabled = True
         x = [value for key, value in self.graph_dict_global["motor_stat"].items() if joint_group not in key]
+        keys = [key for key, value in self.graph_dict_global["motor_stat"].items() if joint_group not in key]
+
+        print "disabling the following graphs:", keys
+
         for graph in x:
             graph.enabled = False
 
 
     def enable_graphs(self, graph_type):
         for element in graph_type:
+            print "enabling the following graphs in ", element, ": "
             for key, graph in self.graph_dict_global[element].iteritems():
+                print key
                 graph.enabled = True
 
     def disable_graphs(self, graph_type):
         for element in graph_type:
+            print "disabling the following graphs in ", element, ": "
             for key, graph in self.graph_dict_global[element].iteritems():
+                print key
                 graph.enabled = False
 
     def delay_tab_change(self, number_of_times, tab_index, tab_group):
@@ -198,7 +239,7 @@ class SrDataVisualizer(Plugin):
             s = 2
             for graphs in self.graph_dict_global.iteritems():
                 for key, graph in graphs[1].iteritems():
-                    print key
+                    #print key
                     graph.update()
                     graph.draw()
 

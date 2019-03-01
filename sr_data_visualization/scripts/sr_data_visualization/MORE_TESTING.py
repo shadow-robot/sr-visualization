@@ -46,7 +46,6 @@ test_var_kwargs(True, line=3, type="control_loops")
     self.graph_dict_global[type][self.graph_names_global[type][i]].draw()
 
 
-# TODO: remove redundant code in change_to_all_graphs and change_to_single_graph
 def change_to_all_graphs(self, type):
     if type == "pos_vel_eff":
         index = 0
