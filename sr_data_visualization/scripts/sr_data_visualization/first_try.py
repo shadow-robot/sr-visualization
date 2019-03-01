@@ -30,11 +30,14 @@ import rospy
 import rospkg
 import string
 import threading
+import rviz
+
 import time
 
 from sensor_msgs.msg import JointState
 from control_msgs.msg import JointControllerState
 from diagnostic_msgs.msg import DiagnosticArray
+from std_msgs.msg import Float64MultiArray
 
 def timeit(method):
     def timed(*args, **kw):
@@ -59,12 +62,14 @@ class SrDataVisualizer(Plugin):
         if __name__ != "__main__":
             context.add_widget(self._widget)
         self._widget.setWindowTitle("Dexterous Hand Data Visualizer")
+
         # Set white background color
         p = self._widget.palette()
         p.setColor(self._widget.backgroundRole(), Qt.white)
         self._widget.setPalette(p)
         self.tab_widget_main = self._widget.findChild(QTabWidget, "tabWidget_main")
         self.tabWidget_motor_stats = self._widget.findChild(QTabWidget, "tabWidget_motor_stats")
+
         # Change tabs background color
         p = self.tab_widget_main.palette()
         stylesheet = """ 
@@ -76,13 +81,19 @@ class SrDataVisualizer(Plugin):
         self.tab_widget_main.currentChanged.connect(self.tab_change)
         self.tabWidget_motor_stats.currentChanged.connect(self.tab_change_mstat)
 
-        with open("mech_stat_val_keys.yaml", 'r') as stream:
+        self.create_scene_plugin_model()
+        self.create_scene_plugin_tftree()
+
+        motor_stat_keys_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'config', 'data_visualiser_motor_stat_keys.yaml')
+        parameters_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'config', 'data_visualiser_parameters.yaml')
+
+        with open(motor_stat_keys_file, 'r') as stream:
             try:
                 self.motor_stat_keys = yaml.load(stream)
             except yaml.YAMLError as exc:
                 print(exc)
 
-        with open("example.yaml", 'r') as stream:
+        with open(parameters_file, 'r') as stream:
             try:
                 data_loaded = yaml.load(stream)
                 self.initialize(data_loaded)
@@ -99,8 +110,46 @@ class SrDataVisualizer(Plugin):
         self.tabWidget_motor_stats.setCurrentIndex(5)
         self.tabWidget_motor_stats.setCurrentIndex(0)
 
+        self.change_graphs(all=True, type="motor_stat", ncol=1)
+
         self.init_complete = True
         # TODO: refresh graphs on resize?
+
+    def create_scene_plugin_model(self):
+        package_path = rospkg.RosPack().get_path('sr_data_visualization')
+        rviz_config_approach = package_path + "/uis/handescene_model.rviz"
+
+        reader = rviz.YamlConfigReader()
+        config_approach = rviz.Config()
+        reader.readFile(config_approach, rviz_config_approach)
+        frame_scene = rviz.VisualizationFrame()
+        frame_scene.setSplashPath("")
+        frame_scene.initialize()
+        frame_scene.setMenuBar(None)
+        frame_scene.setStatusBar(None)
+        frame_scene.setHideButtonVisibility(False)
+        frame_scene.load(config_approach)
+
+        scene_layout = self._widget.findChild(QVBoxLayout, "scene_layout_model")
+        scene_layout.addWidget(frame_scene)
+
+    def create_scene_plugin_tftree(self):
+        package_path = rospkg.RosPack().get_path('sr_data_visualization')
+        rviz_config_approach = package_path + "/uis/handescene_tftree.rviz"
+
+        reader = rviz.YamlConfigReader()
+        config_approach = rviz.Config()
+        reader.readFile(config_approach, rviz_config_approach)
+        frame_scene = rviz.VisualizationFrame()
+        frame_scene.setSplashPath("")
+        frame_scene.initialize()
+        frame_scene.setMenuBar(None)
+        frame_scene.setStatusBar(None)
+        frame_scene.setHideButtonVisibility(False)
+        frame_scene.load(config_approach)
+
+        scene_layout = self._widget.findChild(QVBoxLayout, "scene_layout_tf")
+        scene_layout.addWidget(frame_scene)
 
     def tab_change_mstat(self, tab_index):
         self.hide_and_refresh(tab_index, "motor_stat")
@@ -111,29 +160,30 @@ class SrDataVisualizer(Plugin):
     def hide_and_refresh(self, tab_index, tab_type):
         self.hide_tabs(tab_index, tab_type)
 
-    @timeit
     def hide_tabs(self, tab_index, tab):
-        print tab_index, tab
+        #print tab_index, tab
         if tab == "main":
             if tab_index == 0:
-                self.disable_graphs(["control_loops", "motor_stat"], True)
-                self.disable_graphs(["pos_vel_eff"], False)
+                self.disable_graphs(["control_loops", "motor_stat", "palm_extras_accelerometer", "palm_extras_gyro", "palm_extras_adc"], disable=True)
+                self.disable_graphs(["pos_vel_eff"], disable=False)
             elif tab_index == 1:
-                self.disable_graphs(["pos_vel_eff", "motor_stat"], True)
-                self.disable_graphs(["control_loops"], False)
+                self.disable_graphs(["pos_vel_eff", "motor_stat", "palm_extras_accelerometer", "palm_extras_gyro", "palm_extras_adc"], disable=True)
+                self.disable_graphs(["control_loops"], disable=False)
             elif tab_index == 2:
-                self.disable_graphs(["pos_vel_eff", "control_loops"], True)
-
-                # TODO: instead of enable all motorstat, should get motor stat tab index and enable just those
+                self.disable_graphs(["pos_vel_eff", "control_loops", "palm_extras_accelerometer", "palm_extras_gyro", "palm_extras_adc"], disable=True)
                 self.show_specific_motor_stat_tabs()
+            elif tab_index == 3:
+                self.disable_graphs(["pos_vel_eff", "control_loops", "motor_stat"], disable=True)
+                self.disable_graphs(["palm_extras_accelerometer", "palm_extras_gyro", "palm_extras_adc"], disable=False)
+                # TODO: instead of enable all motorstat, should get motor stat tab index and enable just those
 
         elif tab == "motor_stat":
-            print "sub mstat tab change"
+            #print "sub mstat tab change"
             self.show_specific_motor_stat_tabs()
 
     def show_specific_motor_stat_tabs(self):
         tab_index = self.tabWidget_motor_stats.currentIndex()
-        print "sub mstat tab index: ", tab_index
+        #print "sub mstat tab index: ", tab_index
         if tab_index == 0:
             self.hide_all_but("thj")
         elif tab_index == 1:
@@ -162,7 +212,7 @@ class SrDataVisualizer(Plugin):
             # else:
             #     print "Disabling the following graphs in ", element, ": "
             for key, graph in self.graph_dict_global[element].iteritems():
-                print key
+                #print key
                 graph.enabled = not disable
 
     def setup_radio_buttons(self):
@@ -193,7 +243,7 @@ class SrDataVisualizer(Plugin):
 
         self.radio_button_list = []
         j = 0
-        while j < len(self.global_yaml["graphs"]):
+        while j < 3:
             i = 0
             while i < len(self.global_yaml["graphs"][j]["lines"]):
                 tmp = self.make_all_button_functions(i, all=False, type=j)
@@ -342,6 +392,9 @@ class SrDataVisualizer(Plugin):
                 i += 1
             self.graph_dict_global[graphs["type"]] = temp_graph_dict
 
+            if graphs["type"] == "palm_extras_accelerometer":
+                hold = 2
+
             # create subscribers
             if graphs["type"] == "control_loops":
                 i = 0
@@ -355,7 +408,11 @@ class SrDataVisualizer(Plugin):
                 self.subs.append(rospy.Subscriber(graphs["topic_namespace"], JointState, self.joint_state_cb, queue_size=1))
             elif graphs["type"] == "motor_stat":
                 self.subs.append(rospy.Subscriber(graphs["topic_namespace"], DiagnosticArray, self.diagnostic_cb, queue_size=1))
+            elif graphs["type"] == "palm_extras_accelerometer":
+                self.subs.append(rospy.Subscriber(graphs["topic_namespace"], Float64MultiArray, self.palm_extras_cb, queue_size=1))
 
+            if graphs["type"] == "palm_extras_accelerometer":
+                hold = 2
             # init_widget_children
             lay_dic = {}
             i = 0
@@ -366,15 +423,37 @@ class SrDataVisualizer(Plugin):
                     layout = graphs["graph_names"][i] + "_layout_ctrl"
                 elif graphs["type"] == "motor_stat":
                     layout = graphs["graph_names"][i] + "_layout_motor_stat"
+                elif graphs["type"] == "palm_extras_accelerometer":
+                    layout = graphs["graph_names"][i] + "_layout"
+                elif graphs["type"] == "palm_extras_gyro":
+                    layout = graphs["graph_names"][i] + "_layout"
+                elif graphs["type"] == "palm_extras_adc":
+                    layout = graphs["graph_names"][i] + "_layout"
                 lay_dic[graphs["graph_names"][i]] = self._widget.findChild(QVBoxLayout, layout)
                 i += 1
 
             # attach_graphs
             i = 0
             while i < (len(graphs["graph_names"])):
+                print graphs["graph_names"][i]
                 x = lay_dic.get(graphs["graph_names"][i])
                 x.addWidget(self.graph_dict_global[graphs["type"]][graphs["graph_names"][i]])
                 i += 1
+
+        #Setup palm extras graphs (as they don't need radio buttons)
+        palm_extras_graphs = [value for key, value in self.graph_dict_global.items() if 'palm_extras' in key]
+        i = 3
+        for graph in palm_extras_graphs:
+            for key, value in graph.iteritems():
+                value.plot_all = True
+                value.ax1.yaxis.set_tick_params(which='both', labelbottom=True)
+                value.ymax = self.global_yaml["graphs"][i]["ranges"][0][1]
+                value.ymin = self.global_yaml["graphs"][i]["ranges"][0][0]
+                value.re_init()
+                value.ax1.legend(value.line, self.global_yaml["graphs"][i]["lines"], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5, ncol=len(self.global_yaml["graphs"][i]["lines"]), prop={'size': 7})
+                i += 1
+
+
 
     def joint_state_cb(self, value):
         if self.first_run:
@@ -441,6 +520,23 @@ class SrDataVisualizer(Plugin):
                         j += 1
                     i += 1
 
+    def palm_extras_cb(self, data):
+        if self.init_complete:
+            palm_extras_graphs = [value for key, value in self.graph_dict_global.items() if 'palm_extras' in key]
+            for graph in palm_extras_graphs:
+                if 'palm_extras_accelerometer' in graph:
+                    graph["palm_extras_accelerometer"].addData(data.data[0], 0)
+                    graph["palm_extras_accelerometer"].addData(data.data[1], 1)
+                    graph["palm_extras_accelerometer"].addData(data.data[2], 2)
+                if 'palm_extras_gyro' in graph:
+                    graph["palm_extras_gyro"].addData(data.data[3], 0)
+                    graph["palm_extras_gyro"].addData(data.data[4], 1)
+                    graph["palm_extras_gyro"].addData(data.data[5], 2)
+                if 'palm_extras_adc' in graph:
+                    graph["palm_extras_adc"].addData(data.data[6], 0)
+                    graph["palm_extras_adc"].addData(data.data[7], 1)
+                    graph["palm_extras_adc"].addData(data.data[8], 2)
+                    graph["palm_extras_adc"].addData(data.data[9], 2)
 
 class CustomFigCanvas(FigureCanvas, TimedAnimation):
     # Inspired by: https://stackoverflow.com/questions/36665850/matplotlib-animation-inside-your-own-pyqt4-gui

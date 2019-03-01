@@ -1,0 +1,33 @@
+- FFJ0: 3
+  FFJ3: 6
+  FFJ4: 7
+  MFJ0: 8
+  MFJ3: 11
+  MFJ4: 12
+  RFJ0: 13
+  RFJ3: 16
+  RFJ4: 17
+  LFJ0: 18
+  LFJ3: 21
+  LFJ4: 22
+  LFJ5: 23
+  THJ1: 24
+  THJ2: 25
+  THJ3: 26
+  THJ4: 27
+  THJ5: 28
+  WRJ1: 29
+  WRJ2: 30
+
+- Strain Gauge Left: 4
+  Strain Gauge Right: 5
+  Measured PWM: 7
+  Measured Current: 8
+  Measured Voltage: 9
+  Measured Effort: 10
+  Temperature: 11
+  Unfiltered position: 12
+  Unfiltered force: 13
+  Last Commanded Effort: 28
+  Encoder Position: 29
+
