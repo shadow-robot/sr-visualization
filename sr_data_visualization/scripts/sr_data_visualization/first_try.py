@@ -98,26 +98,17 @@ class SrDataVisualizer(Plugin):
 ##############################################################################################################
 
     def tab_change_mstat(self, tab_index):
-        #self.radioButton_all_motor_stat.setChecked(True)
         self.hide_and_refresh(tab_index, "motor_stat")
-        # self.hide_tabs(tab_index, "motor_stat")
-        # print "refreshing motor stat graphs"
-        # if self.init_complete:
-        #     threading.Thread(target=self.delay_tab_change(4, tab_index, "motor_stat")).start()
 
     def tab_change(self, tab_index):
         self.hide_and_refresh(tab_index, "main")
-        # self.hide_tabs(tab_index, "main")
-        # print "refreshing main graphs"
         # threading.Thread(target=self.delay_tab_change(4, tab_index, "main")).start()
 
     def hide_and_refresh(self, tab_index, tab_type):
-        print "##########################################################"
         self.hide_tabs(tab_index, tab_type)
         self.refresh_remaining_tabs(tab_index, tab_type)
 
     def refresh_remaining_tabs(self, tab_index, tab_type):
-        print "tab_type: ", tab_type, "tab_index", tab_index
         if tab_type == "main":
             if tab_index == 0:
                 tab_group = "pos_vel_eff"
@@ -127,13 +118,10 @@ class SrDataVisualizer(Plugin):
                 tab_group = "motor_stat"
         else:
             tab_group = tab_type
-        print "tab_group", tab_group
         x = [value for key, value in self.graph_dict_global[tab_group].items() if value.enabled is True]
-
         for graph in x:
             graph.update()
-        # for graph in x:
-        #     graph.update()
+
 
     def hide_tabs(self, tab_index, tab):
         print tab_index, tab
@@ -757,7 +745,8 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
 
 
     def _step(self, *args):
-        TimedAnimation._step(self, *args)
+        if self.enabled:
+            TimedAnimation._step(self, *args)
 
     def _draw_frame(self, framedata):
         if self.enabled:
