@@ -125,12 +125,8 @@ class SrDataVisualizer(Plugin):
         #self.include_tactile_plugin()
         #self.tracker = SummaryTracker()
 
-
-
         self.init_complete = True
         # TODO: refresh graphs on resize?
-
-
 
     def create_scene_plugin_model(self):
         package_path = rospkg.RosPack().get_path('sr_data_visualization')
@@ -149,7 +145,6 @@ class SrDataVisualizer(Plugin):
 
         scene_layout = self._widget.findChild(QVBoxLayout, "scene_layout_model")
         scene_layout.addWidget(frame_scene)
-
 
     def create_scene_plugin_tftree(self):
         package_path = rospkg.RosPack().get_path('sr_data_visualization')
@@ -210,17 +205,20 @@ class SrDataVisualizer(Plugin):
         #print tab_index, tab
         if tab == "main":
             if tab_index == 0:
-                self.disable_graphs(["control_loops", "motor_stat", "palm_extras_accelerometer", "palm_extras_gyro", "palm_extras_adc"], disable=True)
+                self.disable_graphs(["control_loops", "motor_stat", "palm_extras_accelerometer", "palm_extras_gyro", "palm_extras_adc", "biotacs"], disable=True)
                 self.disable_graphs(["pos_vel_eff"], disable=False)
             elif tab_index == 1:
-                self.disable_graphs(["pos_vel_eff", "motor_stat", "palm_extras_accelerometer", "palm_extras_gyro", "palm_extras_adc"], disable=True)
+                self.disable_graphs(["pos_vel_eff", "motor_stat", "palm_extras_accelerometer", "palm_extras_gyro", "palm_extras_adc", "biotacs"], disable=True)
                 self.disable_graphs(["control_loops"], disable=False)
             elif tab_index == 2:
-                self.disable_graphs(["pos_vel_eff", "control_loops", "palm_extras_accelerometer", "palm_extras_gyro", "palm_extras_adc"], disable=True)
+                self.disable_graphs(["pos_vel_eff", "control_loops", "palm_extras_accelerometer", "palm_extras_gyro", "palm_extras_adc", "biotacs"], disable=True)
                 self.show_specific_motor_stat_tabs()
             elif tab_index == 3:
-                self.disable_graphs(["pos_vel_eff", "control_loops", "motor_stat"], disable=True)
+                self.disable_graphs(["pos_vel_eff", "control_loops", "motor_stat", "biotacs"], disable=True)
                 self.disable_graphs(["palm_extras_accelerometer", "palm_extras_gyro", "palm_extras_adc"], disable=False)
+            elif tab_index == 4:
+                self.disable_graphs(["pos_vel_eff", "control_loops", "motor_stat", "palm_extras_accelerometer", "palm_extras_gyro", "palm_extras_adc"], disable=True)
+                self.disable_graphs(["biotacs"], disable=False)
                 # TODO: instead of enable all motorstat, should get motor stat tab index and enable just those
 
         elif tab == "motor_stat":
@@ -254,12 +252,7 @@ class SrDataVisualizer(Plugin):
     @timeit
     def disable_graphs(self, graph_type, disable):
         for element in graph_type:
-            # if not disable:
-            #     print "Enabling the following graphs in ", element, ": "
-            # else:
-            #     print "Disabling the following graphs in ", element, ": "
             for key, graph in self.graph_dict_global[element].iteritems():
-                #print key
                 graph.enabled = not disable
 
     def setup_radio_buttons(self):
