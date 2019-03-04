@@ -49,4 +49,11 @@ graphs:
     colours: ['red', 'cyan', 'green', 'purple']
     topic_namespace: /rh/palm_extras
 
+  - type: biotacs
+    lines: ['biotac_0', 'biotac_1', 'biotac_2', 'biotac_3', 'biotac_4']
+    ranges: [[37, 2200], [0, 2000], [0, 5000], [0, 5000], [750, 1500]]
+    graph_names: ['TAC', 'TDC', 'PAC0', 'PAC1', 'PDC']
+    colours: ['red', 'cyan', 'green', 'purple', 'blue']
+    topic_namespace: /rh/tactile
+
 

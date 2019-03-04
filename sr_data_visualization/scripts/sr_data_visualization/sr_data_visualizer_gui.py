@@ -2,8 +2,13 @@
 
 import yaml
 import matplotlib
-import gc
-from mem_top import mem_top
+# import gc
+# from mem_top import mem_top
+# from pympler.tracker import SummaryTracker
+# from pympler import refbrowser
+# import stackimpact
+
+
 
 matplotlib.use("Qt5Agg")
 from python_qt_binding.QtGui import *
@@ -41,6 +46,7 @@ from sensor_msgs.msg import JointState
 from control_msgs.msg import JointControllerState
 from diagnostic_msgs.msg import DiagnosticArray
 from std_msgs.msg import Float64MultiArray
+from sr_robot_msgs.msg import BiotacAll
 from sr_gui_biotac.biotac import SrGuiBiotac
 
 def timeit(method):
@@ -82,11 +88,11 @@ class SrDataVisualizer(Plugin):
         p.setColor(self.tab_widget_main.backgroundRole(), Qt.white)
         self.tab_widget_main.setStyleSheet(stylesheet)
 
-        #self.tab_widget_main.currentChanged.connect(self.tab_change)
-        #self.tabWidget_motor_stats.currentChanged.connect(self.tab_change_mstat)
+        self.tab_widget_main.currentChanged.connect(self.tab_change)
+        self.tabWidget_motor_stats.currentChanged.connect(self.tab_change_mstat)
 
-        self.create_scene_plugin_model()
-        self.create_scene_plugin_tftree()
+        # self.create_scene_plugin_model()
+        # self.create_scene_plugin_tftree()
 
         motor_stat_keys_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'config', 'data_visualiser_motor_stat_keys.yaml')
         parameters_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'config', 'data_visualiser_parameters.yaml')
@@ -117,6 +123,9 @@ class SrDataVisualizer(Plugin):
 
         self.change_graphs(all=True, type="motor_stat", ncol=1)
         #self.include_tactile_plugin()
+        #self.tracker = SummaryTracker()
+
+
 
         self.init_complete = True
         # TODO: refresh graphs on resize?
@@ -345,8 +354,10 @@ class SrDataVisualizer(Plugin):
         return button_function
 
     def dump_garbage(self):
+        print "hey"
+        #print(mem_top())  # Or just print().
+        #self.tracker.print_diff()
 
-        print(mem_top())  # Or just print().
         #
         # """
         # show us what the garbage is about
@@ -443,13 +454,15 @@ class SrDataVisualizer(Plugin):
             # create_graphs
             temp_graph_dict = {}
             i = 0
+            if graphs["type"] == "biotacs":
+                s = 1
             while i < (len(graphs["graph_names"])):
-                temp_graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]), colour=graphs["colours"], ymin=ymin, ymax=ymax, ranges=graphs["ranges"], graph_title=graphs["graph_names"][i], legends=graphs["lines"], legend_columns=len(graphs["lines"]), legend_font_size=7, num_ticks=4, xaxis_tick_animation=False, tail_enable=False, enabled=True)
+                if graphs["type"] == "biotacs":
+                    temp_graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]), colour=graphs["colours"], ymin=graphs["ranges"][i][0], ymax=graphs["ranges"][i][1], ranges=graphs["ranges"], graph_title=graphs["graph_names"][i], legends=graphs["lines"], legend_columns=len(graphs["lines"]), legend_font_size=7, num_ticks=4, xaxis_tick_animation=False, tail_enable=False, enabled=True)
+                else:
+                    temp_graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]), colour=graphs["colours"], ymin=ymin, ymax=ymax, ranges=graphs["ranges"], graph_title=graphs["graph_names"][i], legends=graphs["lines"], legend_columns=len(graphs["lines"]), legend_font_size=7, num_ticks=4, xaxis_tick_animation=False, tail_enable=False, enabled=True)
                 i += 1
             self.graph_dict_global[graphs["type"]] = temp_graph_dict
-
-            if graphs["type"] == "palm_extras_accelerometer":
-                hold = 2
 
             # create subscribers
             if graphs["type"] == "control_loops":
@@ -466,6 +479,8 @@ class SrDataVisualizer(Plugin):
                 self.subs.append(rospy.Subscriber(graphs["topic_namespace"], DiagnosticArray, self.diagnostic_cb, queue_size=1))
             elif graphs["type"] == "palm_extras_accelerometer":
                 self.subs.append(rospy.Subscriber(graphs["topic_namespace"], Float64MultiArray, self.palm_extras_cb, queue_size=1))
+            elif graphs["type"] == "biotacs":
+                self.subs.append(rospy.Subscriber(graphs["topic_namespace"], BiotacAll, self.biotac_all_cb, queue_size=1))
 
             if graphs["type"] == "palm_extras_accelerometer":
                 hold = 2
@@ -484,6 +499,8 @@ class SrDataVisualizer(Plugin):
                 elif graphs["type"] == "palm_extras_gyro":
                     layout = graphs["graph_names"][i] + "_layout"
                 elif graphs["type"] == "palm_extras_adc":
+                    layout = graphs["graph_names"][i] + "_layout"
+                elif graphs["type"] == "biotacs":
                     layout = graphs["graph_names"][i] + "_layout"
                 lay_dic[graphs["graph_names"][i]] = self._widget.findChild(QVBoxLayout, layout)
                 i += 1
@@ -594,6 +611,21 @@ class SrDataVisualizer(Plugin):
                     graph["palm_extras_adc"].addData(data.data[8], 2)
                     graph["palm_extras_adc"].addData(data.data[9], 2)
 
+    def biotac_all_cb(self, data):
+        if self.init_complete:
+            i = 0
+            # graph = self.graph_dict_global["biotacs"]["TAC"]
+            # point = data.tactiles[0].pdc
+            # graph.addData(point, 0)
+            # s = 1
+            while i < len(data.tactiles):
+                self.graph_dict_global["biotacs"]["PAC0"].addData(data.tactiles[i].pac0, i)
+                self.graph_dict_global["biotacs"]["PAC1"].addData(data.tactiles[i].pac1, i)
+                self.graph_dict_global["biotacs"]["PDC"].addData(data.tactiles[i].pdc, i)
+                self.graph_dict_global["biotacs"]["TAC"].addData(data.tactiles[i].tac, i)
+                self.graph_dict_global["biotacs"]["TDC"].addData(data.tactiles[i].tdc, i)
+                i += 1
+
 class CustomFigCanvas(FigureCanvas, TimedAnimation):
     @timeit
     # Inspired by: https://stackoverflow.com/questions/36665850/matplotlib-animation-inside-your-own-pyqt4-gui
@@ -671,6 +703,7 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         FigureCanvas.__init__(self, self.fig)
         TimedAnimation.__init__(self, self.fig, interval=50, blit=not (self.xaxis_tick_animation))
         #TimedAnimation.__init__(self, self.fig, interval=50, blit=False)
+        self.tmp_counter = 0
 
     @timeit
     def re_init(self):
@@ -727,6 +760,39 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
 
     def addData(self, value, index):
         self.addedDataArray[index].append(value)
+        if len(self.addedDataArray[index]) > (self.xlim*2):
+            del self.addedDataArray[index][0:self.xlim]
+        # self.tmp_counter += 1
+        # if self.tmp_counter > 500:
+        #     i = 0
+        #     while i < len(self.addedDataArray):
+        #         j = 0
+        #         while j < len(self.addedDataArray[i]):
+        #             if i > self.num_lines:
+        #                 print "num_lines exceeded. i = ", i, "j = ", j
+        #             if j > ((self.xlim*2) + 10):
+        #                 print "j > xlim*2 + 10. j = ", j, "i = ", i
+        #             j += 1
+        #         i += 1
+        #     self.tmp_counter = 0
+
+        # if self.num_lines == 3:
+        #     if self.tmp_counter > 131:
+        #         print "joint_states"
+        #         i = 0
+        #         while i < self.num_lines:
+        #             print len(self.addedDataArray[i])
+        #             print "\n -----"
+        #             i += 1
+        #     self.tmp_counter += 1
+
+            # elif self.num_lines == 5:
+            #     "ctrl loop"
+            #     i = 0
+            #     while i < self.num_lines:
+            #         print len(self.addedDataArray[i])
+            #         print "\n -----"
+            #         i += 1
 
     @timeit
     def _step(self, *args):
@@ -735,35 +801,25 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
 
     @timeit
     def _draw_frame(self, framedata):
-        if self.enabled:
-            margin = 2
+        # if self.enabled:
+        if self.num_lines == 3:
+            s = 1
+        elif self.num_lines == 5:
+            s = 2
+        # elif self.num_lines == 11:
+        #     print "sfasgdshf"
+        margin = 2
+        i = 0
+        while i < self.num_lines:
+            while len(self.addedDataArray[i]) > 0:
+                self.y[i] = np.roll(self.y[i], -1)
+                self.counter = self.counter + 1
+                self.y[i][-1] = self.addedDataArray[i][0]
+                del (self.addedDataArray[i][0])
+            i = i + 1
+        if self.plot_all:
             i = 0
             while i < self.num_lines:
-                while (len(self.addedDataArray[i]) > 0):
-                    self.y[i] = np.roll(self.y[i], -1)
-                    self.counter = self.counter + 1
-                    self.y[i][-1] = self.addedDataArray[i][0]
-                    del (self.addedDataArray[i][0])
-                i = i + 1
-            if self.plot_all:
-                i = 0
-                while i < self.num_lines:
-                    self.line[i].set_data(self.n[0: self.n.size - margin], self.y[i][0: self.n.size - margin])
-                    if self.tail_enable:
-                        self.line_tail[i].set_data(np.append(self.n[-10:-1 - margin], self.n[-1 - margin]),
-                                                   np.append(self.y[i][-10:-1 - margin], self.y[i][-1 - margin]))
-                        self.line_head[i].set_data(self.n[-1 - margin], self.y[i][-1 - margin])
-                    self._drawn_artists = []
-                    for l in self.line:
-                        self._drawn_artists.append(l)
-                    if self.tail_enable:
-                        for l in self.line_tail:
-                            self._drawn_artists.append(l)
-                        for l in self.line_head:
-                            self._drawn_artists.append(l)
-                    i = i + 1
-            else:
-                i = self.line_to_plot
                 self.line[i].set_data(self.n[0: self.n.size - margin], self.y[i][0: self.n.size - margin])
                 if self.tail_enable:
                     self.line_tail[i].set_data(np.append(self.n[-10:-1 - margin], self.n[-1 - margin]),
@@ -777,24 +833,44 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
                         self._drawn_artists.append(l)
                     for l in self.line_head:
                         self._drawn_artists.append(l)
+                i = i + 1
+        else:
+            i = self.line_to_plot
+            self.line[i].set_data(self.n[0: self.n.size - margin], self.y[i][0: self.n.size - margin])
+            if self.tail_enable:
+                self.line_tail[i].set_data(np.append(self.n[-10:-1 - margin], self.n[-1 - margin]),
+                                           np.append(self.y[i][-10:-1 - margin], self.y[i][-1 - margin]))
+                self.line_head[i].set_data(self.n[-1 - margin], self.y[i][-1 - margin])
+            self._drawn_artists = []
+            for l in self.line:
+                self._drawn_artists.append(l)
+            if self.tail_enable:
+                for l in self.line_tail:
+                    self._drawn_artists.append(l)
+                for l in self.line_head:
+                    self._drawn_artists.append(l)
 
-            if self.xaxis_tick_animation:
-                time_from_start = int((rospy.get_rostime() - self.start_time).to_sec())
-                if len(self.label_buffer) > 3:
-                    self.label_buffer = np.roll(self.label_buffer, 1)
-                    self.label_buffer[2] = time_from_start
-                else:
-                    self.label_buffer.append(time_from_start)
-                x = []
-                i = 0
-                while i < self.num_ticks:
-                    x.append(int(self.xlim / self.num_ticks) * i)
-                    i = i + 1
-                self.ax1.set_xticks(x)
-                self.ax1.set_xticklabels([int(i / int(self.xlim / self.num_ticks)) + time_from_start for i in x])
+        if self.xaxis_tick_animation:
+            time_from_start = int((rospy.get_rostime() - self.start_time).to_sec())
+            if len(self.label_buffer) > 3:
+                self.label_buffer = np.roll(self.label_buffer, 1)
+                self.label_buffer[2] = time_from_start
+            else:
+                self.label_buffer.append(time_from_start)
+            x = []
+            i = 0
+            while i < self.num_ticks:
+                x.append(int(self.xlim / self.num_ticks) * i)
+                i = i + 1
+            self.ax1.set_xticks(x)
+            self.ax1.set_xticklabels([int(i / int(self.xlim / self.num_ticks)) + time_from_start for i in x])
 
 if __name__ == "__main__":
     rospy.init_node("hand_e_visualizer")
+    # agent = stackimpact.start(
+    #     agent_key='9e08e5540b1eb056d503dea532cc1042577da120',
+    #     app_name='MyPythonApp',
+    #     debug=True)
     app = QApplication(sys.argv)
     if (app.desktop().screenGeometry().width() != 2880 or app.desktop().screenGeometry().height() != 1620):
         rospy.logwarn("This program works best at a screen resolution of 2880x1620")
