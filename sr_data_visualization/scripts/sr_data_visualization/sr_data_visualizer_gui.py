@@ -2,6 +2,9 @@
 
 import yaml
 import matplotlib
+import gc
+from mem_top import mem_top
+
 matplotlib.use("Qt5Agg")
 from python_qt_binding.QtGui import *
 from python_qt_binding.QtCore import *
@@ -46,8 +49,8 @@ def timeit(method):
         result = method(*args, **kw)
         te = time.time()
 
-        print '%r  %2.2f ms' % \
-              (method.__name__, (te - ts) * 1000)
+        # print '%r  %2.2f ms' % \
+        #       (method.__name__, (te - ts) * 1000)
         return result
     return timed
 
@@ -79,14 +82,15 @@ class SrDataVisualizer(Plugin):
         p.setColor(self.tab_widget_main.backgroundRole(), Qt.white)
         self.tab_widget_main.setStyleSheet(stylesheet)
 
-        self.tab_widget_main.currentChanged.connect(self.tab_change)
-        self.tabWidget_motor_stats.currentChanged.connect(self.tab_change_mstat)
+        #self.tab_widget_main.currentChanged.connect(self.tab_change)
+        #self.tabWidget_motor_stats.currentChanged.connect(self.tab_change_mstat)
 
         self.create_scene_plugin_model()
         self.create_scene_plugin_tftree()
 
         motor_stat_keys_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'config', 'data_visualiser_motor_stat_keys.yaml')
         parameters_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'config', 'data_visualiser_parameters.yaml')
+        #gc.set_debug(gc.DEBUG_LEAK)
 
         with open(motor_stat_keys_file, 'r') as stream:
             try:
@@ -117,6 +121,8 @@ class SrDataVisualizer(Plugin):
         self.init_complete = True
         # TODO: refresh graphs on resize?
 
+
+
     def create_scene_plugin_model(self):
         package_path = rospkg.RosPack().get_path('sr_data_visualization')
         rviz_config_approach = package_path + "/uis/handescene_model.rviz"
@@ -134,6 +140,7 @@ class SrDataVisualizer(Plugin):
 
         scene_layout = self._widget.findChild(QVBoxLayout, "scene_layout_model")
         scene_layout.addWidget(frame_scene)
+
 
     def create_scene_plugin_tftree(self):
         package_path = rospkg.RosPack().get_path('sr_data_visualization')
@@ -179,6 +186,7 @@ class SrDataVisualizer(Plugin):
         p = self._widget.scrollArea.palette()
         stylesheet = """ QScrollArea>QWidget>QWidget{background: white;}"""
         self._widget.scrollArea.setStyleSheet(stylesheet)
+
 
     def tab_change_mstat(self, tab_index):
         self.hide_and_refresh(tab_index, "motor_stat")
@@ -234,6 +242,7 @@ class SrDataVisualizer(Plugin):
         for graph in x:
             graph.enabled = False
 
+    @timeit
     def disable_graphs(self, graph_type, disable):
         for element in graph_type:
             # if not disable:
@@ -331,8 +340,26 @@ class SrDataVisualizer(Plugin):
             def button_function(b):
                 if b.text() == self.global_yaml["graphs"][type]["lines"][i]:
                     if b.isChecked():
+                        self.dump_garbage()
                         self.change_graphs(all=False, legend_name=[self.global_yaml["graphs"][type]["lines"][i]], line_number=i, type=graph_type, ncol=1)
         return button_function
+
+    def dump_garbage(self):
+
+        print(mem_top())  # Or just print().
+        #
+        # """
+        # show us what the garbage is about
+        # """
+        # # Force collection
+        # print "\nGARBAGE:"
+        # gc.collect()
+        #
+        # print "\nGARBAGE OBJECTS:"
+        # for x in gc.garbage:
+        #     s = str(x)
+        #     if len(s) > 80: s = s[:77] + '...'
+        #     print type(x), "\n  ", s
 
     def change_graphs(self, all, **kwargs):
         if kwargs["type"] == "pos_vel_eff":
@@ -568,6 +595,7 @@ class SrDataVisualizer(Plugin):
                     graph["palm_extras_adc"].addData(data.data[9], 2)
 
 class CustomFigCanvas(FigureCanvas, TimedAnimation):
+    @timeit
     # Inspired by: https://stackoverflow.com/questions/36665850/matplotlib-animation-inside-your-own-pyqt4-gui
     def __init__(self, num_lines, colour=[], ymin=-1, ymax=1, legends=[], legend_columns='none', legend_font_size=7,
                  num_ticks=4, xaxis_tick_animation=False, tail_enable=True, enabled=True, ranges=[], graph_title="oops"):
@@ -644,6 +672,7 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         TimedAnimation.__init__(self, self.fig, interval=50, blit=not (self.xaxis_tick_animation))
         #TimedAnimation.__init__(self, self.fig, interval=50, blit=False)
 
+    @timeit
     def re_init(self):
         self.line = []
         if self.tail_enable:
@@ -677,9 +706,13 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
                 self.ax1.set_ylim(self.ymin, self.ymax)
                 i = i + 1
 
+
+
+    @timeit
     def new_frame_seq(self):
         return iter(range(self.n.size))
 
+    @timeit
     def _init_draw(self):
         i = 0
         while i < self.num_lines:
@@ -695,11 +728,12 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
     def addData(self, value, index):
         self.addedDataArray[index].append(value)
 
-
+    @timeit
     def _step(self, *args):
         if self.enabled:
             TimedAnimation._step(self, *args)
 
+    @timeit
     def _draw_frame(self, framedata):
         if self.enabled:
             margin = 2
