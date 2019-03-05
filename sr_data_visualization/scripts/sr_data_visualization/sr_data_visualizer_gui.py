@@ -125,8 +125,37 @@ class SrDataVisualizer(Plugin):
 
         self.change_graphs(all=True, type="motor_stat", ncol=1)
 
+        self.include_tactile_plugin()
+
         self.init_complete = True
         # TODO: refresh graphs on resize?
+
+    def include_tactile_plugin(self):
+        tactile_gui = SrGuiBiotac(None, rqt_plugin=False)
+
+        tactile_gui._widget = self._widget
+        self.timer = QTimer(self._widget)
+        self.timer.timeout.connect(self._widget.scrollAreaWidgetContents.update)
+        self._widget.scrollAreaWidgetContents.paintEvent = tactile_gui.paintEvent
+
+        for hand in tactile_gui._hand_parameters.mapping:
+            self._widget.select_prefix.addItem(
+                tactile_gui._hand_parameters.mapping[hand])
+        if not tactile_gui._hand_parameters.mapping:
+            rospy.logerr("No hand detected")
+            # QMessageBox.warning(
+            #     self._widget, "warning", "No hand is detected")
+        else:
+            self._widget.select_prefix.setCurrentIndex(0)
+
+        self._widget.select_prefix.activated['QString'].connect(tactile_gui.subscribe_to_topic)
+
+        self.timer.start(50)
+
+        # Change background color
+        p = self._widget.scrollArea.palette()
+        stylesheet = """ QScrollArea>QWidget>QWidget{background: white;}"""
+        self._widget.scrollArea.setStyleSheet(stylesheet)
 
     def tab_change_mstat(self, tab_index):
         self.hide_and_refresh(tab_index, "motor_stat")
