@@ -1,0 +1,15 @@
+<launch>
+
+  <arg name="robot_description" default="'$(find sr_description)/robots/shadowhand_motor.urdf.xacro'"/>
+
+  <param name="robot_description" command="xacro --inorder $(arg robot_description)"/>
+
+  <node name="spawn_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model usrh -z 0.0 "
+          respawn="false" output="screen"/>
+
+  <node pkg="sr_data_visualization" type="sr_data_visualizer_gui.py" name="data_gui" output="screen"/>
+  <node pkg="rosbag" type="play" name="player" output="screen" args="-l $(find sr_data_visualization)/biotacs_and_everything_else.bag"/>
+</launch>
+
+
+

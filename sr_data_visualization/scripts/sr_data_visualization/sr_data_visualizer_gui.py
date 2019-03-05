@@ -37,9 +37,6 @@ import signal
 import rospy
 import rospkg
 import string
-import threading
-import rviz
-
 import time
 
 from sensor_msgs.msg import JointState
@@ -55,8 +52,8 @@ def timeit(method):
         result = method(*args, **kw)
         te = time.time()
 
-        # print '%r  %2.2f ms' % \
-        #       (method.__name__, (te - ts) * 1000)
+        print '%r  %2.2f ms' % \
+              (method.__name__, (te - ts) * 1000)
         return result
     return timed
 
@@ -91,9 +88,6 @@ class SrDataVisualizer(Plugin):
         self.tab_widget_main.currentChanged.connect(self.tab_change)
         self.tabWidget_motor_stats.currentChanged.connect(self.tab_change_mstat)
 
-        # self.create_scene_plugin_model()
-        # self.create_scene_plugin_tftree()
-
         motor_stat_keys_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'config', 'data_visualiser_motor_stat_keys.yaml')
         parameters_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'config', 'data_visualiser_parameters.yaml')
         #gc.set_debug(gc.DEBUG_LEAK)
@@ -122,75 +116,9 @@ class SrDataVisualizer(Plugin):
         self.tabWidget_motor_stats.setCurrentIndex(0)
 
         self.change_graphs(all=True, type="motor_stat", ncol=1)
-        #self.include_tactile_plugin()
-        #self.tracker = SummaryTracker()
 
         self.init_complete = True
         # TODO: refresh graphs on resize?
-
-    def create_scene_plugin_model(self):
-        package_path = rospkg.RosPack().get_path('sr_data_visualization')
-        rviz_config_approach = package_path + "/uis/handescene_model.rviz"
-
-        reader = rviz.YamlConfigReader()
-        config_approach = rviz.Config()
-        reader.readFile(config_approach, rviz_config_approach)
-        frame_scene = rviz.VisualizationFrame()
-        frame_scene.setSplashPath("")
-        frame_scene.initialize()
-        frame_scene.setMenuBar(None)
-        frame_scene.setStatusBar(None)
-        frame_scene.setHideButtonVisibility(False)
-        frame_scene.load(config_approach)
-
-        scene_layout = self._widget.findChild(QVBoxLayout, "scene_layout_model")
-        scene_layout.addWidget(frame_scene)
-
-    def create_scene_plugin_tftree(self):
-        package_path = rospkg.RosPack().get_path('sr_data_visualization')
-        rviz_config_approach = package_path + "/uis/handescene_tftree.rviz"
-
-        reader = rviz.YamlConfigReader()
-        config_approach = rviz.Config()
-        reader.readFile(config_approach, rviz_config_approach)
-        frame_scene = rviz.VisualizationFrame()
-        frame_scene.setSplashPath("")
-        frame_scene.initialize()
-        frame_scene.setMenuBar(None)
-        frame_scene.setStatusBar(None)
-        frame_scene.setHideButtonVisibility(False)
-        frame_scene.load(config_approach)
-
-        scene_layout = self._widget.findChild(QVBoxLayout, "scene_layout_tf")
-        scene_layout.addWidget(frame_scene)
-
-    def include_tactile_plugin(self):
-        tactile_gui = SrGuiBiotac(None, rqt_plugin=False)
-
-        tactile_gui._widget = self._widget
-        self.timer = QTimer(self._widget)
-        self.timer.timeout.connect(self._widget.scrollAreaWidgetContents.update)
-        self._widget.scrollAreaWidgetContents.paintEvent = tactile_gui.paintEvent
-
-        for hand in tactile_gui._hand_parameters.mapping:
-            self._widget.select_prefix.addItem(
-                tactile_gui._hand_parameters.mapping[hand])
-        if not tactile_gui._hand_parameters.mapping:
-            rospy.logerr("No hand detected")
-            # QMessageBox.warning(
-            #     self._widget, "warning", "No hand is detected")
-        else:
-            self._widget.select_prefix.setCurrentIndex(0)
-
-        self._widget.select_prefix.activated['QString'].connect(tactile_gui.subscribe_to_topic)
-
-        self.timer.start(50)
-
-        # Change background color
-        p = self._widget.scrollArea.palette()
-        stylesheet = """ QScrollArea>QWidget>QWidget{background: white;}"""
-        self._widget.scrollArea.setStyleSheet(stylesheet)
-
 
     def tab_change_mstat(self, tab_index):
         self.hide_and_refresh(tab_index, "motor_stat")
@@ -202,7 +130,6 @@ class SrDataVisualizer(Plugin):
         self.hide_tabs(tab_index, tab_type)
 
     def hide_tabs(self, tab_index, tab):
-        #print tab_index, tab
         if tab == "main":
             if tab_index == 0:
                 self.disable_graphs(["control_loops", "motor_stat", "palm_extras_accelerometer", "palm_extras_gyro", "palm_extras_adc", "biotacs"], disable=True)
@@ -219,15 +146,11 @@ class SrDataVisualizer(Plugin):
             elif tab_index == 4:
                 self.disable_graphs(["pos_vel_eff", "control_loops", "motor_stat", "palm_extras_accelerometer", "palm_extras_gyro", "palm_extras_adc"], disable=True)
                 self.disable_graphs(["biotacs"], disable=False)
-                # TODO: instead of enable all motorstat, should get motor stat tab index and enable just those
-
         elif tab == "motor_stat":
-            #print "sub mstat tab change"
             self.show_specific_motor_stat_tabs()
 
     def show_specific_motor_stat_tabs(self):
         tab_index = self.tabWidget_motor_stats.currentIndex()
-        #print "sub mstat tab index: ", tab_index
         if tab_index == 0:
             self.hide_all_but("thj")
         elif tab_index == 1:
@@ -326,10 +249,12 @@ class SrDataVisualizer(Plugin):
         elif type == 2:
             graph_type = "motor_stat"
 
-        if all and graph_type == "pos_vel_eff":
+        if "legend_columns" in self.global_yaml["graphs"][type]:
+            number_of_columns = self.global_yaml["graphs"][type]["legend_columns"]
+        elif all and graph_type == "pos_vel_eff":
             number_of_columns = 3
         elif all and graph_type == "control_loops":
-            number_of_columns = 3
+            number_of_columns = 5
         elif all and graph_type == "motor_stat":
             number_of_columns = 1
 
@@ -342,29 +267,10 @@ class SrDataVisualizer(Plugin):
             def button_function(b):
                 if b.text() == self.global_yaml["graphs"][type]["lines"][i]:
                     if b.isChecked():
-                        self.dump_garbage()
                         self.change_graphs(all=False, legend_name=[self.global_yaml["graphs"][type]["lines"][i]], line_number=i, type=graph_type, ncol=1)
         return button_function
 
-    def dump_garbage(self):
-        print "hey"
-        #print(mem_top())  # Or just print().
-        #self.tracker.print_diff()
-
-        #
-        # """
-        # show us what the garbage is about
-        # """
-        # # Force collection
-        # print "\nGARBAGE:"
-        # gc.collect()
-        #
-        # print "\nGARBAGE OBJECTS:"
-        # for x in gc.garbage:
-        #     s = str(x)
-        #     if len(s) > 80: s = s[:77] + '...'
-        #     print type(x), "\n  ", s
-
+    @timeit
     def change_graphs(self, all, **kwargs):
         if kwargs["type"] == "pos_vel_eff":
             index = 0
@@ -381,7 +287,6 @@ class SrDataVisualizer(Plugin):
         # TODO: speed this up. update/draw double the time taken to run this function. Only update/draw graphs we can see?
         i = 0
         while i < len(self.graph_names_global[type]):
-            #self.graph_dict_global[type][self.graph_names_global[type][i]].enabled = False
             if all:
                 # TODO: Store max/min somewhere? only takes approx 10uS to find_max_range, but it's a shame to call it all the time
                 ymin, ymax = self.find_max_range(self.global_yaml["graphs"][index])
@@ -390,7 +295,7 @@ class SrDataVisualizer(Plugin):
                 self.graph_dict_global[type][self.graph_names_global[type][i]].plot_all = True
                 self.graph_dict_global[type][self.graph_names_global[type][i]].ax1.yaxis.set_tick_params(which='both', labelbottom=False)
                 self.graph_dict_global[type][self.graph_names_global[type][i]].re_init()
-                self.graph_dict_global[type][self.graph_names_global[type][i]].ax1.legend(self.graph_dict_global[type][self.graph_names_global[type][i]].line, self.global_yaml["graphs"][index]["lines"], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5, ncol=ncols, prop={'size': 7})
+                self.graph_dict_global[type][self.graph_names_global[type][i]].ax1.legend(self.graph_dict_global[type][self.graph_names_global[type][i]].line, self.global_yaml["graphs"][index]["lines"], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5, ncol=ncols, prop={'size': self.global_yaml["graphs"][index]["font_size"]})
             else:
                 self.graph_dict_global[type][self.graph_names_global[type][i]].ymin = self.global_yaml["graphs"][index]["ranges"][kwargs["line_number"]][0]
                 self.graph_dict_global[type][self.graph_names_global[type][i]].ymax = self.global_yaml["graphs"][index]["ranges"][kwargs["line_number"]][1]
@@ -398,12 +303,10 @@ class SrDataVisualizer(Plugin):
                 self.graph_dict_global[type][self.graph_names_global[type][i]].plot_all = False
                 self.graph_dict_global[type][self.graph_names_global[type][i]].ax1.yaxis.set_tick_params(which='both', labelbottom=True)
                 self.graph_dict_global[type][self.graph_names_global[type][i]].re_init()
-                self.graph_dict_global[type][self.graph_names_global[type][i]].ax1.legend(self.graph_dict_global[type][self.graph_names_global[type][i]].line, kwargs["legend_name"], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5,  prop={'size': 7})
-            #self.graph_dict_global[type][self.graph_names_global[type][i]].enabled = True
+                self.graph_dict_global[type][self.graph_names_global[type][i]].ax1.legend(self.graph_dict_global[type][self.graph_names_global[type][i]].line, kwargs["legend_name"], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5,  prop={'size': 10})
             self.graph_dict_global[type][self.graph_names_global[type][i]].update()
             self.graph_dict_global[type][self.graph_names_global[type][i]].draw()
             i += 1
-
 
     def make_control_loop_callbacks(self, graph):
         def _callback(value):
@@ -443,17 +346,19 @@ class SrDataVisualizer(Plugin):
         for graphs in data["graphs"]:
             ymin, ymax = self.find_max_range(graphs)
             self.graph_names_global[graphs["type"]] = graphs["graph_names"]
+            if "legend_columns" in graphs:
+                legend_columns = graphs["legend_columns"]
+            else:
+                legend_columns = len(graphs["lines"])
 
             # create_graphs
             temp_graph_dict = {}
             i = 0
-            if graphs["type"] == "biotacs":
-                s = 1
             while i < (len(graphs["graph_names"])):
                 if graphs["type"] == "biotacs":
-                    temp_graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]), colour=graphs["colours"], ymin=graphs["ranges"][i][0], ymax=graphs["ranges"][i][1], ranges=graphs["ranges"], graph_title=graphs["graph_names"][i], legends=graphs["lines"], legend_columns=len(graphs["lines"]), legend_font_size=7, num_ticks=4, xaxis_tick_animation=False, tail_enable=False, enabled=True)
+                    temp_graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]), colour=graphs["colours"], ymin=graphs["ranges"][i][0], ymax=graphs["ranges"][i][1], ranges=graphs["ranges"], graph_title=graphs["graph_names"][i], legends=graphs["lines"], legend_columns=legend_columns, legend_font_size=graphs["font_size"], num_ticks=4, xaxis_tick_animation=False, tail_enable=False, enabled=True)
                 else:
-                    temp_graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]), colour=graphs["colours"], ymin=ymin, ymax=ymax, ranges=graphs["ranges"], graph_title=graphs["graph_names"][i], legends=graphs["lines"], legend_columns=len(graphs["lines"]), legend_font_size=7, num_ticks=4, xaxis_tick_animation=False, tail_enable=False, enabled=True)
+                    temp_graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]), colour=graphs["colours"], ymin=ymin, ymax=ymax, ranges=graphs["ranges"], graph_title=graphs["graph_names"][i], legends=graphs["lines"], legend_columns=legend_columns, legend_font_size=graphs["font_size"], num_ticks=4, xaxis_tick_animation=False, tail_enable=False, enabled=True)
                 i += 1
             self.graph_dict_global[graphs["type"]] = temp_graph_dict
 
@@ -475,25 +380,15 @@ class SrDataVisualizer(Plugin):
             elif graphs["type"] == "biotacs":
                 self.subs.append(rospy.Subscriber(graphs["topic_namespace"], BiotacAll, self.biotac_all_cb, queue_size=1))
 
-            if graphs["type"] == "palm_extras_accelerometer":
-                hold = 2
             # init_widget_children
             lay_dic = {}
             i = 0
             while i < (len(graphs["graph_names"])):
-                if graphs["type"] == "pos_vel_eff":
-                    layout = graphs["graph_names"][i] + "_layout"
-                elif graphs["type"] == "control_loops":
+                if graphs["type"] == "control_loops":
                     layout = graphs["graph_names"][i] + "_layout_ctrl"
                 elif graphs["type"] == "motor_stat":
                     layout = graphs["graph_names"][i] + "_layout_motor_stat"
-                elif graphs["type"] == "palm_extras_accelerometer":
-                    layout = graphs["graph_names"][i] + "_layout"
-                elif graphs["type"] == "palm_extras_gyro":
-                    layout = graphs["graph_names"][i] + "_layout"
-                elif graphs["type"] == "palm_extras_adc":
-                    layout = graphs["graph_names"][i] + "_layout"
-                elif graphs["type"] == "biotacs":
+                else:
                     layout = graphs["graph_names"][i] + "_layout"
                 lay_dic[graphs["graph_names"][i]] = self._widget.findChild(QVBoxLayout, layout)
                 i += 1
@@ -501,7 +396,6 @@ class SrDataVisualizer(Plugin):
             # attach_graphs
             i = 0
             while i < (len(graphs["graph_names"])):
-                #print graphs["graph_names"][i]
                 x = lay_dic.get(graphs["graph_names"][i])
                 x.addWidget(self.graph_dict_global[graphs["type"]][graphs["graph_names"][i]])
                 i += 1
@@ -515,8 +409,9 @@ class SrDataVisualizer(Plugin):
                 value.ax1.yaxis.set_tick_params(which='both', labelbottom=True)
                 value.ymax = self.global_yaml["graphs"][i]["ranges"][0][1]
                 value.ymin = self.global_yaml["graphs"][i]["ranges"][0][0]
+                font_size = value.ax1.legend_.prop._size
                 value.re_init()
-                value.ax1.legend(value.line, self.global_yaml["graphs"][i]["lines"], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5, ncol=len(self.global_yaml["graphs"][i]["lines"]), prop={'size': 7})
+                value.ax1.legend(value.line, self.global_yaml["graphs"][i]["lines"], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5, ncol=len(self.global_yaml["graphs"][i]["lines"]), prop={'size': font_size})
                 i += 1
 
 
@@ -561,20 +456,6 @@ class SrDataVisualizer(Plugin):
                     while j < len(self.motor_stat_keys[1]):
                         ymin, ymax = self.find_max_range(self.global_yaml["graphs"][2])
                         graph = self.graph_dict_global["motor_stat"][self.graph_names_global["motor_stat"][i]]
-                        # status_key_key = self.graph_names_global["motor_stat"][i]
-                        # status_key = self.motor_stat_keys[0][string.upper(status_key_key)]
-                        # data_point = data.status[status_key]
-                        #
-                        # lin_num_key = self.global_yaml["graphs"][2]["lines"][j]
-                        # lin_num = self.motor_stat_keys[1][lin_num_key]
-                        #
-                        # data_values = data_point.values[lin_num]
-                        # data_value = data_values.value
-                        # scale = float(ymax / self.global_yaml["graphs"][2]["ranges"][j][1])
-                        # if self.graph_dict_global["motor_stat"][self.graph_names_global["motor_stat"][i]].plot_all:
-                        #     graph.addData(float(data_value)*scale, j)
-                        # else:
-                        #     graph.addData(float(data_value), j)
                         data_point = data.status[self.motor_stat_keys[0][string.upper(self.graph_names_global["motor_stat"][i])]]
                         line_number = self.motor_stat_keys[1][self.global_yaml["graphs"][2]["lines"][j]]
                         data_value = data_point.values[line_number].value
@@ -607,10 +488,6 @@ class SrDataVisualizer(Plugin):
     def biotac_all_cb(self, data):
         if self.init_complete:
             i = 0
-            # graph = self.graph_dict_global["biotacs"]["TAC"]
-            # point = data.tactiles[0].pdc
-            # graph.addData(point, 0)
-            # s = 1
             while i < len(data.tactiles):
                 self.graph_dict_global["biotacs"]["PAC0"].addData(data.tactiles[i].pac0, i)
                 self.graph_dict_global["biotacs"]["PAC1"].addData(data.tactiles[i].pac1, i)
@@ -620,7 +497,6 @@ class SrDataVisualizer(Plugin):
                 i += 1
 
 class CustomFigCanvas(FigureCanvas, TimedAnimation):
-    @timeit
     # Inspired by: https://stackoverflow.com/questions/36665850/matplotlib-animation-inside-your-own-pyqt4-gui
     def __init__(self, num_lines, colour=[], ymin=-1, ymax=1, legends=[], legend_columns='none', legend_font_size=7,
                  num_ticks=4, xaxis_tick_animation=False, tail_enable=True, enabled=True, ranges=[], graph_title="oops"):
@@ -695,10 +571,8 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         self.counter = 0
         FigureCanvas.__init__(self, self.fig)
         TimedAnimation.__init__(self, self.fig, interval=50, blit=not (self.xaxis_tick_animation))
-        #TimedAnimation.__init__(self, self.fig, interval=50, blit=False)
         self.tmp_counter = 0
 
-    @timeit
     def re_init(self):
         self.line = []
         if self.tail_enable:
@@ -732,13 +606,9 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
                 self.ax1.set_ylim(self.ymin, self.ymax)
                 i = i + 1
 
-
-
-    @timeit
     def new_frame_seq(self):
         return iter(range(self.n.size))
 
-    @timeit
     def _init_draw(self):
         i = 0
         while i < self.num_lines:
@@ -755,52 +625,12 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         self.addedDataArray[index].append(value)
         if len(self.addedDataArray[index]) > (self.xlim*2):
             del self.addedDataArray[index][0:self.xlim]
-        # self.tmp_counter += 1
-        # if self.tmp_counter > 500:
-        #     i = 0
-        #     while i < len(self.addedDataArray):
-        #         j = 0
-        #         while j < len(self.addedDataArray[i]):
-        #             if i > self.num_lines:
-        #                 print "num_lines exceeded. i = ", i, "j = ", j
-        #             if j > ((self.xlim*2) + 10):
-        #                 print "j > xlim*2 + 10. j = ", j, "i = ", i
-        #             j += 1
-        #         i += 1
-        #     self.tmp_counter = 0
 
-        # if self.num_lines == 3:
-        #     if self.tmp_counter > 131:
-        #         print "joint_states"
-        #         i = 0
-        #         while i < self.num_lines:
-        #             print len(self.addedDataArray[i])
-        #             print "\n -----"
-        #             i += 1
-        #     self.tmp_counter += 1
-
-            # elif self.num_lines == 5:
-            #     "ctrl loop"
-            #     i = 0
-            #     while i < self.num_lines:
-            #         print len(self.addedDataArray[i])
-            #         print "\n -----"
-            #         i += 1
-
-    @timeit
     def _step(self, *args):
         if self.enabled:
             TimedAnimation._step(self, *args)
 
-    @timeit
     def _draw_frame(self, framedata):
-        # if self.enabled:
-        if self.num_lines == 3:
-            s = 1
-        elif self.num_lines == 5:
-            s = 2
-        # elif self.num_lines == 11:
-        #     print "sfasgdshf"
         margin = 2
         i = 0
         while i < self.num_lines:
@@ -860,12 +690,8 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
 
 if __name__ == "__main__":
     rospy.init_node("hand_e_visualizer")
-    # agent = stackimpact.start(
-    #     agent_key='9e08e5540b1eb056d503dea532cc1042577da120',
-    #     app_name='MyPythonApp',
-    #     debug=True)
     app = QApplication(sys.argv)
-    if (app.desktop().screenGeometry().width() != 2880 or app.desktop().screenGeometry().height() != 1620):
+    if (app.desktop().screenGeometry().width() < 2880 or app.desktop().screenGeometry().height() < 1620):
         rospy.logwarn("This program works best at a screen resolution of 2880x1620")
     planner_benchmarking_gui = SrDataVisualizer(None)
     planner_benchmarking_gui._widget.show()
