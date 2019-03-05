@@ -58,7 +58,7 @@ def timeit(method):
     return timed
 
 class SrDataVisualizer(Plugin):
-    def __init__(self, context):
+    def __init__(self, context, width, height):
         self.init_complete = False
         self.first_run = True
         super(SrDataVisualizer, self).__init__(context)
@@ -91,6 +91,14 @@ class SrDataVisualizer(Plugin):
         motor_stat_keys_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'config', 'data_visualiser_motor_stat_keys.yaml')
         parameters_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'config', 'data_visualiser_parameters.yaml')
         #gc.set_debug(gc.DEBUG_LEAK)
+
+        self.font_offset = 0
+        print width, "x", height
+        if width < 2880 or height < 1620:
+            self.font_offset = -3
+        if width == 2880 or height == 1620:
+            self.font_offset = 1
+        print self.font_offset
 
         with open(motor_stat_keys_file, 'r') as stream:
             try:
@@ -295,7 +303,7 @@ class SrDataVisualizer(Plugin):
                 self.graph_dict_global[type][self.graph_names_global[type][i]].plot_all = True
                 self.graph_dict_global[type][self.graph_names_global[type][i]].ax1.yaxis.set_tick_params(which='both', labelbottom=False)
                 self.graph_dict_global[type][self.graph_names_global[type][i]].re_init()
-                self.graph_dict_global[type][self.graph_names_global[type][i]].ax1.legend(self.graph_dict_global[type][self.graph_names_global[type][i]].line, self.global_yaml["graphs"][index]["lines"], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5, ncol=ncols, prop={'size': self.global_yaml["graphs"][index]["font_size"]})
+                self.graph_dict_global[type][self.graph_names_global[type][i]].ax1.legend(self.graph_dict_global[type][self.graph_names_global[type][i]].line, self.global_yaml["graphs"][index]["lines"], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5, ncol=ncols, prop={'size': self.global_yaml["graphs"][index]["font_size"] + self.font_offset})
             else:
                 self.graph_dict_global[type][self.graph_names_global[type][i]].ymin = self.global_yaml["graphs"][index]["ranges"][kwargs["line_number"]][0]
                 self.graph_dict_global[type][self.graph_names_global[type][i]].ymax = self.global_yaml["graphs"][index]["ranges"][kwargs["line_number"]][1]
@@ -303,7 +311,7 @@ class SrDataVisualizer(Plugin):
                 self.graph_dict_global[type][self.graph_names_global[type][i]].plot_all = False
                 self.graph_dict_global[type][self.graph_names_global[type][i]].ax1.yaxis.set_tick_params(which='both', labelbottom=True)
                 self.graph_dict_global[type][self.graph_names_global[type][i]].re_init()
-                self.graph_dict_global[type][self.graph_names_global[type][i]].ax1.legend(self.graph_dict_global[type][self.graph_names_global[type][i]].line, kwargs["legend_name"], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5,  prop={'size': 10})
+                self.graph_dict_global[type][self.graph_names_global[type][i]].ax1.legend(self.graph_dict_global[type][self.graph_names_global[type][i]].line, kwargs["legend_name"], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5,  prop={'size': 10 + self.font_offset})
             self.graph_dict_global[type][self.graph_names_global[type][i]].update()
             self.graph_dict_global[type][self.graph_names_global[type][i]].draw()
             i += 1
@@ -356,9 +364,9 @@ class SrDataVisualizer(Plugin):
             i = 0
             while i < (len(graphs["graph_names"])):
                 if graphs["type"] == "biotacs":
-                    temp_graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]), colour=graphs["colours"], ymin=graphs["ranges"][i][0], ymax=graphs["ranges"][i][1], ranges=graphs["ranges"], graph_title=graphs["graph_names"][i], legends=graphs["lines"], legend_columns=legend_columns, legend_font_size=graphs["font_size"], num_ticks=4, xaxis_tick_animation=False, tail_enable=False, enabled=True)
+                    temp_graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]), colour=graphs["colours"], ymin=graphs["ranges"][i][0], ymax=graphs["ranges"][i][1], ranges=graphs["ranges"], graph_title=graphs["graph_names"][i], legends=graphs["lines"], legend_columns=legend_columns, legend_font_size=graphs["font_size"] + self.font_offset, num_ticks=4, xaxis_tick_animation=False, tail_enable=False, enabled=True)
                 else:
-                    temp_graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]), colour=graphs["colours"], ymin=ymin, ymax=ymax, ranges=graphs["ranges"], graph_title=graphs["graph_names"][i], legends=graphs["lines"], legend_columns=legend_columns, legend_font_size=graphs["font_size"], num_ticks=4, xaxis_tick_animation=False, tail_enable=False, enabled=True)
+                    temp_graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]), colour=graphs["colours"], ymin=ymin, ymax=ymax, ranges=graphs["ranges"], graph_title=graphs["graph_names"][i], legends=graphs["lines"], legend_columns=legend_columns, legend_font_size=graphs["font_size"] + self.font_offset, num_ticks=4, xaxis_tick_animation=False, tail_enable=False, enabled=True)
                 i += 1
             self.graph_dict_global[graphs["type"]] = temp_graph_dict
 
@@ -692,8 +700,8 @@ if __name__ == "__main__":
     rospy.init_node("hand_e_visualizer")
     app = QApplication(sys.argv)
     if (app.desktop().screenGeometry().width() < 2880 or app.desktop().screenGeometry().height() < 1620):
-        rospy.logwarn("This program works best at a screen resolution of 2880x1620")
-    planner_benchmarking_gui = SrDataVisualizer(None)
+        rospy.logwarn("This program works best at a screen resolution of at least 2880x1620")
+    planner_benchmarking_gui = SrDataVisualizer(None, app.desktop().screenGeometry().width(), app.desktop().screenGeometry().height())
     planner_benchmarking_gui._widget.show()
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     sys.exit(app.exec_())
