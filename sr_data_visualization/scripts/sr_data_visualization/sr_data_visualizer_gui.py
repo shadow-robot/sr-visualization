@@ -43,8 +43,11 @@ from sensor_msgs.msg import JointState
 from control_msgs.msg import JointControllerState
 from diagnostic_msgs.msg import DiagnosticArray
 from std_msgs.msg import Float64MultiArray
-from sr_robot_msgs.msg import BiotacAll
-from sr_gui_biotac.biotac import SrGuiBiotac
+from QtGui import QIcon, QColor, QPainter, QFont
+from QtWidgets import QMessageBox, QWidget
+from QtCore import QRectF, QTimer
+from sr_robot_msgs.msg import Biotac, BiotacAll
+from sr_utilities.hand_finder import HandFinder
 
 def timeit(method):
     def timed(*args, **kw):
@@ -132,31 +135,77 @@ class SrDataVisualizer(Plugin):
         # TODO: refresh graphs on resize?
 
     def include_tactile_plugin(self):
-        tactile_gui = SrGuiBiotac(None, rqt_plugin=False)
-
-        tactile_gui._widget = self._widget
+        tactile_gui_list = []
+        i = 0
         self.timer = QTimer(self._widget)
-        self.timer.timeout.connect(self._widget.scrollAreaWidgetContents.update)
-        self._widget.scrollAreaWidgetContents.paintEvent = tactile_gui.paintEvent
 
-        for hand in tactile_gui._hand_parameters.mapping:
-            self._widget.select_prefix.addItem(
-                tactile_gui._hand_parameters.mapping[hand])
-        if not tactile_gui._hand_parameters.mapping:
-            rospy.logerr("No hand detected")
-            # QMessageBox.warning(
-            #     self._widget, "warning", "No hand is detected")
-        else:
-            self._widget.select_prefix.setCurrentIndex(0)
+        while i < 5:
+            tactile_gui = SrGuiBiotac(None, rqt_plugin=False)
+            tactile_gui._widget = self._widget
+            tactile_gui.find_children(i)
+            tactile_gui_list.append(tactile_gui)
+            scrollAreaWidgetContents = self._widget.findChild(QWidget, "scrollAreaWidgetContents" + "_" + str(i))
+            self.timer.timeout.connect(scrollAreaWidgetContents.update)
+            scrollAreaWidgetContents.paintEvent = tactile_gui.paintEvent
 
-        self._widget.select_prefix.activated['QString'].connect(tactile_gui.subscribe_to_topic)
+            if not tactile_gui._hand_parameters.mapping:
+                rospy.logerr("No hand detected")
+            #     # QMessageBox.warning(
+            #     #     self._widget, "warning", "No hand is detected")
+            # else:
+            #     self._widget.select_prefix_0.setCurrentIndex(0)
+            # self._widget.select_prefix_0.activated['QString'].connect(tactile_gui.subscribe_to_topic)
+            i += 1
+
+
+        #self.btSelect = self._widget.findChild(QComboBox, "btSelect" + "_" + biotac_name)
+        # tactile_gui = SrGuiBiotac(None, rqt_plugin=False)
+        # tactile_gui._widget = self._widget
+        # tactile_gui.find_children("0")
+        #
+        # tactile_gui_1 = SrGuiBiotac(None, rqt_plugin=False)
+        # tactile_gui_1._widget = self._widget
+        # tactile_gui_1.find_children("1")
+
+        # self.timer.timeout.connect(self._widget.scrollAreaWidgetContents_0.update)
+        # self._widget.scrollAreaWidgetContents_0.paintEvent = tactile_gui.paintEvent
+        #
+        # self.timer.timeout.connect(self._widget.scrollAreaWidgetContents_1.update)
+        # self._widget.scrollAreaWidgetContents_1.paintEvent = tactile_gui_1.paintEvent
+
+        # for hand in tactile_gui._hand_parameters.mapping:
+        #     self._widget.select_prefix.addItem(
+        #         tactile_gui._hand_parameters.mapping[hand])
+        # if not tactile_gui._hand_parameters.mapping:
+        #     rospy.logerr("No hand detected")
+        #     # QMessageBox.warning(
+        #     #     self._widget, "warning", "No hand is detected")
+        # else:
+        #     self._widget.select_prefix.setCurrentIndex(0)
+        #
+        # for hand in tactile_gui_1._hand_parameters.mapping:
+        #     self._widget.select_prefix.addItem(
+        #         tactile_gui_1._hand_parameters.mapping[hand])
+        # if not tactile_gui_1._hand_parameters.mapping:
+        #     rospy.logerr("No hand detected")
+        #     # QMessageBox.warning(
+        #     #     self._widget, "warning", "No hand is detected")
+        # else:
+        #     self._widget.select_prefix.setCurrentIndex(0)
+
+        #self._widget.select_prefix.activated['QString'].connect(tactile_gui.subscribe_to_topic)
+        #self._widget.select_prefix.activated['QString'].connect(tactile_gui_1.subscribe_to_topic)
 
         self.timer.start(50)
-
-        # Change background color
-        p = self._widget.scrollArea.palette()
-        stylesheet = """ QScrollArea>QWidget>QWidget{background: white;}"""
-        self._widget.scrollArea.setStyleSheet(stylesheet)
+        #
+        # # Change background color
+        # p = self._widget.scrollArea_1.palette()
+        # stylesheet = """ QScrollArea>QWidget>QWidget{background: white;}"""
+        # self._widget.scrollArea_0.setStyleSheet(stylesheet)
+        # self._widget.centralWidget_2.setStyleSheet(stylesheet)
+        # self._widget.scrollAreaWidgetContents_0.setStyleSheet(stylesheet)
+        # self._widget.scrollArea_1.setStyleSheet(stylesheet)
+        # self._widget.scrollArea_2.setStyleSheet(stylesheet)
 
     def tab_change_mstat(self, tab_index):
         self.hide_and_refresh(tab_index, "motor_stat")
@@ -542,6 +591,273 @@ class SrDataVisualizer(Plugin):
                 self.graph_dict_global["biotacs"]["TAC"].addData(data.tactiles[i].tac, i)
                 self.graph_dict_global["biotacs"]["TDC"].addData(data.tactiles[i].tdc, i)
                 i += 1
+
+
+
+
+
+
+class SrGuiBiotac(Plugin):
+    _nb_electrodes_biotac = 19
+    _nb_electrodes_biotac_sp = 24
+
+    def define_electrodes(self):
+        self.sensing_electrodes_v1_x = \
+            rospy.get_param(
+                "sr_gui_biotac/sensing_electrodes_x_locations",
+                [6.45, 3.65, 3.65, 6.45, 3.65, 6.45, 0.00, 1.95, -1.95,
+                 0.00, -6.45, - 3.65, -3.65, -6.45, -3.65, -6.45, 0.00,
+                 0.00, 0.00])  # Physical electrode locations on the sensor
+        self.sensing_electrodes_v1_y = \
+            rospy.get_param(
+                "sr_gui_biotac/sensing_electrodes_y_locations",
+                [7.58, 11.28, 14.78, 16.58, 19.08, 21.98, 4.38, 6.38, 6.38,
+                 8.38, 7.58, 11.28, 14.78, 16.58, 19.08, 21.98, 11.38,
+                 18.38, 22.18])
+
+        self.excitation_electrodes_v1_x = \
+            rospy.get_param(
+                "sr_gui_biotac/excitation_electrodes_x_locations",
+                [6.45, 3.75, -3.75, -6.45])
+        self.excitation_electrodes_v1_y = \
+            rospy.get_param(
+                "sr_gui_biotac/excitation_electrodes_y_locations",
+                [12.48, 24.48, 24.48, 12.48])
+
+        self.sensing_electrodes_v2_x = \
+            rospy.get_param(
+                "sr_gui_biotac/sensing_electrodes_x_locations",
+                [5.00, 3.65, 6.45, 4.40, 2.70, 6.45, 4.40, 1.50, 4.00, 4.50,
+                 -5.00, - 3.65, -6.45, -4.40, -2.70, -6.45, -4.40, -1.50, -4.00, -4.50,
+                 0.00, 1.95, -1.95, 0.00])  # Physical electrode locations on the sensor
+        self.sensing_electrodes_v2_y = \
+            rospy.get_param(
+                "sr_gui_biotac/sensing_electrodes_y_locations",
+                [4.38, 6.38, 14.78, 15.50, 18.50, 19.08, 20.00, 21.00, 23.00, 25.00,
+                 4.38, 6.38, 14.78, 15.50, 18.50, 19.08, 20.00, 21.00, 23.00, 25.00,
+                 7.38, 11.50, 11.50, 15.20])
+
+        self.excitation_electrodes_v2_x = \
+            rospy.get_param(
+                "sr_gui_biotac/excitation_electrodes_x_locations",
+                [5.30, 6.00, -5.30, -6.00])
+        self.excitation_electrodes_v2_y = \
+            rospy.get_param(
+                "sr_gui_biotac/excitation_electrodes_y_locations",
+                [9.00, 22.00, 9.00, 22.00])
+
+    def assign_electrodes(self, nb_electrodes):
+        if nb_electrodes == self._nb_electrodes_biotac:
+            self.sensing_electrodes_x = self.sensing_electrodes_v1_x
+            self.sensing_electrodes_y = self.sensing_electrodes_v1_y
+            self.excitation_electrodes_x = self.excitation_electrodes_v1_x
+            self.excitation_electrodes_y = self.excitation_electrodes_v1_y
+            self.factor = rospy.get_param(
+                "sr_gui_biotac/display_location_scale_factor",
+                17.5)  # Sets the multiplier to go from physical electrode
+        # location on the sensor in mm to display location in pixels
+        elif nb_electrodes == self._nb_electrodes_biotac_sp:
+            self.sensing_electrodes_x = self.sensing_electrodes_v2_x
+            self.sensing_electrodes_y = self.sensing_electrodes_v2_y
+            self.excitation_electrodes_x = self.excitation_electrodes_v2_x
+            self.excitation_electrodes_y = self.excitation_electrodes_v2_y
+            self.factor = 25.0
+        else:
+            rospy.logerr("Number of electrodes %d not matching known biotac models. expected: %d or %d",
+                         nb_electrodes, self._nb_electrodes_biotac, self._nb_electrodes_biotac_sp)
+            return
+
+        self.factor = self.factor * 0.6
+
+        for n in range(len(self.sensing_electrodes_x)):
+            self.sensing_electrodes_x[n] = (
+                self.sensing_electrodes_x[n] * self.factor +
+                self.x_display_offset[0])
+            self.sensing_electrodes_y[n] = (
+                self.sensing_electrodes_y[n] * self.factor +
+                self.y_display_offset[0])
+
+        for n in range(len(self.excitation_electrodes_x)):
+            self.excitation_electrodes_x[n] = (
+                self.excitation_electrodes_x[n] * self.factor +
+                self.x_display_offset[0])
+            self.excitation_electrodes_y[n] = (
+                self.excitation_electrodes_y[n] * self.factor +
+                self.y_display_offset[0])
+
+    def tactile_cb(self, msg):
+        if len(msg.tactiles[0].electrodes) != self._nb_electrodes:
+            self._nb_electrodes = len(msg.tactiles[0].electrodes)
+            self.assign_electrodes(self._nb_electrodes)
+        self.latest_data = msg
+
+    def get_electrode_colour_from_value(self, value):
+        r = 0.0
+        g = 0.0
+        b = 255.0
+
+        value = float(value)
+
+        threshold = (0.0, 1000.0, 2000.0, 3000.0, 4095.0)
+
+        if value <= threshold[0]:
+            pass
+
+        elif value < threshold[1]:
+
+            r = 255
+            g = 255 * ((value - threshold[0]) / (threshold[1] - threshold[0]))
+            b = 0
+
+        elif value < threshold[2]:
+
+            r = 255 * ((threshold[2] - value) / (threshold[2] - threshold[1]))
+            g = 255
+            b = 0
+
+        elif value < threshold[3]:
+
+            r = 0
+            g = 255
+            b = 255 * ((value - threshold[2]) / (threshold[3] - threshold[2]))
+
+        elif value < threshold[4]:
+
+            r = 0
+            g = 255 * ((threshold[4] - value) / (threshold[4] - threshold[3]))
+            b = 255
+
+        return QColor(r, g, b)
+
+    def biotac_id_from_dropdown(self):
+#        name = self.btSelect.currentText()
+#        fingers = ["FF", "MF", "RF", "LF", "TH"]
+        return self.biotac_name
+        #return fingers.index(name)
+
+    def draw_electrode(self, painter, elipse_x, elipse_y, text_x, text_y,
+                       colour, text):
+
+        rect = QRectF(elipse_x, elipse_y, self.RECTANGLE_WIDTH,
+                      self.RECTANGLE_HEIGHT)
+
+        painter.setBrush(colour)
+        painter.drawEllipse(rect)
+
+        rect.setX(text_x)
+        rect.setY(text_y)
+
+        painter.drawText(rect, text)
+
+    def paintEvent(self, paintEvent):
+        painter = QPainter(self.scrollAreaWidgetContents)
+        which_tactile = self.biotac_id_from_dropdown()
+
+        painter.setFont(QFont("Arial", self.label_font_size[0]))
+
+        if len(self.sensing_electrodes_x) == len(self.latest_data.tactiles[which_tactile].electrodes):
+            for n in range(len(self.sensing_electrodes_x)):
+                value = self.latest_data.tactiles[which_tactile].electrodes[n]
+
+                eval("self._widget.lcdE%02d_%d.display(%d)" % (n + 1, self.biotac_name, value))
+                colour = self.get_electrode_colour_from_value(value)
+
+                elipse_x = self.sensing_electrodes_x[n]
+                elipse_y = self.sensing_electrodes_y[n]
+
+                if n < 9:
+                    text_x = elipse_x + self.x_display_offset[1]
+                    text_y = elipse_y + self.y_display_offset[1]
+
+                else:
+                    text_x = elipse_x + self.x_display_offset[2]
+                    text_y = elipse_y + self.y_display_offset[2]
+
+                self.draw_electrode(painter, elipse_x, elipse_y, text_x, text_y,
+                                    colour, str(n + 1))
+
+        painter.setFont(QFont("Arial", self.label_font_size[1]))
+
+        for n in range(len(self.excitation_electrodes_x)):
+            elipse_x = self.excitation_electrodes_x[n]
+            elipse_y = self.excitation_electrodes_y[n]
+
+            colour = QColor(127, 127, 127)
+
+            text_x = elipse_x + self.x_display_offset[3]
+            text_y = elipse_y + self.y_display_offset[3]
+
+            self.draw_electrode(painter, elipse_x, elipse_y, text_x, text_y,
+                                colour, "X" + str(n + 1))
+
+        self._widget.update()
+
+    def subscribe_to_topic(self, prefix):
+        if prefix:
+            rospy.Subscriber(prefix + "tactile", BiotacAll, self.tactile_cb)
+
+    def load_params(self):
+        # self.RECTANGLE_WIDTH = rospy.get_param(
+        #     "sr_gui_biotac/electrode_display_width",
+        #     45)  # Display sizes for electrodes in pixels
+        # self.RECTANGLE_HEIGHT = rospy.get_param(
+        #     "sr_gui_biotac/electrode_display_height", 45)
+
+        self.RECTANGLE_WIDTH = rospy.get_param(
+            "sr_gui_biotac/electrode_display_width",
+            30)  # Display sizes for electrodes in pixels
+        self.RECTANGLE_HEIGHT = rospy.get_param(
+            "sr_gui_biotac/electrode_display_height", 30)
+
+        # self.factor = rospy.get_param(
+        #     "sr_gui_biotac/display_location_scale_factor",
+        #     17.5)  # Sets the multiplier to go from physical electrode
+        self.factor = 5#rospy.get_param(
+            #"sr_gui_biotac/display_location_scale_factor",
+            #10)  # Sets the multiplier to go from physical electrode
+        # location on the sensor in mm to display location in pixels
+        self.x_display_offset = rospy.get_param(
+            "sr_gui_biotac/x_display_offset", [125, 12.5, 4.5,
+                                               3.5])  # Pixel offsets for
+        # displaying electrodes. offset[0] is applied to each electrode.
+        # 1,2 and 3 are the label offsets for displaying electrode number.
+        self.y_display_offset = rospy.get_param(
+            "sr_gui_biotac/y_display_offset", [-50, 4.0, 4.0, 4.0])
+        self.label_font_size = rospy.get_param(
+            "sr_gui_biotac/electrode_label_font_sizes", [8,
+                                                         6])  # Font sizes
+        # for labels on sensing + excitation electrodes
+
+        if self._hand_parameters.mapping:
+            self.default_topic = (
+                self._hand_parameters.mapping.values()[0] + '/')
+        else:
+            self.default_topic = ""
+
+    def find_children(self, biotac_name):
+        self.scrollAreaWidgetContents = self._widget.findChild(QWidget, "scrollAreaWidgetContents" + "_" + str(biotac_name))
+        self.btSelect = self._widget.findChild(QComboBox, "btSelect" + "_" + str(biotac_name))
+        self.biotac_name = biotac_name
+
+    def __init__(self, context, rqt_plugin = True):
+
+        super(SrGuiBiotac, self).__init__(context)
+        self.setObjectName('SrGuiBiotac')
+        #self.scrollArea = self._widget.findChild(, "radioButton_velocity")
+        self._hand_finder = HandFinder()
+        self._hand_parameters = self._hand_finder.get_hand_parameters()
+        self.load_params()
+
+        self._widget = QWidget()
+
+        self.latest_data = BiotacAll()
+
+        self.define_electrodes()
+        self._nb_electrodes = self._nb_electrodes_biotac
+        self.assign_electrodes(self._nb_electrodes)
+
+        self.subscribe_to_topic(self.default_topic)
+
 
 class CustomFigCanvas(FigureCanvas, TimedAnimation):
     # Inspired by: https://stackoverflow.com/questions/36665850/matplotlib-animation-inside-your-own-pyqt4-gui
