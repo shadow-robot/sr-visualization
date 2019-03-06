@@ -1249,7 +1249,7 @@
         </widget>
         <widget class="QWidget" name="tab_10">
          <attribute name="title">
-          <string>Page</string>
+          <string>Biotac Visualizers</string>
          </attribute>
          <widget class="QScrollArea" name="scrollArea_0">
           <property name="geometry">
