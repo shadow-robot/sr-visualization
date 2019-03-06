@@ -1168,7 +1168,7 @@
              </font>
             </property>
             <property name="title">
-             <string>TAC</string>
+             <string>Temperature (AC)</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_71">
              <item row="0" column="0">
@@ -1185,7 +1185,7 @@
              </font>
             </property>
             <property name="title">
-             <string>TDC</string>
+             <string>Temperature (DC)</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_72">
              <item row="0" column="0">
@@ -1202,7 +1202,7 @@
              </font>
             </property>
             <property name="title">
-             <string>PAC0</string>
+             <string>Pressure (AC) 0</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_74">
              <item row="0" column="0">
@@ -1219,7 +1219,7 @@
              </font>
             </property>
             <property name="title">
-             <string>PAC1</string>
+             <string>Pressure (AC) 1</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_78">
              <item row="0" column="0">
@@ -1236,7 +1236,7 @@
              </font>
             </property>
             <property name="title">
-             <string>PDC</string>
+             <string>Pressure (DC)</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_77">
              <item row="0" column="0">

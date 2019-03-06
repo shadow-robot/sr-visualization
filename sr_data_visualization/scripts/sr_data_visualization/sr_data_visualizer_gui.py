@@ -113,6 +113,8 @@ class SrDataVisualizer(Plugin):
             except yaml.YAMLError as exc:
                 print(exc)
 
+        self.include_tactile_plugin()
+
         self.setup_radio_buttons()
 
         self.tabWidget_motor_stats.setCurrentIndex(0)
@@ -125,7 +127,6 @@ class SrDataVisualizer(Plugin):
 
         self.change_graphs(all=True, type="motor_stat", ncol=1)
 
-        self.include_tactile_plugin()
 
         self.init_complete = True
         # TODO: refresh graphs on resize?
@@ -183,6 +184,8 @@ class SrDataVisualizer(Plugin):
             elif tab_index == 4:
                 self.disable_graphs(["pos_vel_eff", "control_loops", "motor_stat", "palm_extras_accelerometer", "palm_extras_gyro", "palm_extras_adc"], disable=True)
                 self.disable_graphs(["biotacs"], disable=False)
+            elif tab_index == 5:
+                self.disable_graphs(["pos_vel_eff", "control_loops", "motor_stat", "palm_extras_accelerometer", "palm_extras_gyro", "palm_extras_adc", "biotacs"], disable=True)
         elif tab == "motor_stat":
             self.show_specific_motor_stat_tabs()
 
@@ -323,7 +326,10 @@ class SrDataVisualizer(Plugin):
         type = kwargs["type"]
         # TODO: speed this up. update/draw double the time taken to run this function. Only update/draw graphs we can see?
         i = 0
+        t2 = 0
+        t4 = 0
         while i < len(self.graph_names_global[type]):
+            t3 = time.time()
             if all:
                 # TODO: Store max/min somewhere? only takes approx 10uS to find_max_range, but it's a shame to call it all the time
                 ymin, ymax = self.find_max_range(self.global_yaml["graphs"][index])
@@ -341,9 +347,16 @@ class SrDataVisualizer(Plugin):
                 self.graph_dict_global[type][self.graph_names_global[type][i]].ax1.yaxis.set_tick_params(which='both', labelbottom=True)
                 self.graph_dict_global[type][self.graph_names_global[type][i]].re_init()
                 self.graph_dict_global[type][self.graph_names_global[type][i]].ax1.legend(self.graph_dict_global[type][self.graph_names_global[type][i]].line, kwargs["legend_name"], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5,  prop={'size': 10 + self.font_offset})
-            self.graph_dict_global[type][self.graph_names_global[type][i]].update()
-            self.graph_dict_global[type][self.graph_names_global[type][i]].draw()
+            t0 = time.time()
+            if self.graph_dict_global[type][self.graph_names_global[type][i]].enabled:
+                self.graph_dict_global[type][self.graph_names_global[type][i]].update()
+                self.graph_dict_global[type][self.graph_names_global[type][i]].draw()
+            t1 = time.time()
+            t2 += t1 - t0
+            t4 += t0 - t3
             i += 1
+        print "time spent updating and drawing: ", t2*1000, "ms", " other: ", t4*1000, "ms"
+        #print "other: ", t4*1000, "ms"
 
     def make_control_loop_callbacks(self, graph):
         def _callback(value):
@@ -437,7 +450,7 @@ class SrDataVisualizer(Plugin):
                 x.addWidget(self.graph_dict_global[graphs["type"]][graphs["graph_names"][i]])
                 i += 1
 
-        #Setup palm extras graphs (as they don't need radio buttons)
+        # Setup palm extras graphs (as they don't need radio buttons)
         palm_extras_graphs = [value for key, value in self.graph_dict_global.items() if 'palm_extras' in key]
         i = 3
         for graph in palm_extras_graphs:
@@ -450,8 +463,6 @@ class SrDataVisualizer(Plugin):
                 value.re_init()
                 value.ax1.legend(value.line, self.global_yaml["graphs"][i]["lines"], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5, ncol=len(self.global_yaml["graphs"][i]["lines"]), prop={'size': font_size})
                 i += 1
-
-
 
     def joint_state_cb(self, value):
         if self.first_run:
@@ -469,7 +480,6 @@ class SrDataVisualizer(Plugin):
             while j < len(self.graph_names_global["pos_vel_eff"]):
                 if self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][j]].plot_all:
                     ymin, ymax = self.find_max_range(self.global_yaml["graphs"][0])
-
                     # for each line
                     self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][j]].addData(value.position[self.joint_state_data_map['rh_' + string.upper(self.graph_names_global["pos_vel_eff"][j])]] * (ymax / self.global_yaml["graphs"][0]["ranges"][0][1]), 0)
                     self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][j]].addData(value.velocity[self.joint_state_data_map['rh_' + string.upper(self.graph_names_global["pos_vel_eff"][j])]] * (ymax / self.global_yaml["graphs"][0]["ranges"][1][1]), 1)
@@ -550,7 +560,7 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         self.ymin = ymin
         self.ymax = ymax
         self.colour = colour
-        if (legend_columns == 'none'):
+        if legend_columns == 'none':
             legend_columns = self.num_lines
         self.addedDataArray = []
         n = 0
@@ -576,7 +586,7 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         # self.fig.patch.set_alpha(0.0)
         self.ax1 = self.fig.add_subplot(111)
         self.x_axis = self.n
-        if not (self.xaxis_tick_animation):
+        if not self.xaxis_tick_animation:
             self.ax1.axes.get_xaxis().set_visible(False)
 
         # Shrink the font size of the x tick labels
@@ -607,7 +617,7 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
                         ncol=legend_columns, mode="expand", borderaxespad=0.5, prop={'size': legend_font_size})
         self.counter = 0
         FigureCanvas.__init__(self, self.fig)
-        TimedAnimation.__init__(self, self.fig, interval=50, blit=not (self.xaxis_tick_animation))
+        TimedAnimation.__init__(self, self.fig, interval=50, blit=not self.xaxis_tick_animation)
         self.tmp_counter = 0
 
     def re_init(self):
@@ -725,10 +735,11 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
             self.ax1.set_xticks(x)
             self.ax1.set_xticklabels([int(i / int(self.xlim / self.num_ticks)) + time_from_start for i in x])
 
+
 if __name__ == "__main__":
     rospy.init_node("hand_e_visualizer")
     app = QApplication(sys.argv)
-    if (app.desktop().screenGeometry().width() < 2880 or app.desktop().screenGeometry().height() < 1620):
+    if app.desktop().screenGeometry().width() < 2880 or app.desktop().screenGeometry().height() < 1620:
         rospy.logwarn("This program works best at a screen resolution of at least 2880x1620")
     planner_benchmarking_gui = SrDataVisualizer(None, app.desktop().screenGeometry().width(), app.desktop().screenGeometry().height())
     planner_benchmarking_gui._widget.show()
