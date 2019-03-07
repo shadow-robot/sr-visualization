@@ -40,6 +40,7 @@ from QtWidgets import QMessageBox, QWidget
 from QtCore import QRectF, QTimer
 from sr_robot_msgs.msg import Biotac, BiotacAll
 from sr_utilities.hand_finder import HandFinder
+import threading
 
 # import gc
 # from mem_top import mem_top
@@ -133,6 +134,15 @@ class SrDataVisualizer(Plugin):
 
         self.init_complete = True
         # TODO: refresh graphs on resize?
+
+        threading.Thread(target=self.print_window_size).start()
+
+    def print_window_size(self):
+        while True:
+            width = self._widget.width()
+            height = self._widget.height()
+            print width, "x", height
+            time.sleep(1)
 
     def include_tactile_plugin(self):
         tactile_gui_list = []
