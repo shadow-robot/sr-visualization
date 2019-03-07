@@ -2,14 +2,6 @@
 
 import yaml
 import matplotlib
-# import gc
-# from mem_top import mem_top
-# from pympler.tracker import SummaryTracker
-# from pympler import refbrowser
-# import stackimpact
-
-
-
 matplotlib.use("Qt5Agg")
 from python_qt_binding.QtGui import *
 from python_qt_binding.QtCore import *
@@ -49,6 +41,12 @@ from QtCore import QRectF, QTimer
 from sr_robot_msgs.msg import Biotac, BiotacAll
 from sr_utilities.hand_finder import HandFinder
 
+# import gc
+# from mem_top import mem_top
+# from pympler.tracker import SummaryTracker
+# from pympler import refbrowser
+# import stackimpact
+
 def timeit(method):
     def timed(*args, **kw):
         ts = time.time()
@@ -61,7 +59,9 @@ def timeit(method):
     return timed
 
 class SrDataVisualizer(Plugin):
-    def __init__(self, context, width, height):
+    def __init__(self, context):#, width, height):
+        width = 2000
+        height = 2000
         self.init_complete = False
         self.first_run = True
         super(SrDataVisualizer, self).__init__(context)
@@ -138,7 +138,6 @@ class SrDataVisualizer(Plugin):
         tactile_gui_list = []
         i = 0
         self.timer = QTimer(self._widget)
-
         while i < 5:
             tactile_gui = SrGuiBiotac(None, rqt_plugin=False)
             tactile_gui._widget = self._widget
@@ -147,65 +146,17 @@ class SrDataVisualizer(Plugin):
             scrollAreaWidgetContents = self._widget.findChild(QWidget, "scrollAreaWidgetContents" + "_" + str(i))
             self.timer.timeout.connect(scrollAreaWidgetContents.update)
             scrollAreaWidgetContents.paintEvent = tactile_gui.paintEvent
-
             if not tactile_gui._hand_parameters.mapping:
                 rospy.logerr("No hand detected")
-            #     # QMessageBox.warning(
-            #     #     self._widget, "warning", "No hand is detected")
-            # else:
-            #     self._widget.select_prefix_0.setCurrentIndex(0)
-            # self._widget.select_prefix_0.activated['QString'].connect(tactile_gui.subscribe_to_topic)
             i += 1
-
-
-        #self.btSelect = self._widget.findChild(QComboBox, "btSelect" + "_" + biotac_name)
-        # tactile_gui = SrGuiBiotac(None, rqt_plugin=False)
-        # tactile_gui._widget = self._widget
-        # tactile_gui.find_children("0")
-        #
-        # tactile_gui_1 = SrGuiBiotac(None, rqt_plugin=False)
-        # tactile_gui_1._widget = self._widget
-        # tactile_gui_1.find_children("1")
-
-        # self.timer.timeout.connect(self._widget.scrollAreaWidgetContents_0.update)
-        # self._widget.scrollAreaWidgetContents_0.paintEvent = tactile_gui.paintEvent
-        #
-        # self.timer.timeout.connect(self._widget.scrollAreaWidgetContents_1.update)
-        # self._widget.scrollAreaWidgetContents_1.paintEvent = tactile_gui_1.paintEvent
-
-        # for hand in tactile_gui._hand_parameters.mapping:
-        #     self._widget.select_prefix.addItem(
-        #         tactile_gui._hand_parameters.mapping[hand])
-        # if not tactile_gui._hand_parameters.mapping:
-        #     rospy.logerr("No hand detected")
-        #     # QMessageBox.warning(
-        #     #     self._widget, "warning", "No hand is detected")
-        # else:
-        #     self._widget.select_prefix.setCurrentIndex(0)
-        #
-        # for hand in tactile_gui_1._hand_parameters.mapping:
-        #     self._widget.select_prefix.addItem(
-        #         tactile_gui_1._hand_parameters.mapping[hand])
-        # if not tactile_gui_1._hand_parameters.mapping:
-        #     rospy.logerr("No hand detected")
-        #     # QMessageBox.warning(
-        #     #     self._widget, "warning", "No hand is detected")
-        # else:
-        #     self._widget.select_prefix.setCurrentIndex(0)
-
-        #self._widget.select_prefix.activated['QString'].connect(tactile_gui.subscribe_to_topic)
-        #self._widget.select_prefix.activated['QString'].connect(tactile_gui_1.subscribe_to_topic)
+        stylesheet = """ QScrollArea>QWidget>QWidget{background: white;}"""
+        self._widget.scrollArea_0.setStyleSheet(stylesheet)
+        self._widget.scrollArea_1.setStyleSheet(stylesheet)
+        self._widget.scrollArea_2.setStyleSheet(stylesheet)
+        self._widget.scrollArea_3.setStyleSheet(stylesheet)
+        self._widget.scrollArea_4.setStyleSheet(stylesheet)
 
         self.timer.start(50)
-        #
-        # # Change background color
-        # p = self._widget.scrollArea_1.palette()
-        # stylesheet = """ QScrollArea>QWidget>QWidget{background: white;}"""
-        # self._widget.scrollArea_0.setStyleSheet(stylesheet)
-        # self._widget.centralWidget_2.setStyleSheet(stylesheet)
-        # self._widget.scrollAreaWidgetContents_0.setStyleSheet(stylesheet)
-        # self._widget.scrollArea_1.setStyleSheet(stylesheet)
-        # self._widget.scrollArea_2.setStyleSheet(stylesheet)
 
     def tab_change_mstat(self, tab_index):
         self.hide_and_refresh(tab_index, "motor_stat")
@@ -593,10 +544,6 @@ class SrDataVisualizer(Plugin):
                 i += 1
 
 
-
-
-
-
 class SrGuiBiotac(Plugin):
     _nb_electrodes_biotac = 19
     _nb_electrodes_biotac_sp = 24
@@ -729,12 +676,6 @@ class SrGuiBiotac(Plugin):
 
         return QColor(r, g, b)
 
-    def biotac_id_from_dropdown(self):
-#        name = self.btSelect.currentText()
-#        fingers = ["FF", "MF", "RF", "LF", "TH"]
-        return self.biotac_name
-        #return fingers.index(name)
-
     def draw_electrode(self, painter, elipse_x, elipse_y, text_x, text_y,
                        colour, text):
 
@@ -751,7 +692,7 @@ class SrGuiBiotac(Plugin):
 
     def paintEvent(self, paintEvent):
         painter = QPainter(self.scrollAreaWidgetContents)
-        which_tactile = self.biotac_id_from_dropdown()
+        which_tactile = self.biotac_name
 
         painter.setFont(QFont("Arial", self.label_font_size[0]))
 
@@ -797,11 +738,6 @@ class SrGuiBiotac(Plugin):
             rospy.Subscriber(prefix + "tactile", BiotacAll, self.tactile_cb)
 
     def load_params(self):
-        # self.RECTANGLE_WIDTH = rospy.get_param(
-        #     "sr_gui_biotac/electrode_display_width",
-        #     45)  # Display sizes for electrodes in pixels
-        # self.RECTANGLE_HEIGHT = rospy.get_param(
-        #     "sr_gui_biotac/electrode_display_height", 45)
 
         self.RECTANGLE_WIDTH = rospy.get_param(
             "sr_gui_biotac/electrode_display_width",
@@ -812,9 +748,7 @@ class SrGuiBiotac(Plugin):
         # self.factor = rospy.get_param(
         #     "sr_gui_biotac/display_location_scale_factor",
         #     17.5)  # Sets the multiplier to go from physical electrode
-        self.factor = 5#rospy.get_param(
-            #"sr_gui_biotac/display_location_scale_factor",
-            #10)  # Sets the multiplier to go from physical electrode
+        self.factor = 5
         # location on the sensor in mm to display location in pixels
         self.x_display_offset = rospy.get_param(
             "sr_gui_biotac/x_display_offset", [125, 12.5, 4.5,
@@ -931,10 +865,8 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         self.fig.subplots_adjust(bottom=0.05, top=0.8, left=0.08, right=0.98)
         self.ax1.legend(self.line, self.legends, bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3,
                         ncol=legend_columns, mode="expand", borderaxespad=0.5, prop={'size': legend_font_size})
-        self.counter = 0
         FigureCanvas.__init__(self, self.fig)
         TimedAnimation.__init__(self, self.fig, interval=50, blit=not self.xaxis_tick_animation)
-        self.tmp_counter = 0
 
     def re_init(self):
         self.line = []
@@ -977,7 +909,6 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         while i < self.num_lines:
             if self.tail_enable:
                 lines = [self.line[i], self.line_tail[i], self.line_head[i]]
-
             else:
                 lines = [self.line[i]]
             for l in lines:
@@ -999,7 +930,6 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         while i < self.num_lines:
             while len(self.addedDataArray[i]) > 0:
                 self.y[i] = np.roll(self.y[i], -1)
-                self.counter = self.counter + 1
                 self.y[i][-1] = self.addedDataArray[i][0]
                 del (self.addedDataArray[i][0])
             i = i + 1
@@ -1057,7 +987,9 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     if app.desktop().screenGeometry().width() < 2880 or app.desktop().screenGeometry().height() < 1620:
         rospy.logwarn("This program works best at a screen resolution of at least 2880x1620")
-    planner_benchmarking_gui = SrDataVisualizer(None, app.desktop().screenGeometry().width(), app.desktop().screenGeometry().height())
+    planner_benchmarking_gui = SrDataVisualizer(None)
+    #planner_benchmarking_gui = SrDataVisualizer(None, app.desktop().screenGeometry().width(), app.desktop().screenGeometry().height())
+    #planner_benchmarking_gui = SrDataVisualizer(None, 1920, 1080)
     planner_benchmarking_gui._widget.show()
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     sys.exit(app.exec_())
