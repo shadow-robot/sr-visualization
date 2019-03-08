@@ -131,11 +131,11 @@ class SrDataVisualizer(Plugin):
 
         self.change_graphs(all=True, type="motor_stat", ncol=1)
 
-
+        self.t0 = 0
         self.init_complete = True
         # TODO: refresh graphs on resize?
 
-        threading.Thread(target=self.print_window_size).start()
+        #threading.Thread(target=self.print_window_size).start()
 
     def print_window_size(self):
         while True:
@@ -145,28 +145,81 @@ class SrDataVisualizer(Plugin):
             time.sleep(1)
 
     def include_tactile_plugin(self):
-        tactile_gui_list = []
+        self.tactile_gui_list = []
         i = 0
         self.timer = QTimer(self._widget)
         while i < 5:
-            tactile_gui = SrGuiBiotac(None, rqt_plugin=False)
+            tactile_gui = SrGuiBiotac(None)
             tactile_gui._widget = self._widget
             tactile_gui.find_children(i)
-            tactile_gui_list.append(tactile_gui)
-            scrollAreaWidgetContents = self._widget.findChild(QWidget, "scrollAreaWidgetContents" + "_" + str(i))
-            self.timer.timeout.connect(scrollAreaWidgetContents.update)
-            scrollAreaWidgetContents.paintEvent = tactile_gui.paintEvent
+            self.tactile_gui_list.append(tactile_gui)
+            widget = self._widget.findChild(QWidget, "widget" + "_" + str(i))
+            widget.resizeEvent = self.onResize
+
+            self.timer.timeout.connect(widget.update)
+            widget.paintEvent = tactile_gui.paintEvent
             if not tactile_gui._hand_parameters.mapping:
                 rospy.logerr("No hand detected")
             i += 1
-        stylesheet = """ QScrollArea>QWidget>QWidget{background: white;}"""
-        self._widget.scrollArea_0.setStyleSheet(stylesheet)
-        self._widget.scrollArea_1.setStyleSheet(stylesheet)
-        self._widget.scrollArea_2.setStyleSheet(stylesheet)
-        self._widget.scrollArea_3.setStyleSheet(stylesheet)
-        self._widget.scrollArea_4.setStyleSheet(stylesheet)
+
+        self.label_list = []
+        self.lcd_list = []
+
+        j = 0
+        while j < 5:
+            i = 1
+            lcds = []
+            while i < 25:
+                if i < 10:
+                    lcd = self._widget.findChild(QLCDNumber, "lcdE0" + str(i) + "_" + str(j))  # %d_0" + "_" + str(i))
+                else:
+                    lcd = self._widget.findChild(QLCDNumber, "lcdE" + str(i) + "_" + str(j))  # %d_0" + "_" + str(i))
+                lcds.append(lcd)
+                i += 1
+            self.lcd_list.append(lcds)
+
+            i = 1
+            labels = []
+            while i < 25:
+                if i < 10:
+                    label = self._widget.findChild(QLabel, "label_E0" + str(i) + "_" + str(j))  # %d_0" + "_" + str(i))
+                else:
+                    label = self._widget.findChild(QLabel, "label_E" + str(i) + "_" + str(j))  # %d_0" + "_" + str(i))
+                labels.append(label)
+                i += 1
+            self.label_list.append(labels)
+            j += 1
 
         self.timer.start(50)
+
+    def onResize(self, whatsthis):
+        if (time.time() - self.t0) > 1:
+            for tactile_widget in self.tactile_gui_list:
+                tactile_widget.redraw_electrodes()
+
+            if (self._widget.width() * self._widget.height()) < 3000000:
+                scale = 6
+                mheight = 18
+            else:
+                scale = 12
+                mheight = 30
+
+            font = QFont('Sans Serif', scale)
+            font.setKerning(True)
+            j = 0
+            while j < 5:
+                i = 0
+                while i < 24:
+                    self.lcd_list[j][i].setMinimumHeight(2)
+                    self.lcd_list[j][i].setMaximumHeight(mheight)
+                    i += 1
+                i = 0
+                while i < 24:
+                    print "i", i, "j", j
+                    self.label_list[j][i].setFont(font)
+                    i += 1
+                j += 1
+            self.t0 = time.time()
 
     def tab_change_mstat(self, tab_index):
         self.hide_and_refresh(tab_index, "motor_stat")
@@ -334,14 +387,12 @@ class SrDataVisualizer(Plugin):
             ncols = kwargs["ncol"]
 
         type = kwargs["type"]
-        # TODO: speed this up. update/draw double the time taken to run this function. Only update/draw graphs we can see?
         i = 0
         t2 = 0
         t4 = 0
         while i < len(self.graph_names_global[type]):
             t3 = time.time()
             if all:
-                # TODO: Store max/min somewhere? only takes approx 10uS to find_max_range, but it's a shame to call it all the time
                 ymin, ymax = self.find_max_range(self.global_yaml["graphs"][index])
                 self.graph_dict_global[type][self.graph_names_global[type][i]].ymin = ymin
                 self.graph_dict_global[type][self.graph_names_global[type][i]].ymax = ymax
@@ -366,7 +417,6 @@ class SrDataVisualizer(Plugin):
             t4 += t0 - t3
             i += 1
         print "time spent updating and drawing: ", t2*1000, "ms", " other: ", t4*1000, "ms"
-        #print "other: ", t4*1000, "ms"
 
     def make_control_loop_callbacks(self, graph):
         def _callback(value):
@@ -609,22 +659,15 @@ class SrGuiBiotac(Plugin):
             self.sensing_electrodes_y = self.sensing_electrodes_v1_y
             self.excitation_electrodes_x = self.excitation_electrodes_v1_x
             self.excitation_electrodes_y = self.excitation_electrodes_v1_y
-            self.factor = rospy.get_param(
-                "sr_gui_biotac/display_location_scale_factor",
-                17.5)  # Sets the multiplier to go from physical electrode
-        # location on the sensor in mm to display location in pixels
         elif nb_electrodes == self._nb_electrodes_biotac_sp:
             self.sensing_electrodes_x = self.sensing_electrodes_v2_x
             self.sensing_electrodes_y = self.sensing_electrodes_v2_y
             self.excitation_electrodes_x = self.excitation_electrodes_v2_x
             self.excitation_electrodes_y = self.excitation_electrodes_v2_y
-            self.factor = 25.0
         else:
             rospy.logerr("Number of electrodes %d not matching known biotac models. expected: %d or %d",
                          nb_electrodes, self._nb_electrodes_biotac, self._nb_electrodes_biotac_sp)
             return
-
-        self.factor = self.factor * 0.6
 
         for n in range(len(self.sensing_electrodes_x)):
             self.sensing_electrodes_x[n] = (
@@ -661,25 +704,20 @@ class SrGuiBiotac(Plugin):
             pass
 
         elif value < threshold[1]:
-
             r = 255
             g = 255 * ((value - threshold[0]) / (threshold[1] - threshold[0]))
             b = 0
 
         elif value < threshold[2]:
-
             r = 255 * ((threshold[2] - value) / (threshold[2] - threshold[1]))
             g = 255
             b = 0
 
         elif value < threshold[3]:
-
             r = 0
             g = 255
             b = 255 * ((value - threshold[2]) / (threshold[3] - threshold[2]))
-
         elif value < threshold[4]:
-
             r = 0
             g = 255 * ((threshold[4] - value) / (threshold[4] - threshold[3]))
             b = 255
@@ -701,7 +739,7 @@ class SrGuiBiotac(Plugin):
         painter.drawText(rect, text)
 
     def paintEvent(self, paintEvent):
-        painter = QPainter(self.scrollAreaWidgetContents)
+        painter = QPainter(self.widget)#scrollAreaWidgetContents)
         which_tactile = self.biotac_name
 
         painter.setFont(QFont("Arial", self.label_font_size[0]))
@@ -766,7 +804,7 @@ class SrGuiBiotac(Plugin):
         # displaying electrodes. offset[0] is applied to each electrode.
         # 1,2 and 3 are the label offsets for displaying electrode number.
         self.y_display_offset = rospy.get_param(
-            "sr_gui_biotac/y_display_offset", [-50, 4.0, 4.0, 4.0])
+            "sr_gui_biotac/y_display_offset", [-30, 4.0, 4.0, 4.0])
         self.label_font_size = rospy.get_param(
             "sr_gui_biotac/electrode_label_font_sizes", [8,
                                                          6])  # Font sizes
@@ -779,15 +817,12 @@ class SrGuiBiotac(Plugin):
             self.default_topic = ""
 
     def find_children(self, biotac_name):
-        self.scrollAreaWidgetContents = self._widget.findChild(QWidget, "scrollAreaWidgetContents" + "_" + str(biotac_name))
-        self.btSelect = self._widget.findChild(QComboBox, "btSelect" + "_" + str(biotac_name))
+        self.widget = self._widget.findChild(QWidget, "widget" + "_" + str(biotac_name))
         self.biotac_name = biotac_name
 
-    def __init__(self, context, rqt_plugin = True):
-
+    def __init__(self, context):
         super(SrGuiBiotac, self).__init__(context)
         self.setObjectName('SrGuiBiotac')
-        #self.scrollArea = self._widget.findChild(, "radioButton_velocity")
         self._hand_finder = HandFinder()
         self._hand_parameters = self._hand_finder.get_hand_parameters()
         self.load_params()
@@ -795,12 +830,45 @@ class SrGuiBiotac(Plugin):
         self._widget = QWidget()
 
         self.latest_data = BiotacAll()
+        self.pixels = self._widget.width() * self._widget.height()
 
         self.define_electrodes()
         self._nb_electrodes = self._nb_electrodes_biotac
         self.assign_electrodes(self._nb_electrodes)
 
         self.subscribe_to_topic(self.default_topic)
+
+    def redraw_electrodes(self):
+        self.pixels = self._widget.width() * self._widget.height()
+        print self.pixels
+        self.define_electrodes()
+
+        if self._nb_electrodes == self._nb_electrodes_biotac:
+            self.factor = 17.5
+        elif self._nb_electrodes == self._nb_electrodes_biotac_sp:
+            self.factor = 25.0
+        else:
+            rospy.logerr("Number of electrodes %d not matching known biotac models. expected: %d or %d",
+                         self.nb_electrodes, self._nb_electrodes_biotac, self._nb_electrodes_biotac_sp)
+            return
+
+        if self.pixels > 3000000:
+            self.factor = self.factor * 0.80
+            self.RECTANGLE_WIDTH = 40
+            self.RECTANGLE_HEIGHT = 40
+            self.x_display_offset[0] = 170
+            self.y_display_offset[0] = -30
+            self.label_font_size = [10, 9]
+        else:
+            self.factor = self.factor * 0.55
+            self.RECTANGLE_WIDTH = 25
+            self.RECTANGLE_HEIGHT = 25
+            self.x_display_offset[0] = 125
+            self.y_display_offset[0] = -30
+            self.label_font_size = [6, 6]
+
+        self._nb_electrodes = self._nb_electrodes_biotac
+        self.assign_electrodes(self._nb_electrodes)
 
 
 class CustomFigCanvas(FigureCanvas, TimedAnimation):
