@@ -40,29 +40,9 @@ from QtWidgets import QMessageBox, QWidget
 from QtCore import QRectF, QTimer
 from sr_robot_msgs.msg import Biotac, BiotacAll
 from sr_utilities.hand_finder import HandFinder
-import threading
-
-# import gc
-# from mem_top import mem_top
-# from pympler.tracker import SummaryTracker
-# from pympler import refbrowser
-# import stackimpact
-
-def timeit(method):
-    def timed(*args, **kw):
-        ts = time.time()
-        result = method(*args, **kw)
-        te = time.time()
-
-        print '%r  %2.2f ms' % \
-              (method.__name__, (te - ts) * 1000)
-        return result
-    return timed
 
 class SrDataVisualizer(Plugin):
-    def __init__(self, context):#, width, height):
-        width = 2000
-        height = 2000
+    def __init__(self, context):
         self.init_complete = False
         self.first_run = True
         super(SrDataVisualizer, self).__init__(context)
@@ -94,15 +74,10 @@ class SrDataVisualizer(Plugin):
 
         motor_stat_keys_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'config', 'data_visualiser_motor_stat_keys.yaml')
         parameters_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'config', 'data_visualiser_parameters.yaml')
-        #gc.set_debug(gc.DEBUG_LEAK)
 
-        self.font_offset = 0
-        print width, "x", height
-        if width < 2880 or height < 1620:
-            self.font_offset = -3
-        if width == 2880 or height == 1620:
-            self.font_offset = 1
-        print self.font_offset
+        self.font_offset = -3
+
+        self._widget.resizeEvent = self.on_resize_main
 
         with open(motor_stat_keys_file, 'r') as stream:
             try:
@@ -135,14 +110,11 @@ class SrDataVisualizer(Plugin):
         self.init_complete = True
         # TODO: refresh graphs on resize?
 
-        #threading.Thread(target=self.print_window_size).start()
-
-    def print_window_size(self):
-        while True:
-            width = self._widget.width()
-            height = self._widget.height()
-            print width, "x", height
-            time.sleep(1)
+    def on_resize_main(self, empty):
+        if (self._widget.width() * self._widget.height()) < 3500000:
+            self.font_offset = -3
+        else:
+            self.font_offset = 1
 
     def include_tactile_plugin(self):
         self.tactile_gui_list = []
@@ -154,7 +126,7 @@ class SrDataVisualizer(Plugin):
             tactile_gui.find_children(i)
             self.tactile_gui_list.append(tactile_gui)
             widget = self._widget.findChild(QWidget, "widget" + "_" + str(i))
-            widget.resizeEvent = self.onResize
+            widget.resizeEvent = self.on_resize_tactile
 
             self.timer.timeout.connect(widget.update)
             widget.paintEvent = tactile_gui.paintEvent
@@ -192,12 +164,12 @@ class SrDataVisualizer(Plugin):
 
         self.timer.start(50)
 
-    def onResize(self, whatsthis):
-        if (time.time() - self.t0) > 1:
+    def on_resize_tactile(self, none):
+        if (time.time() - self.t0) > 0:
             for tactile_widget in self.tactile_gui_list:
                 tactile_widget.redraw_electrodes()
 
-            if (self._widget.width() * self._widget.height()) < 3000000:
+            if (self._widget.width() * self._widget.height()) < 3500000:
                 scale = 6
                 mheight = 18
             else:
@@ -215,7 +187,6 @@ class SrDataVisualizer(Plugin):
                     i += 1
                 i = 0
                 while i < 24:
-                    print "i", i, "j", j
                     self.label_list[j][i].setFont(font)
                     i += 1
                 j += 1
@@ -275,7 +246,6 @@ class SrDataVisualizer(Plugin):
         for graph in x:
             graph.enabled = False
 
-    @timeit
     def disable_graphs(self, graph_type, disable):
         for element in graph_type:
             for key, graph in self.graph_dict_global[element].iteritems():
@@ -373,7 +343,6 @@ class SrDataVisualizer(Plugin):
                         self.change_graphs(all=False, legend_name=[self.global_yaml["graphs"][type]["lines"][i]], line_number=i, type=graph_type, ncol=1)
         return button_function
 
-    @timeit
     def change_graphs(self, all, **kwargs):
         if kwargs["type"] == "pos_vel_eff":
             index = 0
@@ -385,13 +354,9 @@ class SrDataVisualizer(Plugin):
             ncols = 3
         else:
             ncols = kwargs["ncol"]
-
         type = kwargs["type"]
         i = 0
-        t2 = 0
-        t4 = 0
         while i < len(self.graph_names_global[type]):
-            t3 = time.time()
             if all:
                 ymin, ymax = self.find_max_range(self.global_yaml["graphs"][index])
                 self.graph_dict_global[type][self.graph_names_global[type][i]].ymin = ymin
@@ -408,15 +373,10 @@ class SrDataVisualizer(Plugin):
                 self.graph_dict_global[type][self.graph_names_global[type][i]].ax1.yaxis.set_tick_params(which='both', labelbottom=True)
                 self.graph_dict_global[type][self.graph_names_global[type][i]].re_init()
                 self.graph_dict_global[type][self.graph_names_global[type][i]].ax1.legend(self.graph_dict_global[type][self.graph_names_global[type][i]].line, kwargs["legend_name"], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5,  prop={'size': 10 + self.font_offset})
-            t0 = time.time()
             if self.graph_dict_global[type][self.graph_names_global[type][i]].enabled:
                 self.graph_dict_global[type][self.graph_names_global[type][i]].update()
                 self.graph_dict_global[type][self.graph_names_global[type][i]].draw()
-            t1 = time.time()
-            t2 += t1 - t0
-            t4 += t0 - t3
             i += 1
-        print "time spent updating and drawing: ", t2*1000, "ms", " other: ", t4*1000, "ms"
 
     def make_control_loop_callbacks(self, graph):
         def _callback(value):
@@ -466,9 +426,9 @@ class SrDataVisualizer(Plugin):
             i = 0
             while i < (len(graphs["graph_names"])):
                 if graphs["type"] == "biotacs":
-                    temp_graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]), colour=graphs["colours"], ymin=graphs["ranges"][i][0], ymax=graphs["ranges"][i][1], ranges=graphs["ranges"], graph_title=graphs["graph_names"][i], legends=graphs["lines"], legend_columns=legend_columns, legend_font_size=graphs["font_size"] + self.font_offset, num_ticks=4, xaxis_tick_animation=False, tail_enable=False, enabled=True)
+                    temp_graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]), colour=graphs["colours"], ymin=graphs["ranges"][i][0], ymax=graphs["ranges"][i][1], legends=graphs["lines"], legend_columns=legend_columns, legend_font_size=graphs["font_size"] + self.font_offset, num_ticks=4, xaxis_tick_animation=False, tail_enable=False, enabled=True)
                 else:
-                    temp_graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]), colour=graphs["colours"], ymin=ymin, ymax=ymax, ranges=graphs["ranges"], graph_title=graphs["graph_names"][i], legends=graphs["lines"], legend_columns=legend_columns, legend_font_size=graphs["font_size"] + self.font_offset, num_ticks=4, xaxis_tick_animation=False, tail_enable=False, enabled=True)
+                    temp_graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]), colour=graphs["colours"], ymin=ymin, ymax=ymax, legends=graphs["lines"], legend_columns=legend_columns, legend_font_size=graphs["font_size"] + self.font_offset, num_ticks=4, xaxis_tick_animation=False, tail_enable=False, enabled=True)
                 i += 1
             self.graph_dict_global[graphs["type"]] = temp_graph_dict
 
@@ -739,7 +699,7 @@ class SrGuiBiotac(Plugin):
         painter.drawText(rect, text)
 
     def paintEvent(self, paintEvent):
-        painter = QPainter(self.widget)#scrollAreaWidgetContents)
+        painter = QPainter(self.widget)
         which_tactile = self.biotac_name
 
         painter.setFont(QFont("Arial", self.label_font_size[0]))
@@ -793,9 +753,6 @@ class SrGuiBiotac(Plugin):
         self.RECTANGLE_HEIGHT = rospy.get_param(
             "sr_gui_biotac/electrode_display_height", 30)
 
-        # self.factor = rospy.get_param(
-        #     "sr_gui_biotac/display_location_scale_factor",
-        #     17.5)  # Sets the multiplier to go from physical electrode
         self.factor = 5
         # location on the sensor in mm to display location in pixels
         self.x_display_offset = rospy.get_param(
@@ -840,7 +797,6 @@ class SrGuiBiotac(Plugin):
 
     def redraw_electrodes(self):
         self.pixels = self._widget.width() * self._widget.height()
-        print self.pixels
         self.define_electrodes()
 
         if self._nb_electrodes == self._nb_electrodes_biotac:
@@ -852,7 +808,7 @@ class SrGuiBiotac(Plugin):
                          self.nb_electrodes, self._nb_electrodes_biotac, self._nb_electrodes_biotac_sp)
             return
 
-        if self.pixels > 3000000:
+        if self.pixels > 3500000:
             self.factor = self.factor * 0.80
             self.RECTANGLE_WIDTH = 40
             self.RECTANGLE_HEIGHT = 40
@@ -865,16 +821,15 @@ class SrGuiBiotac(Plugin):
             self.RECTANGLE_HEIGHT = 25
             self.x_display_offset[0] = 125
             self.y_display_offset[0] = -30
-            self.label_font_size = [6, 6]
+            self.label_font_size = [8, 8]
 
         self._nb_electrodes = self._nb_electrodes_biotac
         self.assign_electrodes(self._nb_electrodes)
 
 
 class CustomFigCanvas(FigureCanvas, TimedAnimation):
-    # Inspired by: https://stackoverflow.com/questions/36665850/matplotlib-animation-inside-your-own-pyqt4-gui
     def __init__(self, num_lines, colour=[], ymin=-1, ymax=1, legends=[], legend_columns='none', legend_font_size=7,
-                 num_ticks=4, xaxis_tick_animation=False, tail_enable=True, enabled=True, ranges=[], graph_title="oops"):
+                 num_ticks=4, xaxis_tick_animation=False, tail_enable=True, enabled=True):
         self.plot_all = True
         self.line_to_plot = None
         self.enabled = enabled
@@ -1063,11 +1018,7 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
 if __name__ == "__main__":
     rospy.init_node("hand_e_visualizer")
     app = QApplication(sys.argv)
-    if app.desktop().screenGeometry().width() < 2880 or app.desktop().screenGeometry().height() < 1620:
-        rospy.logwarn("This program works best at a screen resolution of at least 2880x1620")
     planner_benchmarking_gui = SrDataVisualizer(None)
-    #planner_benchmarking_gui = SrDataVisualizer(None, app.desktop().screenGeometry().width(), app.desktop().screenGeometry().height())
-    #planner_benchmarking_gui = SrDataVisualizer(None, 1920, 1080)
     planner_benchmarking_gui._widget.show()
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     sys.exit(app.exec_())

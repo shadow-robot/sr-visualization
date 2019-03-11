@@ -1,7 +1,0 @@
-<launch>
-  <node pkg="sr_data_visualization" type="sr_data_visualizer_gui_new.py" name="data_gui" output="screen"/>
-  <!--node pkg="rosbag" type="play" name="player" output="screen" args="-l $(find sr_data_visualization)/test_record_all_nodes.bag"/-->
-</launch>
-
-
-
