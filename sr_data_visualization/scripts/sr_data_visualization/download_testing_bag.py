@@ -7,6 +7,7 @@ import rospkg
 import threading
 import urllib
 
+
 def show_progress(event):
     while not event.is_set():
         sys.stdout.write('.')
@@ -32,4 +33,3 @@ if not os.path.isfile(bag_file):
 else:
     print "Bag file already exists, doing nothing."
     sys.exit()
-
