@@ -366,7 +366,7 @@ class SrDataVisualizer(Plugin):
             legend_name_stripped = re.sub(r"[\(\[].*?[\)\]]", "", legend_name).strip()
 
             def button_function(b):
-                if b.text() == legend_name_stripped:
+                if legend_name_stripped in b.text():
                     if b.isChecked():
                         self.change_graphs(all=False, legend_name=[legend_name],
                                            line_number=i, type=graph_type, ncol=1)
