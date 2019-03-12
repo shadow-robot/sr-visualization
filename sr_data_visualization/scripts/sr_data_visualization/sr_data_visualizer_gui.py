@@ -7,6 +7,7 @@ import signal
 import rospy
 import rospkg
 import string
+import re
 import time
 matplotlib.use("Qt5Agg")  # noqa
 from python_qt_binding.QtGui import *
@@ -361,10 +362,13 @@ class SrDataVisualizer(Plugin):
                     if b.isChecked():
                         self.change_graphs(all=True, type=graph_type, ncol=number_of_columns)
         else:
+            legend_name = self.global_yaml["graphs"][type]["lines"][i]
+            legend_name_stripped = re.sub(r"[\(\[].*?[\)\]]", "", legend_name).strip()
+
             def button_function(b):
-                if b.text() == self.global_yaml["graphs"][type]["lines"][i]:
+                if b.text() == legend_name_stripped:
                     if b.isChecked():
-                        self.change_graphs(all=False, legend_name=[self.global_yaml["graphs"][type]["lines"][i]],
+                        self.change_graphs(all=False, legend_name=[legend_name],
                                            line_number=i, type=graph_type, ncol=1)
         return button_function
 
@@ -585,11 +589,13 @@ class SrDataVisualizer(Plugin):
                 while i < len(self.graph_names_global["motor_stat"]):
                     j = 0
                     while j < len(self.motor_stat_keys[1]):
+                        x = self.global_yaml["graphs"][2]["lines"][j]
+                        x = re.sub(r"[\(\[].*?[\)\]]", "", x).strip()
                         ymin, ymax = self.find_max_range(self.global_yaml["graphs"][2])
                         graph = self.graph_dict_global["motor_stat"][self.graph_names_global["motor_stat"][i]]
                         data_index = self.motor_stat_keys[0][string.upper(self.graph_names_global["motor_stat"][i])]
                         data_point = data.status[data_index]
-                        line_number = self.motor_stat_keys[1][self.global_yaml["graphs"][2]["lines"][j]]
+                        line_number = self.motor_stat_keys[1][x]
                         data_value = data_point.values[line_number].value
                         scale = float(ymax / self.global_yaml["graphs"][2]["ranges"][j][1])
                         if self.graph_dict_global["motor_stat"][self.graph_names_global["motor_stat"][i]].plot_all:
