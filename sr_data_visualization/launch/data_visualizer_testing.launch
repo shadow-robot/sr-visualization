@@ -35,6 +35,3 @@
   <node pkg="sr_data_visualization" type="sr_data_visualizer_gui.py" name="data_gui" output="screen"/>
   <node pkg="rosbag" type="play" name="player" output="screen" args="-l $(find sr_data_visualization)/biotacs_and_everything_else.bag"/>
 </launch>
-
-
-

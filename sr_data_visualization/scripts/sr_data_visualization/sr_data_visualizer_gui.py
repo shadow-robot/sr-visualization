@@ -8,7 +8,7 @@ import rospy
 import rospkg
 import string
 import time
-matplotlib.use("Qt5Agg") # noqa
+matplotlib.use("Qt5Agg")  # noqa
 from python_qt_binding.QtGui import *
 from python_qt_binding.QtCore import *
 try:
@@ -46,7 +46,7 @@ class SrDataVisualizer(Plugin):
         super(SrDataVisualizer, self).__init__(context)
         self.setObjectName("SrDataVisualizer")
         self._widget = QWidget()
-        ui_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'uis', 'e_visualizer_test_2.ui')
+        ui_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'uis', 'hand-e_visualizer.ui')
         loadUi(ui_file, self._widget)
         if __name__ != "__main__":
             context.add_widget(self._widget)
@@ -61,7 +61,7 @@ class SrDataVisualizer(Plugin):
 
         # Change tabs background color
         p = self.tab_widget_main.palette()
-        stylesheet = """ 
+        stylesheet = """
             QTabWidget>QWidget>QWidget{background: white;}
             """
         p.setColor(self.tab_widget_main.backgroundRole(), Qt.white)

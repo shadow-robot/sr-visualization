@@ -14,7 +14,6 @@ graphs:
     lines: [Setpoint, Input, dInput/dt, Error, Output]
     ranges: [[-4, 4], [-4, 4], [-4, 4], [-4, 4], [-600, 600]]
     graph_names: [ffj0, ffj3, ffj4, mfj0, mfj3, mfj4, thj1, thj2, thj3, thj4, thj5, rfj0, rfj3, rfj4, lfj0, lfj3, lfj4, lfj5, wrj1, wrj2]
-    #graph_names: [ffj0, ffj3, ffj4, mfj0, mfj3]
     colours: [red, blue, green, purple, cyan]
     font_size: 8
     legend_columns: 3
@@ -61,5 +60,3 @@ graphs:
     colours: ['red', 'cyan', 'green', 'purple', 'blue']
     font_size: 9
     topic_namespace: /rh/tactile
-
-

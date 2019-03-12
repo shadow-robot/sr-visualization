@@ -14,7 +14,6 @@ def show_progress(event):
         event.wait(1)
     print "\n"
 
-
 bag_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'biotacs_and_everything_else.bag')
 
 if not os.path.isfile(bag_file):
@@ -25,7 +24,7 @@ if not os.path.isfile(bag_file):
     trigger = threading.Event()
     t = threading.Thread(target=show_progress, args=(trigger,))
     t.start()
-    urllib.urlretrieve(url, bag_file)  
+    urllib.urlretrieve(url, bag_file)
     trigger.set()
     print "\n"
     print "File downloaded: ", bag_file
@@ -33,5 +32,4 @@ if not os.path.isfile(bag_file):
 else:
     print "Bag file already exists, doing nothing."
     sys.exit()
-
 

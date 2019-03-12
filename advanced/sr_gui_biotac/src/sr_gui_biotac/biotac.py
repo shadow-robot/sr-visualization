@@ -1,4 +1,4 @@
-# Copyright (c) 2013, Shadow Robot Company, SynTouch LLC
+# Copyright (c) 2013, 2019, Shadow Robot Company, SynTouch LLC
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -267,7 +267,7 @@ class SrGuiBiotac(Plugin):
         else:
             self.default_topic = ""
 
-    def __init__(self, context, rqt_plugin = True):
+    def __init__(self, context, rqt_plugin=True):
 
         super(SrGuiBiotac, self).__init__(context)
         self.setObjectName('SrGuiBiotac')
@@ -290,8 +290,6 @@ class SrGuiBiotac(Plugin):
             self._widget.setObjectName('SrBiotacUi')
 
             self.timer = QTimer(self._widget)
-            # self._widget.connect(self.timer, SIGNAL("timeout()"),
-            #                     self._widget.scrollAreaWidgetContents.update)
             self.timer.timeout.connect(self._widget.scrollAreaWidgetContents.update)
             self._widget.scrollAreaWidgetContents.paintEvent = self.paintEvent
 
@@ -300,8 +298,6 @@ class SrGuiBiotac(Plugin):
                     self._hand_parameters.mapping[hand])
             if not self._hand_parameters.mapping:
                 rospy.logerr("No hand detected")
-                # QMessageBox.warning(
-                #     self._widget, "warning", "No hand is detected")
             else:
                 self._widget.select_prefix.setCurrentIndex(0)
 
@@ -314,8 +310,5 @@ class SrGuiBiotac(Plugin):
                                  self.subscribe_to_topic)
             '''
             self._widget.select_prefix.activated['QString'].connect(self.subscribe_to_topic)
-
-
-        if rqt_plugin:
             self.timer.start(50)
             context.add_widget(self._widget)
