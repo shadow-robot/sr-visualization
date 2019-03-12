@@ -8,7 +8,7 @@ import rospy
 import rospkg
 import string
 import time
-matplotlib.use("Qt5Agg")
+matplotlib.use("Qt5Agg") # noqa
 from python_qt_binding.QtGui import *
 from python_qt_binding.QtCore import *
 try:
@@ -215,12 +215,13 @@ class SrDataVisualizer(Plugin):
                 self.disable_graphs(["control_loops"], disable=False)
             elif tab_index == 2:
                 self.disable_graphs(
-                    ["pos_vel_eff", "control_loops", "palm_extras_accelerometer", "palm_extras_gyro", "palm_extras_adc",
-                     "biotacs"], disable=True)
+                    ["pos_vel_eff", "control_loops", "palm_extras_accelerometer", "palm_extras_gyro",
+                     "palm_extras_adc", "biotacs"], disable=True)
                 self.show_specific_motor_stat_tabs()
             elif tab_index == 3:
                 self.disable_graphs(["pos_vel_eff", "control_loops", "motor_stat", "biotacs"], disable=True)
-                self.disable_graphs(["palm_extras_accelerometer", "palm_extras_gyro", "palm_extras_adc"], disable=False)
+                self.disable_graphs(
+                    ["palm_extras_accelerometer", "palm_extras_gyro", "palm_extras_adc"], disable=False)
             elif tab_index == 4:
                 self.disable_graphs(
                     ["pos_vel_eff", "control_loops", "motor_stat", "palm_extras_accelerometer", "palm_extras_gyro",
@@ -316,14 +317,16 @@ class SrDataVisualizer(Plugin):
             lambda: self.radio_button_list[10](self.radioButton_strain_gauge_left))
         self.radioButton_strain_gauge_right.toggled.connect(
             lambda: self.radio_button_list[11](self.radioButton_strain_gauge_right))
-        self.radioButton_measured_pwm.toggled.connect(lambda: self.radio_button_list[12](self.radioButton_measured_pwm))
+        self.radioButton_measured_pwm.toggled.connect(
+            lambda: self.radio_button_list[12](self.radioButton_measured_pwm))
         self.radioButton_measured_current.toggled.connect(
             lambda: self.radio_button_list[13](self.radioButton_measured_current))
         self.radioButton_measured_voltage.toggled.connect(
             lambda: self.radio_button_list[14](self.radioButton_measured_voltage))
         self.radioButton_measured_effort.toggled.connect(
             lambda: self.radio_button_list[15](self.radioButton_measured_effort))
-        self.radioButton_temperature.toggled.connect(lambda: self.radio_button_list[16](self.radioButton_temperature))
+        self.radioButton_temperature.toggled.connect(
+            lambda: self.radio_button_list[16](self.radioButton_temperature))
         self.radioButton_unfiltered_position.toggled.connect(
             lambda: self.radio_button_list[17](self.radioButton_unfiltered_position))
         self.radioButton_unfiltered_force.toggled.connect(
@@ -379,36 +382,31 @@ class SrDataVisualizer(Plugin):
         type = kwargs["type"]
         i = 0
         while i < len(self.graph_names_global[type]):
+            graph = self.graph_dict_global[type][self.graph_names_global[type][i]]
             if all:
                 ymin, ymax = self.find_max_range(self.global_yaml["graphs"][index])
-                self.graph_dict_global[type][self.graph_names_global[type][i]].ymin = ymin
-                self.graph_dict_global[type][self.graph_names_global[type][i]].ymax = ymax
-                self.graph_dict_global[type][self.graph_names_global[type][i]].plot_all = True
-                self.graph_dict_global[type][self.graph_names_global[type][i]].ax1.yaxis.set_tick_params(which='both',
-                                                                                                         labelbottom=False)
-                self.graph_dict_global[type][self.graph_names_global[type][i]].re_init()
-                self.graph_dict_global[type][self.graph_names_global[type][i]].ax1.legend(
-                    self.graph_dict_global[type][self.graph_names_global[type][i]].line,
-                    self.global_yaml["graphs"][index]["lines"], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8,
-                    loc=3, mode="expand", borderaxespad=0.5, ncol=ncols,
-                    prop={'size': self.global_yaml["graphs"][index]["font_size"] + self.font_offset})
+                graph.ymin = ymin
+                graph.ymax = ymax
+                graph.plot_all = True
+                graph.ax1.yaxis.set_tick_params(which='both', labelbottom=False)
+                graph.re_init()
+                graph.ax1.legend(graph.line, self.global_yaml["graphs"][index]["lines"],
+                                 bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand",
+                                 borderaxespad=0.5, ncol=ncols,
+                                 prop={'size': self.global_yaml["graphs"][index]["font_size"] + self.font_offset})
             else:
-                self.graph_dict_global[type][self.graph_names_global[type][i]].ymin = \
-                self.global_yaml["graphs"][index]["ranges"][kwargs["line_number"]][0]
-                self.graph_dict_global[type][self.graph_names_global[type][i]].ymax = \
-                self.global_yaml["graphs"][index]["ranges"][kwargs["line_number"]][1]
-                self.graph_dict_global[type][self.graph_names_global[type][i]].line_to_plot = kwargs["line_number"]
-                self.graph_dict_global[type][self.graph_names_global[type][i]].plot_all = False
-                self.graph_dict_global[type][self.graph_names_global[type][i]].ax1.yaxis.set_tick_params(which='both',
-                                                                                                         labelbottom=True)
-                self.graph_dict_global[type][self.graph_names_global[type][i]].re_init()
-                self.graph_dict_global[type][self.graph_names_global[type][i]].ax1.legend(
-                    self.graph_dict_global[type][self.graph_names_global[type][i]].line, kwargs["legend_name"],
-                    bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5,
-                    prop={'size': 10 + self.font_offset})
-            if self.graph_dict_global[type][self.graph_names_global[type][i]].enabled:
-                self.graph_dict_global[type][self.graph_names_global[type][i]].update()
-                self.graph_dict_global[type][self.graph_names_global[type][i]].draw()
+                graph.ymin = self.global_yaml["graphs"][index]["ranges"][kwargs["line_number"]][0]
+                graph.ymax = self.global_yaml["graphs"][index]["ranges"][kwargs["line_number"]][1]
+                graph.line_to_plot = kwargs["line_number"]
+                graph.plot_all = False
+                graph.ax1.yaxis.set_tick_params(which='both', labelbottom=True)
+                graph.re_init()
+                graph.ax1.legend(graph.line, kwargs["legend_name"], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9),
+                                 framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5,
+                                 prop={'size': 10 + self.font_offset})
+            if graph.enabled:
+                graph.update()
+                graph.draw()
             i += 1
 
     def make_control_loop_callbacks(self, graph):
@@ -466,18 +464,20 @@ class SrDataVisualizer(Plugin):
                                                                                 ymax=graphs["ranges"][i][1],
                                                                                 legends=graphs["lines"],
                                                                                 legend_columns=legend_columns,
-                                                                                legend_font_size=graphs[
-                                                                                                     "font_size"] + self.font_offset,
-                                                                                num_ticks=4, xaxis_tick_animation=False,
+                                                                                legend_font_size=(graphs["font_size"] +
+                                                                                                  self.font_offset),
+                                                                                num_ticks=4,
+                                                                                xaxis_tick_animation=False,
                                                                                 tail_enable=False, enabled=True)
                 else:
                     temp_graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]),
                                                                                 colour=graphs["colours"], ymin=ymin,
                                                                                 ymax=ymax, legends=graphs["lines"],
                                                                                 legend_columns=legend_columns,
-                                                                                legend_font_size=graphs[
-                                                                                                     "font_size"] + self.font_offset,
-                                                                                num_ticks=4, xaxis_tick_animation=False,
+                                                                                legend_font_size=(graphs["font_size"] +
+                                                                                                  self.font_offset),
+                                                                                num_ticks=4,
+                                                                                xaxis_tick_animation=False,
                                                                                 tail_enable=False, enabled=True)
                 i += 1
             self.graph_dict_global[graphs["type"]] = temp_graph_dict
@@ -558,36 +558,21 @@ class SrDataVisualizer(Plugin):
             j = 0
             # for each graph
             while j < len(self.graph_names_global["pos_vel_eff"]):
-                if self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][j]].plot_all:
+                graph = self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][j]]
+                data_index = self.joint_state_data_map['rh_' + string.upper(self.graph_names_global["pos_vel_eff"][j])]
+                if graph.plot_all:
                     ymin, ymax = self.find_max_range(self.global_yaml["graphs"][0])
+                    range_array = self.global_yaml["graphs"][0]["ranges"]
                     # for each line
-                    self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][j]].addData(
-                        value.position[self.joint_state_data_map[
-                            'rh_' + string.upper(self.graph_names_global["pos_vel_eff"][j])]] * (
-                                    ymax / self.global_yaml["graphs"][0]["ranges"][0][1]), 0)
-                    self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][j]].addData(
-                        value.velocity[self.joint_state_data_map[
-                            'rh_' + string.upper(self.graph_names_global["pos_vel_eff"][j])]] * (
-                                    ymax / self.global_yaml["graphs"][0]["ranges"][1][1]), 1)
-                    self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][j]].addData(
-                        value.effort[self.joint_state_data_map[
-                            'rh_' + string.upper(self.graph_names_global["pos_vel_eff"][j])]] * (
-                                    ymax / self.global_yaml["graphs"][0]["ranges"][2][1]), 2)
+                    graph.addData(value.position[data_index] * (ymax / range_array[0][1]), 0)
+                    graph.addData(value.velocity[data_index] * (ymax / range_array[1][1]), 1)
+                    graph.addData(value.effort[data_index] * (ymax / range_array[2][1]), 2)
                     j += 1
                 else:
                     # for each line
-                    self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][j]].addData(
-                        value.position[
-                            self.joint_state_data_map['rh_' + string.upper(self.graph_names_global["pos_vel_eff"][j])]],
-                        0)
-                    self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][j]].addData(
-                        value.velocity[
-                            self.joint_state_data_map['rh_' + string.upper(self.graph_names_global["pos_vel_eff"][j])]],
-                        1)
-                    self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][j]].addData(
-                        value.effort[
-                            self.joint_state_data_map['rh_' + string.upper(self.graph_names_global["pos_vel_eff"][j])]],
-                        2)
+                    graph.addData(value.position[data_index], 0)
+                    graph.addData(value.velocity[data_index], 1)
+                    graph.addData(value.effort[data_index], 2)
                     j += 1
 
     def diagnostic_cb(self, data):
@@ -596,14 +581,14 @@ class SrDataVisualizer(Plugin):
             if len(data.status) > 1:
                 # for each joint_name / graph
                 i = 0
-                while i < len(self.graph_names_global[
-                                  "motor_stat"]):  # i iterate from 0 to give joint names  #j iterate from 0 to give line numbers
+                # i iterate from 0 to give joint names  #j iterate from 0 to give line numbers
+                while i < len(self.graph_names_global["motor_stat"]):
                     j = 0
                     while j < len(self.motor_stat_keys[1]):
                         ymin, ymax = self.find_max_range(self.global_yaml["graphs"][2])
                         graph = self.graph_dict_global["motor_stat"][self.graph_names_global["motor_stat"][i]]
-                        data_point = data.status[
-                            self.motor_stat_keys[0][string.upper(self.graph_names_global["motor_stat"][i])]]
+                        data_index = self.motor_stat_keys[0][string.upper(self.graph_names_global["motor_stat"][i])]
+                        data_point = data.status[data_index]
                         line_number = self.motor_stat_keys[1][self.global_yaml["graphs"][2]["lines"][j]]
                         data_value = data_point.values[line_number].value
                         scale = float(ymax / self.global_yaml["graphs"][2]["ranges"][j][1])
