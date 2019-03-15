@@ -1,4 +1,4 @@
-# Copyright (c) 2013, 2019, Shadow Robot Company, SynTouch LLC
+# Copyright (c) 2013, Shadow Robot Company, SynTouch LLC
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -267,7 +267,7 @@ class SrGuiBiotac(Plugin):
         else:
             self.default_topic = ""
 
-    def __init__(self, context, rqt_plugin=True):
+    def __init__(self, context):
 
         super(SrGuiBiotac, self).__init__(context)
         self.setObjectName('SrGuiBiotac')
@@ -275,6 +275,7 @@ class SrGuiBiotac(Plugin):
         self._hand_parameters = self._hand_finder.get_hand_parameters()
         self.load_params()
 
+        self._publisher = None
         self._widget = QWidget()
 
         self.latest_data = BiotacAll()
@@ -283,32 +284,36 @@ class SrGuiBiotac(Plugin):
         self._nb_electrodes = self._nb_electrodes_biotac
         self.assign_electrodes(self._nb_electrodes)
 
-        if rqt_plugin:
-            ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_biotac'),
-                                   'uis', 'SrGuiBiotac.ui')
-            loadUi(ui_file, self._widget)
-            self._widget.setObjectName('SrBiotacUi')
+        ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_biotac'),
+                               'uis', 'SrGuiBiotac.ui')
+        loadUi(ui_file, self._widget)
+        self._widget.setObjectName('SrBiotacUi')
 
-            self.timer = QTimer(self._widget)
-            self.timer.timeout.connect(self._widget.scrollAreaWidgetContents.update)
-            self._widget.scrollAreaWidgetContents.paintEvent = self.paintEvent
-
-            for hand in self._hand_parameters.mapping:
-                self._widget.select_prefix.addItem(
-                    self._hand_parameters.mapping[hand])
-            if not self._hand_parameters.mapping:
-                rospy.logerr("No hand detected")
-            else:
-                self._widget.select_prefix.setCurrentIndex(0)
+        self.timer = QTimer(self._widget)
+        # self._widget.connect(self.timer, SIGNAL("timeout()"),
+        #                     self._widget.scrollAreaWidgetContents.update)
+        self.timer.timeout.connect(self._widget.scrollAreaWidgetContents.update)
+        self._widget.scrollAreaWidgetContents.paintEvent = self.paintEvent
 
         self.subscribe_to_topic(self.default_topic)
 
-        if rqt_plugin:
-            '''
-            self._widget.connect(self._widget.select_prefix,
-                                 SIGNAL("activated(QString)"),
-                                 self.subscribe_to_topic)
-            '''
-            self._widget.select_prefix.activated['QString'].connect(self.subscribe_to_topic)
-            self.timer.start(50)
-            context.add_widget(self._widget)
+        for hand in self._hand_parameters.mapping:
+            self._widget.select_prefix.addItem(
+                self._hand_parameters.mapping[hand])
+        if not self._hand_parameters.mapping:
+            rospy.logerr("No hand detected")
+            QMessageBox.warning(
+                self._widget, "warning", "No hand is detected")
+        else:
+            self._widget.select_prefix.setCurrentIndex(0)
+
+        '''
+        self._widget.connect(self._widget.select_prefix,
+                             SIGNAL("activated(QString)"),
+                             self.subscribe_to_topic)
+        '''
+        self._widget.select_prefix.activated['QString'].connect(self.subscribe_to_topic)
+
+        self.timer.start(50)
+
+        context.add_widget(self._widget)
