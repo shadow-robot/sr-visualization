@@ -48,4 +48,5 @@ sr_gui_joint_slider/cmake_install.cmake
 sr_gui_joint_slider/devel/
 sr_gui_joint_slider/gtest/
 *.pyc
+*.idea
 
