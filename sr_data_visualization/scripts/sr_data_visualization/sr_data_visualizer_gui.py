@@ -80,6 +80,12 @@ class SrDataVisualizer(Plugin):
 
         self._widget.resizeEvent = self.on_resize_main
 
+        self.type_dict = {
+            0: "pos_vel_eff",
+            1: "control_loops",
+            2: "motor_stat"
+        }
+
         with open(motor_stat_keys_file, 'r') as stream:
             try:
                 self.motor_stat_keys = yaml.load(stream)
@@ -93,6 +99,8 @@ class SrDataVisualizer(Plugin):
             except yaml.YAMLError as exc:
                 print(exc)
 
+        self.number_of_biotacs = 5
+        self.electrodes_per_biotac = 25
         self._include_tactile_plugin()
 
         self._setup_radio_buttons()
@@ -105,11 +113,10 @@ class SrDataVisualizer(Plugin):
         self.tabWidget_motor_stats.setCurrentIndex(5)
         self.tabWidget_motor_stats.setCurrentIndex(0)
 
-        self._change_graphs(all=True, type="motor_stat", ncol=1)
+        #Update legends on motor_stat graphs
+        self._change_graphs(all=True, type=2, ncol=1)
 
-        self.t0 = 0
         self.init_complete = True
-        # TODO: refresh graphs on resize?
 
     def on_resize_main(self, empty):
         if (self._widget.width() * self._widget.height()) < 3500000:
@@ -120,9 +127,7 @@ class SrDataVisualizer(Plugin):
     def _include_tactile_plugin(self):
         self.tactile_gui_list = []
         self.timer = QTimer(self._widget)
-        number_of_biotacs = 5
-        electrodes_per_biotac = 25
-        for i in range(number_of_biotacs):
+        for i in range(self.number_of_biotacs):
             tactile_gui = SrGuiBiotac(None)
             tactile_gui._widget = self._widget
             tactile_gui.find_children(i)
@@ -138,10 +143,10 @@ class SrDataVisualizer(Plugin):
         self.label_list = []
         self.lcd_list = []
 
-        for j in range(number_of_biotacs):
+        for j in range(self.number_of_biotacs):
             lcds = []
             labels = []
-            for i in range(1, electrodes_per_biotac):
+            for i in range(1, self.electrodes_per_biotac):
                 if i < 10:
                     lcd = self._widget.findChild(QLCDNumber, "lcdE0" + str(i) + "_" + str(j))
                     label = self._widget.findChild(QLabel, "label_E0" + str(i) + "_" + str(j))
@@ -161,18 +166,14 @@ class SrDataVisualizer(Plugin):
         if (self._widget.width() * self._widget.height()) < 3500000:
             scale = 6
             mheight = 18
-            print "smol", self._widget.width() * self._widget.height()
         else:
             scale = 12
             mheight = 30
-            print "heckin", self._widget.width() * self._widget.height()
 
         font = QFont('Sans Serif', scale)
         font.setKerning(True)
-        number_of_biotacs = 5
-        electrodes_per_biotac = 25
-        for j in range(number_of_biotacs):
-            for i in range(electrodes_per_biotac - 1):
+        for j in range(self.number_of_biotacs):
+            for i in range(self.electrodes_per_biotac - 1):
                 self.lcd_list[j][i].setMinimumHeight(2)
                 self.lcd_list[j][i].setMaximumHeight(mheight)
                 self.label_list[j][i].setFont(font)
@@ -318,12 +319,7 @@ class SrDataVisualizer(Plugin):
             lambda: self.radio_button_list[21](self.radioButton_all_motor_stat))
 
     def _make_all_button_functions(self, i, all, type):
-        type_dict = {
-            0: "pos_vel_eff",
-            1: "control_loops",
-            2: "motor_stat"
-        }
-        graph_type = type_dict[type]
+        graph_type = self.type_dict[type]
 
         if "legend_columns" in self.global_yaml["graphs"][type]:
             number_of_columns = self.global_yaml["graphs"][type]["legend_columns"]
@@ -338,7 +334,7 @@ class SrDataVisualizer(Plugin):
             def _button_function(b):
                 if b.text() == "All":
                     if b.isChecked():
-                        self._change_graphs(all=True, type=graph_type, ncol=number_of_columns)
+                        self._change_graphs(all=True, type=type, ncol=number_of_columns)
         else:
             legend_name = self.global_yaml["graphs"][type]["lines"][i]
             legend_name_stripped = re.sub(r"[\(\[].*?[\)\]]", "", legend_name).strip()
@@ -347,21 +343,18 @@ class SrDataVisualizer(Plugin):
                 if legend_name_stripped in b.text():
                     if b.isChecked():
                         self._change_graphs(all=False, legend_name=[legend_name],
-                                            line_number=i, type=graph_type, ncol=1)
+                                            line_number=i, type=type, ncol=1)
         return _button_function
 
     def _change_graphs(self, all, **kwargs):
-        type_dict = {
-            "pos_vel_eff": 0,
-            "control_loops": 1,
-            "motor_stat": 2
-        }
-        index = type_dict[kwargs["type"]]
+        index = kwargs["type"]
+        type = self.type_dict[index]
+
         if 'ncol' not in kwargs:
             ncols = 3
         else:
             ncols = kwargs["ncol"]
-        type = kwargs["type"]
+
         for i in range(len(self.graph_names_global[type])):
             graph = self.graph_dict_global[type][self.graph_names_global[type][i]]
             if all:
@@ -577,7 +570,7 @@ class SrDataVisualizer(Plugin):
                     graph["palm_extras_adc"].addData(data.data[6], 0)
                     graph["palm_extras_adc"].addData(data.data[7], 1)
                     graph["palm_extras_adc"].addData(data.data[8], 2)
-                    graph["palm_extras_adc"].addData(data.data[9], 2)
+                    graph["palm_extras_adc"].addData(data.data[9], 3)
 
     def _biotac_all_cb(self, data):
         if self.init_complete:
