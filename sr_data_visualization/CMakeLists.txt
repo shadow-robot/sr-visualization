@@ -18,10 +18,7 @@ catkin_package(
     rqt_gui_py
     std_msgs
     sr_robot_msgs
-  INCLUDE_DIRS include
 )
-
-include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 
 install(DIRECTORY launch DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 install( FILES sr_data_visualizer_plugin.xml DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION} )

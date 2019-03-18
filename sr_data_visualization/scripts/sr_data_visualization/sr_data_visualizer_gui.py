@@ -169,8 +169,10 @@ class SrDataVisualizer(Plugin):
 
         font = QFont('Sans Serif', scale)
         font.setKerning(True)
-        for j in range(5):
-            for i in range(24):
+        number_of_biotacs = 5
+        electrodes_per_biotac = 25
+        for j in range(number_of_biotacs):
+            for i in range(electrodes_per_biotac - 1):
                 self.lcd_list[j][i].setMinimumHeight(2)
                 self.lcd_list[j][i].setMaximumHeight(mheight)
                 self.label_list[j][i].setFont(font)
@@ -270,7 +272,8 @@ class SrDataVisualizer(Plugin):
         self.radioButton_encoder_position = self._widget.findChild(QRadioButton, "radioButton_encoder_position")
 
         self.radio_button_list = []
-        for j in range(3):
+        number_of_radio_button_pages = 3
+        for j in range(number_of_radio_button_pages):
             for i in range(len(self.global_yaml["graphs"][j]["lines"])):
                 tmp = self._make_all_button_functions(i, all=False, type=j)
                 self.radio_button_list.append(tmp)
@@ -343,7 +346,7 @@ class SrDataVisualizer(Plugin):
             def _button_function(b):
                 if legend_name_stripped in b.text():
                     if b.isChecked():
-                        self._change_graphs(all=False, legend_name=[legend_name], 
+                        self._change_graphs(all=False, legend_name=[legend_name],
                                             line_number=i, type=graph_type, ncol=1)
         return _button_function
 
@@ -590,7 +593,6 @@ class SrGuiBiotac(Plugin):
     _nb_electrodes_biotac = 19
     _nb_electrodes_biotac_sp = 24
 
-
     def __init__(self, context):
         super(SrGuiBiotac, self).__init__(context)
         self.setObjectName('SrGuiBiotac')
@@ -725,8 +727,7 @@ class SrGuiBiotac(Plugin):
 
         return QColor(r, g, b)
 
-    def _draw_electrode(self, painter, elipse_x, elipse_y, text_x, text_y,
-                       colour, text):
+    def _draw_electrode(self, painter, elipse_x, elipse_y, text_x, text_y, colour, text):
 
         rect = QRectF(elipse_x, elipse_y, self.RECTANGLE_WIDTH,
                       self.RECTANGLE_HEIGHT)
@@ -763,8 +764,7 @@ class SrGuiBiotac(Plugin):
                     text_x = elipse_x + self.x_display_offset[2]
                     text_y = elipse_y + self.y_display_offset[2]
 
-                self._draw_electrode(painter, elipse_x, elipse_y, text_x, text_y,
-                                    colour, str(n + 1))
+                self._draw_electrode(painter, elipse_x, elipse_y, text_x, text_y, colour, str(n + 1))
 
         painter.setFont(QFont("Arial", self.label_font_size[1]))
 
