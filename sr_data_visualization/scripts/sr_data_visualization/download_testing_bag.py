@@ -20,7 +20,7 @@ bag_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'bio
 if not os.path.isfile(bag_file):
     sys.stdout.write("Bag file for testing not found, downloading now. This may take a few minutes .")
     sys.stdout.flush()
-    url = "https://www.dropbox.com/s/4iavfgfcbtpfmoh/biotacs_and_everything_else.bag?dl=1"
+    url = "https://www.dropbox.com/s/6vfxvmla4hcsbzd/biotacs_and_everything_else.bag?dl=1"
     file_path = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'))
     trigger = threading.Event()
     t = threading.Thread(target=show_progress, args=(trigger,))

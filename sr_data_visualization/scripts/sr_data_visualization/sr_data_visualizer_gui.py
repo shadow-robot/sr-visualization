@@ -86,6 +86,9 @@ class SrDataVisualizer(Plugin):
             2: "motor_stat"
         }
 
+        self.number_of_biotacs = 5
+        self.electrodes_per_biotac = 25
+
         with open(motor_stat_keys_file, 'r') as stream:
             try:
                 self.motor_stat_keys = yaml.load(stream)
@@ -99,9 +102,6 @@ class SrDataVisualizer(Plugin):
             except yaml.YAMLError as exc:
                 print(exc)
 
-        self.number_of_biotacs = 5
-        self.electrodes_per_biotac = 25
-        self._include_tactile_plugin()
 
         self._setup_radio_buttons()
 
@@ -190,33 +190,29 @@ class SrDataVisualizer(Plugin):
     def _hide_tabs(self, tab_index, tab):
         if tab == "main":
             if tab_index == 0:
-                self._disable_graphs(
-                    ["control_loops", "motor_stat", "palm_extras_accelerometer", "palm_extras_gyro", "palm_extras_adc",
-                     "biotacs"], disable=True)
+                graph_type = [key for key, value in self.graph_names_global.items() if "pos_vel_eff" not in key]
+                self._disable_graphs(graph_type, disable=True)
                 self._disable_graphs(["pos_vel_eff"], disable=False)
             elif tab_index == 1:
-                self._disable_graphs(
-                    ["pos_vel_eff", "motor_stat", "palm_extras_accelerometer", "palm_extras_gyro", "palm_extras_adc",
-                     "biotacs"], disable=True)
+                graph_type = [key for key, value in self.graph_names_global.items() if "control_loops" not in key]
+                self._disable_graphs(graph_type, disable=True)
                 self._disable_graphs(["control_loops"], disable=False)
             elif tab_index == 2:
-                self._disable_graphs(
-                    ["pos_vel_eff", "control_loops", "palm_extras_accelerometer", "palm_extras_gyro",
-                     "palm_extras_adc", "biotacs"], disable=True)
+                graph_type = [key for key, value in self.graph_names_global.items() if "motor_stat" not in key]
+                self._disable_graphs(graph_type, disable=True)
                 self._show_specific_motor_stat_tabs()
             elif tab_index == 3:
-                self._disable_graphs(["pos_vel_eff", "control_loops", "motor_stat", "biotacs"], disable=True)
-                self._disable_graphs(
-                    ["palm_extras_accelerometer", "palm_extras_gyro", "palm_extras_adc"], disable=False)
+                graph_type = [key for key, value in self.graph_names_global.items() if "palm_extras" not in key]
+                self._disable_graphs(graph_type, disable=True)
+                graph_type = [key for key, value in self.graph_names_global.items() if "palm_extras" in key]
+                self._disable_graphs(graph_type, disable=False)
             elif tab_index == 4:
-                self._disable_graphs(
-                    ["pos_vel_eff", "control_loops", "motor_stat", "palm_extras_accelerometer", "palm_extras_gyro",
-                     "palm_extras_adc"], disable=True)
+                graph_type = [key for key, value in self.graph_names_global.items() if "biotacs" not in key]
+                self._disable_graphs(graph_type, disable=True)
                 self._disable_graphs(["biotacs"], disable=False)
             elif tab_index == 5:
-                self._disable_graphs(
-                    ["pos_vel_eff", "control_loops", "motor_stat", "palm_extras_accelerometer", "palm_extras_gyro",
-                     "palm_extras_adc", "biotacs"], disable=True)
+                graph_type = [key for key, value in self.graph_names_global.items()]
+                self._disable_graphs(graph_type, disable=True)
         elif tab == "motor_stat":
             self._show_specific_motor_stat_tabs()
 
@@ -411,84 +407,105 @@ class SrDataVisualizer(Plugin):
         return scales
 
     def _initialize(self, data):
+        self.global_yaml = data
+        topic_list = rospy.get_published_topics()
+        self.show_tactiles = False
+        for topic in topic_list:
+            for value in topic:
+                if "bio" in value:
+                    self._include_tactile_plugin()
+                    self.show_tactiles = True
+        if self.show_tactiles == False:
+            for graphs in self.global_yaml["graphs"]:
+                if graphs["type"] == "biotacs":
+                    self.global_yaml["graphs"].remove(graphs)
+            self.tab_widget_main.setTabEnabled(4, False)
+            self.tab_widget_main.setTabEnabled(5, False)
+            p = self.tab_widget_main.palette()
+            stylesheet = """
+                QTabBar::tab::disabled {width: 0; height: 0; margin: 0; padding: 1; border: none;}
+                QTabWidget>QWidget>QWidget{background: white;}
+                """
+            p.setColor(self.tab_widget_main.backgroundRole(), Qt.white)
+            self.tab_widget_main.setStyleSheet(stylesheet)
+
         self.graph_dict_global = {}
         self.control_loop_callback_dict = {}
         self.subs = []
-        self.global_yaml = data
         self.graph_names_global = {}
         for graphs in data["graphs"]:
-            ymin, ymax = self._find_max_range(graphs)
-            self.graph_names_global[graphs["type"]] = graphs["graph_names"]
-            if "legend_columns" in graphs:
-                legend_columns = graphs["legend_columns"]
-            else:
-                legend_columns = len(graphs["lines"])
-
-            # create_graphs
-            temp_graph_dict = {}
-            for i in range(len(graphs["graph_names"])):
-                if graphs["type"] == "biotacs":
-                    temp_graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]),
-                                                                                colour=graphs["colours"],
-                                                                                ymin=graphs["ranges"][i][0],
-                                                                                ymax=graphs["ranges"][i][1],
-                                                                                legends=graphs["lines"],
-                                                                                legend_columns=legend_columns,
-                                                                                legend_font_size=(graphs["font_size"] +
-                                                                                                  self.font_offset),
-                                                                                num_ticks=4,
-                                                                                xaxis_tick_animation=False,
-                                                                                tail_enable=False, enabled=True)
+            if self.show_tactiles or graphs["type"] != "biotacs":
+                ymin, ymax = self._find_max_range(graphs)
+                self.graph_names_global[graphs["type"]] = graphs["graph_names"]
+                if "legend_columns" in graphs:
+                    legend_columns = graphs["legend_columns"]
                 else:
-                    temp_graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]),
-                                                                                colour=graphs["colours"], ymin=ymin,
-                                                                                ymax=ymax, legends=graphs["lines"],
-                                                                                legend_columns=legend_columns,
-                                                                                legend_font_size=(graphs["font_size"] +
-                                                                                                  self.font_offset),
-                                                                                num_ticks=4,
-                                                                                xaxis_tick_animation=False,
-                                                                                tail_enable=False, enabled=True)
-            self.graph_dict_global[graphs["type"]] = temp_graph_dict
+                    legend_columns = len(graphs["lines"])
 
-            # create subscribers
-            if graphs["type"] == "control_loops":
+                # create_graphs
+                temp_graph_dict = {}
                 for i in range(len(graphs["graph_names"])):
-                    sub_namespace = graphs["topic_namespace_start"] + graphs["graph_names"][i] + graphs[
-                        "topic_namespace_end"]
-                    tmp_callback = self._make_control_loop_callbacks(
-                        self.graph_dict_global["control_loops"][graphs["graph_names"][i]])
-                    self.subs.append(
-                        rospy.Subscriber(sub_namespace, JointControllerState, callback=tmp_callback, queue_size=1))
-                    self.control_loop_callback_dict[graphs["graph_names"][i]] = tmp_callback
-            elif graphs["type"] == "pos_vel_eff":
-                self.subs.append(
-                    rospy.Subscriber(graphs["topic_namespace"], JointState, self._joint_state_cb, queue_size=1))
-            elif graphs["type"] == "motor_stat":
-                self.subs.append(
-                    rospy.Subscriber(graphs["topic_namespace"], DiagnosticArray, self._diagnostic_cb, queue_size=1))
-            elif graphs["type"] == "palm_extras_accelerometer":
-                self.subs.append(
-                    rospy.Subscriber(graphs["topic_namespace"], Float64MultiArray, self._palm_extras_cb, queue_size=1))
-            elif graphs["type"] == "biotacs":
-                self.subs.append(
-                    rospy.Subscriber(graphs["topic_namespace"], BiotacAll, self._biotac_all_cb, queue_size=1))
+                    if graphs["type"] == "biotacs":
+                        temp_graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]),
+                                                                                    colour=graphs["colours"],
+                                                                                    ymin=graphs["ranges"][i][0],
+                                                                                    ymax=graphs["ranges"][i][1],
+                                                                                    legends=graphs["lines"],
+                                                                                    legend_columns=legend_columns,
+                                                                                    legend_font_size=(graphs["font_size"] +
+                                                                                                      self.font_offset),
+                                                                                    num_ticks=4,
+                                                                                    xaxis_tick_animation=False,
+                                                                                    tail_enable=False, enabled=True)
+                    else:
+                        temp_graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]),
+                                                                                    colour=graphs["colours"], ymin=ymin,
+                                                                                    ymax=ymax, legends=graphs["lines"],
+                                                                                    legend_columns=legend_columns,
+                                                                                    legend_font_size=(graphs["font_size"] +
+                                                                                                      self.font_offset),
+                                                                                    num_ticks=4,
+                                                                                    xaxis_tick_animation=False,
+                                                                                    tail_enable=False, enabled=True)
+                self.graph_dict_global[graphs["type"]] = temp_graph_dict
 
-            # init_widget_children
-            lay_dic = {}
-            for i in range(len(graphs["graph_names"])):
+                # create subscribers
                 if graphs["type"] == "control_loops":
-                    layout = graphs["graph_names"][i] + "_layout_ctrl"
+                    for i in range(len(graphs["graph_names"])):
+                        sub_namespace = graphs["topic_namespace_start"] + graphs["graph_names"][i] + graphs[
+                            "topic_namespace_end"]
+                        tmp_callback = self._make_control_loop_callbacks(
+                            self.graph_dict_global["control_loops"][graphs["graph_names"][i]])
+                        self.subs.append(
+                            rospy.Subscriber(sub_namespace, JointControllerState, callback=tmp_callback, queue_size=1))
+                        self.control_loop_callback_dict[graphs["graph_names"][i]] = tmp_callback
+                elif graphs["type"] == "pos_vel_eff":
+                    self.subs.append(
+                        rospy.Subscriber(graphs["topic_namespace"], JointState, self._joint_state_cb, queue_size=1))
                 elif graphs["type"] == "motor_stat":
-                    layout = graphs["graph_names"][i] + "_layout_motor_stat"
-                else:
-                    layout = graphs["graph_names"][i] + "_layout"
-                lay_dic[graphs["graph_names"][i]] = self._widget.findChild(QVBoxLayout, layout)
-            # attach_graphs
-            for i in range(len(graphs["graph_names"])):
-                x = lay_dic.get(graphs["graph_names"][i])
-                x.addWidget(self.graph_dict_global[graphs["type"]][graphs["graph_names"][i]])
+                    self.subs.append(
+                        rospy.Subscriber(graphs["topic_namespace"], DiagnosticArray, self._diagnostic_cb, queue_size=1))
+                elif graphs["type"] == "palm_extras_accelerometer":
+                    self.subs.append(
+                        rospy.Subscriber(graphs["topic_namespace"], Float64MultiArray, self._palm_extras_cb, queue_size=1))
+                elif graphs["type"] == "biotacs":
+                    self.subs.append(
+                        rospy.Subscriber(graphs["topic_namespace"], BiotacAll, self._biotac_all_cb, queue_size=1))
 
+                # init_widget_children
+                lay_dic = {}
+                for i in range(len(graphs["graph_names"])):
+                    if graphs["type"] == "control_loops":
+                        layout = graphs["graph_names"][i] + "_layout_ctrl"
+                    elif graphs["type"] == "motor_stat":
+                        layout = graphs["graph_names"][i] + "_layout_motor_stat"
+                    else:
+                        layout = graphs["graph_names"][i] + "_layout"
+                    lay_dic[graphs["graph_names"][i]] = self._widget.findChild(QVBoxLayout, layout)
+                # attach_graphs
+                for i in range(len(graphs["graph_names"])):
+                    x = lay_dic.get(graphs["graph_names"][i])
+                    x.addWidget(self.graph_dict_global[graphs["type"]][graphs["graph_names"][i]])
         # Setup palm extras graphs (as they don't need radio buttons)
         palm_extras_graphs = [value for key, value in self.graph_dict_global.items() if 'palm_extras' in key]
         i = 3
@@ -505,6 +522,8 @@ class SrDataVisualizer(Plugin):
                                  borderaxespad=0.5, ncol=len(self.global_yaml["graphs"][i]["lines"]),
                                  prop={'size': font_size})
                 i += 1
+
+
 
     def _joint_state_cb(self, value):
         if self.first_run:

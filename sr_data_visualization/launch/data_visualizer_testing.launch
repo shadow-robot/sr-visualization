@@ -1,5 +1,7 @@
 <launch>
 
+  <arg name="show_biotacs" default="true"/>
+  
   <arg name="hand_id" default="rh"/>
 
   <arg name="hand_type" default="hand_e"/>
@@ -31,6 +33,19 @@
     <param name="publish_frequency" type="double" value="50.0" />
     <param name="tf_prefix" type="string" value="" />
   </node>  
+
+  <group if="$(arg show_biotacs)">
+  <!--group if="$(eval arg('hand_type') == 'true')"-->
+    <node name="biotac_fake_publisher" pkg="rostopic" type="rostopic"
+      args="pub /rh/biotac_0 sr_robot_msgs/Biotac
+      '{pac0: 0,
+      pac1: 0,
+      pdc: 0,
+      tac: 0,
+      tdc: 0,
+      electrodes:[0]}' -r 2"/>
+  </group>
+
 
   <node pkg="sr_data_visualization" type="sr_data_visualizer_gui.py" name="data_gui" output="screen"/>
   <node pkg="rosbag" type="play" name="player" output="screen" args="-l $(find sr_data_visualization)/biotacs_and_everything_else.bag"/>
