@@ -451,9 +451,9 @@ class SrDataVisualizer(Plugin):
                                                                                     ymax=graphs["ranges"][i][1],
                                                                                     legends=graphs["lines"],
                                                                                     legend_columns=legend_columns,
-                                                                                    legend_font_size=
-                                                                                    (graphs["font_size"] +
-                                                                                     self.font_offset),
+                                                                                    legend_font_size=(
+                                                                                            graphs["font_size"] +
+                                                                                            self.font_offset),
                                                                                     num_ticks=4,
                                                                                     xaxis_tick_animation=False,
                                                                                     tail_enable=False, enabled=True)
