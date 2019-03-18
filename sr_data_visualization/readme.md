@@ -30,7 +30,7 @@ Inside the `config` folder you will find a file called `data_visualiser_paramete
 
 ## Testing 
 
-This package includes a script to fetch a bag file for testing purposes. This allows the gui to be used without having a physical or simulated hand running or connected. 
+This package includes a script to fetch a bag file for testing purposes, allowing the gui to be used without having a physical or simulated hand running or connected. 
 
 To fetch this bag file, run:
 ``` 
