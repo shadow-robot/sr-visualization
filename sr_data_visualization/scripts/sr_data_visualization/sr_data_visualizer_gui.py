@@ -102,7 +102,6 @@ class SrDataVisualizer(Plugin):
             except yaml.YAMLError as exc:
                 print(exc)
 
-
         self._setup_radio_buttons()
 
         self.tabWidget_motor_stats.setCurrentIndex(0)
@@ -113,7 +112,7 @@ class SrDataVisualizer(Plugin):
         self.tabWidget_motor_stats.setCurrentIndex(5)
         self.tabWidget_motor_stats.setCurrentIndex(0)
 
-        #Update legends on motor_stat graphs
+        # Update legends on motor_stat graphs
         self._change_graphs(all=True, type=2, ncol=1)
 
         self.init_complete = True
@@ -415,7 +414,7 @@ class SrDataVisualizer(Plugin):
                 if "bio" in value:
                     self._include_tactile_plugin()
                     self.show_tactiles = True
-        if self.show_tactiles == False:
+        if self.show_tactiles is False:
             for graphs in self.global_yaml["graphs"]:
                 if graphs["type"] == "biotacs":
                     self.global_yaml["graphs"].remove(graphs)
@@ -452,8 +451,9 @@ class SrDataVisualizer(Plugin):
                                                                                     ymax=graphs["ranges"][i][1],
                                                                                     legends=graphs["lines"],
                                                                                     legend_columns=legend_columns,
-                                                                                    legend_font_size=(graphs["font_size"] +
-                                                                                                      self.font_offset),
+                                                                                    legend_font_size=
+                                                                                    (graphs["font_size"] +
+                                                                                     self.font_offset),
                                                                                     num_ticks=4,
                                                                                     xaxis_tick_animation=False,
                                                                                     tail_enable=False, enabled=True)
@@ -462,8 +462,9 @@ class SrDataVisualizer(Plugin):
                                                                                     colour=graphs["colours"], ymin=ymin,
                                                                                     ymax=ymax, legends=graphs["lines"],
                                                                                     legend_columns=legend_columns,
-                                                                                    legend_font_size=(graphs["font_size"] +
-                                                                                                      self.font_offset),
+                                                                                    legend_font_size=(
+                                                                                            graphs["font_size"] +
+                                                                                            self.font_offset),
                                                                                     num_ticks=4,
                                                                                     xaxis_tick_animation=False,
                                                                                     tail_enable=False, enabled=True)
@@ -484,10 +485,12 @@ class SrDataVisualizer(Plugin):
                         rospy.Subscriber(graphs["topic_namespace"], JointState, self._joint_state_cb, queue_size=1))
                 elif graphs["type"] == "motor_stat":
                     self.subs.append(
-                        rospy.Subscriber(graphs["topic_namespace"], DiagnosticArray, self._diagnostic_cb, queue_size=1))
+                        rospy.Subscriber(graphs["topic_namespace"], DiagnosticArray, self._diagnostic_cb,
+                                         queue_size=1))
                 elif graphs["type"] == "palm_extras_accelerometer":
                     self.subs.append(
-                        rospy.Subscriber(graphs["topic_namespace"], Float64MultiArray, self._palm_extras_cb, queue_size=1))
+                        rospy.Subscriber(graphs["topic_namespace"], Float64MultiArray, self._palm_extras_cb,
+                                         queue_size=1))
                 elif graphs["type"] == "biotacs":
                     self.subs.append(
                         rospy.Subscriber(graphs["topic_namespace"], BiotacAll, self._biotac_all_cb, queue_size=1))
@@ -522,8 +525,6 @@ class SrDataVisualizer(Plugin):
                                  borderaxespad=0.5, ncol=len(self.global_yaml["graphs"][i]["lines"]),
                                  prop={'size': font_size})
                 i += 1
-
-
 
     def _joint_state_cb(self, value):
         if self.first_run:
