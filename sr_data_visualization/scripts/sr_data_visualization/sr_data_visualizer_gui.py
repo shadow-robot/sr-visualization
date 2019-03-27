@@ -39,10 +39,6 @@ from QtCore import QRectF, QTimer
 from sr_robot_msgs.msg import Biotac, BiotacAll
 from sr_utilities.hand_finder import HandFinder
 
-from threading import Thread
-
-
-
 
 class SrDataVisualizer(Plugin):
     def __init__(self, context):
@@ -85,11 +81,9 @@ class SrDataVisualizer(Plugin):
         self.reset_tab_1 = self._widget.findChild(QPushButton, "reset_tab1")
         self.reset_tab_2 = self._widget.findChild(QPushButton, "reset_tab2")
         self.reset_tab_3 = self._widget.findChild(QPushButton, "reset_tab3")
-        #self.push_button_3 = self._widget.findChild(QPushButton, "pushButton_3")
         self.reset_tab_1.clicked.connect(self.reset_1)
         self.reset_tab_2.clicked.connect(self.reset_2)
         self.reset_tab_3.clicked.connect(self.reset_3)
-        #self.push_button_3.clicked.connect(self._empty)
 
         self.font_offset = -3
 
