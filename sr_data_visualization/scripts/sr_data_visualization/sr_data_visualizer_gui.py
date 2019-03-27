@@ -39,6 +39,10 @@ from QtCore import QRectF, QTimer
 from sr_robot_msgs.msg import Biotac, BiotacAll
 from sr_utilities.hand_finder import HandFinder
 
+from threading import Thread
+
+
+
 
 class SrDataVisualizer(Plugin):
     def __init__(self, context):
@@ -75,6 +79,17 @@ class SrDataVisualizer(Plugin):
                                             'data_visualiser_motor_stat_keys.yaml')
         parameters_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'config',
                                        'data_visualiser_parameters.yaml')
+
+        self.t0 = time.time()
+
+        self.reset_tab_1 = self._widget.findChild(QPushButton, "reset_tab1")
+        self.reset_tab_2 = self._widget.findChild(QPushButton, "reset_tab2")
+        self.reset_tab_3 = self._widget.findChild(QPushButton, "reset_tab3")
+        #self.push_button_3 = self._widget.findChild(QPushButton, "pushButton_3")
+        self.reset_tab_1.clicked.connect(self.reset_1)
+        self.reset_tab_2.clicked.connect(self.reset_2)
+        self.reset_tab_3.clicked.connect(self.reset_3)
+        #self.push_button_3.clicked.connect(self._empty)
 
         self.font_offset = -3
 
@@ -122,6 +137,31 @@ class SrDataVisualizer(Plugin):
             self.font_offset = -3
         else:
             self.font_offset = 1
+
+    def reset_1(self):
+        self.reset_graphs(0)
+
+    def reset_2(self):
+        self.reset_graphs(1)
+
+    def reset_3(self):
+        self.reset_graphs(2)
+
+    def reset_graphs(self, tab):
+        graph_type = [key for key, value in self.graph_names_global.items() if self.type_dict[tab] in key]
+        for element in graph_type:
+            for key, graph in self.graph_dict_global[element].iteritems():
+                print "unblitting: ", key
+                graph.ax1.clear()
+                graph._handle_resize()
+        self.radio_button_all.setChecked(True)
+        self.radio_button_ctrl_all.setChecked(True)
+        self.radioButton_all_motor_stat.setChecked(True)
+        if tab == 2:
+            ncol = 1
+        else:
+            ncol = 3
+        self._change_graphs(all=True, type=tab, ncol=ncol)
 
     def _include_tactile_plugin(self):
         self.tactile_gui_list = []
@@ -362,7 +402,7 @@ class SrDataVisualizer(Plugin):
                 graph.ax1.legend(graph.line, self.global_yaml["graphs"][index]["lines"],
                                  bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand",
                                  borderaxespad=0.5, ncol=ncols,
-                                 prop={'size': self.global_yaml["graphs"][index]["font_size"] + self.font_offset})
+                                 prop={'size': 9 + self.font_offset})
             else:
                 graph.ymin = self.global_yaml["graphs"][index]["ranges"][kwargs["line_number"]][0]
                 graph.ymax = self.global_yaml["graphs"][index]["ranges"][kwargs["line_number"]][1]
@@ -463,11 +503,16 @@ class SrDataVisualizer(Plugin):
                                                                                     ymax=ymax, legends=graphs["lines"],
                                                                                     legend_columns=legend_columns,
                                                                                     legend_font_size=(
-                                                                                            graphs["font_size"] +
+                                                                                            9 +
                                                                                             self.font_offset),
                                                                                     num_ticks=4,
                                                                                     xaxis_tick_animation=False,
                                                                                     tail_enable=False, enabled=True)
+                        #temp_graph_dict[graphs["graph_names"][i]].fig.canvas.copy_from_bbox()
+                        self.background = temp_graph_dict[graphs["graph_names"][i]].fig.canvas.copy_from_bbox(temp_graph_dict[graphs["graph_names"][i]].ax1.bbox)
+
+                        #self.stored_background = temp_graph_dict[graphs["graph_names"][i]].fig.canvas.copy_from_bbox()
+
                 self.graph_dict_global[graphs["type"]] = temp_graph_dict
 
                 # create subscribers
@@ -930,6 +975,8 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
                         ncol=legend_columns, mode="expand", borderaxespad=0.5, prop={'size': legend_font_size})
         FigureCanvas.__init__(self, self.fig)
         TimedAnimation.__init__(self, self.fig, interval=50, blit=not self.xaxis_tick_animation)
+
+        self.background = self.fig.canvas.copy_from_bbox(self.ax1.bbox)
 
     def re_init(self):
         self.line = []
