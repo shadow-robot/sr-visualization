@@ -134,23 +134,22 @@ class SrDataVisualizer(Plugin):
 
     def reset_1(self):
         self.reset_graphs(0)
+        self.radio_button_all.setChecked(True)
 
     def reset_2(self):
         self.reset_graphs(1)
+        self.radio_button_ctrl_all.setChecked(True)
 
     def reset_3(self):
         self.reset_graphs(2)
+        self.radioButton_all_motor_stat.setChecked(True)
 
     def reset_graphs(self, tab):
         graph_type = [key for key, value in self.graph_names_global.items() if self.type_dict[tab] in key]
         for element in graph_type:
             for key, graph in self.graph_dict_global[element].iteritems():
-                print "unblitting: ", key
                 graph.ax1.clear()
                 graph._handle_resize()
-        self.radio_button_all.setChecked(True)
-        self.radio_button_ctrl_all.setChecked(True)
-        self.radioButton_all_motor_stat.setChecked(True)
         if tab == 2:
             ncol = 1
         else:
@@ -502,11 +501,6 @@ class SrDataVisualizer(Plugin):
                                                                                     num_ticks=4,
                                                                                     xaxis_tick_animation=False,
                                                                                     tail_enable=False, enabled=True)
-                        #temp_graph_dict[graphs["graph_names"][i]].fig.canvas.copy_from_bbox()
-                        self.background = temp_graph_dict[graphs["graph_names"][i]].fig.canvas.copy_from_bbox(temp_graph_dict[graphs["graph_names"][i]].ax1.bbox)
-
-                        #self.stored_background = temp_graph_dict[graphs["graph_names"][i]].fig.canvas.copy_from_bbox()
-
                 self.graph_dict_global[graphs["type"]] = temp_graph_dict
 
                 # create subscribers
@@ -969,8 +963,6 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
                         ncol=legend_columns, mode="expand", borderaxespad=0.5, prop={'size': legend_font_size})
         FigureCanvas.__init__(self, self.fig)
         TimedAnimation.__init__(self, self.fig, interval=50, blit=not self.xaxis_tick_animation)
-
-        self.background = self.fig.canvas.copy_from_bbox(self.ax1.bbox)
 
     def re_init(self):
         self.line = []
