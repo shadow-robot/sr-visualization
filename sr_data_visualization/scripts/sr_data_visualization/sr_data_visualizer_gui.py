@@ -124,6 +124,7 @@ class SrDataVisualizer(Plugin):
         # Update legends on motor_stat graphs
         self._change_graphs(all=True, type=2, ncol=1)
 
+        QTimer.singleShot(5000, self.reset_1)
         self.init_complete = True
 
     def on_resize_main(self, empty):
@@ -133,18 +134,18 @@ class SrDataVisualizer(Plugin):
             self.font_offset = 1
 
     def reset_1(self):
-        self.reset_graphs(0)
+        self._reset_graphs(0)
         self.radio_button_all.setChecked(True)
 
     def reset_2(self):
-        self.reset_graphs(1)
+        self._reset_graphs(1)
         self.radio_button_ctrl_all.setChecked(True)
 
     def reset_3(self):
-        self.reset_graphs(2)
+        self._reset_graphs(2)
         self.radioButton_all_motor_stat.setChecked(True)
 
-    def reset_graphs(self, tab):
+    def _reset_graphs(self, tab):
         graph_type = [key for key, value in self.graph_names_global.items() if self.type_dict[tab] in key]
         for element in graph_type:
             for key, graph in self.graph_dict_global[element].iteritems():
@@ -401,7 +402,7 @@ class SrDataVisualizer(Plugin):
                 graph.ymax = self.global_yaml["graphs"][index]["ranges"][kwargs["line_number"]][1]
                 graph.line_to_plot = kwargs["line_number"]
                 graph.plot_all = False
-                graph.ax1.yaxis.set_tick_params(which='both', labelbottom=True)
+                graph.ax1.yaxis.set_tick_params(which='both', labelbottom=True, labelsize=6)
                 graph.re_init()
                 graph.ax1.legend(graph.line, kwargs["legend_name"], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9),
                                  framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5,
