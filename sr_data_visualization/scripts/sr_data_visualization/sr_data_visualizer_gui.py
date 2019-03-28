@@ -433,7 +433,7 @@ class SrDataVisualizer(Plugin):
         ymin = 0
         ymax = 0
         for i in range(len(graphs["ranges"])):
-            if graphs["ranges"][i][0] < ymin and graphs["ranges"][i][1] > ymax:
+            if graphs["ranges"][i][0] <= ymin and graphs["ranges"][i][1] >= ymax:
                 ymin = graphs["ranges"][i][0]
                 ymax = graphs["ranges"][i][1]
         scales = [ymin, ymax]
@@ -491,6 +491,7 @@ class SrDataVisualizer(Plugin):
                                                                                     num_ticks=4,
                                                                                     xaxis_tick_animation=False,
                                                                                     tail_enable=False, enabled=True)
+                        print graphs["graph_names"][i], ymax, ymin
                     else:
                         temp_graph_dict[graphs["graph_names"][i]] = CustomFigCanvas(num_lines=len(graphs["lines"]),
                                                                                     colour=graphs["colours"], ymin=ymin,
@@ -502,6 +503,7 @@ class SrDataVisualizer(Plugin):
                                                                                     num_ticks=4,
                                                                                     xaxis_tick_animation=False,
                                                                                     tail_enable=False, enabled=True)
+                        print graphs["graph_names"][i], ymax, ymin
                 self.graph_dict_global[graphs["type"]] = temp_graph_dict
 
                 # create subscribers
