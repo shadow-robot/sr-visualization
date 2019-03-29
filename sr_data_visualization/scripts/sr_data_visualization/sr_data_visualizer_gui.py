@@ -9,6 +9,7 @@ import rospkg
 import string
 import re
 import time
+import atexit
 matplotlib.use("Qt5Agg")  # noqa
 from python_qt_binding.QtGui import *
 from python_qt_binding.QtCore import *
@@ -1078,6 +1079,6 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     data_visualiser_gui = SrDataVisualizer(None)
     data_visualiser_gui._widget.show()
-    data_visualiser_gui.shutdown_plugin()
+    atexit.register(data_visualiser_gui.shutdown_plugin)
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     sys.exit(app.exec_())
