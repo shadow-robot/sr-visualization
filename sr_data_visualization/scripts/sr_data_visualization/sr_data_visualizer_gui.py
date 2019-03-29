@@ -76,6 +76,15 @@ class SrDataVisualizer(Plugin):
         parameters_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'config',
                                        'data_visualiser_parameters.yaml')
 
+        self.t0 = time.time()
+
+        self.reset_tab_1 = self._widget.findChild(QPushButton, "reset_tab1")
+        self.reset_tab_2 = self._widget.findChild(QPushButton, "reset_tab2")
+        self.reset_tab_3 = self._widget.findChild(QPushButton, "reset_tab3")
+        self.reset_tab_1.clicked.connect(self.reset_1)
+        self.reset_tab_2.clicked.connect(self.reset_2)
+        self.reset_tab_3.clicked.connect(self.reset_3)
+
         self.font_offset = -3
 
         self._widget.resizeEvent = self.on_resize_main
@@ -115,6 +124,7 @@ class SrDataVisualizer(Plugin):
         # Update legends on motor_stat graphs
         self._change_graphs(all=True, type=2, ncol=1)
 
+        QTimer.singleShot(5000, self.reset_1)
         self.init_complete = True
 
     def on_resize_main(self, empty):
@@ -122,6 +132,30 @@ class SrDataVisualizer(Plugin):
             self.font_offset = -3
         else:
             self.font_offset = 1
+
+    def reset_1(self):
+        self._reset_graphs(0)
+        self.radio_button_all.setChecked(True)
+
+    def reset_2(self):
+        self._reset_graphs(1)
+        self.radio_button_ctrl_all.setChecked(True)
+
+    def reset_3(self):
+        self._reset_graphs(2)
+        self.radioButton_all_motor_stat.setChecked(True)
+
+    def _reset_graphs(self, tab):
+        graph_type = [key for key, value in self.graph_names_global.items() if self.type_dict[tab] in key]
+        for element in graph_type:
+            for key, graph in self.graph_dict_global[element].iteritems():
+                graph.ax1.clear()
+                graph._handle_resize()
+        if tab == 2:
+            ncol = 1
+        else:
+            ncol = 3
+        self._change_graphs(all=True, type=tab, ncol=ncol)
 
     def _include_tactile_plugin(self):
         self.tactile_gui_list = []
@@ -362,13 +396,13 @@ class SrDataVisualizer(Plugin):
                 graph.ax1.legend(graph.line, self.global_yaml["graphs"][index]["lines"],
                                  bbox_to_anchor=(0.0, 1.0, 1.0, 0.9), framealpha=0.8, loc=3, mode="expand",
                                  borderaxespad=0.5, ncol=ncols,
-                                 prop={'size': self.global_yaml["graphs"][index]["font_size"] + self.font_offset})
+                                 prop={'size': 9 + self.font_offset})
             else:
                 graph.ymin = self.global_yaml["graphs"][index]["ranges"][kwargs["line_number"]][0]
                 graph.ymax = self.global_yaml["graphs"][index]["ranges"][kwargs["line_number"]][1]
                 graph.line_to_plot = kwargs["line_number"]
                 graph.plot_all = False
-                graph.ax1.yaxis.set_tick_params(which='both', labelbottom=True)
+                graph.ax1.yaxis.set_tick_params(which='both', labelbottom=True, labelsize=6)
                 graph.re_init()
                 graph.ax1.legend(graph.line, kwargs["legend_name"], bbox_to_anchor=(0.0, 1.0, 1.0, 0.9),
                                  framealpha=0.8, loc=3, mode="expand", borderaxespad=0.5,
@@ -399,7 +433,7 @@ class SrDataVisualizer(Plugin):
         ymin = 0
         ymax = 0
         for i in range(len(graphs["ranges"])):
-            if graphs["ranges"][i][0] < ymin and graphs["ranges"][i][1] > ymax:
+            if graphs["ranges"][i][0] <= ymin and graphs["ranges"][i][1] >= ymax:
                 ymin = graphs["ranges"][i][0]
                 ymax = graphs["ranges"][i][1]
         scales = [ymin, ymax]
@@ -463,7 +497,7 @@ class SrDataVisualizer(Plugin):
                                                                                     ymax=ymax, legends=graphs["lines"],
                                                                                     legend_columns=legend_columns,
                                                                                     legend_font_size=(
-                                                                                            graphs["font_size"] +
+                                                                                            9 +
                                                                                             self.font_offset),
                                                                                     num_ticks=4,
                                                                                     xaxis_tick_animation=False,

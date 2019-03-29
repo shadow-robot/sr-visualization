@@ -6,7 +6,7 @@ graphs:
     ranges: [[-3.14, 3.14], [-3.14, 3.14], [-600, 600]]
     graph_names: [thj1, thj2, thj3, thj4, thj5, ffj1, ffj2, ffj3, ffj4, mfj1, mfj2, mfj3, mfj4, rfj1, rfj2, rfj3, rfj4, lfj1, lfj2, lfj3, lfj4, lfj5, wrj1, wrj2]
     colours: [red, blue, green]
-    font_size: 8
+    font_size: 6
     topic_namespace: /joint_states
     message_type: JointState
 
@@ -15,7 +15,7 @@ graphs:
     ranges: [[-4, 4], [-4, 4], [-4, 4], [-4, 4], [-600, 600]]
     graph_names: [ffj0, ffj3, ffj4, mfj0, mfj3, mfj4, thj1, thj2, thj3, thj4, thj5, rfj0, rfj3, rfj4, lfj0, lfj3, lfj4, lfj5, wrj1, wrj2]
     colours: [red, blue, green, purple, cyan]
-    font_size: 8
+    font_size: 6
     legend_columns: 3
     topic_namespace_start: /sh_rh_
     topic_namespace_end: _position_controller/state
@@ -58,5 +58,5 @@ graphs:
     ranges: [[2000, 2200], [1000, 2000], [0, 5000], [0, 5000], [750, 1500]]
     graph_names: ['TAC', 'TDC', 'PAC0', 'PAC1', 'PDC']
     colours: ['red', 'cyan', 'green', 'purple', 'blue']
-    font_size: 12
+    font_size: 10
     topic_namespace: /rh/tactile
