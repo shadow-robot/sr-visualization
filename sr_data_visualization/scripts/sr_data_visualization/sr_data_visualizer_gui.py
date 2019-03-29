@@ -127,6 +127,12 @@ class SrDataVisualizer(Plugin):
         QTimer.singleShot(5000, self.reset_1)
         self.init_complete = True
 
+    def shutdown_plugin(self):
+        graph_type = [key for key, value in self.graph_names_global.items()]
+        for element in graph_type:
+            for key, graph in self.graph_dict_global[element].iteritems():
+                graph.enabled = False
+
     def on_resize_main(self, empty):
         if (self._widget.width() * self._widget.height()) < 3500000:
             self.font_offset = -3
@@ -1070,7 +1076,8 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
 if __name__ == "__main__":
     rospy.init_node("hand_e_visualizer")
     app = QApplication(sys.argv)
-    planner_benchmarking_gui = SrDataVisualizer(None)
-    planner_benchmarking_gui._widget.show()
+    data_visualiser_gui = SrDataVisualizer(None)
+    data_visualiser_gui._widget.show()
+    data_visualiser_gui.shutdown_plugin()
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     sys.exit(app.exec_())
