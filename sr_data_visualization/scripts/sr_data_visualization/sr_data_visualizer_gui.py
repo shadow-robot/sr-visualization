@@ -82,10 +82,10 @@ class SrDataVisualizer(Plugin):
                                             'data_visualiser_motor_stat_keys.yaml')
         if self._joint_prefix == "rh_":
             parameters_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'config',
-                                       'data_visualiser_parameters_rh.yaml')
+                                           'data_visualiser_parameters_rh.yaml')
         elif self._joint_prefix == "lh_":
             parameters_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'config',
-                                       'data_visualiser_parameters_lh.yaml')
+                                           'data_visualiser_parameters_lh.yaml')
         else:
             rospy.logerr("Unknown hand detected")
 
