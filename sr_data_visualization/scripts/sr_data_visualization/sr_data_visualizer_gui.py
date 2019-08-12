@@ -591,7 +591,8 @@ class SrDataVisualizer(Plugin):
             # for each graph
             for j in range(len(self.graph_names_global["pos_vel_eff"])):
                 graph = self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][j]]
-                data_index = self.joint_state_data_map[self._joint_prefix + string.upper(self.graph_names_global["pos_vel_eff"][j])]
+                data_index = self.joint_state_data_map[self._joint_prefix +
+                                                       string.upper(self.graph_names_global["pos_vel_eff"][j])]
                 if graph.plot_all:
                     ymin, ymax = self._find_max_range(self.global_yaml["graphs"][0])
                     range_array = self.global_yaml["graphs"][0]["ranges"]
