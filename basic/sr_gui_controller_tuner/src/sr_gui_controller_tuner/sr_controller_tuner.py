@@ -90,7 +90,7 @@ class SrControllerTunerApp(object):
 
     def __init__(self, xml_path):
         self.xml_path = xml_path
-        self.all_controller_types = ["Motor Force", "Position", "Velocity",
+        self.all_controller_types = ["Motor Force", "Position", "Variable Position", "Velocity",
                                      "Mixed Position/Velocity", "Effort", "Muscle Position"]
         self.pid_loader = PidLoader()
 
@@ -228,10 +228,12 @@ class SrControllerTunerApp(object):
                         # look at first word of the controller type
                         ctrl_type_tmp_splitted = ctrl_type_tmp.split("_")
                         for defined_ctrl_type in self.all_controller_types:
-                            if ctrl_type_tmp_splitted[0].lower() in defined_ctrl_type.lower():
-                                running_ctrls.append(defined_ctrl_type)
+                            if ctrl_type_tmp_splitted[0].lower() == defined_ctrl_type.lower().split(" ")[0]:
+                                if defined_ctrl_type not in running_ctrls:
+                                    running_ctrls.append(defined_ctrl_type)
                                 self.edit_only_mode = False
-                                return running_ctrls
+            rospy.logwarn(running_ctrls)
+            return running_ctrls
 
         rospy.loginfo("No controllers currently running")
         rospy.loginfo("Running controller tuner in edit-only mode")
@@ -281,6 +283,9 @@ class SrControllerTunerApp(object):
         elif controller_type == "Position":
             param_name = prefix + self.controller_prefix + \
                 joint_name.lower() + "_position_controller/pid"
+        elif controller_type == "Variable Position":
+            param_name = prefix + self.controller_prefix + \
+                joint_name.lower() + "_variable_position_controller/pid"
         elif controller_type == "Muscle Position":
             param_name = prefix + self.controller_prefix + \
                 joint_name.lower() + "_muscle_position_controller/pid"
@@ -319,6 +324,12 @@ class SrControllerTunerApp(object):
             # /sh_ffj3_position_controller/set_gains
             service_name = prefix + self.controller_prefix + \
                 joint_name.lower() + "_position_controller/set_gains"
+            pid_service = rospy.ServiceProxy(service_name, SetPidGains)
+
+        elif controller_type == "Variable Position":
+            # /sh_ffj3_variable_position_controller/set_gains
+            service_name = prefix + self.controller_prefix + \
+                joint_name.lower() + "_variable_position_controller/set_gains"
             pid_service = rospy.ServiceProxy(service_name, SetPidGains)
 
         elif controller_type == "Muscle Position":
@@ -377,6 +388,20 @@ class SrControllerTunerApp(object):
                 return False
 
         elif controller_type == "Position":
+            try:
+                pid_service(
+                    float(contrlr_settings_converted["p"]), float(
+                        contrlr_settings_converted["i"]),
+                    float(contrlr_settings_converted["d"]), float(
+                        contrlr_settings_converted["i_clamp"]),
+                    float(contrlr_settings_converted["max_force"]), float(
+                        contrlr_settings_converted[
+                            "position_deadband"]),
+                    int(contrlr_settings_converted["friction_deadband"]))
+            except rospy.ServiceException:
+                return False
+
+        elif controller_type == "Variable Position":
             try:
                 pid_service(
                     float(contrlr_settings_converted["p"]), float(
@@ -462,6 +487,9 @@ class SrControllerTunerApp(object):
         elif controller_type == "Position":
             param_name = [prefix + self.controller_prefix +
                           joint_name.lower() + "_position_controller", "pid"]
+        elif controller_type == "Variable Position":
+            param_name = [prefix + self.controller_prefix +
+                          joint_name.lower() + "_variable_position_controller", "pid"]
         elif controller_type == "Muscle Position":
             param_name = [prefix + self.controller_prefix +
                           joint_name.lower() + "_muscle_position_controller", "pid"]
