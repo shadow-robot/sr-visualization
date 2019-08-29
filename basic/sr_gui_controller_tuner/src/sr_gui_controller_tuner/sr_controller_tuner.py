@@ -232,7 +232,6 @@ class SrControllerTunerApp(object):
                                 if defined_ctrl_type not in running_ctrls:
                                     running_ctrls.append(defined_ctrl_type)
                                 self.edit_only_mode = False
-            rospy.logwarn(running_ctrls)
             return running_ctrls
 
         rospy.loginfo("No controllers currently running")
