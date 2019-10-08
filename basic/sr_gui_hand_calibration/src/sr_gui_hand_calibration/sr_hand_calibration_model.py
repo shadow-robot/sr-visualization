@@ -97,6 +97,69 @@ class IndividualCalibration(QTreeWidgetItem):
     def get_calibration(self):
         return [self.raw_value, self.calibrated_value]
 
+class IndividualCalibrationCoupled(QTreeWidgetItem):
+
+    """
+    Calibrate coupled joints by raw and calibrated values
+    Calibrated joints will appear as green
+    or orange if calibrations are loaded from a file
+    """
+
+    def __init__(self, joint_names,
+                 raw_values, calibrated_values,
+                 parent_widget, tree_widget,
+                 robot_lib):
+        self.joint_names = joint_names
+        self.raw_values = [int(raw_value) for raw_value in raw_values]
+        self.calibrated_values = calibrated_values
+        self.tree_widget = tree_widget
+        self.robot_lib = robot_lib
+
+        QTreeWidgetItem.__init__(self, parent_widget, [
+                                 "", "", str(self.raw_values[0]) + ", " + str(self.raw_values[1]), str(self.calibrated_values[0]) + ", " + str(self.calibrated_values[1])])
+
+        for col in xrange(self.tree_widget.columnCount()):
+            self.setBackground(col, QColor(red))
+
+        self.tree_widget.addTopLevelItem(self)
+
+        self.is_calibrated = False
+
+    def remove(self):
+        self.tree_widget.remove
+
+    def calibrate(self):
+        """
+        Performs the joint calibration and sets background to green
+        calibrate only the calibration lines, not the items for the fingers / joints / hand
+        """
+        raw_values_str = []
+        for idx in range(0, 2):
+            self.raw_values[idx] = self.robot_lib.get_average_raw_value(
+                self.joint_names[idx], 100)
+            raw_values_str.append(str(self.raw_values[idx]))
+        self.setText(2, ", ".join(raw_values_str))
+
+        for col in xrange(self.tree_widget.columnCount()):
+            if self.text(2) != "":
+                self.setBackground(col, QColor(green))
+
+        self.is_calibrated = True
+
+    def set_is_loaded_calibration(self):
+        """
+        set the background to orange: those values are loaded
+        from the file, not recalibrated
+        """
+        for col in xrange(self.tree_widget.columnCount()):
+            if self.text(2) != "":
+                self.setBackground(col, QColor(orange))
+
+        self.is_calibrated = True
+
+    def get_calibration(self):
+        return [self.raw_values, self.calibrated_values]
+
 
 class JointCalibration(QTreeWidgetItem):
 
@@ -120,12 +183,18 @@ class JointCalibration(QTreeWidgetItem):
         self.last_raw_values = deque()
 
         QTreeWidgetItem.__init__(
-            self, parent_widget, ["", joint_name, "", ""])
+            self, parent_widget, [joint_name[0] + ", " + joint_name[1], "", "", ""])
 
-        for calibration in calibrations:
-            self.calibrations.append(IndividualCalibration(joint_name,
-                                                           calibration[0], calibration[1],
-                                                           self, tree_widget, robot_lib))
+        if type(self.joint_name) is not list:
+            for calibration in calibrations:
+                self.calibrations.append(IndividualCalibration(joint_name,
+                                                            calibration[0], calibration[1],
+                                                            self, tree_widget, robot_lib))
+        else:
+            for calibration in calibrations:
+                self.calibrations.append(IndividualCalibrationCoupled(joint_name,
+                                                            calibration[0], calibration[1],
+                                                            self, tree_widget, robot_lib))
 
         # display the current joint position in the GUI
         self.timer = QTimer()
@@ -312,16 +381,31 @@ class HandCalibration(QTreeWidgetItem):
                                              [0.0, 67.5],
                                              [0.0, 90.0]]]],
 
-                 "Thumb": [["THJ1", [[0.0, 0.0],
-                                     [0.0, 22.5],
-                                     [0.0, 45.0],
-                                     [0.0, 67.5],
-                                     [0.0, 90.0]]],
-                           ["THJ2", [[0.0, -40.0],
-                                     [0.0, -20.0],
-                                     [0.0, 0.0],
-                                     [0.0, 20.0],
-                                     [0.0, 40.0]]],
+                 "Thumb": [[["THJ1", "THJ2"], [[[0.0, 0.0],[0.0, 40]],
+                                              [[0.0, 0.0], [0.0, 20]],
+                                              [[0.0, 0.0], [0.0, 0.0]],
+                                              [[0.0, 0.0], [0.0, -20.0]],
+                                              [[0.0, 0.0], [0.0, -40.0]],
+                                              [[0.0, 0.0], [22.5, 40.0]],
+                                              [[0.0, 0.0], [22.5, 20.0]],
+                                              [[0.0, 0.0], [22.5, 0.0]],
+                                              [[0.0, 0.0], [22.5, -20.0]],
+                                              [[0.0, 0.0], [22.5, -40.0]],
+                                              [[0.0, 0.0], [45.0, 40.0]],
+                                              [[0.0, 0.0], [45.0, 20.0]],
+                                              [[0.0, 0.0], [45.0, 0.0]],
+                                              [[0.0, 0.0], [45.0, -20.0]],
+                                              [[0.0, 0.0], [45.0, -40.0]],
+                                              [[0.0, 0.0], [67.5, 40.0]],
+                                              [[0.0, 0.0], [67.5, 20.0]],
+                                              [[0.0, 0.0], [67.5, 0.0]],
+                                              [[0.0, 0.0], [67.5, -20.0]],
+                                              [[0.0, 0.0], [67.5, -40.0]],
+                                              [[0.0, 0.0], [90.0, 40.0]],
+                                              [[0.0, 0.0], [90.0, 20.0]],
+                                              [[0.0, 0.0], [90.0, 0.0]],
+                                              [[0.0, 0.0], [90.0, -20.0]],
+                                              [[0.0, 0.0], [90.0, -40]]]],
                            ["THJ3", [[0.0, -15.0],
                                      [0.0, 0.0],
                                      [0.0, 15.0]]],
