@@ -187,14 +187,14 @@ class JointCalibration(QTreeWidgetItem):
 
         if type(self.joint_name) is not list:
             QTreeWidgetItem.__init__(
-                self, parent_widget, [joint_name, "", "", ""])
+                self, parent_widget, ["", joint_name, "", ""])
             for calibration in calibrations:
                 self.calibrations.append(IndividualCalibration(joint_name,
                                                             calibration[0], calibration[1],
                                                             self, tree_widget, robot_lib))
         else:
             QTreeWidgetItem.__init__(
-                self, parent_widget, [joint_name[0] + ", " + joint_name[1], "", "", ""])
+                self, parent_widget, ["", joint_name[0] + ", " + joint_name[1], "", ""])
             for calibration in calibrations:
                 self.calibrations.append(IndividualCalibrationCoupled(joint_name,
                                                             calibration[0], calibration[1],
@@ -219,7 +219,7 @@ class JointCalibration(QTreeWidgetItem):
                                                 self, self.tree_widget, self.robot_lib)
             else:
                 new_calib = IndividualCalibrationCoupled(self.joint_name,
-                                                calibration[0], calibration[1],
+                                                calibration[0], [calibration[1], calibration[2]],
                                                 self, self.tree_widget, self.robot_lib)
             new_calib.set_is_loaded_calibration()
             self.calibrations.append(new_calib)
@@ -560,9 +560,15 @@ class HandCalibration(QTreeWidgetItem):
         for joint in (yaml_config["sr_calibrations"] + yaml_config["sr_calibrations_coupled"]):
             it = QTreeWidgetItemIterator(self)
             while it.value():
-                if it.value().text(1) == joint[0]:
+                if type(joint[0]) is not list:
+                    joint_name = joint[0]
+                else:
+                    joint_name = ", ".join(joint[0])
+                if it.value().text(1) == joint_name:
                     it.value().load_joint_calibration(joint[1])
                 it += 1
+
+
         self.progress_bar.setValue(100)
 
     def save(self, filepath):
