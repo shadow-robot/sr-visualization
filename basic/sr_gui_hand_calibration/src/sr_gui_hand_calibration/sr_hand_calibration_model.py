@@ -97,7 +97,7 @@ class IndividualCalibration(QTreeWidgetItem):
     def get_calibration(self):
         return [self.raw_value, self.calibrated_value]
 
-class IndividualCalibrationCoupled(QTreeWidgetItem):
+class IndividualCalibrationCoupled(IndividualCalibration):
 
     """
     Calibrate coupled joints by raw and calibrated values
@@ -109,6 +109,7 @@ class IndividualCalibrationCoupled(QTreeWidgetItem):
                  raw_values, calibrated_values,
                  parent_widget, tree_widget,
                  robot_lib):
+
         self.joint_names = joint_names
         self.raw_values = [int(raw_value) for raw_value in raw_values]
         self.calibrated_values = calibrated_values
@@ -126,9 +127,6 @@ class IndividualCalibrationCoupled(QTreeWidgetItem):
 
         self.is_calibrated = False
 
-    def remove(self):
-        self.tree_widget.remove
-
     def calibrate(self):
         """
         Performs the joint calibration and sets background to green
@@ -144,17 +142,6 @@ class IndividualCalibrationCoupled(QTreeWidgetItem):
         for col in xrange(self.tree_widget.columnCount()):
             if self.text(2) != "":
                 self.setBackground(col, QColor(green))
-
-        self.is_calibrated = True
-
-    def set_is_loaded_calibration(self):
-        """
-        set the background to orange: those values are loaded
-        from the file, not recalibrated
-        """
-        for col in xrange(self.tree_widget.columnCount()):
-            if self.text(2) != "":
-                self.setBackground(col, QColor(orange))
 
         self.is_calibrated = True
 
