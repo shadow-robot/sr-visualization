@@ -48,6 +48,12 @@ class SrDataVisualizer(Plugin):
         super(SrDataVisualizer, self).__init__(context)
         self.setObjectName("SrDataVisualizer")
         self._widget = QWidget()
+        self._hand_finder = HandFinder()
+        self._hand_parameters = self._hand_finder.get_hand_parameters()
+        self._joint_prefix = self._hand_parameters.joint_prefix
+        for key in self._hand_parameters.joint_prefix:
+            self.hand_serial = key
+        self._joint_prefix = self._hand_parameters.joint_prefix[self.hand_serial]
         ui_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'uis', 'hand-e_visualizer.ui')
         loadUi(ui_file, self._widget)
         if __name__ != "__main__":
@@ -74,8 +80,14 @@ class SrDataVisualizer(Plugin):
 
         motor_stat_keys_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'config',
                                             'data_visualiser_motor_stat_keys.yaml')
-        parameters_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'config',
-                                       'data_visualiser_parameters.yaml')
+        if self._joint_prefix == "rh_":
+            parameters_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'config',
+                                           'data_visualiser_parameters_rh.yaml')
+        elif self._joint_prefix == "lh_":
+            parameters_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'config',
+                                           'data_visualiser_parameters_lh.yaml')
+        else:
+            rospy.logerr("Unknown hand detected")
 
         self.t0 = time.time()
 
@@ -579,7 +591,8 @@ class SrDataVisualizer(Plugin):
             # for each graph
             for j in range(len(self.graph_names_global["pos_vel_eff"])):
                 graph = self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][j]]
-                data_index = self.joint_state_data_map['rh_' + string.upper(self.graph_names_global["pos_vel_eff"][j])]
+                data_index = self.joint_state_data_map[self._joint_prefix +
+                                                       string.upper(self.graph_names_global["pos_vel_eff"][j])]
                 if graph.plot_all:
                     ymin, ymax = self._find_max_range(self.global_yaml["graphs"][0])
                     range_array = self.global_yaml["graphs"][0]["ranges"]
