@@ -116,7 +116,8 @@ class IndividualCalibrationCoupled(QTreeWidgetItem):
         self.robot_lib = robot_lib
 
         QTreeWidgetItem.__init__(self, parent_widget, [
-                                 "", "", str(self.raw_values[0]) + ", " + str(self.raw_values[1]), str(self.calibrated_values[0]) + ", " + str(self.calibrated_values[1])])
+                                 "", "", str(self.raw_values[0]) + ", " + str(self.raw_values[1]),
+                                 str(self.calibrated_values[0]) + ", " + str(self.calibrated_values[1])])
 
         for col in xrange(self.tree_widget.columnCount()):
             self.setBackground(col, QColor(red))
@@ -182,15 +183,18 @@ class JointCalibration(QTreeWidgetItem):
 
         self.last_raw_values = deque()
 
-        QTreeWidgetItem.__init__(
-            self, parent_widget, [joint_name[0] + ", " + joint_name[1], "", "", ""])
+
 
         if type(self.joint_name) is not list:
+            QTreeWidgetItem.__init__(
+                self, parent_widget, [joint_name, "", "", ""])
             for calibration in calibrations:
                 self.calibrations.append(IndividualCalibration(joint_name,
                                                             calibration[0], calibration[1],
                                                             self, tree_widget, robot_lib))
         else:
+            QTreeWidgetItem.__init__(
+                self, parent_widget, [joint_name[0] + ", " + joint_name[1], "", "", ""])
             for calibration in calibrations:
                 self.calibrations.append(IndividualCalibrationCoupled(joint_name,
                                                             calibration[0], calibration[1],
@@ -209,9 +213,14 @@ class JointCalibration(QTreeWidgetItem):
         self.calibrations = []
 
         for calibration in new_calibrations:
-            new_calib = IndividualCalibration(self.joint_name,
-                                              calibration[0], calibration[1],
-                                              self, self.tree_widget, self.robot_lib)
+            if type(self.joint_name) is not list:
+                new_calib = IndividualCalibration(self.joint_name,
+                                                calibration[0], calibration[1],
+                                                self, self.tree_widget, self.robot_lib)
+            else:
+                new_calib = IndividualCalibrationCoupled(self.joint_name,
+                                                calibration[0], calibration[1],
+                                                self, self.tree_widget, self.robot_lib)
             new_calib.set_is_loaded_calibration()
             self.calibrations.append(new_calib)
 
@@ -224,7 +233,10 @@ class JointCalibration(QTreeWidgetItem):
         if len(config) <= 1:
             # no config, or only one point
             # generating flat config
-            config = [[0, 0.0], [1, 0.0]]
+            if type(self.joint_name) is not list:
+                config = [[0, 0.0], [1, 0.0]]
+            else:
+                config = [[[0, 0], [0.0, 0.0]], [[1, 1], [0.0, 0.0]]]
         return [self.joint_name, config]
 
     def update_joint_pos(self):
@@ -545,7 +557,7 @@ class HandCalibration(QTreeWidgetItem):
         f.close()
         yaml_config = yaml.load(document)
 
-        for joint in yaml_config["sr_calibrations"]:
+        for joint in (yaml_config["sr_calibrations"] + yaml_config["sr_calibrations_coupled"]):
             it = QTreeWidgetItemIterator(self)
             while it.value():
                 if it.value().text(1) == joint[0]:
@@ -569,19 +581,41 @@ class HandCalibration(QTreeWidgetItem):
         # yaml_config["sr_calibrations"] = joint_configs
         # full_config_to_write = yaml.dump(yaml_config,
         # default_flow_style=False)
-        full_config_to_write = "{\'sr_calibrations\': [\n"
+        full_config_to_write = "sr_calibrations: [\n"
         for joint_config in joint_configs:
-            full_config_to_write += "[\""
-            full_config_to_write += joint_config[0] + "\", "
+            if type(joint_config[0]) is not list:
+                full_config_to_write += "[\""
+                full_config_to_write += joint_config[0] + "\", "
 
-            # the etherCAT driver wants floats
-            for index, calib in enumerate(joint_config[1]):
-                joint_config[1][index][0] = float(calib[0])
-                joint_config[1][index][1] = float(calib[1])
+                # the etherCAT driver wants floats
+                for index, calib in enumerate(joint_config[1]):
+                    joint_config[1][index][0] = float(calib[0])
+                    joint_config[1][index][1] = float(calib[1])
 
-            full_config_to_write += str(joint_config[1])
-            full_config_to_write += "], \n"
-        full_config_to_write += "]}"
+                full_config_to_write += str(joint_config[1])
+                full_config_to_write += "], \n"
+        full_config_to_write += "]"
+
+        full_config_to_write += "\n\nsr_calibrations_coupled: [\n"
+        for joint_config in joint_configs:
+            if type(joint_config[0]) is list:
+                full_config_to_write += "[[\""
+                full_config_to_write += joint_config[0][0] + ", " + joint_config[0][1] + "\"], ["
+
+                for index, calib in enumerate(joint_config[1]):
+                    joint_config[1][index][0][0] = float(calib[0][0])
+                    joint_config[1][index][0][1] = float(calib[0][1])
+                    joint_config[1][index][1][0] = float(calib[1][0])
+                    joint_config[1][index][1][1] = float(calib[1][1])
+
+                    if index > 0:
+                        full_config_to_write +=  ", \n                  "
+                    full_config_to_write += "["
+                    full_config_to_write += str(joint_config[1][index][0]) + ", "
+                    full_config_to_write += str(joint_config[1][index][1][0]) + ", " + str(joint_config[1][index][1][1])
+                    full_config_to_write += "]"
+                full_config_to_write += "]]"
+        full_config_to_write += "\n]"
 
         f = open(filepath, 'w')
         f.write(full_config_to_write)
