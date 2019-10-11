@@ -590,7 +590,7 @@ class HandCalibration(QTreeWidgetItem):
         for joint_config in joint_configs:
             if type(joint_config[0]) is list:
                 full_config_to_write += "[[\""
-                full_config_to_write += joint_config[0][0] + ", " + joint_config[0][1] + "\"], ["
+                full_config_to_write += joint_config[0][0] + "\", \"" + joint_config[0][1] + "\"], ["
 
                 for index, calib in enumerate(joint_config[1]):
                     joint_config[1][index][0][0] = float(calib[0][0])
@@ -599,7 +599,7 @@ class HandCalibration(QTreeWidgetItem):
                     joint_config[1][index][1][1] = float(calib[1][1])
 
                     if index > 0:
-                        full_config_to_write += ", \n                  "
+                        full_config_to_write += ", \n                    "
                     full_config_to_write += "["
                     full_config_to_write += str(joint_config[1][index][0]) + ", "
                     full_config_to_write += str(joint_config[1][index][1][0]) + ", " + str(joint_config[1][index][1][1])
