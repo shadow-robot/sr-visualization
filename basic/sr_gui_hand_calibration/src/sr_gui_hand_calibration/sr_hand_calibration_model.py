@@ -97,6 +97,7 @@ class IndividualCalibration(QTreeWidgetItem):
     def get_calibration(self):
         return [self.raw_value, self.calibrated_value]
 
+
 class IndividualCalibrationCoupled(IndividualCalibration):
 
     """
@@ -167,25 +168,22 @@ class JointCalibration(QTreeWidgetItem):
         self.robot_lib = robot_lib
 
         self.calibrations = []
-
         self.last_raw_values = deque()
-
-
 
         if type(self.joint_name) is not list:
             QTreeWidgetItem.__init__(
                 self, parent_widget, ["", joint_name, "", ""])
             for calibration in calibrations:
                 self.calibrations.append(IndividualCalibration(joint_name,
-                                                            calibration[0], calibration[1],
-                                                            self, tree_widget, robot_lib))
+                                                               calibration[0], calibration[1],
+                                                               self, tree_widget, robot_lib))
         else:
             QTreeWidgetItem.__init__(
                 self, parent_widget, ["", joint_name[0] + ", " + joint_name[1], "", ""])
             for calibration in calibrations:
                 self.calibrations.append(IndividualCalibrationCoupled(joint_name,
-                                                            calibration[0], calibration[1],
-                                                            self, tree_widget, robot_lib))
+                                                                      calibration[0], calibration[1],
+                                                                      self, tree_widget, robot_lib))
 
         # display the current joint position in the GUI
         self.timer = QTimer()
@@ -202,12 +200,12 @@ class JointCalibration(QTreeWidgetItem):
         for calibration in new_calibrations:
             if type(self.joint_name) is not list:
                 new_calib = IndividualCalibration(self.joint_name,
-                                                calibration[0], calibration[1],
-                                                self, self.tree_widget, self.robot_lib)
+                                                  calibration[0], calibration[1],
+                                                  self, self.tree_widget, self.robot_lib)
             else:
                 new_calib = IndividualCalibrationCoupled(self.joint_name,
-                                                calibration[0], [calibration[1], calibration[2]],
-                                                self, self.tree_widget, self.robot_lib)
+                                                         calibration[0], [calibration[1], calibration[2]],
+                                                         self, self.tree_widget, self.robot_lib)
             new_calib.set_is_loaded_calibration()
             self.calibrations.append(new_calib)
 
@@ -380,31 +378,31 @@ class HandCalibration(QTreeWidgetItem):
                                              [0.0, 67.5],
                                              [0.0, 90.0]]]],
 
-                 "Thumb": [[["THJ1", "THJ2"], [[[0.0, 0.0],[0.0, 40]],
-                                              [[0.0, 0.0], [0.0, 20]],
-                                              [[0.0, 0.0], [0.0, 0.0]],
-                                              [[0.0, 0.0], [0.0, -20.0]],
-                                              [[0.0, 0.0], [0.0, -40.0]],
-                                              [[0.0, 0.0], [22.5, 40.0]],
-                                              [[0.0, 0.0], [22.5, 20.0]],
-                                              [[0.0, 0.0], [22.5, 0.0]],
-                                              [[0.0, 0.0], [22.5, -20.0]],
-                                              [[0.0, 0.0], [22.5, -40.0]],
-                                              [[0.0, 0.0], [45.0, 40.0]],
-                                              [[0.0, 0.0], [45.0, 20.0]],
-                                              [[0.0, 0.0], [45.0, 0.0]],
-                                              [[0.0, 0.0], [45.0, -20.0]],
-                                              [[0.0, 0.0], [45.0, -40.0]],
-                                              [[0.0, 0.0], [67.5, 40.0]],
-                                              [[0.0, 0.0], [67.5, 20.0]],
-                                              [[0.0, 0.0], [67.5, 0.0]],
-                                              [[0.0, 0.0], [67.5, -20.0]],
-                                              [[0.0, 0.0], [67.5, -40.0]],
-                                              [[0.0, 0.0], [90.0, 40.0]],
-                                              [[0.0, 0.0], [90.0, 20.0]],
-                                              [[0.0, 0.0], [90.0, 0.0]],
-                                              [[0.0, 0.0], [90.0, -20.0]],
-                                              [[0.0, 0.0], [90.0, -40]]]],
+                 "Thumb": [[["THJ1", "THJ2"], [[[0.0, 0.0], [0.0, 40]],
+                                               [[0.0, 0.0], [0.0, 20]],
+                                               [[0.0, 0.0], [0.0, 0.0]],
+                                               [[0.0, 0.0], [0.0, -20.0]],
+                                               [[0.0, 0.0], [0.0, -40.0]],
+                                               [[0.0, 0.0], [22.5, 40.0]],
+                                               [[0.0, 0.0], [22.5, 20.0]],
+                                               [[0.0, 0.0], [22.5, 0.0]],
+                                               [[0.0, 0.0], [22.5, -20.0]],
+                                               [[0.0, 0.0], [22.5, -40.0]],
+                                               [[0.0, 0.0], [45.0, 40.0]],
+                                               [[0.0, 0.0], [45.0, 20.0]],
+                                               [[0.0, 0.0], [45.0, 0.0]],
+                                               [[0.0, 0.0], [45.0, -20.0]],
+                                               [[0.0, 0.0], [45.0, -40.0]],
+                                               [[0.0, 0.0], [67.5, 40.0]],
+                                               [[0.0, 0.0], [67.5, 20.0]],
+                                               [[0.0, 0.0], [67.5, 0.0]],
+                                               [[0.0, 0.0], [67.5, -20.0]],
+                                               [[0.0, 0.0], [67.5, -40.0]],
+                                               [[0.0, 0.0], [90.0, 40.0]],
+                                               [[0.0, 0.0], [90.0, 20.0]],
+                                               [[0.0, 0.0], [90.0, 0.0]],
+                                               [[0.0, 0.0], [90.0, -20.0]],
+                                               [[0.0, 0.0], [90.0, -40]]]],
                            ["THJ3", [[0.0, -15.0],
                                      [0.0, 0.0],
                                      [0.0, 15.0]]],
@@ -555,7 +553,6 @@ class HandCalibration(QTreeWidgetItem):
                     it.value().load_joint_calibration(joint[1])
                 it += 1
 
-
         self.progress_bar.setValue(100)
 
     def save(self, filepath):
@@ -602,7 +599,7 @@ class HandCalibration(QTreeWidgetItem):
                     joint_config[1][index][1][1] = float(calib[1][1])
 
                     if index > 0:
-                        full_config_to_write +=  ", \n                  "
+                        full_config_to_write += ", \n                  "
                     full_config_to_write += "["
                     full_config_to_write += str(joint_config[1][index][0]) + ", "
                     full_config_to_write += str(joint_config[1][index][1][0]) + ", " + str(joint_config[1][index][1][1])
