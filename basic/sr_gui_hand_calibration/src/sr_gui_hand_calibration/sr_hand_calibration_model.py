@@ -295,7 +295,7 @@ class HandCalibration(QTreeWidgetItem):
                  fingers=["First Finger", "Middle Finger",
                           "Ring Finger", "Little Finger",
                           "Thumb", "Wrist"],
-                  old_version=False):
+                 old_version=False):
 
         # TODO: Import this from an xml file?
         self.joint_map = {"First Finger": [["FFJ1", [[0.0, 0.0],
@@ -395,7 +395,7 @@ class HandCalibration(QTreeWidgetItem):
                                     ["WRJ2", [[0.0, -30.0],
                                               [0.0, 0.0],
                                               [0.0, 10.0]]]]
-                         }
+                          }
 
         if not old_version:
             self.joint_map["Thumb"] = [[["THJ1", "THJ2"], [[[0.0, 0.0], [0.0, 40]],
