@@ -156,6 +156,7 @@ class JointCalibration(QTreeWidgetItem):
     Calibrate a single joint by calibrations list
     Also displays the current joint position in the GUI
     """
+
     nb_values_to_check = 5
 
     def __init__(self, joint_name,

@@ -154,7 +154,6 @@ class SrHandCalibration(Plugin):
         else:
             self.populate_tree(old_version=False)
 
-
     def _unregisterPublisher(self):
         if self._publisher is not None:
             self._publisher.unregister()
