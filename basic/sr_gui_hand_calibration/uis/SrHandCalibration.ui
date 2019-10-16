@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>660</width>
-    <height>344</height>
+    <width>1381</width>
+    <height>712</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -43,6 +43,13 @@
            </property>
            <property name="shortcut">
             <string>Ctrl+O</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="cb_old_version">
+           <property name="text">
+            <string>Old Version</string>
            </property>
           </widget>
          </item>

@@ -57,18 +57,19 @@ class SrHandCalibration(Plugin):
 
         self._widget.btn_save.clicked.connect(self.btn_save_clicked_)
         self._widget.btn_load.clicked.connect(self.btn_load_clicked_)
+        self._widget.cb_old_version.stateChanged.connect(self.cb_state_changed_)
         self._widget.btn_joint_0s.clicked.connect(self.btn_joint_0s_clicked_)
 
         self.populate_tree()
 
-    def populate_tree(self):
+    def populate_tree(self, old_version=False):
         """
         Create tree with calibrations
         """
         self._widget.tree_calibration.clear()
 
         self.hand_model = HandCalibration(
-            tree_widget=self._widget.tree_calibration, progress_bar=self._widget.progress)
+            tree_widget=self._widget.tree_calibration, progress_bar=self._widget.progress, old_version=old_version)
         if not self.hand_model.is_active:
             self.close_plugin()
             return
@@ -146,6 +147,13 @@ class SrHandCalibration(Plugin):
         calibrate the first joint of each finger
         """
         self.hand_model.calibrate_joint0s(self._widget.btn_joint_0s)
+
+    def cb_state_changed_(self):
+        if self._widget.cb_old_version.isChecked():
+            self.populate_tree(old_version=True)
+        else:
+            self.populate_tree(old_version=False)
+
 
     def _unregisterPublisher(self):
         if self._publisher is not None:
