@@ -297,6 +297,8 @@ class HandCalibration(QTreeWidgetItem):
                           "Thumb", "Wrist"],
                  old_version=False):
 
+        self.old_version = old_version
+
         # TODO: Import this from an xml file?
         self.joint_map = {"First Finger": [["FFJ1", [[0.0, 0.0],
                                                      [0.0, 22.5],
@@ -397,7 +399,7 @@ class HandCalibration(QTreeWidgetItem):
                                               [0.0, 10.0]]]]
                           }
 
-        if not old_version:
+        if not self.old_version:
             self.joint_map["Thumb"] = [[["THJ1", "THJ2"], [[[0.0, 0.0], [0.0, 40]],
                                                            [[0.0, 0.0], [0.0, 20]],
                                                            [[0.0, 0.0], [0.0, 0.0]],
@@ -568,8 +570,12 @@ class HandCalibration(QTreeWidgetItem):
             document += line
         f.close()
         yaml_config = yaml.load(document)
-
-        for joint in (yaml_config["sr_calibrations"] + yaml_config["sr_calibrations_coupled"]):
+        
+        if self.old_version:
+            used_yaml_config = yaml_config["sr_calibrations"]
+        else:
+            used_yaml_config = yaml_config["sr_calibrations"] + yaml_config["sr_calibrations_coupled"]
+        for joint in used_yaml_config:
             it = QTreeWidgetItemIterator(self)
             while it.value():
                 if type(joint[0]) is not list:
@@ -613,26 +619,27 @@ class HandCalibration(QTreeWidgetItem):
                 full_config_to_write += "], \n"
         full_config_to_write += "]"
 
-        full_config_to_write += "\n\nsr_calibrations_coupled: [\n"
-        for joint_config in joint_configs:
-            if type(joint_config[0]) is list:
-                full_config_to_write += "[[\""
-                full_config_to_write += joint_config[0][0] + "\", \"" + joint_config[0][1] + "\"], ["
+        if not self.old_version:
+            full_config_to_write += "\n\nsr_calibrations_coupled: [\n"
+            for joint_config in joint_configs:
+                if type(joint_config[0]) is list:
+                    full_config_to_write += "[[\""
+                    full_config_to_write += joint_config[0][0] + "\", \"" + joint_config[0][1] + "\"], ["
 
-                for index, calib in enumerate(joint_config[1]):
-                    joint_config[1][index][0][0] = float(calib[0][0])
-                    joint_config[1][index][0][1] = float(calib[0][1])
-                    joint_config[1][index][1][0] = float(calib[1][0])
-                    joint_config[1][index][1][1] = float(calib[1][1])
+                    for index, calib in enumerate(joint_config[1]):
+                        joint_config[1][index][0][0] = float(calib[0][0])
+                        joint_config[1][index][0][1] = float(calib[0][1])
+                        joint_config[1][index][1][0] = float(calib[1][0])
+                        joint_config[1][index][1][1] = float(calib[1][1])
 
-                    if index > 0:
-                        full_config_to_write += ", \n                    "
-                    full_config_to_write += "["
-                    full_config_to_write += str(joint_config[1][index][0]) + ", "
-                    full_config_to_write += str(joint_config[1][index][1][0]) + ", " + str(joint_config[1][index][1][1])
-                    full_config_to_write += "]"
-                full_config_to_write += "]]"
-        full_config_to_write += "\n]"
+                        if index > 0:
+                            full_config_to_write += ", \n                    "
+                        full_config_to_write += "["
+                        full_config_to_write += str(joint_config[1][index][0]) + ", "
+                        full_config_to_write += str(joint_config[1][index][1][0]) + ", " + str(joint_config[1][index][1][1])
+                        full_config_to_write += "]"
+                    full_config_to_write += "]]"
+            full_config_to_write += "\n]"
 
         f = open(filepath, 'w')
         f.write(full_config_to_write)
