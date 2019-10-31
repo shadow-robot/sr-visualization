@@ -570,7 +570,7 @@ class HandCalibration(QTreeWidgetItem):
             document += line
         f.close()
         yaml_config = yaml.load(document)
-        
+
         if self.old_version:
             used_yaml_config = yaml_config["sr_calibrations"]
         else:
@@ -636,7 +636,8 @@ class HandCalibration(QTreeWidgetItem):
                             full_config_to_write += ", \n                    "
                         full_config_to_write += "["
                         full_config_to_write += str(joint_config[1][index][0]) + ", "
-                        full_config_to_write += str(joint_config[1][index][1][0]) + ", " + str(joint_config[1][index][1][1])
+                        full_config_to_write += str(joint_config[1][index][1][0]) + ", " + \
+                                                str(joint_config[1][index][1][1])
                         full_config_to_write += "]"
                     full_config_to_write += "]]"
             full_config_to_write += "\n]"
