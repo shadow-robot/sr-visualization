@@ -637,7 +637,7 @@ class HandCalibration(QTreeWidgetItem):
                         full_config_to_write += "["
                         full_config_to_write += str(joint_config[1][index][0]) + ", "
                         full_config_to_write += str(joint_config[1][index][1][0]) + ", " + \
-                                                str(joint_config[1][index][1][1])
+                            str(joint_config[1][index][1][1])
                         full_config_to_write += "]"
                     full_config_to_write += "]]"
             full_config_to_write += "\n]"
