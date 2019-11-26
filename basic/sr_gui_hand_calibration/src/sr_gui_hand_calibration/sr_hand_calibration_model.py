@@ -74,7 +74,7 @@ class IndividualCalibration(QTreeWidgetItem):
         calibrate only the calibration lines, not the items for the fingers / joints / hand
         """
         self.raw_value = self.robot_lib.get_average_raw_value(
-            self.joint_name, 100)
+            self.joint_name, number_of_samples=100, accept_zeros=False)
         self.setText(2, str(self.raw_value))
 
         for col in xrange(self.tree_widget.columnCount()):
@@ -571,9 +571,22 @@ class HandCalibration(QTreeWidgetItem):
         f.close()
         yaml_config = yaml.load(document)
 
+        if "sr_calibrations" not in yaml_config.keys():
+            error_string = ('The selected calibration file does not contain calibration ' +
+                            'values.')
+            rospy.logwarn(error_string)
+            QMessageBox(QMessageBox.Critical, 'Calibration file error', error_string).exec_()
+            return
+
         if self.old_version:
             used_yaml_config = yaml_config["sr_calibrations"]
         else:
+            if "sr_calibrations_coupled" not in yaml_config.keys():
+                error_string = ('The selected calibration file does not contain coupled thumb calibration ' +
+                                'values. Choose one that does, or switch to "Old Version" mode.')
+                rospy.logwarn(error_string)
+                QMessageBox(QMessageBox.Critical, 'Calibration file error', error_string).exec_()
+                return
             used_yaml_config = yaml_config["sr_calibrations"] + yaml_config["sr_calibrations_coupled"]
         for joint in used_yaml_config:
             it = QTreeWidgetItemIterator(self)
