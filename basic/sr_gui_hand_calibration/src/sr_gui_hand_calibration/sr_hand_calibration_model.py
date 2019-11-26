@@ -571,7 +571,7 @@ class HandCalibration(QTreeWidgetItem):
         f.close()
         yaml_config = yaml.load(document)
 
-        if not "sr_calibrations" in yaml_config.keys():
+        if "sr_calibrations" not in yaml_config.keys():
             error_string = ('The selected calibration file does not contain calibration ' +
                             'values.')
             rospy.logwarn(error_string)
@@ -581,7 +581,7 @@ class HandCalibration(QTreeWidgetItem):
         if self.old_version:
             used_yaml_config = yaml_config["sr_calibrations"]
         else:
-            if not "sr_calibrations_coupled" in yaml_config.keys():
+            if "sr_calibrations_coupled" not in yaml_config.keys():
                 error_string = ('The selected calibration file does not contain coupled thumb calibration ' +
                                 'values. Choose one that does, or switch to "Old Version" mode.')
                 rospy.logwarn(error_string)
