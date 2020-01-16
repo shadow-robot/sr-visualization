@@ -26,9 +26,12 @@ class TestHandCalibration(unittest.TestCase):
         loadUi(ui_file, self._widget)
 
         self.mock_file = tempfile.NamedTemporaryFile(delete=False)
-        self.mock_file.write("""{'sr_calibrations': [\n""" +
+        self.mock_file.write("""sr_calibrations: [\n""" +
                              """["mock", [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]],\n""" +
-                             """]}""")
+                             """]""")
+        self.mock_file.write("""\n\nsr_calibrations_coupled: [\n""" +
+                             """[["mock_1", "mock_2"], [[[0.0, 0.0], 0.0, 0.0]]],\n""" +
+                             """]""")
         self.mock_file.close()
 
     def tearDown(self):

@@ -74,7 +74,7 @@ class IndividualCalibration(QTreeWidgetItem):
         calibrate only the calibration lines, not the items for the fingers / joints / hand
         """
         self.raw_value = self.robot_lib.get_average_raw_value(
-            self.joint_name, 100)
+            self.joint_name, number_of_samples=100, accept_zeros=False)
         self.setText(2, str(self.raw_value))
 
         for col in xrange(self.tree_widget.columnCount()):
@@ -98,6 +98,58 @@ class IndividualCalibration(QTreeWidgetItem):
         return [self.raw_value, self.calibrated_value]
 
 
+class IndividualCalibrationCoupled(IndividualCalibration):
+
+    """
+    Calibrate coupled joints by raw and calibrated values
+    Calibrated joints will appear as green
+    or orange if calibrations are loaded from a file
+    """
+
+    def __init__(self, joint_names,
+                 raw_values, calibrated_values,
+                 parent_widget, tree_widget,
+                 robot_lib):
+
+        self.joint_names = joint_names
+        self.raw_values = [int(raw_value) for raw_value in raw_values]
+        self.calibrated_values = calibrated_values
+        self.tree_widget = tree_widget
+        self.robot_lib = robot_lib
+
+        QTreeWidgetItem.__init__(self, parent_widget, [
+                                 "", "", str(self.raw_values[0]) + ", " + str(self.raw_values[1]),
+                                 str(self.calibrated_values[0]) + ", " + str(self.calibrated_values[1])])
+
+        for col in xrange(self.tree_widget.columnCount()):
+            self.setBackground(col, QColor(red))
+
+        self.tree_widget.addTopLevelItem(self)
+
+        self.is_calibrated = False
+
+    def calibrate(self):
+        """
+        Performs the joint calibration and sets background to green
+        calibrate only the calibration lines, not the items for the fingers / joints / hand
+        """
+        raw_values_str = []
+        for idx in range(0, 2):
+            self.raw_values[idx] = self.robot_lib.get_average_raw_value(
+                self.joint_names[idx], 100)
+            raw_values_str.append(str(self.raw_values[idx]))
+        self.setText(2, ", ".join(raw_values_str))
+
+        for col in xrange(self.tree_widget.columnCount()):
+            if self.text(2) != "":
+                self.setBackground(col, QColor(green))
+
+        self.is_calibrated = True
+
+    def get_calibration(self):
+        return [self.raw_values, self.calibrated_values]
+
+
 class JointCalibration(QTreeWidgetItem):
 
     """
@@ -116,16 +168,22 @@ class JointCalibration(QTreeWidgetItem):
         self.robot_lib = robot_lib
 
         self.calibrations = []
-
         self.last_raw_values = deque()
 
-        QTreeWidgetItem.__init__(
-            self, parent_widget, ["", joint_name, "", ""])
-
-        for calibration in calibrations:
-            self.calibrations.append(IndividualCalibration(joint_name,
-                                                           calibration[0], calibration[1],
-                                                           self, tree_widget, robot_lib))
+        if type(self.joint_name) is not list:
+            QTreeWidgetItem.__init__(
+                self, parent_widget, ["", joint_name, "", ""])
+            for calibration in calibrations:
+                self.calibrations.append(IndividualCalibration(joint_name,
+                                                               calibration[0], calibration[1],
+                                                               self, tree_widget, robot_lib))
+        else:
+            QTreeWidgetItem.__init__(
+                self, parent_widget, ["", joint_name[0] + ", " + joint_name[1], "", ""])
+            for calibration in calibrations:
+                self.calibrations.append(IndividualCalibrationCoupled(joint_name,
+                                                                      calibration[0], calibration[1],
+                                                                      self, tree_widget, robot_lib))
 
         # display the current joint position in the GUI
         self.timer = QTimer()
@@ -140,9 +198,14 @@ class JointCalibration(QTreeWidgetItem):
         self.calibrations = []
 
         for calibration in new_calibrations:
-            new_calib = IndividualCalibration(self.joint_name,
-                                              calibration[0], calibration[1],
-                                              self, self.tree_widget, self.robot_lib)
+            if type(self.joint_name) is not list:
+                new_calib = IndividualCalibration(self.joint_name,
+                                                  calibration[0], calibration[1],
+                                                  self, self.tree_widget, self.robot_lib)
+            else:
+                new_calib = IndividualCalibrationCoupled(self.joint_name,
+                                                         calibration[0], [calibration[1], calibration[2]],
+                                                         self, self.tree_widget, self.robot_lib)
             new_calib.set_is_loaded_calibration()
             self.calibrations.append(new_calib)
 
@@ -155,7 +218,10 @@ class JointCalibration(QTreeWidgetItem):
         if len(config) <= 1:
             # no config, or only one point
             # generating flat config
-            config = [[0, 0.0], [1, 0.0]]
+            if type(self.joint_name) is not list:
+                config = [[0, 0.0], [1, 0.0]]
+            else:
+                config = [[[0, 0], [0.0, 0.0]], [[1, 1], [0.0, 0.0]]]
         return [self.joint_name, config]
 
     def update_joint_pos(self):
@@ -222,135 +288,179 @@ class HandCalibration(QTreeWidgetItem):
     """
     calibrate all joints of all fingers of a hand
     """
-    # TODO: Import this from an xml file?
-    joint_map = {"First Finger": [["FFJ1", [[0.0, 0.0],
-                                            [0.0, 22.5],
-                                            [0.0, 45.0],
-                                            [0.0, 67.5],
-                                            [0.0, 90.0]]],
-                                  ["FFJ2", [[0.0, 0.0],
-                                            [0.0, 22.5],
-                                            [0.0, 45.0],
-                                            [0.0, 67.5],
-                                            [0.0, 90.0]]],
-                                  ["FFJ3", [[0.0, 0.0],
-                                            [0.0, 22.5],
-                                            [0.0, 45.0],
-                                            [0.0, 67.5],
-                                            [0.0, 90.0]]],
-                                  ["FFJ4", [[0.0, -20.0],
-                                            [0.0, -10.0],
-                                            [0.0, 0.0],
-                                            [0.0, 10.0],
-                                            [0.0, 20.0]]]],
-
-                 "Middle Finger": [["MFJ1", [[0.0, 0.0],
-                                             [0.0, 22.5],
-                                             [0.0, 45.0],
-                                             [0.0, 67.5],
-                                             [0.0, 90.0]]],
-                                   ["MFJ2", [[0.0, 0.0],
-                                             [0.0, 22.5],
-                                             [0.0, 45.0],
-                                             [0.0, 67.5],
-                                             [0.0, 90.0]]],
-                                   ["MFJ3", [[0.0, 0.0],
-                                             [0.0, 22.5],
-                                             [0.0, 45.0],
-                                             [0.0, 67.5],
-                                             [0.0, 90.0]]],
-                                   ["MFJ4", [[0.0, -20.0],
-                                             [0.0, -10.0],
-                                             [0.0, 0.0],
-                                             [0.0, 10.0],
-                                             [0.0, 20.0]]]],
-
-                 "Ring Finger": [["RFJ1", [[0.0, 0.0],
-                                           [0.0, 22.5],
-                                           [0.0, 45.0],
-                                           [0.0, 67.5],
-                                           [0.0, 90.0]]],
-                                 ["RFJ2", [[0.0, 0.0],
-                                           [0.0, 22.5],
-                                           [0.0, 45.0],
-                                           [0.0, 67.5],
-                                           [0.0, 90.0]]],
-                                 ["RFJ3", [[0.0, 0.0],
-                                           [0.0, 22.5],
-                                           [0.0, 45.0],
-                                           [0.0, 67.5],
-                                           [0.0, 90.0]]],
-                                 ["RFJ4", [[0.0, -20.0],
-                                           [0.0, -10.0],
-                                           [0.0, 0.0],
-                                           [0.0, 10.0],
-                                           [0.0, 20.0]]]],
-
-                 "Little Finger": [["LFJ1", [[0.0, 0.0],
-                                             [0.0, 22.5],
-                                             [0.0, 45.0],
-                                             [0.0, 67.5],
-                                             [0.0, 90.0]]],
-                                   ["LFJ2", [[0.0, 0.0],
-                                             [0.0, 22.5],
-                                             [0.0, 45.0],
-                                             [0.0, 67.5],
-                                             [0.0, 90.0]]],
-                                   ["LFJ3", [[0.0, 0.0],
-                                             [0.0, 22.5],
-                                             [0.0, 45.0],
-                                             [0.0, 67.5],
-                                             [0.0, 90.0]]],
-                                   ["LFJ4", [[0.0, -20.0],
-                                             [0.0, -10.0],
-                                             [0.0, 0.0],
-                                             [0.0, 10.0],
-                                             [0.0, 20.0]]],
-                                   ["LFJ5", [[0.0, 0.0],
-                                             [0.0, 22.5],
-                                             [0.0, 45.0],
-                                             [0.0, 67.5],
-                                             [0.0, 90.0]]]],
-
-                 "Thumb": [["THJ1", [[0.0, 0.0],
-                                     [0.0, 22.5],
-                                     [0.0, 45.0],
-                                     [0.0, 67.5],
-                                     [0.0, 90.0]]],
-                           ["THJ2", [[0.0, -40.0],
-                                     [0.0, -20.0],
-                                     [0.0, 0.0],
-                                     [0.0, 20.0],
-                                     [0.0, 40.0]]],
-                           ["THJ3", [[0.0, -15.0],
-                                     [0.0, 0.0],
-                                     [0.0, 15.0]]],
-                           ["THJ4", [[0.0, 0.0],
-                                     [0.0, 22.5],
-                                     [0.0, 45.0],
-                                     [0.0, 67.5]]],
-                           ["THJ5", [[0.0, -60.0],
-                                     [0.0, -30.0],
-                                     [0.0, 0.0],
-                                     [0.0, 30.0],
-                                     [0.0, 60.0]]]],
-
-                 "Wrist": [["WRJ1", [[0.0, -45.0],
-                                     [0.0, -22.5],
-                                     [0.0, 0.0],
-                                     [0.0, 15.0],
-                                     [0.0, 30.0]]],
-                           ["WRJ2", [[0.0, -30.0],
-                                     [0.0, 0.0],
-                                     [0.0, 10.0]]]]
-                 }
 
     def __init__(self,
                  tree_widget,
                  progress_bar,
                  fingers=["First Finger", "Middle Finger",
                           "Ring Finger", "Little Finger",
-                          "Thumb", "Wrist"]):
+                          "Thumb", "Wrist"],
+                 old_version=False):
+
+        self.old_version = old_version
+
+        # TODO: Import this from an xml file?
+        self.joint_map = {"First Finger": [["FFJ1", [[0.0, 0.0],
+                                                     [0.0, 22.5],
+                                                     [0.0, 45.0],
+                                                     [0.0, 67.5],
+                                                     [0.0, 90.0]]],
+                                           ["FFJ2", [[0.0, 0.0],
+                                                     [0.0, 22.5],
+                                                     [0.0, 45.0],
+                                                     [0.0, 67.5],
+                                                     [0.0, 90.0]]],
+                                           ["FFJ3", [[0.0, 0.0],
+                                                     [0.0, 22.5],
+                                                     [0.0, 45.0],
+                                                     [0.0, 67.5],
+                                                     [0.0, 90.0]]],
+                                           ["FFJ4", [[0.0, -20.0],
+                                                     [0.0, -10.0],
+                                                     [0.0, 0.0],
+                                                     [0.0, 10.0],
+                                                     [0.0, 20.0]]]],
+
+                          "Middle Finger": [["MFJ1", [[0.0, 0.0],
+                                                      [0.0, 22.5],
+                                                      [0.0, 45.0],
+                                                      [0.0, 67.5],
+                                                      [0.0, 90.0]]],
+                                            ["MFJ2", [[0.0, 0.0],
+                                                      [0.0, 22.5],
+                                                      [0.0, 45.0],
+                                                      [0.0, 67.5],
+                                                      [0.0, 90.0]]],
+                                            ["MFJ3", [[0.0, 0.0],
+                                                      [0.0, 22.5],
+                                                      [0.0, 45.0],
+                                                      [0.0, 67.5],
+                                                      [0.0, 90.0]]],
+                                            ["MFJ4", [[0.0, -20.0],
+                                                      [0.0, -10.0],
+                                                      [0.0, 0.0],
+                                                      [0.0, 10.0],
+                                                      [0.0, 20.0]]]],
+
+                          "Ring Finger": [["RFJ1", [[0.0, 0.0],
+                                                    [0.0, 22.5],
+                                                    [0.0, 45.0],
+                                                    [0.0, 67.5],
+                                                    [0.0, 90.0]]],
+                                          ["RFJ2", [[0.0, 0.0],
+                                                    [0.0, 22.5],
+                                                    [0.0, 45.0],
+                                                    [0.0, 67.5],
+                                                    [0.0, 90.0]]],
+                                          ["RFJ3", [[0.0, 0.0],
+                                                    [0.0, 22.5],
+                                                    [0.0, 45.0],
+                                                    [0.0, 67.5],
+                                                    [0.0, 90.0]]],
+                                          ["RFJ4", [[0.0, -20.0],
+                                                    [0.0, -10.0],
+                                                    [0.0, 0.0],
+                                                    [0.0, 10.0],
+                                                    [0.0, 20.0]]]],
+
+                          "Little Finger": [["LFJ1", [[0.0, 0.0],
+                                                      [0.0, 22.5],
+                                                      [0.0, 45.0],
+                                                      [0.0, 67.5],
+                                                      [0.0, 90.0]]],
+                                            ["LFJ2", [[0.0, 0.0],
+                                                      [0.0, 22.5],
+                                                      [0.0, 45.0],
+                                                      [0.0, 67.5],
+                                                      [0.0, 90.0]]],
+                                            ["LFJ3", [[0.0, 0.0],
+                                                      [0.0, 22.5],
+                                                      [0.0, 45.0],
+                                                      [0.0, 67.5],
+                                                      [0.0, 90.0]]],
+                                            ["LFJ4", [[0.0, -20.0],
+                                                      [0.0, -10.0],
+                                                      [0.0, 0.0],
+                                                      [0.0, 10.0],
+                                                      [0.0, 20.0]]],
+                                            ["LFJ5", [[0.0, 0.0],
+                                                      [0.0, 22.5],
+                                                      [0.0, 45.0],
+                                                      [0.0, 67.5],
+                                                      [0.0, 90.0]]]],
+
+                          "Wrist": [["WRJ1", [[0.0, -45.0],
+                                              [0.0, -22.5],
+                                              [0.0, 0.0],
+                                              [0.0, 15.0],
+                                              [0.0, 30.0]]],
+                                    ["WRJ2", [[0.0, -30.0],
+                                              [0.0, 0.0],
+                                              [0.0, 10.0]]]]
+                          }
+
+        if not self.old_version:
+            self.joint_map["Thumb"] = [[["THJ1", "THJ2"], [[[0.0, 0.0], [0.0, 40]],
+                                                           [[0.0, 0.0], [0.0, 20]],
+                                                           [[0.0, 0.0], [0.0, 0.0]],
+                                                           [[0.0, 0.0], [0.0, -20.0]],
+                                                           [[0.0, 0.0], [0.0, -40.0]],
+                                                           [[0.0, 0.0], [22.5, 40.0]],
+                                                           [[0.0, 0.0], [22.5, 20.0]],
+                                                           [[0.0, 0.0], [22.5, 0.0]],
+                                                           [[0.0, 0.0], [22.5, -20.0]],
+                                                           [[0.0, 0.0], [22.5, -40.0]],
+                                                           [[0.0, 0.0], [45.0, 40.0]],
+                                                           [[0.0, 0.0], [45.0, 20.0]],
+                                                           [[0.0, 0.0], [45.0, 0.0]],
+                                                           [[0.0, 0.0], [45.0, -20.0]],
+                                                           [[0.0, 0.0], [45.0, -40.0]],
+                                                           [[0.0, 0.0], [67.5, 40.0]],
+                                                           [[0.0, 0.0], [67.5, 20.0]],
+                                                           [[0.0, 0.0], [67.5, 0.0]],
+                                                           [[0.0, 0.0], [67.5, -20.0]],
+                                                           [[0.0, 0.0], [67.5, -40.0]],
+                                                           [[0.0, 0.0], [90.0, 40.0]],
+                                                           [[0.0, 0.0], [90.0, 20.0]],
+                                                           [[0.0, 0.0], [90.0, 0.0]],
+                                                           [[0.0, 0.0], [90.0, -20.0]],
+                                                           [[0.0, 0.0], [90.0, -40]]]],
+                                       ["THJ3", [[0.0, -15.0],
+                                                 [0.0, 0.0],
+                                                 [0.0, 15.0]]],
+                                       ["THJ4", [[0.0, 0.0],
+                                                 [0.0, 22.5],
+                                                 [0.0, 45.0],
+                                                 [0.0, 67.5]]],
+                                       ["THJ5", [[0.0, -60.0],
+                                                 [0.0, -30.0],
+                                                 [0.0, 0.0],
+                                                 [0.0, 30.0],
+                                                 [0.0, 60.0]]]]
+        else:
+            self.joint_map["Thumb"] = [["THJ1", [[0.0, 0.0],
+                                                 [0.0, 22.5],
+                                                 [0.0, 45.0],
+                                                 [0.0, 67.5],
+                                                 [0.0, 90.0]]],
+                                       ["THJ2", [[0.0, -40.0],
+                                                 [0.0, -20.0],
+                                                 [0.0, 0.0],
+                                                 [0.0, 20.0],
+                                                 [0.0, 40.0]]],
+                                       ["THJ3", [[0.0, -15.0],
+                                                 [0.0, 0.0],
+                                                 [0.0, 15.0]]],
+                                       ["THJ4", [[0.0, 0.0],
+                                                 [0.0, 22.5],
+                                                 [0.0, 45.0],
+                                                 [0.0, 67.5]]],
+                                       ["THJ5", [[0.0, -60.0],
+                                                 [0.0, -30.0],
+                                                 [0.0, 0.0],
+                                                 [0.0, 30.0],
+                                                 [0.0, 60.0]]]]
+
         self.fingers = []
         # this is set to False if the user doesn't want to continue
         # when there are no EtherCAT hand node currently running.
@@ -461,12 +571,34 @@ class HandCalibration(QTreeWidgetItem):
         f.close()
         yaml_config = yaml.load(document)
 
-        for joint in yaml_config["sr_calibrations"]:
+        if "sr_calibrations" not in yaml_config.keys():
+            error_string = ('The selected calibration file does not contain calibration ' +
+                            'values.')
+            rospy.logwarn(error_string)
+            QMessageBox(QMessageBox.Critical, 'Calibration file error', error_string).exec_()
+            return
+
+        if self.old_version:
+            used_yaml_config = yaml_config["sr_calibrations"]
+        else:
+            if "sr_calibrations_coupled" not in yaml_config.keys():
+                error_string = ('The selected calibration file does not contain coupled thumb calibration ' +
+                                'values. Choose one that does, or switch to "Old Version" mode.')
+                rospy.logwarn(error_string)
+                QMessageBox(QMessageBox.Critical, 'Calibration file error', error_string).exec_()
+                return
+            used_yaml_config = yaml_config["sr_calibrations"] + yaml_config["sr_calibrations_coupled"]
+        for joint in used_yaml_config:
             it = QTreeWidgetItemIterator(self)
             while it.value():
-                if it.value().text(1) == joint[0]:
+                if type(joint[0]) is not list:
+                    joint_name = joint[0]
+                else:
+                    joint_name = ", ".join(joint[0])
+                if it.value().text(1) == joint_name:
                     it.value().load_joint_calibration(joint[1])
                 it += 1
+
         self.progress_bar.setValue(100)
 
     def save(self, filepath):
@@ -485,19 +617,43 @@ class HandCalibration(QTreeWidgetItem):
         # yaml_config["sr_calibrations"] = joint_configs
         # full_config_to_write = yaml.dump(yaml_config,
         # default_flow_style=False)
-        full_config_to_write = "{\'sr_calibrations\': [\n"
+        full_config_to_write = "sr_calibrations: [\n"
         for joint_config in joint_configs:
-            full_config_to_write += "[\""
-            full_config_to_write += joint_config[0] + "\", "
+            if type(joint_config[0]) is not list:
+                full_config_to_write += "[\""
+                full_config_to_write += joint_config[0] + "\", "
 
-            # the etherCAT driver wants floats
-            for index, calib in enumerate(joint_config[1]):
-                joint_config[1][index][0] = float(calib[0])
-                joint_config[1][index][1] = float(calib[1])
+                # the etherCAT driver wants floats
+                for index, calib in enumerate(joint_config[1]):
+                    joint_config[1][index][0] = float(calib[0])
+                    joint_config[1][index][1] = float(calib[1])
 
-            full_config_to_write += str(joint_config[1])
-            full_config_to_write += "], \n"
-        full_config_to_write += "]}"
+                full_config_to_write += str(joint_config[1])
+                full_config_to_write += "], \n"
+        full_config_to_write += "]"
+
+        if not self.old_version:
+            full_config_to_write += "\n\nsr_calibrations_coupled: [\n"
+            for joint_config in joint_configs:
+                if type(joint_config[0]) is list:
+                    full_config_to_write += "[[\""
+                    full_config_to_write += joint_config[0][0] + "\", \"" + joint_config[0][1] + "\"], ["
+
+                    for index, calib in enumerate(joint_config[1]):
+                        joint_config[1][index][0][0] = float(calib[0][0])
+                        joint_config[1][index][0][1] = float(calib[0][1])
+                        joint_config[1][index][1][0] = float(calib[1][0])
+                        joint_config[1][index][1][1] = float(calib[1][1])
+
+                        if index > 0:
+                            full_config_to_write += ", \n                    "
+                        full_config_to_write += "["
+                        full_config_to_write += str(joint_config[1][index][0]) + ", "
+                        full_config_to_write += str(joint_config[1][index][1][0]) + ", " + \
+                            str(joint_config[1][index][1][1])
+                        full_config_to_write += "]"
+                    full_config_to_write += "]]"
+            full_config_to_write += "\n]"
 
         f = open(filepath, 'w')
         f.write(full_config_to_write)
