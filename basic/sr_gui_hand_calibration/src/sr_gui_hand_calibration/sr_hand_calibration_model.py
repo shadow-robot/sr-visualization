@@ -248,7 +248,11 @@ class JointCalibration(QTreeWidgetItem):
             all_equal = True
             last_data = self.last_raw_values[0]
             for data in self.last_raw_values:
-                if data != last_data:
+                if type(data) is not list:
+                    last_data_not_equal = data != last_data
+                else:
+                    last_data_not_equal = (data[0] != last_data[0] or data[1] != last_data[1])
+                if last_data_not_equal:
                     all_equal = False
                     break
             if all_equal:
