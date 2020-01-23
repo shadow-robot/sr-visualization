@@ -229,8 +229,13 @@ class JointCalibration(QTreeWidgetItem):
         Update the joint position if there are enough nonequal values
         If the values are equal it can be assumed the sensor are not measuring properly
         """
-        raw_value = self.robot_lib.get_raw_value(self.joint_name)
-        self.setText(2, str(raw_value))
+        if type(self.joint_name) is not list:
+            raw_value = self.robot_lib.get_raw_value(self.joint_name)
+            self.setText(2, str(raw_value))
+        else:
+            raw_value_0 = self.robot_lib.get_raw_value(self.joint_name[0])
+            raw_value_1 = self.robot_lib.get_raw_value(self.joint_name[1])
+            self.setText(2, str(raw_value_0) + ", " + str(raw_value_1))
 
         # if the 5 last values are equal, then display a warning
         # as there's always some noise on the values
