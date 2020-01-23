@@ -233,8 +233,9 @@ class JointCalibration(QTreeWidgetItem):
             raw_value = self.robot_lib.get_raw_value(self.joint_name)
             self.setText(2, str(raw_value))
         else:
-            raw_value_0 = self.robot_lib.get_raw_value(self.joint_name[0])
-            raw_value_1 = self.robot_lib.get_raw_value(self.joint_name[1])
+            raw_value = []
+            raw_value.append(self.robot_lib.get_raw_value(self.joint_name[0]))
+            raw_value.append(self.robot_lib.get_raw_value(self.joint_name[1]))
             self.setText(2, str(raw_value_0) + ", " + str(raw_value_1))
 
         # if the 5 last values are equal, then display a warning
