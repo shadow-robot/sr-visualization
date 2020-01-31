@@ -86,6 +86,7 @@
       <item name="Max_Force" type="Float"/>
       <item name="Position_Deadband" type="Float"/>
       <item name="Friction_Deadband" type="Float"/>
+      <item name="Anti_Windup" type="Bool"/>
     </headers>
   </controller>
 
