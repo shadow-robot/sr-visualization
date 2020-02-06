@@ -464,7 +464,7 @@ class SrDataVisualizer(Plugin):
         self.show_tactiles = False
         for topic in topic_list:
             for value in topic:
-                if "bio" in value:
+                if "bio" in value or "Bio" in value:
                     self._include_tactile_plugin()
                     self.show_tactiles = True
         if self.show_tactiles is False:
