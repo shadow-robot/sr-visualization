@@ -391,10 +391,10 @@ class SrGuiCybergloveCalibrator(Plugin):
             error = "Error writing file."
 
         if error is not None:
-            QtWidgets.QMessageBox.error(self._widget, "Error writing config.",
-                                        error,
-                                        QtWidgets.QMessageBox.Cancel,
-                                        QtWidgets.QMessageBox.Cancel)
+            QtWidgets.QMessageBox.critical(self._widget, "Error writing config!",
+                                           error,
+                                           QtWidgets.QMessageBox.Ok,
+                                           QtWidgets.QMessageBox.Ok)
         elif QtWidgets.QMessageBox.question(self._widget,
                                             "Load new Calibration",
                                             "Do you want to load the new calibration file?",
