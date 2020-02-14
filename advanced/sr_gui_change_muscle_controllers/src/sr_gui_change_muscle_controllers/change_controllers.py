@@ -39,7 +39,7 @@ from python_qt_binding import loadUi
 from QtCore import QEvent, QObject, Qt, QTimer, Slot
 from QtGui import QIcon
 from QtWidgets import QShortcut, QMessageBox, QWidget
-from controller_manager_msgs.srv import ListControllers, SwitchController, LoadController
+from controller_manager_msgs.srv import ListControllers, SwitchController, SwitchControllerRequest, LoadController
 from sr_robot_msgs.srv import ChangeControlType
 from sr_robot_msgs.msg import ControlType
 
@@ -109,6 +109,11 @@ class SrGuiChangeControllers(Plugin):
         loadUi(ui_file, self._widget)
         self._widget.setObjectName('SrChangeControllersUi')
         context.add_widget(self._widget)
+
+        self.list_controllers = rospy.ServiceProxy(
+            'controller_manager/list_controllers', ListControllers)
+        self.switch_controllers = rospy.ServiceProxy(
+                'controller_manager/switch_controller', SwitchController)
 
         # Setting the initial state of the controller buttons
         self._widget.btn_valve.setIcon(self.CONTROLLER_OFF_ICON)
@@ -181,10 +186,9 @@ class SrGuiChangeControllers(Plugin):
         Switch controller type
         """
         success = True
-        list_controllers = rospy.ServiceProxy(
-            'controller_manager/list_controllers', ListControllers)
+
         try:
-            resp1 = list_controllers()
+            resp1 = self.list_controllers()
         except rospy.ServiceException:
             success = False
 
@@ -207,11 +211,14 @@ class SrGuiChangeControllers(Plugin):
                     if not resp1.ok:
                         success = False
 
-            switch_controllers = rospy.ServiceProxy(
-                'controller_manager/switch_controller', SwitchController)
+            req.start_controllers = controllers_to_start
+            req.stop_controllers = current_controllers
+            req.strictness = SwitchControllerRequest.BEST_EFFORT
+            req.start_asap = False
+            req.timeout = 0.0
+
             try:
-                resp1 = switch_controllers(
-                    controllers_to_start, current_controllers, SwitchController._request_class.BEST_EFFORT, False, 0)
+                resp1 = self.switch_controller.call(req)
             except rospy.ServiceException:
                 success = False
 
