@@ -355,7 +355,7 @@ class SrGuiAdvancedControls(Plugin):
             try:
                 resp1 = switch_controllers(
                     controllers_to_start, controllers_to_stop,
-                    SwitchController._request_class.BEST_EFFORT)
+                    SwitchController._request_class.BEST_EFFORT, False, 0)
             except rospy.ServiceException:
                 success = False
 

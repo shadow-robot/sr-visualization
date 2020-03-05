@@ -14,6 +14,6 @@ install( DIRECTORY uis resource DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION} 
 
 install( FILES sr_gui_hand_calibration_plugin.xml DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION} )
 
-if(CATKIN_ENABLE_TESTING)
-  catkin_add_nosetests(test/test_hand_calibration.py)
-endif()
+#if(CATKIN_ENABLE_TESTING)
+#  catkin_add_nosetests(test/test_hand_calibration.py)
+#endif()

@@ -1,4 +1,19 @@
 #!/usr/bin/env python
+
+# Copyright 2020 Shadow Robot Company Ltd.
+#
+# This program is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the Free
+# Software Foundation version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program. If not, see <http://www.gnu.org/licenses/>.
+
 import yaml
 import matplotlib
 import numpy as np
@@ -464,7 +479,7 @@ class SrDataVisualizer(Plugin):
         self.show_tactiles = False
         for topic in topic_list:
             for value in topic:
-                if "bio" in value:
+                if "bio" in value or "Bio" in value:
                     self._include_tactile_plugin()
                     self.show_tactiles = True
         if self.show_tactiles is False:
