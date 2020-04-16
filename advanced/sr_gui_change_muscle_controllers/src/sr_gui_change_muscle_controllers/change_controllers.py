@@ -211,7 +211,7 @@ class SrGuiChangeControllers(Plugin):
                 'controller_manager/switch_controller', SwitchController)
             try:
                 resp1 = switch_controllers(
-                    controllers_to_start, current_controllers, SwitchController._request_class.BEST_EFFORT)
+                    controllers_to_start, current_controllers, SwitchController._request_class.BEST_EFFORT, False, 0)
             except rospy.ServiceException:
                 success = False
 
