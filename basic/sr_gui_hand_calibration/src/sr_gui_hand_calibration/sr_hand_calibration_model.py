@@ -19,7 +19,7 @@ import rospy
 
 from sr_robot_lib.etherCAT_hand_lib import EtherCAT_Hand_Lib
 from PyQt5.QtGui import QColor, QIcon
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QTreeWidgetItemIterator, QMessageBox
+from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QTreeWidgetItemIterator, QMessageBox, QPushButton
 from PyQt5.QtCore import QTimer, pyqtSignal
 
 import yaml
@@ -168,10 +168,12 @@ class JointCalibration(QTreeWidgetItem):
 
         self.calibrations = []
         self.last_raw_values = deque()
+        self.plot_button = QPushButton()
 
         if type(self.joint_name) is not list:
             QTreeWidgetItem.__init__(
                 self, parent_widget, ["", joint_name, "", ""])
+            tree_widget.setItemWidget(self, 2, self.plot_button)
             for calibration in calibrations:
                 self.calibrations.append(IndividualCalibration(joint_name,
                                                                calibration[0], calibration[1],
@@ -179,6 +181,7 @@ class JointCalibration(QTreeWidgetItem):
         else:
             QTreeWidgetItem.__init__(
                 self, parent_widget, ["", joint_name[0] + ", " + joint_name[1], "", ""])
+            tree_widget.setItemWidget(self, 2, self.plot_button)
             for calibration in calibrations:
                 self.calibrations.append(IndividualCalibrationCoupled(joint_name,
                                                                       calibration[0], calibration[1],
@@ -230,12 +233,12 @@ class JointCalibration(QTreeWidgetItem):
         """
         if type(self.joint_name) is not list:
             raw_value = self.robot_lib.get_raw_value(self.joint_name)
-            self.setText(2, str(raw_value))
+            self.plot_button.setText(str(raw_value))
         else:
             raw_value = []
             raw_value.append(self.robot_lib.get_raw_value(self.joint_name[0]))
             raw_value.append(self.robot_lib.get_raw_value(self.joint_name[1]))
-            self.setText(2, str(raw_value[0]) + ", " + str(raw_value[1]))
+            self.plot_button.setText(str(raw_value[0]) + ", " + str(raw_value[1]))
 
         # if the 5 last values are equal, then display a warning
         # as there's always some noise on the values
