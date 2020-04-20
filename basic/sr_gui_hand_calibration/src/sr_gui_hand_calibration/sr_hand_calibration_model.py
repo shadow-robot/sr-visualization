@@ -343,7 +343,7 @@ class FingerCalibration(QTreeWidgetItem):
                                                 parent_widget=self,
                                                 tree_widget=tree_widget,
                                                 robot_lib=robot_lib,
-                                                package_path = package_path))
+                                                package_path=package_path))
 
         tree_widget.addTopLevelItem(self)
 
