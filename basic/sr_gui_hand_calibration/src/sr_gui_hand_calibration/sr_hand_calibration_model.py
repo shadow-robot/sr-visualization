@@ -205,10 +205,21 @@ class JointCalibration(QTreeWidgetItem):
 
     def plot_raw_button_clicked(self):
         if type(self.joint_name) is not list:
-            template_filename = "{}/resource/rqt_multiplot_1_sensor.xml".format(self.package_path)
-            replace_list = [['sensor_id_0', str(self.robot_lib.get_raw_value_index(self.joint_name))],
-                            ['sensor_name_0', self.joint_name]]
+            if type(self.raw_value_index) is not list:
+                # Single joint, single sensor
+                template_filename = "{}/resource/rqt_multiplot_1_sensor.xml".format(self.package_path)
+                replace_list = [['sensor_id_0', str(self.raw_value_index)],
+                                ['sensor_name_0', self.joint_name]]
+            else:
+                # Single joint, two sensors
+                template_filename = "{}/resource/rqt_multiplot_2_sensors.xml".format(self.package_path)
+                sensor_names = self.robot_lib.get_compound_names(self.joint_name)
+                replace_list = []
+                for i, sensor_index in enumerate(self.raw_value_index):
+                    replace_list.append(["sensor_id_{}".format(i), str(sensor_index)])
+                    replace_list.append(["sensor_name_{}".format(i), sensor_names[i]])
         else:
+            # Two coupled joints, each with a single sensor
             template_filename = "{}/resource/rqt_multiplot_2_sensors.xml".format(self.package_path)
             replace_list = []
             for i, joint_name in enumerate(self.joint_name):
@@ -221,8 +232,6 @@ class JointCalibration(QTreeWidgetItem):
             rospy.logerr("Failed to open multiplot template file: {}".format(template_filename))
             return
         for replacement in replace_list:
-            rospy.loginfo(replacement)
-            rospy.loginfo("{}, {}".format(replacement[0], replacement[1]))
             template = template.replace(replacement[0], replacement[1])
         temporary_file_name = "{}/resource/tmp_multiplot.xml".format(self.package_path)
         try:
