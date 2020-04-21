@@ -204,27 +204,32 @@ class JointCalibration(QTreeWidgetItem):
         self.timer.timeout.connect(self.update_joint_pos)
 
     def plot_raw_button_clicked(self):
+        temporary_file_name = "{}/resource/tmp_plot.xml".format(self.package_path)
         if type(self.joint_name) is not list:
             if type(self.raw_value_index) is not list:
                 # Single joint, single sensor
                 template_filename = "{}/resource/rqt_multiplot_1_sensor.xml".format(self.package_path)
                 replace_list = [['sensor_id_0', str(self.raw_value_index)],
                                 ['sensor_name_0', self.joint_name]]
+                process = ["rosrun", "rqt_multiplot", "rqt_multiplot", "--multiplot-config", temporary_file_name,
+                           "--multiplot-run-all"]
             else:
                 # Single joint, two sensors
-                template_filename = "{}/resource/rqt_multiplot_2_sensors.xml".format(self.package_path)
+                template_filename = "{}/resource/plotjuggler_2_sensors.xml".format(self.package_path)
                 sensor_names = self.robot_lib.get_compound_names(self.joint_name)
                 replace_list = []
                 for i, sensor_index in enumerate(self.raw_value_index):
                     replace_list.append(["sensor_id_{}".format(i), str(sensor_index)])
                     replace_list.append(["sensor_name_{}".format(i), sensor_names[i]])
+                process = ["rosrun", "plotjuggler", "PlotJuggler", "-n", "-l", temporary_file_name]
         else:
             # Two coupled joints, each with a single sensor
-            template_filename = "{}/resource/rqt_multiplot_2_sensors.xml".format(self.package_path)
+            template_filename = "{}/resource/plotjuggler_2_sensors.xml".format(self.package_path)
             replace_list = []
             for i, joint_name in enumerate(self.joint_name):
                 replace_list.append(["sensor_id_{}".format(i), str(self.raw_value_index[i])])
                 replace_list.append(["sensor_name_{}".format(i), joint_name])
+                process = ["rosrun", "plotjuggler", "PlotJuggler", "-n", "-l", temporary_file_name]
         try:
             with open(template_filename, "r") as f:
                 template = f.read()
@@ -233,16 +238,13 @@ class JointCalibration(QTreeWidgetItem):
             return
         for replacement in replace_list:
             template = template.replace(replacement[0], replacement[1])
-        temporary_file_name = "{}/resource/tmp_multiplot.xml".format(self.package_path)
         try:
             with open(temporary_file_name, "w+") as f:
                 f.write(template)
         except:
             rospy.logerr("Failed to write temportary multiplot configuration file: {}".format(temporary_file_name))
             return
-        self.multiplot_processes.append(subprocess.Popen(["rosrun", "rqt_multiplot", "rqt_multiplot",
-                                                          "--multiplot-config", temporary_file_name,
-                                                          "--multiplot-run-all"]))
+        self.multiplot_processes.append(subprocess.Popen(process))
 
     def load_joint_calibration(self, new_calibrations):
         for calibration in self.calibrations:
