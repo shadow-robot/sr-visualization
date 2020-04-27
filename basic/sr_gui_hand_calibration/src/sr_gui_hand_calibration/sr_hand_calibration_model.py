@@ -16,10 +16,12 @@
 #
 
 import rospy
+import rospkg
+import subprocess
 
 from sr_robot_lib.etherCAT_hand_lib import EtherCAT_Hand_Lib
 from PyQt5.QtGui import QColor, QIcon
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QTreeWidgetItemIterator, QMessageBox
+from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QTreeWidgetItemIterator, QMessageBox, QPushButton
 from PyQt5.QtCore import QTimer, pyqtSignal
 
 import yaml
@@ -161,28 +163,38 @@ class JointCalibration(QTreeWidgetItem):
     def __init__(self, joint_name,
                  calibrations,
                  parent_widget, tree_widget,
-                 robot_lib):
+                 robot_lib, package_path):
         self.joint_name = joint_name
         self.tree_widget = tree_widget
         self.robot_lib = robot_lib
 
         self.calibrations = []
         self.last_raw_values = deque()
+        self.plot_button = QPushButton()
+        self.plot_button.clicked.connect(self.plot_raw_button_clicked)
+        self.package_path = package_path
+        self.multiplot_processes = []
 
         if type(self.joint_name) is not list:
             QTreeWidgetItem.__init__(
                 self, parent_widget, ["", joint_name, "", ""])
+            tree_widget.setItemWidget(self, 2, self.plot_button)
             for calibration in calibrations:
                 self.calibrations.append(IndividualCalibration(joint_name,
                                                                calibration[0], calibration[1],
                                                                self, tree_widget, robot_lib))
+            self.raw_value_index = robot_lib.get_raw_value_index(self.joint_name)
         else:
             QTreeWidgetItem.__init__(
                 self, parent_widget, ["", joint_name[0] + ", " + joint_name[1], "", ""])
+            tree_widget.setItemWidget(self, 2, self.plot_button)
             for calibration in calibrations:
                 self.calibrations.append(IndividualCalibrationCoupled(joint_name,
                                                                       calibration[0], calibration[1],
                                                                       self, tree_widget, robot_lib))
+            self.raw_value_index = []
+            for name in self.joint_name:
+                self.raw_value_index.append(robot_lib.get_raw_value_index(name))
 
         # display the current joint position in the GUI
         self.timer = QTimer()
@@ -190,6 +202,49 @@ class JointCalibration(QTreeWidgetItem):
 
         tree_widget.addTopLevelItem(self)
         self.timer.timeout.connect(self.update_joint_pos)
+
+    def plot_raw_button_clicked(self):
+        temporary_file_name = "{}/resource/tmp_plot.xml".format(self.package_path)
+        if type(self.joint_name) is not list:
+            if type(self.raw_value_index) is not list:
+                # Single joint, single sensor
+                template_filename = "{}/resource/rqt_multiplot_1_sensor.xml".format(self.package_path)
+                replace_list = [['sensor_id_0', str(self.raw_value_index)],
+                                ['sensor_name_0', self.joint_name]]
+                process = ["rosrun", "rqt_multiplot", "rqt_multiplot", "--multiplot-config", temporary_file_name,
+                           "--multiplot-run-all"]
+            else:
+                # Single joint, two sensors
+                template_filename = "{}/resource/plotjuggler_2_sensors.xml".format(self.package_path)
+                sensor_names = self.robot_lib.get_compound_names(self.joint_name)
+                replace_list = []
+                for i, sensor_index in enumerate(self.raw_value_index):
+                    replace_list.append(["sensor_id_{}".format(i), str(sensor_index)])
+                    replace_list.append(["sensor_name_{}".format(i), sensor_names[i]])
+                process = ["rosrun", "plotjuggler", "PlotJuggler", "-n", "-l", temporary_file_name]
+        else:
+            # Two coupled joints, each with a single sensor
+            template_filename = "{}/resource/plotjuggler_2_sensors.xml".format(self.package_path)
+            replace_list = []
+            for i, joint_name in enumerate(self.joint_name):
+                replace_list.append(["sensor_id_{}".format(i), str(self.raw_value_index[i])])
+                replace_list.append(["sensor_name_{}".format(i), joint_name])
+                process = ["rosrun", "plotjuggler", "PlotJuggler", "-n", "-l", temporary_file_name]
+        try:
+            with open(template_filename, "r") as f:
+                template = f.read()
+        except:
+            rospy.logerr("Failed to open multiplot template file: {}".format(template_filename))
+            return
+        for replacement in replace_list:
+            template = template.replace(replacement[0], replacement[1])
+        try:
+            with open(temporary_file_name, "w+") as f:
+                f.write(template)
+        except:
+            rospy.logerr("Failed to write temportary multiplot configuration file: {}".format(temporary_file_name))
+            return
+        self.multiplot_processes.append(subprocess.Popen(process))
 
     def load_joint_calibration(self, new_calibrations):
         for calibration in self.calibrations:
@@ -230,12 +285,12 @@ class JointCalibration(QTreeWidgetItem):
         """
         if type(self.joint_name) is not list:
             raw_value = self.robot_lib.get_raw_value(self.joint_name)
-            self.setText(2, str(raw_value))
+            self.plot_button.setText(str(raw_value))
         else:
             raw_value = []
             raw_value.append(self.robot_lib.get_raw_value(self.joint_name[0]))
             raw_value.append(self.robot_lib.get_raw_value(self.joint_name[1]))
-            self.setText(2, str(raw_value[0]) + ", " + str(raw_value[1]))
+            self.plot_button.setText(str(raw_value[0]) + ", " + str(raw_value[1]))
 
         # if the 5 last values are equal, then display a warning
         # as there's always some noise on the values
@@ -265,6 +320,8 @@ class JointCalibration(QTreeWidgetItem):
 
     def on_close(self):
         self.timer.stop()
+        for process in self.multiplot_processes:
+            process.terminate()
 
 
 class FingerCalibration(QTreeWidgetItem):
@@ -276,7 +333,7 @@ class FingerCalibration(QTreeWidgetItem):
     def __init__(self, finger_name,
                  finger_joints,
                  parent_widget, tree_widget,
-                 robot_lib):
+                 robot_lib, package_path):
 
         QTreeWidgetItem.__init__(
             self, parent_widget, [finger_name, "", "", ""])
@@ -287,7 +344,8 @@ class FingerCalibration(QTreeWidgetItem):
                                                 calibrations=joint[1],
                                                 parent_widget=self,
                                                 tree_widget=tree_widget,
-                                                robot_lib=robot_lib))
+                                                robot_lib=robot_lib,
+                                                package_path=package_path))
 
         tree_widget.addTopLevelItem(self)
 
@@ -307,6 +365,8 @@ class HandCalibration(QTreeWidgetItem):
                  old_version=False):
 
         self.old_version = old_version
+
+        self.package_path = rospkg.RosPack().get_path('sr_gui_hand_calibration')
 
         # TODO: Import this from an xml file?
         self.joint_map = {"First Finger": [["FFJ1", [[0.0, 0.0],
@@ -492,7 +552,8 @@ class HandCalibration(QTreeWidgetItem):
                 self.fingers.append(FingerCalibration(finger,
                                                       self.joint_map[finger],
                                                       self, tree_widget,
-                                                      self.robot_lib))
+                                                      self.robot_lib,
+                                                      self.package_path))
 
             else:
                 print finger, " not found in the calibration map"
