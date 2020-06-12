@@ -66,6 +66,10 @@ class SrDataVisualizer(Plugin):
         self._hand_finder = HandFinder()
         self._hand_parameters = self._hand_finder.get_hand_parameters()
         self._joint_prefix = self._hand_parameters.joint_prefix
+        self._hand_g = False
+        for hand, joints in self._hand_finder.hand_joints.items():
+            if 'THJ3' not in joints:
+                self._hand_g = True
         for key in self._hand_parameters.joint_prefix:
             self.hand_serial = key
         self._joint_prefix = self._hand_parameters.joint_prefix[self.hand_serial]
@@ -95,7 +99,10 @@ class SrDataVisualizer(Plugin):
 
         motor_stat_keys_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'config',
                                             'data_visualiser_motor_stat_keys.yaml')
-        if self._joint_prefix == "rh_":
+        if self._hand_g:
+            parameters_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'config',
+                                           'data_visualiser_parameters_rh_lite.yaml')
+        elif self._joint_prefix == "rh_":
             parameters_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'config',
                                            'data_visualiser_parameters_rh.yaml')
         elif self._joint_prefix == "lh_":
