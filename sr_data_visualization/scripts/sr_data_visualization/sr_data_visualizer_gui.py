@@ -644,7 +644,10 @@ class SrDataVisualizer(Plugin):
                         data_index = self.motor_stat_keys[0][string.upper(self.graph_names_global["motor_stat"][i])]
                         data_point = data.status[data_index]
                         line_number = self.motor_stat_keys[1][x]
-                        data_value = data_point.values[line_number].value
+                        try:
+                            data_value = data_point.values[line_number].value
+                        except IndexError as e:
+                            rospy.logerr("Can't find %s. Exception: %s", data_point.name, e)
                         scale = float(ymax / self.global_yaml["graphs"][2]["ranges"][j][1])
                         if self.graph_dict_global["motor_stat"][self.graph_names_global["motor_stat"][i]].plot_all:
                             graph.addData(float(data_value) * scale, j)
