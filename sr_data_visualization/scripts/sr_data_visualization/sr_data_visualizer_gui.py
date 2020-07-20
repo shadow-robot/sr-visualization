@@ -167,6 +167,7 @@ class SrDataVisualizer(Plugin):
         for element in graph_type:
             for key, graph in self.graph_dict_global[element].iteritems():
                 graph.enabled = False
+        self.init_complete = False
 
     def on_resize_main(self, empty):
         if (self._widget.width() * self._widget.height()) < 3500000:
