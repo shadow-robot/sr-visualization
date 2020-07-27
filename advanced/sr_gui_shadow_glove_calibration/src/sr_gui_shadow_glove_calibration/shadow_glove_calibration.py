@@ -22,6 +22,7 @@ from QtWidgets import *
 from QtGui import *
 from QtCore import *
 
+
 # TODO: This will be replaced by imported, actual calibration script
 def mock_calibration_script(hand_size_0, hand_size_1, source_position_0, source_position_1, source_position_2):
     return [0, 0, 0]
@@ -49,7 +50,7 @@ class SrGuiShadowGloveCalibration(Plugin):
         self.user_calibration = {}
         self.calibrations_path = '/home/user/shadow_glove_user_calibration_files'
         if not os.path.exists(self.calibrations_path):
-            self.calibrations_path= '/home/user'
+            self.calibrations_path = '/home/user'
 
     def message_box_throw(self, message):
             msg = QMessageBox()
@@ -65,12 +66,16 @@ class SrGuiShadowGloveCalibration(Plugin):
         self.user_calibration['mf_knuckle_to_glove_source_pose']['x'] = float(self._widget.source_position_0.text())
         self.user_calibration['mf_knuckle_to_glove_source_pose']['y'] = float(self._widget.source_position_1.text())
         self.user_calibration['mf_knuckle_to_glove_source_pose']['z'] = float(self._widget.source_position_2.text())
-        self.user_calibration['mf_knuckle_to_glove_source_pose']['yaw'] = float(self._widget.source_orientation_0.text())
-        self.user_calibration['mf_knuckle_to_glove_source_pose']['pitch'] = float(self._widget.source_orientation_1.text())
-        self.user_calibration['mf_knuckle_to_glove_source_pose']['roll'] = float(self._widget.source_orientation_2.text())
+        self.user_calibration['mf_knuckle_to_glove_source_pose']['yaw'] = \
+            float(self._widget.source_orientation_0.text())
+        self.user_calibration['mf_knuckle_to_glove_source_pose']['pitch'] = \
+            float(self._widget.source_orientation_1.text())
+        self.user_calibration['mf_knuckle_to_glove_source_pose']['roll'] = \
+            float(self._widget.source_orientation_2.text())
 
     def btn_load_calibration_clicked_(self):
-        user_calibration_file_path = QFileDialog.getOpenFileName(self._widget, 'Open file', self.calibrations_path, 'YAML file (*.yaml)')[0]
+        user_calibration_file_path = QFileDialog.getOpenFileName(self._widget, 'Open file', self.calibrations_path,
+                                                                 'YAML file (*.yaml)')[0]
         try:
             with open("{}".format(user_calibration_file_path)) as f:
                 self.user_calibration = yaml.load(f)
@@ -90,9 +95,12 @@ class SrGuiShadowGloveCalibration(Plugin):
             self._widget.source_position_0.insert(str(self.user_calibration['mf_knuckle_to_glove_source_pose']['x']))
             self._widget.source_position_1.insert(str(self.user_calibration['mf_knuckle_to_glove_source_pose']['y']))
             self._widget.source_position_2.insert(str(self.user_calibration['mf_knuckle_to_glove_source_pose']['z']))
-            self._widget.source_orientation_0.insert(str(self.user_calibration['mf_knuckle_to_glove_source_pose']['yaw']))
-            self._widget.source_orientation_1.insert(str(self.user_calibration['mf_knuckle_to_glove_source_pose']['pitch']))
-            self._widget.source_orientation_2.insert(str(self.user_calibration['mf_knuckle_to_glove_source_pose']['roll']))
+            self._widget.source_orientation_0.insert(str(self.user_calibration
+                                                         ['mf_knuckle_to_glove_source_pose']['yaw']))
+            self._widget.source_orientation_1.insert(str(self.user_calibration
+                                                         ['mf_knuckle_to_glove_source_pose']['pitch']))
+            self._widget.source_orientation_2.insert(str(self.user_calibration
+                                                         ['mf_knuckle_to_glove_source_pose']['roll']))
 
     def btn_calibrate_clicked_(self):
         try:
@@ -105,7 +113,8 @@ class SrGuiShadowGloveCalibration(Plugin):
             self.message_box_throw("Please correctly fill the necessary fields.")
         else:
             # TODO: Replace by actual calibration script call when it's available
-            source_orientation = mock_calibration_script(hand_size_0, hand_size_1, source_position_0, source_position_1, source_position_2)
+            source_orientation = mock_calibration_script(hand_size_0, hand_size_1,
+                                                         source_position_0, source_position_1, source_position_2)
             source_orientation = [str(value_float) for value_float in source_orientation]
             self._widget.source_orientation_0.clear()
             self._widget.source_orientation_1.clear()
@@ -129,8 +138,10 @@ class SrGuiShadowGloveCalibration(Plugin):
     def btn_set_default_clicked_(self):
         if not '/home/user/shadow_glove_user_calibration_files' == self.calibrations_path:
             self.message_box_throw("Since the aurora-created directory for calibrations does not exist,"
-                                    " most likely this action will not have any effect. Make sure you"
-                                    " installed all the software for the hand correctly.")
-        chosen_calibration_path = QFileDialog.getOpenFileName(self._widget, 'Open file', self.calibrations_path, 'YAML file (*.yaml)')[0]
-        create_symlink_command = 'ln -sf {} {}/default_calibration'.format(chosen_calibration_path, self.calibrations_path)
+                                   " most likely this action will not have any effect. Make sure you"
+                                   " installed all the software for the hand correctly.")
+        chosen_calibration_path = QFileDialog.getOpenFileName(self._widget, 'Open file', self.calibrations_path,
+                                                              'YAML file (*.yaml)')[0]
+        create_symlink_command = 'ln -sf {} {}/default_calibration'.format(chosen_calibration_path,
+                                                                           self.calibrations_path)
         os.system(create_symlink_command)
