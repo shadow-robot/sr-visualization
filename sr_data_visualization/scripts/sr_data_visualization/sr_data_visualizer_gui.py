@@ -66,6 +66,10 @@ class SrDataVisualizer(Plugin):
         self._hand_finder = HandFinder()
         self._hand_parameters = self._hand_finder.get_hand_parameters()
         self._joint_prefix = self._hand_parameters.joint_prefix
+        self._hand_g = False
+        for hand, joints in self._hand_finder.hand_joints.items():
+            if 'THJ3' not in joints:
+                self._hand_g = True
         for key in self._hand_parameters.joint_prefix:
             self.hand_serial = key
         self._joint_prefix = self._hand_parameters.joint_prefix[self.hand_serial]
@@ -95,7 +99,10 @@ class SrDataVisualizer(Plugin):
 
         motor_stat_keys_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'config',
                                             'data_visualiser_motor_stat_keys.yaml')
-        if self._joint_prefix == "rh_":
+        if self._hand_g:
+            parameters_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'config',
+                                           'data_visualiser_parameters_rh_lite.yaml')
+        elif self._joint_prefix == "rh_":
             parameters_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'config',
                                            'data_visualiser_parameters_rh.yaml')
         elif self._joint_prefix == "lh_":
@@ -160,6 +167,7 @@ class SrDataVisualizer(Plugin):
         for element in graph_type:
             for key, graph in self.graph_dict_global[element].iteritems():
                 graph.enabled = False
+        self.init_complete = False
 
     def on_resize_main(self, empty):
         if (self._widget.width() * self._widget.height()) < 3500000:
@@ -636,7 +644,11 @@ class SrDataVisualizer(Plugin):
                         data_index = self.motor_stat_keys[0][string.upper(self.graph_names_global["motor_stat"][i])]
                         data_point = data.status[data_index]
                         line_number = self.motor_stat_keys[1][x]
-                        data_value = data_point.values[line_number].value
+                        try:
+                            data_value = data_point.values[line_number].value
+                        except IndexError as e:
+                            rospy.logerr("Can't find %s. Exception: %s", data_point.name, e)
+                            data_value = 0
                         scale = float(ymax / self.global_yaml["graphs"][2]["ranges"][j][1])
                         if self.graph_dict_global["motor_stat"][self.graph_names_global["motor_stat"][i]].plot_all:
                             graph.addData(float(data_value) * scale, j)
