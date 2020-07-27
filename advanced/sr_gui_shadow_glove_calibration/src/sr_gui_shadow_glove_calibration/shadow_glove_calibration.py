@@ -30,6 +30,7 @@ class SrGuiShadowGloveCalibration(Plugin):
         self._widget.load_calibration.clicked.connect(self.btn_load_calibration_clicked_)
         self._widget.calibrate.clicked.connect(self.btn_calibrate_clicked_)
         self._widget.save_calibration.clicked.connect(self.btn_save_calibration_clicked_)
+        self._widget.set_default.clicked.connect(self.btn_set_default_clicked_)
 
         self.user_calibration = {}
         self.calibrations_path = '/home/user/shadow_glove_user_calibration_files'
@@ -59,7 +60,6 @@ class SrGuiShadowGloveCalibration(Plugin):
         try:
             with open("{}".format(user_calibration_file_path)) as f:
                 self.user_calibration = yaml.load(f)
-                rospy.logwarn(self.user_calibration)
         except IOError, yaml.reader.ReaderError:
             self.message_box_throw("Wrong file type or format!")
         else:
@@ -110,3 +110,8 @@ class SrGuiShadowGloveCalibration(Plugin):
         self.read_user_calibration_from_fields()
         with open(r'{}'.format(output_file_path), 'w+') as f:
             yaml.dump(self.user_calibration, f, default_flow_style=False)
+
+    def btn_set_default_clicked_(self):
+        chosen_calibration_path = QFileDialog.getOpenFileName(self._widget, 'Open file', self.calibrations_path)[0]
+        create_symlink_command = 'ln -sf {} {}/default_calibration'.format(chosen_calibration_path, self.calibrations_path)
+        os.system(create_symlink_command)
