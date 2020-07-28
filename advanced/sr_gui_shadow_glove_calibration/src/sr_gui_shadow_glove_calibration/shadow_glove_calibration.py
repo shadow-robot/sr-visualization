@@ -47,10 +47,15 @@ class SrGuiShadowGloveCalibration(Plugin):
         self._widget.save_calibration.clicked.connect(self.btn_save_calibration_clicked_)
         self._widget.set_default.clicked.connect(self.btn_set_default_clicked_)
 
-        self.user_calibration = {}
+        self.init_user_calibration()
         self.calibrations_path = '/home/user/shadow_glove_user_calibration_files'
         if not os.path.exists(self.calibrations_path):
             self.calibrations_path = '/home/user'
+
+    def init_user_calibration(self):
+        self.user_calibration = {}
+        self.user_calibration['hand_size'] = {}
+        self.user_calibration['mf_knuckle_to_glove_source_pose'] = {}
 
     def message_box_throw(self, message):
             msg = QMessageBox()
