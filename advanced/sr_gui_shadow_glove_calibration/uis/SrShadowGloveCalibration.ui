@@ -236,6 +236,9 @@
             <height>21</height>
            </rect>
           </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
          </widget>
          <widget class="QLineEdit" name="source_orientation_1">
           <property name="geometry">
@@ -246,6 +249,9 @@
             <height>21</height>
            </rect>
           </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
          </widget>
          <widget class="QLineEdit" name="source_orientation_2">
           <property name="geometry">
@@ -255,6 +261,9 @@
             <width>81</width>
             <height>21</height>
            </rect>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
           </property>
          </widget>
          <widget class="QLabel" name="label_6">
