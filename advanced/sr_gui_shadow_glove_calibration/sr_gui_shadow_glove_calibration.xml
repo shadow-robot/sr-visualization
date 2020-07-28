@@ -1,0 +1,21 @@
+<library path="src">
+  <class name="Shadow Glove Calibration" type="sr_gui_shadow_glove_calibration.shadow_glove_calibration.SrGuiShadowGloveCalibration"
+         base_class_type="rqt_gui_py::Plugin">
+    <description>
+      A GUI plugin for calibration of the Shadow Glove.
+    </description>
+    <qtgui>
+      <group>
+        <label>Shadow Robot</label>
+      </group>
+      <group>
+        <label>Advanced</label>
+      </group>
+      <label>Shadow Glove Calibration</label>
+      <icon type="file">resource/hand.png</icon>
+      <statustip>
+        A GUI plugin for calibration of the Shadow Glove.
+      </statustip>
+    </qtgui>
+  </class>
+</library>
