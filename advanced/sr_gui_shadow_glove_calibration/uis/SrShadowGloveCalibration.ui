@@ -34,7 +34,7 @@
        <item>
         <widget class="QPushButton" name="load_calibration">
          <property name="text">
-          <string>Load Calibration</string>
+          <string>Edit Calibration</string>
          </property>
         </widget>
        </item>
@@ -90,12 +90,12 @@
      <item>
       <widget class="QGroupBox" name="groupBox">
        <property name="title">
-        <string>Hand Size  [m]</string>
+        <string>Hand Size  [m]      </string>
        </property>
        <widget class="QLineEdit" name="hand_size_0">
         <property name="geometry">
          <rect>
-          <x>50</x>
+          <x>70</x>
           <y>30</y>
           <width>61</width>
           <height>21</height>
@@ -105,7 +105,7 @@
        <widget class="QLineEdit" name="hand_size_1">
         <property name="geometry">
          <rect>
-          <x>50</x>
+          <x>70</x>
           <y>60</y>
           <width>61</width>
           <height>21</height>
@@ -115,27 +115,27 @@
        <widget class="QLabel" name="label">
         <property name="geometry">
          <rect>
-          <x>20</x>
+          <x>10</x>
           <y>32</y>
           <width>59</width>
           <height>15</height>
          </rect>
         </property>
         <property name="text">
-         <string>HL</string>
+         <string>length</string>
         </property>
        </widget>
        <widget class="QLabel" name="label_2">
         <property name="geometry">
          <rect>
-          <x>20</x>
+          <x>10</x>
           <y>62</y>
           <width>59</width>
           <height>15</height>
          </rect>
         </property>
         <property name="text">
-         <string>HB</string>
+         <string>breadth</string>
         </property>
        </widget>
       </widget>
