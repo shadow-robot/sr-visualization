@@ -278,7 +278,7 @@
            </rect>
           </property>
           <property name="text">
-           <string>raw [rad]</string>
+           <string>roll [rad]</string>
           </property>
          </widget>
          <widget class="QLabel" name="label_10">
