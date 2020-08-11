@@ -100,8 +100,8 @@ class SrGuiShadowGloveCalibration(Plugin):
                                                          ['mf_knuckle_to_glove_source_pose']['roll']))
 
             measurements = self.decalibrate(self.user_calibration['mf_knuckle_to_glove_source_pose']['x'],
-                                       self.user_calibration['mf_knuckle_to_glove_source_pose']['y'],
-                                       self.user_calibration['mf_knuckle_to_glove_source_pose']['z'])
+                                            self.user_calibration['mf_knuckle_to_glove_source_pose']['y'],
+                                            self.user_calibration['mf_knuckle_to_glove_source_pose']['z'])
             knuckle_thickness = measurements[0]
             knuckle_to_source = measurements[1]
 
