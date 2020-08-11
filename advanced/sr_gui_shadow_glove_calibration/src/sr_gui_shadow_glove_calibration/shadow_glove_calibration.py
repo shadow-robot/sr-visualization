@@ -99,12 +99,17 @@ class SrGuiShadowGloveCalibration(Plugin):
             self._widget.source_orientation_2.insert(str(self.user_calibration
                                                          ['mf_knuckle_to_glove_source_pose']['roll']))
 
-            knuckle_thickness = (self.user_calibration['mf_knuckle_to_glove_source_pose']['z'] - 0.16)*2
+            measurements = self.decalibrate(self.user_calibration['mf_knuckle_to_glove_source_pose']['x'],
+                                       self.user_calibration['mf_knuckle_to_glove_source_pose']['y'],
+                                       self.user_calibration['mf_knuckle_to_glove_source_pose']['z'])
+            knuckle_thickness = measurements[0]
+            knuckle_to_source = measurements[1]
+
             self._widget.knuckle_thickness.insert(str(knuckle_thickness))
-            knuckle_to_source = self.user_calibration['mf_knuckle_to_glove_source_pose']['x'] - 0.08
             self._widget.knuckle_to_source.insert(str(knuckle_to_source))
 
     def btn_calibrate_clicked_(self):
+        CONST_SOURCE_ORIENTATION = [pi, 0.1, 0]
         try:
             knuckle_thickness = float(self._widget.knuckle_thickness.text())
             knuckle_to_source = float(self._widget.knuckle_to_source.text())
@@ -118,12 +123,14 @@ class SrGuiShadowGloveCalibration(Plugin):
             self._widget.source_orientation_1.clear()
             self._widget.source_orientation_2.clear()
 
-            self._widget.source_position_0.insert(str(knuckle_thickness / 2 + 0.16))
-            self._widget.source_position_1.insert(str(0))
-            self._widget.source_position_2.insert(str(knuckle_to_source + 0.08))
-            self._widget.source_orientation_0.insert(str(pi))
-            self._widget.source_orientation_1.insert(str(0.1))
-            self._widget.source_orientation_2.insert(str(0))
+            calibrated_values = self.calibrate(knuckle_thickness, knuckle_to_source)
+
+            self._widget.source_position_0.insert(str(calibrated_values[0]))
+            self._widget.source_position_1.insert(str(calibrated_values[1]))
+            self._widget.source_position_2.insert(str(calibrated_values[2]))
+            self._widget.source_orientation_0.insert(str(CONST_SOURCE_ORIENTATION[0]))
+            self._widget.source_orientation_1.insert(str(CONST_SOURCE_ORIENTATION[1]))
+            self._widget.source_orientation_2.insert(str(CONST_SOURCE_ORIENTATION[2]))
 
     def btn_save_calibration_clicked_(self):
         output_file_path = QFileDialog.getSaveFileName(self._widget, 'Save File',
@@ -147,3 +154,11 @@ class SrGuiShadowGloveCalibration(Plugin):
         create_symlink_command = 'ln -sf {} {}/default_calibration'.format(chosen_calibration_path,
                                                                            self.calibrations_path)
         os.system(create_symlink_command)
+
+    def calibrate(self, knuckle_thickness, knuckle_to_source):
+        return [knuckle_to_source + 0.08, 0, knuckle_thickness / 2 + 0.16]
+
+    def decalibrate(self, x, y, z):
+        knuckle_thickness = (z - 0.16) * 2
+        knuckle_to_source = x - 0.09
+        return [knuckle_thickness, knuckle_to_source]
