@@ -16,16 +16,12 @@ import os
 import rospy
 import rospkg
 import yaml
+from math import pi
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 from QtWidgets import *
 from QtGui import *
 from QtCore import *
-
-
-# TODO: This will be replaced by imported, actual calibration script
-def mock_calibration_script(hand_size_0, hand_size_1, source_position_0, source_position_1, source_position_2):
-    return [0, 0, 0]
 
 
 class SrGuiShadowGloveCalibration(Plugin):
@@ -54,7 +50,6 @@ class SrGuiShadowGloveCalibration(Plugin):
 
     def init_user_calibration(self):
         self.user_calibration = {}
-        self.user_calibration['hand_size'] = {}
         self.user_calibration['mf_knuckle_to_glove_source_pose'] = {}
 
     def message_box_throw(self, message):
@@ -66,8 +61,6 @@ class SrGuiShadowGloveCalibration(Plugin):
             msg.exec_()
 
     def read_user_calibration_from_fields(self):
-        self.user_calibration['hand_size']['hl'] = float(self._widget.hand_size_0.text())
-        self.user_calibration['hand_size']['hb'] = float(self._widget.hand_size_1.text())
         self.user_calibration['mf_knuckle_to_glove_source_pose']['x'] = float(self._widget.source_position_0.text())
         self.user_calibration['mf_knuckle_to_glove_source_pose']['y'] = float(self._widget.source_position_1.text())
         self.user_calibration['mf_knuckle_to_glove_source_pose']['z'] = float(self._widget.source_position_2.text())
@@ -87,16 +80,15 @@ class SrGuiShadowGloveCalibration(Plugin):
         except IOError, yaml.reader.ReaderError:
             self.message_box_throw("Wrong file type or format!")
         else:
-            self._widget.hand_size_0.clear()
-            self._widget.hand_size_1.clear()
             self._widget.source_position_0.clear()
             self._widget.source_position_1.clear()
             self._widget.source_position_2.clear()
             self._widget.source_orientation_0.clear()
             self._widget.source_orientation_1.clear()
             self._widget.source_orientation_2.clear()
-            self._widget.hand_size_0.insert(str(self.user_calibration['hand_size']['hl']))
-            self._widget.hand_size_1.insert(str(self.user_calibration['hand_size']['hb']))
+            self._widget.knuckle_thickness.clear()
+            self._widget.knuckle_to_source.clear()
+
             self._widget.source_position_0.insert(str(self.user_calibration['mf_knuckle_to_glove_source_pose']['x']))
             self._widget.source_position_1.insert(str(self.user_calibration['mf_knuckle_to_glove_source_pose']['y']))
             self._widget.source_position_2.insert(str(self.user_calibration['mf_knuckle_to_glove_source_pose']['z']))
@@ -107,26 +99,38 @@ class SrGuiShadowGloveCalibration(Plugin):
             self._widget.source_orientation_2.insert(str(self.user_calibration
                                                          ['mf_knuckle_to_glove_source_pose']['roll']))
 
+            measurements = self.decalibrate(self.user_calibration['mf_knuckle_to_glove_source_pose']['x'],
+                                            self.user_calibration['mf_knuckle_to_glove_source_pose']['y'],
+                                            self.user_calibration['mf_knuckle_to_glove_source_pose']['z'])
+            knuckle_thickness = measurements[0]
+            knuckle_to_source = measurements[1]
+
+            self._widget.knuckle_thickness.insert(str(knuckle_thickness))
+            self._widget.knuckle_to_source.insert(str(knuckle_to_source))
+
     def btn_calibrate_clicked_(self):
+        CONST_SOURCE_ORIENTATION = [pi, 0.1, 0]
         try:
-            hand_size_0 = float(self._widget.hand_size_0.text())
-            hand_size_1 = float(self._widget.hand_size_1.text())
-            source_position_0 = float(self._widget.source_position_0.text())
-            source_position_1 = float(self._widget.source_position_1.text())
-            source_position_2 = float(self._widget.source_position_2.text())
+            knuckle_thickness = float(self._widget.knuckle_thickness.text())
+            knuckle_to_source = float(self._widget.knuckle_to_source.text())
         except ValueError:
             self.message_box_throw("Please correctly fill the necessary fields.")
         else:
-            # TODO: Replace by actual calibration script call when it's available
-            source_orientation = mock_calibration_script(hand_size_0, hand_size_1,
-                                                         source_position_0, source_position_1, source_position_2)
-            source_orientation = [str(value_float) for value_float in source_orientation]
+            self._widget.source_position_0.clear()
+            self._widget.source_position_1.clear()
+            self._widget.source_position_2.clear()
             self._widget.source_orientation_0.clear()
             self._widget.source_orientation_1.clear()
             self._widget.source_orientation_2.clear()
-            self._widget.source_orientation_0.insert(source_orientation[0])
-            self._widget.source_orientation_1.insert(source_orientation[1])
-            self._widget.source_orientation_2.insert(source_orientation[2])
+
+            calibrated_values = self.calibrate(knuckle_thickness, knuckle_to_source)
+
+            self._widget.source_position_0.insert(str(calibrated_values[0]))
+            self._widget.source_position_1.insert(str(calibrated_values[1]))
+            self._widget.source_position_2.insert(str(calibrated_values[2]))
+            self._widget.source_orientation_0.insert(str(CONST_SOURCE_ORIENTATION[0]))
+            self._widget.source_orientation_1.insert(str(CONST_SOURCE_ORIENTATION[1]))
+            self._widget.source_orientation_2.insert(str(CONST_SOURCE_ORIENTATION[2]))
 
     def btn_save_calibration_clicked_(self):
         output_file_path = QFileDialog.getSaveFileName(self._widget, 'Save File',
@@ -150,3 +154,11 @@ class SrGuiShadowGloveCalibration(Plugin):
         create_symlink_command = 'ln -sf {} {}/default_calibration'.format(chosen_calibration_path,
                                                                            self.calibrations_path)
         os.system(create_symlink_command)
+
+    def calibrate(self, knuckle_thickness, knuckle_to_source):
+        return [knuckle_to_source + 0.008, 0, knuckle_thickness / 2 + 0.016]
+
+    def decalibrate(self, x, y, z):
+        knuckle_thickness = (z - 0.016) * 2
+        knuckle_to_source = x - 0.008
+        return [knuckle_thickness, knuckle_to_source]
