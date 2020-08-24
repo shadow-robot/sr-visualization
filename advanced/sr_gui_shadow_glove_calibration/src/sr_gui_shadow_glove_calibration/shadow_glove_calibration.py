@@ -43,8 +43,18 @@ class SrGuiShadowGloveCalibration(Plugin):
         self._widget.save_calibration.clicked.connect(self.btn_save_calibration_clicked_)
         self._widget.set_default.clicked.connect(self.btn_set_default_clicked_)
 
+        self._using_binary_image = None
         self.init_user_calibration()
-        self.calibrations_path = '/home/user/shadow_glove_user_calibration_files'
+        self.get_calibrations_path()
+
+    def get_calibrations_path(self):
+        try:
+            self.calibrations_path = '{}/shadow_glove_user_calibration_files'.format(rospkg.RosPack().get_path('sr_teleop_vive_polhemus'))
+            self._using_binary_image = False
+        except rospkg.common.ResourceNotFound:
+            self.calibrations_path = '/opt/ros/melodic/share/sr_teleop_vive_polhemus/shadow_glove_user_calibration_files'
+            self._using_binary_image = True
+
         if not os.path.exists(self.calibrations_path):
             self.calibrations_path = '/home/user'
 
@@ -145,7 +155,7 @@ class SrGuiShadowGloveCalibration(Plugin):
             yaml.dump(self.user_calibration, f, default_flow_style=False)
 
     def btn_set_default_clicked_(self):
-        if not '/home/user/shadow_glove_user_calibration_files' == self.calibrations_path:
+        if '/home/user' == self.calibrations_path:
             self.message_box_throw("Since the aurora-created directory for calibrations does not exist,"
                                    " most likely this action will not have any effect. Make sure you"
                                    " installed all the software for the hand correctly.")
