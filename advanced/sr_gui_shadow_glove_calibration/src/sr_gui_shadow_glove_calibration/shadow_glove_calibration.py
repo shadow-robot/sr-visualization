@@ -158,7 +158,7 @@ class SrGuiShadowGloveCalibration(Plugin):
                                    " installed all the software for the hand correctly.")
         chosen_calibration_path = QFileDialog.getOpenFileName(self._widget, 'Open file', self.calibrations_path,
                                                               'YAML file (*.yaml)')[0]
-        create_symlink_command = 'ln -sf {} {}/default_calibration'.format(chosen_calibration_path,
+        create_symlink_command = 'ln -sf {} {}/current_calibration.yaml'.format(chosen_calibration_path,
                                                                            self.calibrations_path)
         os.system(create_symlink_command)
 
