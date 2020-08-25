@@ -109,7 +109,7 @@ class SrGuiShadowGloveCalibration(Plugin):
             self._widget.knuckle_to_source.insert(str(knuckle_to_source))
 
     def btn_calibrate_clicked_(self):
-        CONST_SOURCE_ORIENTATION = [pi, 0.1, 0]
+        CONST_SOURCE_ORIENTATION = [0, 0.1, -pi]
         try:
             knuckle_thickness = float(self._widget.knuckle_thickness.text())
             knuckle_to_source = float(self._widget.knuckle_to_source.text())
@@ -151,14 +151,14 @@ class SrGuiShadowGloveCalibration(Plugin):
                                    " installed all the software for the hand correctly.")
         chosen_calibration_path = QFileDialog.getOpenFileName(self._widget, 'Open file', self.calibrations_path,
                                                               'YAML file (*.yaml)')[0]
-        create_symlink_command = 'ln -sf {} {}/default_calibration'.format(chosen_calibration_path,
+        create_symlink_command = 'ln -sf {} {}/current_calibration.yaml'.format(chosen_calibration_path,
                                                                            self.calibrations_path)
         os.system(create_symlink_command)
 
     def calibrate(self, knuckle_thickness, knuckle_to_source):
-        return [knuckle_to_source + 0.008, 0, knuckle_thickness / 2 + 0.016]
+        return [-(knuckle_to_source + 0.008), 0, knuckle_thickness / 2 + 0.016]
 
     def decalibrate(self, x, y, z):
         knuckle_thickness = (z - 0.016) * 2
-        knuckle_to_source = x - 0.008
+        knuckle_to_source = x + 0.008
         return [knuckle_thickness, knuckle_to_source]
