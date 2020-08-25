@@ -116,7 +116,7 @@ class SrGuiShadowGloveCalibration(Plugin):
             self._widget.knuckle_to_source.insert(str(knuckle_to_source))
 
     def btn_calibrate_clicked_(self):
-        CONST_SOURCE_ORIENTATION = [-pi, 0.1, 0]
+        CONST_SOURCE_ORIENTATION = [0, 0.1, -pi]
         try:
             knuckle_thickness = float(self._widget.knuckle_thickness.text())
             knuckle_to_source = float(self._widget.knuckle_to_source.text())
