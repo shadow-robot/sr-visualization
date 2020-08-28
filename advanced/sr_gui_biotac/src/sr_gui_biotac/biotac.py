@@ -129,11 +129,11 @@ class SrGuiBiotac(Plugin):
                 self.excitation_electrodes_y[n] * self.factor +
                 self.y_display_offset[0])
 
-    def tactile_cb(self, msg, prefix):
+    def tactile_cb(self, msg):
         if self._prefix in msg.header.frame_id:
             if len(msg.tactiles[0].electrodes) != self._nb_electrodes:
-                 self._nb_electrodes = len(msg.tactiles[0].electrodes)
-                 self.assign_electrodes(self._nb_electrodes)
+                self._nb_electrodes = len(msg.tactiles[0].electrodes)
+                self.assign_electrodes(self._nb_electrodes)
             self.latest_data = msg
 
     def get_electrode_colour_from_value(self, value):
@@ -236,10 +236,9 @@ class SrGuiBiotac(Plugin):
         self._widget.update()
 
     def subscribe_to_topic(self, prefix):
-        print("pref: ", prefix)
         self._prefix = prefix
         if prefix:
-            rospy.Subscriber(prefix + "/tactile", BiotacAll, self.tactile_cb, prefix)
+            rospy.Subscriber(prefix + "/tactile", BiotacAll, self.tactile_cb)
 
     def load_params(self):
         self.RECTANGLE_WIDTH = rospy.get_param(
