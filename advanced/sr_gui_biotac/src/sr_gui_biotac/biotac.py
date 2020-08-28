@@ -129,11 +129,12 @@ class SrGuiBiotac(Plugin):
                 self.excitation_electrodes_y[n] * self.factor +
                 self.y_display_offset[0])
 
-    def tactile_cb(self, msg):
-        if len(msg.tactiles[0].electrodes) != self._nb_electrodes:
-            self._nb_electrodes = len(msg.tactiles[0].electrodes)
-            self.assign_electrodes(self._nb_electrodes)
-        self.latest_data = msg
+    def tactile_cb(self, msg, prefix):
+        if self._prefix in msg.header.frame_id:
+            if len(msg.tactiles[0].electrodes) != self._nb_electrodes:
+                 self._nb_electrodes = len(msg.tactiles[0].electrodes)
+                 self.assign_electrodes(self._nb_electrodes)
+            self.latest_data = msg
 
     def get_electrode_colour_from_value(self, value):
         r = 0.0
@@ -235,8 +236,10 @@ class SrGuiBiotac(Plugin):
         self._widget.update()
 
     def subscribe_to_topic(self, prefix):
+        print("pref: ", prefix)
+        self._prefix = prefix
         if prefix:
-            rospy.Subscriber(prefix + "tactile", BiotacAll, self.tactile_cb)
+            rospy.Subscriber(prefix + "/tactile", BiotacAll, self.tactile_cb, prefix)
 
     def load_params(self):
         self.RECTANGLE_WIDTH = rospy.get_param(
@@ -263,7 +266,7 @@ class SrGuiBiotac(Plugin):
 
         if self._hand_parameters.mapping:
             self.default_topic = (
-                self._hand_parameters.mapping.values()[0] + '/')
+                self._hand_parameters.mapping.values()[0])
         else:
             self.default_topic = ""
 
@@ -294,7 +297,7 @@ class SrGuiBiotac(Plugin):
         #                     self._widget.scrollAreaWidgetContents.update)
         self.timer.timeout.connect(self._widget.scrollAreaWidgetContents.update)
         self._widget.scrollAreaWidgetContents.paintEvent = self.paintEvent
-
+        self._prefix = self._hand_parameters.mapping.values()[0]
         self.subscribe_to_topic(self.default_topic)
 
         for hand in self._hand_parameters.mapping:
