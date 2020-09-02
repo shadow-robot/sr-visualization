@@ -72,6 +72,20 @@
          </property>
         </spacer>
        </item>
+       <item>
+        <widget class="QPushButton" name="boresight">
+         <property name="text">
+          <string>Boresight</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="update_tf">
+         <property name="text">
+          <string>Update TF</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
      <item>
