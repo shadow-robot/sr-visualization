@@ -201,9 +201,9 @@ class SrGuiShadowGloveCalibration(Plugin):
             response = update_tf(user_calibration['mf_knuckle_to_glove_source_pose']['x'],
                                  user_calibration['mf_knuckle_to_glove_source_pose']['y'],
                                  user_calibration['mf_knuckle_to_glove_source_pose']['z'],
-                                 user_calibration['mf_knuckle_to_glove_source_pose']['yaw'],
+                                 user_calibration['mf_knuckle_to_glove_source_pose']['roll'],
                                  user_calibration['mf_knuckle_to_glove_source_pose']['pitch'],
-                                 user_calibration['mf_knuckle_to_glove_source_pose']['roll'])
+                                 user_calibration['mf_knuckle_to_glove_source_pose']['yaw'])
             if response:
                 self.message_box_throw("Successfully updated tf.", "information")
             else:
