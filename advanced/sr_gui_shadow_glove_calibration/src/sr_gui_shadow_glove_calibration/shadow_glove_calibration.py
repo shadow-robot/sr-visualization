@@ -54,11 +54,17 @@ class SrGuiShadowGloveCalibration(Plugin):
         self.user_calibration = {}
         self.user_calibration['mf_knuckle_to_glove_source_pose'] = {}
 
-    def message_box_throw(self, message, message_type=QMessageBox().Warning):
+    def message_box_throw(self, message, message_type='warning'):
             msg = QMessageBox()
-            msg.setIcon(message_type)
+            if message_type == 'warning':
+                msg.setWindowTitle("Warning!")
+                msg.setIcon(QMessageBox().Warning)
+            elif message_type == 'information':
+                msg.setWindowTitle("Information")
+                msg.setIcon(QMessageBox().Information)
+            else:
+                raise ValueError("Unknown message type")
             msg.setText(message)
-            msg.setWindowTitle("Warning!")
             msg.setStandardButtons(QMessageBox.Ok)
             msg.exec_()
 
@@ -169,7 +175,7 @@ class SrGuiShadowGloveCalibration(Plugin):
             boresight_calibrate = rospy.ServiceProxy('/polhemus_tf_broadcaster/calibration', calibrate)
             response = boresight_calibrate()
             if response:
-                self.message_box_throw("Successfully calibrated.", QMessageBox().Information)
+                self.message_box_throw("Successfully calibrated.", "information")
             else:
                 self.message_box_throw("Calibration failed!")
         except rospy.ServiceException as e:
@@ -199,7 +205,7 @@ class SrGuiShadowGloveCalibration(Plugin):
                                  user_calibration['mf_knuckle_to_glove_source_pose']['pitch'],
                                  user_calibration['mf_knuckle_to_glove_source_pose']['roll'])
             if response:
-                self.message_box_throw("Successfully updated tf.", QMessageBox().Information)
+                self.message_box_throw("Successfully updated tf.", "information")
             else:
                 self.message_box_throw("Tf update failed!")
         except rospy.ServiceException as e:
