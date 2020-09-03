@@ -162,7 +162,7 @@ class SrGuiShadowGloveCalibration(Plugin):
             from polhemus_ros_driver.srv import calibrate
         except:
             self.message_box_throw("No calibrate service file available. Please install polhemus_ros_driver"
-                                    " repository for this function to be usable.")
+                                   " repository for this function to be usable.")
             return
 
         try:
@@ -173,14 +173,14 @@ class SrGuiShadowGloveCalibration(Plugin):
             else:
                 self.message_box_throw("Calibration failed!")
         except rospy.ServiceException as e:
-            self.message_box_throw("Service call failed: %s"%e)
+            self.message_box_throw("Service call failed: {}".format(e))
 
     def btn_update_tf_clicked_(self):
         try:
             from sr_teleop_vive_polhemus.srv import SetStaticCalibrationTF
         except:
             self.message_box_throw("No SetStaticCalibrationTF.srv service file available. Please install"
-                                    " sr_teleop_vive_polhemus repository for this function to be usable.")
+                                   " sr_teleop_vive_polhemus repository for this function to be usable.")
             return
 
         CONST_USER_CALIBRATION_FILE_PATH = '/home/user/shadow_glove_user_calibration_files/current_calibration.yaml'
@@ -203,7 +203,7 @@ class SrGuiShadowGloveCalibration(Plugin):
             else:
                 self.message_box_throw("Tf update failed!")
         except rospy.ServiceException as e:
-            self.message_box_throw("Service call failed: %s"%e)
+            self.message_box_throw("Service call failed: {}".format(e))
 
     def calibrate(self, knuckle_thickness, knuckle_to_source):
         return [-(knuckle_to_source + 0.008), 0, knuckle_thickness / 2 + 0.016]
