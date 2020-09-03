@@ -42,6 +42,8 @@ class SrGuiShadowGloveCalibration(Plugin):
         self._widget.calibrate.clicked.connect(self.btn_calibrate_clicked_)
         self._widget.save_calibration.clicked.connect(self.btn_save_calibration_clicked_)
         self._widget.set_default.clicked.connect(self.btn_set_default_clicked_)
+        self._widget.boresight.clicked.connect(self.btn_boresight_clicked_)
+        self._widget.update_tf.clicked.connect(self.btn_update_tf_clicked_)
 
         self.init_user_calibration()
         self.calibrations_path = '/home/user/shadow_glove_user_calibration_files'
@@ -52,11 +54,17 @@ class SrGuiShadowGloveCalibration(Plugin):
         self.user_calibration = {}
         self.user_calibration['mf_knuckle_to_glove_source_pose'] = {}
 
-    def message_box_throw(self, message):
+    def message_box_throw(self, message, message_type='warning'):
             msg = QMessageBox()
-            msg.setIcon(QMessageBox.Warning)
+            if message_type == 'warning':
+                msg.setWindowTitle("Warning!")
+                msg.setIcon(QMessageBox().Warning)
+            elif message_type == 'information':
+                msg.setWindowTitle("Information")
+                msg.setIcon(QMessageBox().Information)
+            else:
+                raise ValueError("Unknown message type")
             msg.setText(message)
-            msg.setWindowTitle("Warning!")
             msg.setStandardButtons(QMessageBox.Ok)
             msg.exec_()
 
@@ -154,6 +162,54 @@ class SrGuiShadowGloveCalibration(Plugin):
         create_symlink_command = 'ln -sf {} {}/current_calibration.yaml'.format(chosen_calibration_path,
                                                                                 self.calibrations_path)
         os.system(create_symlink_command)
+
+    def btn_boresight_clicked_(self):
+        try:
+            from polhemus_ros_driver.srv import calibrate
+        except:
+            self.message_box_throw("No calibrate service file available. Please install polhemus_ros_driver"
+                                   " repository for this function to be usable.")
+            return
+
+        try:
+            boresight_calibrate = rospy.ServiceProxy('/polhemus_tf_broadcaster/calibration', calibrate)
+            response = boresight_calibrate()
+            if response:
+                self.message_box_throw("Successfully calibrated.", "information")
+            else:
+                self.message_box_throw("Calibration failed!")
+        except rospy.ServiceException as e:
+            self.message_box_throw("Service call failed: {}".format(e))
+
+    def btn_update_tf_clicked_(self):
+        try:
+            from sr_teleop_vive_polhemus.srv import SetStaticCalibrationTF
+        except:
+            self.message_box_throw("No SetStaticCalibrationTF.srv service file available. Please install"
+                                   " sr_teleop_vive_polhemus repository for this function to be usable.")
+            return
+
+        CONST_USER_CALIBRATION_FILE_PATH = '/home/user/shadow_glove_user_calibration_files/current_calibration.yaml'
+        try:
+            with open("{}".format(CONST_USER_CALIBRATION_FILE_PATH)) as f:
+                user_calibration = yaml.load(f)
+        except IOError, yaml.reader.ReaderError:
+            self.message_box_throw("Wrong file type or format or current calibration file doesn't exist!")
+            return
+        try:
+            update_tf = rospy.ServiceProxy('/update_static_tf', SetStaticCalibrationTF)
+            response = update_tf(user_calibration['mf_knuckle_to_glove_source_pose']['x'],
+                                 user_calibration['mf_knuckle_to_glove_source_pose']['y'],
+                                 user_calibration['mf_knuckle_to_glove_source_pose']['z'],
+                                 user_calibration['mf_knuckle_to_glove_source_pose']['roll'],
+                                 user_calibration['mf_knuckle_to_glove_source_pose']['pitch'],
+                                 user_calibration['mf_knuckle_to_glove_source_pose']['yaw'])
+            if response:
+                self.message_box_throw("Successfully updated tf.", "information")
+            else:
+                self.message_box_throw("Tf update failed!")
+        except rospy.ServiceException as e:
+            self.message_box_throw("Service call failed: {}".format(e))
 
     def calibrate(self, knuckle_thickness, knuckle_to_source):
         return [-(knuckle_to_source + 0.008), 0, knuckle_thickness / 2 + 0.016]
