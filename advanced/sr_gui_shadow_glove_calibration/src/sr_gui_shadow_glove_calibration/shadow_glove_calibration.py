@@ -72,11 +72,11 @@ class SrGuiShadowGloveCalibration(Plugin):
         self.user_calibration['mf_knuckle_to_glove_source_pose']['x'] = float(self._widget.source_position_0.text())
         self.user_calibration['mf_knuckle_to_glove_source_pose']['y'] = float(self._widget.source_position_1.text())
         self.user_calibration['mf_knuckle_to_glove_source_pose']['z'] = float(self._widget.source_position_2.text())
-        self.user_calibration['mf_knuckle_to_glove_source_pose']['yaw'] = \
+        self.user_calibration['mf_knuckle_to_glove_source_pose']['roll'] = \
             float(self._widget.source_orientation_0.text())
         self.user_calibration['mf_knuckle_to_glove_source_pose']['pitch'] = \
             float(self._widget.source_orientation_1.text())
-        self.user_calibration['mf_knuckle_to_glove_source_pose']['roll'] = \
+        self.user_calibration['mf_knuckle_to_glove_source_pose']['yaw'] = \
             float(self._widget.source_orientation_2.text())
 
     def btn_load_calibration_clicked_(self):
@@ -101,11 +101,11 @@ class SrGuiShadowGloveCalibration(Plugin):
             self._widget.source_position_1.insert(str(self.user_calibration['mf_knuckle_to_glove_source_pose']['y']))
             self._widget.source_position_2.insert(str(self.user_calibration['mf_knuckle_to_glove_source_pose']['z']))
             self._widget.source_orientation_0.insert(str(self.user_calibration
-                                                         ['mf_knuckle_to_glove_source_pose']['yaw']))
+                                                         ['mf_knuckle_to_glove_source_pose']['roll']))
             self._widget.source_orientation_1.insert(str(self.user_calibration
                                                          ['mf_knuckle_to_glove_source_pose']['pitch']))
             self._widget.source_orientation_2.insert(str(self.user_calibration
-                                                         ['mf_knuckle_to_glove_source_pose']['roll']))
+                                                         ['mf_knuckle_to_glove_source_pose']['yaw']))
 
             measurements = self.decalibrate(self.user_calibration['mf_knuckle_to_glove_source_pose']['x'],
                                             self.user_calibration['mf_knuckle_to_glove_source_pose']['y'],
@@ -216,5 +216,5 @@ class SrGuiShadowGloveCalibration(Plugin):
 
     def decalibrate(self, x, y, z):
         knuckle_thickness = (z - 0.016) * 2
-        knuckle_to_source = x + 0.008
+        knuckle_to_source = -(x + 0.008)
         return [knuckle_thickness, knuckle_to_source]
