@@ -189,7 +189,8 @@ class SrGuiShadowGloveCalibration(Plugin):
                                    " sr_teleop_vive_polhemus repository for this function to be usable.")
             return
 
-        CONST_USER_CALIBRATION_FILE_PATH = '/home/user/shadow_glove_calibration/user_calibration/current_calibration.yaml'
+        CONST_USER_CALIBRATION_FILE_PATH = "/home/user/shadow_glove_calibration/user_calibration/" + \
+                                           "current_calibration.yaml"
         try:
             with open("{}".format(CONST_USER_CALIBRATION_FILE_PATH)) as f:
                 user_calibration = yaml.load(f)
