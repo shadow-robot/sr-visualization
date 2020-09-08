@@ -46,7 +46,7 @@ class SrGuiShadowGloveCalibration(Plugin):
         self._widget.update_tf.clicked.connect(self.btn_update_tf_clicked_)
 
         self.init_user_calibration()
-        self.calibrations_path = '/home/user/shadow_glovecalibration/user_calibration'
+        self.calibrations_path = '/home/user/shadow_glove_calibration/user_calibration'
         if not os.path.exists(self.calibrations_path):
             self.calibrations_path = '/home/user'
 
