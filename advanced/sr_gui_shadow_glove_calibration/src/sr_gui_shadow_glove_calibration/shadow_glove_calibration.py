@@ -46,7 +46,7 @@ class SrGuiShadowGloveCalibration(Plugin):
         self._widget.update_tf.clicked.connect(self.btn_update_tf_clicked_)
 
         self.init_user_calibration()
-        self.calibrations_path = '/home/user/shadow_glove_user_calibration_files'
+        self.calibrations_path = '/home/user/shadow_glove_calibration/user_calibration'
         if not os.path.exists(self.calibrations_path):
             self.calibrations_path = '/home/user'
 
@@ -153,7 +153,7 @@ class SrGuiShadowGloveCalibration(Plugin):
             yaml.dump(self.user_calibration, f, default_flow_style=False)
 
     def btn_set_default_clicked_(self):
-        if not '/home/user/shadow_glove_user_calibration_files' == self.calibrations_path:
+        if not '/home/user/shadow_glove_calibration/user_calibration' == self.calibrations_path:
             self.message_box_throw("Since the aurora-created directory for calibrations does not exist,"
                                    " most likely this action will not have any effect. Make sure you"
                                    " installed all the software for the hand correctly.")
@@ -189,7 +189,8 @@ class SrGuiShadowGloveCalibration(Plugin):
                                    " sr_teleop_vive_polhemus repository for this function to be usable.")
             return
 
-        CONST_USER_CALIBRATION_FILE_PATH = '/home/user/shadow_glove_user_calibration_files/current_calibration.yaml'
+        CONST_USER_CALIBRATION_FILE_PATH = "/home/user/shadow_glove_calibration/user_calibration/" + \
+                                           "current_calibration.yaml"
         try:
             with open("{}".format(CONST_USER_CALIBRATION_FILE_PATH)) as f:
                 user_calibration = yaml.load(f)
@@ -216,5 +217,5 @@ class SrGuiShadowGloveCalibration(Plugin):
 
     def decalibrate(self, x, y, z):
         knuckle_thickness = (z - 0.016) * 2
-        knuckle_to_source = x + 0.008
+        knuckle_to_source = -(x + 0.008)
         return [knuckle_thickness, knuckle_to_source]
