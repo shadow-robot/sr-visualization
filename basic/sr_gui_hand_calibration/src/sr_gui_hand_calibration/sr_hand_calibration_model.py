@@ -239,7 +239,6 @@ class JointCalibration(QTreeWidgetItem):
 
         hand_finder = HandFinder()
         prefix = hand_finder.get_available_prefix()
-        print("The prefix: " + prefix)
         if prefix == 'lh_':
             template = template.replace('/rh/', '/lh/')
         for replacement in replace_list:
