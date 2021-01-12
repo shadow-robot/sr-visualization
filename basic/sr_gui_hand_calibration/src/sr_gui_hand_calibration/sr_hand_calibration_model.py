@@ -18,7 +18,7 @@
 import rospy
 import rospkg
 import subprocess
-
+from sr_utilities.hand_finder import HandFinder
 from sr_robot_lib.etherCAT_hand_lib import EtherCAT_Hand_Lib
 from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QTreeWidgetItemIterator, QMessageBox, QPushButton
@@ -236,6 +236,12 @@ class JointCalibration(QTreeWidgetItem):
         except:
             rospy.logerr("Failed to open multiplot template file: {}".format(template_filename))
             return
+
+        hand_finder = HandFinder()
+        prefix = hand_finder.get_available_prefix()
+        print(prefix)
+        if prefix == 'lh':
+            template = template.replace('/rh/', '/lh/')
         for replacement in replace_list:
             template = template.replace(replacement[0], replacement[1])
         try:
