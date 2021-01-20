@@ -1,19 +1,26 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <root version="2.3.8">
  <tabbed_widget parent="main_window" name="Main Window">
-  <plotmatrix rows="1" tab_name="plot" columns="1">
-   <plot col="0" row="0">
-    <range top="18.025000" left="0.000000" right="24.438622" bottom="16.975000"/>
-    <limitY/>
-    <curve B="180" name="sensor_name_0" G="119" R="31" custom_transform="noTransform"/>
-    <curve B="40" name="sensor_name_1" G="39" R="214" custom_transform="noTransform"/>
-    <curve B="56" name="Mean" G="201" R="26" custom_transform="noTransform"/>
-    <transform value="noTransform"/>
-   </plot>
-  </plotmatrix>
-  <currentPlotMatrix index="0"/>
+  <Tab containers="1" tab_name="Data">
+   <Container>
+    <DockSplitter orientation="-" sizes="1" count="1">
+     <DockArea name="...">
+      <plot style="Lines" mode="TimeSeries">
+       <range right="21.597456" bottom="-50.325000" left="16.597482" top="2063.325000"/>
+       <limitY/>
+       <curve name="sensor_name_0" color="#1f77b4"/>
+       <curve name="sensor_name_1" color="#d62728"/>
+       <curve name="Mean" color="#1ac938"/>
+      </plot>
+     </DockArea>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <currentTabIndex index="0"/>
  </tabbed_widget>
  <use_relative_time_offset enabled="1"/>
+ <!-- - - - - - - - - - - - - - - -->
+ <!-- - - - - - - - - - - - - - - -->
  <Plugins>
   <plugin ID="DataLoad CSV">
    <default time_axis=""/>
@@ -25,36 +32,44 @@
    <max_array_size value="100"/>
   </plugin>
   <plugin ID="DataLoad ULog"/>
+  <plugin ID="MQTT Subscriber"/>
   <plugin ID="ROS Topic Subscriber">
    <use_header_stamp value="true"/>
    <use_renaming_rules value="false"/>
    <discard_large_arrays value="true"/>
    <max_array_size value="100"/>
   </plugin>
+  <plugin ID="UDP Server"/>
+  <plugin ID="WebSocket Server"/>
+  <plugin ID="ZMQ Subscriber"/>
   <plugin status="idle" ID="ROS /rosout Visualization"/>
   <plugin status="idle" ID="ROS Topic Re-Publisher"/>
  </Plugins>
+ <!-- - - - - - - - - - - - - - - -->
  <previouslyLoaded_Datafiles/>
  <previouslyLoaded_Streamer name="ROS Topic Subscriber"/>
+ <!-- - - - - - - - - - - - - - - -->
  <customMathEquations>
-  <snippet name="sensor_name_0" language="JS">
-   <linkedPlot>/rh/debug_etherCAT_data/sensors.sensor_id_0</linkedPlot>
+  <snippet name="sensor_name_0">
    <global></global>
-   <equation>return $$/rh/debug_etherCAT_data/sensors.sensor_id_0$$</equation>
+   <function>return value</function>
+   <linkedSource>/rh/debug_etherCAT_data/sensors.sensor_id_0</linkedSource>
   </snippet>
-  <snippet name="sensor_name_1" language="JS">
-   <linkedPlot>/rh/debug_etherCAT_data/sensors.sensor_id_1</linkedPlot>
+  <snippet name="sensor_name_1">
    <global></global>
-   <equation>return $$/rh/debug_etherCAT_data/sensors.sensor_id_1$$</equation>
+   <function>return value</function>
+   <linkedSource>/rh/debug_etherCAT_data/sensors.sensor_id_1</linkedSource>
   </snippet>
-  <snippet name="Mean" language="JS">
-   <linkedPlot>/rh/debug_etherCAT_data/motor_data_type/data</linkedPlot>
+  <snippet name="Mean">
    <global></global>
-   <equation>a = $$/rh/debug_etherCAT_data/sensors.sensor_id_0$$
-b = $$/rh/debug_etherCAT_data/sensors.sensor_id_1$$
-
-return (a+b)/2</equation>
+   <function>return (value + v1)/2</function>
+   <linkedSource>/rh/debug_etherCAT_data/sensors.sensor_id_0</linkedSource>
+   <additionalSources>
+    <v1>/rh/debug_etherCAT_data/sensors.sensor_id_1</v1>
+   </additionalSources>
   </snippet>
  </customMathEquations>
+ <snippets/>
+ <!-- - - - - - - - - - - - - - - -->
 </root>
 
