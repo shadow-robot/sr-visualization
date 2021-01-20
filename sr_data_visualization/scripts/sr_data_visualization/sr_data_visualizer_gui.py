@@ -65,10 +65,10 @@ class SrDataVisualizer(Plugin):
         self._widget = QWidget()
         self._hand_finder = HandFinder()
         self._hand_parameters = self._hand_finder.get_hand_parameters()
-        self._joint_prefix = self._hand_parameters.joint_prefix
+        self._joint_prefix = next(iter(self._hand_parameters.joint_prefix.values()))
         self._hand_g = False
         for hand, joints in self._hand_finder.hand_joints.items():
-            if 'THJ3' not in joints:
+            if self._joint_prefix + 'WRJ1' not in joints:
                 self._hand_g = True
         for key in self._hand_parameters.joint_prefix:
             self.hand_serial = key
