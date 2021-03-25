@@ -31,7 +31,7 @@
   <run_depend>sr_robot_lib</run_depend>
 
 
-  <test_depend>python-mock</test_depend>
+  <test_depend>python3-mock</test_depend>
 
 <export>
     <rqt_gui plugin="${prefix}/sr_gui_hand_calibration_plugin.xml" />
