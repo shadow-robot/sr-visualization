@@ -91,7 +91,7 @@ class SrHandCalibration(Plugin):
         try:
             path_to_config = os.path.join(rospkg.RosPack().get_path(
                 'sr_ethercat_hand_config'), 'calibrations', config_dir)
-        except:
+        except Exception:
             rospy.logwarn("couldnt find the sr_ethercat_hand_config package")
 
         filter_files = "*.yaml"
@@ -127,7 +127,7 @@ class SrHandCalibration(Plugin):
         try:
             path_to_config = os.path.join(rospkg.RosPack().get_path('sr_ethercat_hand_config'),
                                           'calibrations', config_dir)
-        except:
+        except Exception:
             rospy.logwarn("couldn't find the sr_ethercat_hand_config package")
 
         filter_files = "*.yaml"

@@ -93,6 +93,7 @@ class PidSaver(object):
         f.write(full_config_to_write)
         f.close()
 
+
 if __name__ == '__main__':
     path_to_config = "~"
     try:
@@ -103,6 +104,6 @@ if __name__ == '__main__':
             path_to_config + "/sr_edc_mixed_position_velocity_joint_controllers.yaml")
         pid_saver.save_settings(
             ["sh_wrj2_mixed_position_velocity_controller", "pid"], {"d": 1.0})
-    except:
+    except Exception:
         rospy.logwarn(
             "couldnt find the sr_edc_controller_configuration package")

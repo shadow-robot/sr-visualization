@@ -122,7 +122,7 @@ class SrGuiBootloader(Plugin):
         try:
             path_to_bootloader = os.path.join(rospkg.RosPack().get_path(
                 'sr_external_dependencies'), 'compiled_firmware', 'released_firmware')
-        except:
+        except Exception:
             rospy.logwarn(
                 "couldn't find the sr_edc_controller_configuration package")
 

@@ -29,6 +29,7 @@ def show_progress(event):
         event.wait(1)
     print "\n"
 
+
 bag_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'biotacs_and_everything_else.bag')
 
 if not os.path.isfile(bag_file):

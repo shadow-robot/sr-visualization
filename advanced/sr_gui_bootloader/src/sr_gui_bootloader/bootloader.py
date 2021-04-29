@@ -145,7 +145,7 @@ class SrGuiBootloader(Plugin):
             rp = rospkg.RosPack()
             path_to_bootloader = os.path.join(rospkg.RosPack().get_path(
                 'sr_external_dependencies'), '/compiled_firmware/released_firmware/')
-        except:
+        except Exception:
             rospy.logwarn(
                 "Couldn't find the sr_edc_controller_configuration package")
 
@@ -303,6 +303,7 @@ class SrGuiBootloader(Plugin):
     def prefix_selected(self, prefix):
         self._prefix = prefix
         self.populate_motors()
+
 
 if __name__ == "__main__":
     from QtWidgets import QApplication

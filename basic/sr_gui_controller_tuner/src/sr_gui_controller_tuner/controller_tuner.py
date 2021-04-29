@@ -367,7 +367,7 @@ class SrGuiControllerTuner(Plugin):
         try:
             path_to_config = os.path.join(
                 rospkg.RosPack().get_path('sr_ethercat_hand_config'))
-        except:
+        except Exception:
             rospy.logwarn(
                 "couldn't find the sr_ethercat_hand_config package, do you have the sr_config stack installed?")
 

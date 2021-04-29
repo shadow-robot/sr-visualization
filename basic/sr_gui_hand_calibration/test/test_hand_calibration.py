@@ -65,6 +65,7 @@ class TestHandCalibration(unittest.TestCase):
         self.hand_model.load(self.mock_file.name)
         self.assertEquals(self.hand_model.progress_bar.value(), 100)
 
+
 if __name__ == "__main__":
     rospy.init_node("test_hand_calibration")
     rostest.rosrun(PKG, NAME, TestHandCalibration)

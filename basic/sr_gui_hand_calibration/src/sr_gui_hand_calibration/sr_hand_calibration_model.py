@@ -233,7 +233,7 @@ class JointCalibration(QTreeWidgetItem):
         try:
             with open(template_filename, "r") as f:
                 template = f.read()
-        except:
+        except Exception:
             rospy.logerr("Failed to open multiplot template file: {}".format(template_filename))
             return
 
@@ -246,7 +246,7 @@ class JointCalibration(QTreeWidgetItem):
         try:
             with open(temporary_file_name, "w+") as f:
                 f.write(template)
-        except:
+        except Exception:
             rospy.logerr("Failed to write temportary multiplot configuration file: {}".format(temporary_file_name))
             return
         self.multiplot_processes.append(subprocess.Popen(process))
@@ -576,7 +576,7 @@ class HandCalibration(QTreeWidgetItem):
         while it.value():
             try:
                 it.value().on_close()
-            except:
+            except Exception:
                 pass
             it += 1
 
@@ -586,7 +586,7 @@ class HandCalibration(QTreeWidgetItem):
         try:
             # only the IndividualCalibration have the calibrate method
             item.calibrate()
-        except:
+        except Exception:
             pass
 
         self.progress()
@@ -632,7 +632,7 @@ class HandCalibration(QTreeWidgetItem):
                 if it.value().is_calibrated:
                     nb_of_calibrated_items += 1
                 nb_of_items += 1
-            except:
+            except Exception:
                 pass
 
         self.progress_bar.setValue(
@@ -684,7 +684,7 @@ class HandCalibration(QTreeWidgetItem):
         while it.value():
             try:
                 joint_configs.append(it.value().get_joint_calibration())
-            except:
+            except Exception:
                 pass
             it += 1
 
@@ -740,7 +740,7 @@ class HandCalibration(QTreeWidgetItem):
             try:
                 if not it.value().is_calibrated:
                     return False
-            except:
+            except Exception:
                 pass
             it += 1
 

@@ -1050,8 +1050,8 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
                 lines = [self.line[i], self.line_tail[i], self.line_head[i]]
             else:
                 lines = [self.line[i]]
-            for l in lines:
-                l.set_data([], [])
+            for line in lines:
+                line.set_data([], [])
 
     def addData(self, value, index):
         self.addedDataArray[index].append(value)
@@ -1077,13 +1077,13 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
                                                np.append(self.y[i][-10:-1 - margin], self.y[i][-1 - margin]))
                     self.line_head[i].set_data(self.n[-1 - margin], self.y[i][-1 - margin])
                 self._drawn_artists = []
-                for l in self.line:
+                for line in self.line:
                     self._drawn_artists.append(l)
                 if self.tail_enable:
-                    for l in self.line_tail:
-                        self._drawn_artists.append(l)
-                    for l in self.line_head:
-                        self._drawn_artists.append(l)
+                    for line in self.line_tail:
+                        self._drawn_artists.append(line)
+                    for lien in self.line_head:
+                        self._drawn_artists.append(line)
         else:
             i = self.line_to_plot
             self.line[i].set_data(self.n[0: self.n.size - margin], self.y[i][0: self.n.size - margin])
@@ -1092,13 +1092,13 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
                                            np.append(self.y[i][-10:-1 - margin], self.y[i][-1 - margin]))
                 self.line_head[i].set_data(self.n[-1 - margin], self.y[i][-1 - margin])
             self._drawn_artists = []
-            for l in self.line:
-                self._drawn_artists.append(l)
+            for line in self.line:
+                self._drawn_artists.append(line)
             if self.tail_enable:
-                for l in self.line_tail:
-                    self._drawn_artists.append(l)
-                for l in self.line_head:
-                    self._drawn_artists.append(l)
+                for line in self.line_tail:
+                    self._drawn_artists.append(line)
+                for line in self.line_head:
+                    self._drawn_artists.append(line)
 
         if self.xaxis_tick_animation:
             time_from_start = int((rospy.get_rostime() - self.start_time).to_sec())
