@@ -14,12 +14,15 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import absolute_import
 import os
 import sys
 import rospy
 import rospkg
 import threading
-import urllib.request, urllib.parse, urllib.error
+import urllib.request 
+import urllib.parse
+import urllib.error
 
 
 def show_progress(event):

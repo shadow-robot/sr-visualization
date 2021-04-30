@@ -18,6 +18,7 @@
 # Try as I might, I couldn't make Ubuntu leave it alone, so switched to the input events approach seen in
 # sr_triple_pedal.py. I'll leave this here in case it might be useful later.
 
+from __future__ import absolute_import
 import sys
 import os
 import rospy
