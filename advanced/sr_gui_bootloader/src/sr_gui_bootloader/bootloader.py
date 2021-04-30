@@ -52,7 +52,7 @@ class MotorBootloader(QThread):
                     self.bootloader_service = rospy.ServiceProxy(self.prefix + '/SimpleMotorFlasher',
                                                                  SimpleMotorFlasher)
                     resp = self.bootloader_service(firmware_path.encode('ascii', 'ignore'), motor.motor_index)
-                except rospy.ServiceException, e:
+                except rospy.ServiceException as e:
                     self.failed.emit("Service did not process request: %s" % str(e))
                     return
 
@@ -115,7 +115,7 @@ class SrGuiBootloader(Plugin):
             return
         else:
             self._widget.select_prefix.setCurrentIndex(0)
-            self._prefix = hand_parameters.mapping.values()[0]
+            self._prefix = list(hand_parameters.mapping.values())[0]
         self._widget.select_prefix.currentIndexChanged['QString'].connect(self.prefix_selected)
 
         # motors_frame is defined in the ui file with a grid layout
@@ -134,7 +134,7 @@ class SrGuiBootloader(Plugin):
         self._widget.btn_bootload.pressed.connect(self.on_bootload_pressed)
 
         # select the first available hand
-        self.prefix_selected(hand_parameters.mapping.values()[0])
+        self.prefix_selected(list(hand_parameters.mapping.values())[0])
 
     def on_select_bootloader_pressed(self):
         """

@@ -42,14 +42,14 @@ class PidLoader(object):
                 tmp_dict = rospy.get_param(param_name[0])
             except KeyError:
                 return -1
-            for item in tmp_dict.items():
+            for item in list(tmp_dict.items()):
                 param_dict["pos/" + item[0]] = item[1]
 
             try:
                 tmp_dict = rospy.get_param(param_name[1])
             except KeyError:
                 return -1
-            for item in tmp_dict.items():
+            for item in list(tmp_dict.items()):
                 param_dict["vel/" + item[0]] = item[1]
         else:
             try:
@@ -77,7 +77,7 @@ class PidSaver(object):
 
         yaml_config = yaml.load(document)
 
-        for item in parameters_dict.items():
+        for item in list(parameters_dict.items()):
             if "pos/" in item[0]:
                 yaml_config[param_path[0]]["position_pid"][
                     item[0].split("pos/")[1]] = item[1]

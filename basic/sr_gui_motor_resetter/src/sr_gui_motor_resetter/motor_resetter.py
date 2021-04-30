@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import
+
 import os
 import rospkg
 import rospy
@@ -53,14 +53,14 @@ class MotorFlasher(QThread):
         for motor in self.parent.motors:
             if motor.checkbox.checkState() == Qt.Checked:
                 try:
-                    print(
+                    print((
                         "resetting: sr_hand_robot/" + self.prefix +
-                        "reset_motor_" + motor.motor_name)
+                        "reset_motor_" + motor.motor_name))
                     self.flasher_service = rospy.ServiceProxy(
                         'sr_hand_robot/' + self.prefix + 'reset_motor_' +
                         motor.motor_name, Empty)
                     self.flasher_service()
-                except rospy.ServiceException, e:
+                except rospy.ServiceException as e:
                     self.failed['QString'].emit("Service did not process request: %s" % str(e))
                     return
 
@@ -124,7 +124,7 @@ class SrGuiMotorResetter(Plugin):
                 self._widget, "warning", "No hand is detected")
         else:
             self._widget.select_prefix.setCurrentIndex(0)
-            self._prefix = hand_parameters.mapping.values()[0] + "/"
+            self._prefix = list(hand_parameters.mapping.values())[0] + "/"
 
         self._widget.select_prefix.currentIndexChanged['QString'].connect(
             self.prefix_selected)
@@ -146,7 +146,7 @@ class SrGuiMotorResetter(Plugin):
 
     def populate_motors(self):
 
-        for i in reversed(range(self.motors_frame.layout().count())):
+        for i in reversed(list(range(self.motors_frame.layout().count()))):
             self.motors_frame.layout().itemAt(i).widget().setParent(None)
         self.motors = []
 

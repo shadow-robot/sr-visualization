@@ -64,7 +64,7 @@ class SrGuiAdvancedControls(Plugin):
         # mapping is always in global ns
         if rospy.has_param("/hand/mapping"):
             hand_mapping = rospy.get_param("/hand/mapping")
-            for _, value in hand_mapping.items():
+            for _, value in list(hand_mapping.items()):
                 # if prefix matches the mapping, add this hand
                 # empty prefix means both hands
                 if self._prefix in value:
@@ -74,7 +74,7 @@ class SrGuiAdvancedControls(Plugin):
 
         if rospy.has_param("/hand/joint_prefix"):
             hand_joint_prefix_mapping = rospy.get_param("/hand/joint_prefix")
-            for _, value in hand_joint_prefix_mapping.items():
+            for _, value in list(hand_joint_prefix_mapping.items()):
                 # if prefix matches the mapping, add this hand
                 # empty prefix means both hands
                 if self._prefix in value:
@@ -115,7 +115,7 @@ class SrGuiAdvancedControls(Plugin):
                 hand_joint_prefixes], "stop": []}
 
         self.managed_controllers = [
-            cont for type_conts in self.controllers.itervalues()
+            cont for type_conts in self.controllers.values()
             for cont in type_conts]
 
     def __init__(self, context):
@@ -147,7 +147,7 @@ class SrGuiAdvancedControls(Plugin):
                 self._widget, "warning", "No hand is detected")
         else:
             self._widget.select_prefix.setCurrentIndex(0)
-            self._prefix = hand_parameters.mapping.values()[0]
+            self._prefix = list(hand_parameters.mapping.values())[0]
 
         self._widget.select_prefix.currentIndexChanged['QString'].connect(
             self.prefix_selected)

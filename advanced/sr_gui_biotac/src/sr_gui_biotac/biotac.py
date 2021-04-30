@@ -28,7 +28,7 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from __future__ import absolute_import
+
 import rospy
 import rospkg
 import os
@@ -265,7 +265,7 @@ class SrGuiBiotac(Plugin):
 
         if self._hand_parameters.mapping:
             self.default_topic = (
-                self._hand_parameters.mapping.values()[0])
+                list(self._hand_parameters.mapping.values())[0])
         else:
             self.default_topic = ""
 
@@ -296,7 +296,7 @@ class SrGuiBiotac(Plugin):
         #                     self._widget.scrollAreaWidgetContents.update)
         self.timer.timeout.connect(self._widget.scrollAreaWidgetContents.update)
         self._widget.scrollAreaWidgetContents.paintEvent = self.paintEvent
-        self._prefix = self._hand_parameters.mapping.values()[0]
+        self._prefix = list(self._hand_parameters.mapping.values())[0]
         self.subscribe_to_topic(self.default_topic)
 
         for hand in self._hand_parameters.mapping:

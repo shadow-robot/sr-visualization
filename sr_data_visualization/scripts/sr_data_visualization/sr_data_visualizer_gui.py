@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import
+
 import yaml
 import matplotlib
 import numpy as np
@@ -66,9 +66,9 @@ class SrDataVisualizer(Plugin):
         self._widget = QWidget()
         self._hand_finder = HandFinder()
         self._hand_parameters = self._hand_finder.get_hand_parameters()
-        self._joint_prefix = next(iter(self._hand_parameters.joint_prefix.values()))
+        self._joint_prefix = next(iter(list(self._hand_parameters.joint_prefix.values())))
         self._hand_g = False
-        for hand, joints in self._hand_finder.hand_joints.items():
+        for hand, joints in list(self._hand_finder.hand_joints.items()):
             if self._joint_prefix + 'WRJ1' not in joints:
                 self._hand_g = True
         for key in self._hand_parameters.joint_prefix:
@@ -164,9 +164,9 @@ class SrDataVisualizer(Plugin):
         self.init_complete = True
 
     def shutdown_plugin(self):
-        graph_type = [key for key, value in self.graph_names_global.items()]
+        graph_type = [key for key, value in list(self.graph_names_global.items())]
         for element in list(graph_type):
-            for key, graph in self.graph_dict_global[element].iteritems():
+            for key, graph in self.graph_dict_global[element].items():
                 graph.enabled = False
         self.init_complete = False
 
@@ -189,9 +189,9 @@ class SrDataVisualizer(Plugin):
         self.radioButton_all_motor_stat.setChecked(True)
 
     def _reset_graphs(self, tab):
-        graph_type = [key for key, value in self.graph_names_global.items() if self.type_dict[tab] in key]
+        graph_type = [key for key, value in list(self.graph_names_global.items()) if self.type_dict[tab] in key]
         for element in list(graph_type):
-            for key, graph in self.graph_dict_global[element].iteritems():
+            for key, graph in self.graph_dict_global[element].items():
                 graph.ax1.clear()
                 graph._handle_resize()
         if tab == 2:
@@ -266,28 +266,28 @@ class SrDataVisualizer(Plugin):
     def _hide_tabs(self, tab_index, tab):
         if tab == "main":
             if tab_index == 0:
-                graph_type = [key for key, value in self.graph_names_global.items() if "pos_vel_eff" not in key]
+                graph_type = [key for key, value in list(self.graph_names_global.items()) if "pos_vel_eff" not in key]
                 self._disable_graphs(graph_type, disable=True)
                 self._disable_graphs(["pos_vel_eff"], disable=False)
             elif tab_index == 1:
-                graph_type = [key for key, value in self.graph_names_global.items() if "control_loops" not in key]
+                graph_type = [key for key, value in list(self.graph_names_global.items()) if "control_loops" not in key]
                 self._disable_graphs(graph_type, disable=True)
                 self._disable_graphs(["control_loops"], disable=False)
             elif tab_index == 2:
-                graph_type = [key for key, value in self.graph_names_global.items() if "motor_stat" not in key]
+                graph_type = [key for key, value in list(self.graph_names_global.items()) if "motor_stat" not in key]
                 self._disable_graphs(graph_type, disable=True)
                 self._show_specific_motor_stat_tabs()
             elif tab_index == 3:
-                graph_type = [key for key, value in self.graph_names_global.items() if "palm_extras" not in key]
+                graph_type = [key for key, value in list(self.graph_names_global.items()) if "palm_extras" not in key]
                 self._disable_graphs(graph_type, disable=True)
-                graph_type = [key for key, value in self.graph_names_global.items() if "palm_extras" in key]
+                graph_type = [key for key, value in list(self.graph_names_global.items()) if "palm_extras" in key]
                 self._disable_graphs(graph_type, disable=False)
             elif tab_index == 4:
-                graph_type = [key for key, value in self.graph_names_global.items() if "biotacs" not in key]
+                graph_type = [key for key, value in list(self.graph_names_global.items()) if "biotacs" not in key]
                 self._disable_graphs(graph_type, disable=True)
                 self._disable_graphs(["biotacs"], disable=False)
             elif tab_index == 5:
-                graph_type = [key for key, value in self.graph_names_global.items()]
+                graph_type = [key for key, value in list(self.graph_names_global.items())]
                 self._disable_graphs(graph_type, disable=True)
         elif tab == "motor_stat":
             self._show_specific_motor_stat_tabs()
@@ -305,16 +305,16 @@ class SrDataVisualizer(Plugin):
         self._hide_all_but(tab_index_dict[tab_index])
 
     def _hide_all_but(self, joint_group):
-        x = [value for key, value in self.graph_dict_global["motor_stat"].items() if joint_group in key]
+        x = [value for key, value in list(self.graph_dict_global["motor_stat"].items()) if joint_group in key]
         for graph in x:
             graph.enabled = True
-        x = [value for key, value in self.graph_dict_global["motor_stat"].items() if joint_group not in key]
+        x = [value for key, value in list(self.graph_dict_global["motor_stat"].items()) if joint_group not in key]
         for graph in x:
             graph.enabled = False
 
     def _disable_graphs(self, graph_type, disable):
         for element in graph_type:
-            for key, graph in self.graph_dict_global[element].iteritems():
+            for key, graph in self.graph_dict_global[element].items():
                 graph.enabled = not disable
 
     def _setup_radio_buttons(self):
@@ -587,10 +587,10 @@ class SrDataVisualizer(Plugin):
                     x = lay_dic.get(graphs["graph_names"][i])
                     x.addWidget(self.graph_dict_global[graphs["type"]][graphs["graph_names"][i]])
         # Setup palm extras graphs (as they don't need radio buttons)
-        palm_extras_graphs = [value for key, value in self.graph_dict_global.items() if 'palm_extras' in key]
+        palm_extras_graphs = [value for key, value in list(self.graph_dict_global.items()) if 'palm_extras' in key]
         i = 3
         for graph in list(palm_extras_graphs):
-            for key, value in graph.iteritems():
+            for key, value in graph.items():
                 value.plot_all = True
                 value.ax1.yaxis.set_tick_params(which='both', labelbottom=True)
                 value.ymax = self.global_yaml["graphs"][i]["ranges"][0][1]
@@ -658,7 +658,7 @@ class SrDataVisualizer(Plugin):
 
     def _palm_extras_cb(self, data):
         if self.init_complete:
-            palm_extras_graphs = [value for key, value in self.graph_dict_global.items() if 'palm_extras' in key]
+            palm_extras_graphs = [value for key, value in list(self.graph_dict_global.items()) if 'palm_extras' in key]
             for graph in palm_extras_graphs:
                 if 'palm_extras_accelerometer' in graph:
                     graph["palm_extras_accelerometer"].addData(data.data[0], 0)
@@ -905,7 +905,7 @@ class SrGuiBiotac(Plugin):
 
         if self._hand_parameters.mapping:
             self.default_topic = (
-                    self._hand_parameters.mapping.values()[0] + '/')
+                    list(self._hand_parameters.mapping.values())[0] + '/')
         else:
             self.default_topic = ""
 
@@ -1043,7 +1043,7 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
                 self.ax1.set_ylim(self.ymin, self.ymax)
 
     def new_frame_seq(self):
-        return iter(range(self.n.size))
+        return iter(list(range(self.n.size)))
 
     def _init_draw(self):
         for i in range(self.num_lines):
