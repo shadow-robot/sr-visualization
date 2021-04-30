@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import absolute_import
 import yaml
 import matplotlib
 import numpy as np
@@ -164,7 +165,7 @@ class SrDataVisualizer(Plugin):
 
     def shutdown_plugin(self):
         graph_type = [key for key, value in self.graph_names_global.items()]
-        for element in graph_type:
+        for element in list(graph_type):
             for key, graph in self.graph_dict_global[element].iteritems():
                 graph.enabled = False
         self.init_complete = False
@@ -189,7 +190,7 @@ class SrDataVisualizer(Plugin):
 
     def _reset_graphs(self, tab):
         graph_type = [key for key, value in self.graph_names_global.items() if self.type_dict[tab] in key]
-        for element in graph_type:
+        for element in list(graph_type):
             for key, graph in self.graph_dict_global[element].iteritems():
                 graph.ax1.clear()
                 graph._handle_resize()
@@ -588,7 +589,7 @@ class SrDataVisualizer(Plugin):
         # Setup palm extras graphs (as they don't need radio buttons)
         palm_extras_graphs = [value for key, value in self.graph_dict_global.items() if 'palm_extras' in key]
         i = 3
-        for graph in palm_extras_graphs:
+        for graph in list(palm_extras_graphs):
             for key, value in graph.iteritems():
                 value.plot_all = True
                 value.ax1.yaxis.set_tick_params(which='both', labelbottom=True)
@@ -615,7 +616,7 @@ class SrDataVisualizer(Plugin):
             for j in range(len(self.graph_names_global["pos_vel_eff"])):
                 graph = self.graph_dict_global["pos_vel_eff"][self.graph_names_global["pos_vel_eff"][j]]
                 data_index = self.joint_state_data_map[self._joint_prefix +
-                                                       string.upper(self.graph_names_global["pos_vel_eff"][j])]
+                                                       (self.graph_names_global["pos_vel_eff"][j]).upper()]
                 if graph.plot_all:
                     ymin, ymax = self._find_max_range(self.global_yaml["graphs"][0])
                     range_array = self.global_yaml["graphs"][0]["ranges"]
@@ -641,7 +642,7 @@ class SrDataVisualizer(Plugin):
                         x = re.sub(r"[\(\[].*?[\)\]]", "", x).strip()
                         ymin, ymax = self._find_max_range(self.global_yaml["graphs"][2])
                         graph = self.graph_dict_global["motor_stat"][self.graph_names_global["motor_stat"][i]]
-                        data_index = self.motor_stat_keys[0][string.upper(self.graph_names_global["motor_stat"][i])]
+                        data_index = self.motor_stat_keys[0][(self.graph_names_global["motor_stat"][i]).upper()]
                         data_point = data.status[data_index]
                         line_number = self.motor_stat_keys[1][x]
                         try:
