@@ -20,7 +20,7 @@ import sys
 import rospy
 import rospkg
 import threading
-import urllib.request 
+import urllib.request
 import urllib.parse
 import urllib.error
 
