@@ -15,6 +15,7 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
+from __future__ import absolute_import
 import rospy
 import re
 
@@ -126,7 +127,7 @@ class SrControllerTunerApp(object):
         # mapping is always in global ns
         if rospy.has_param("/hand/mapping"):
             hand_mapping = rospy.get_param("/hand/mapping")
-            for _, value in hand_mapping.items():
+            for _, value in list(hand_mapping.items()):
                 # if prefix matches the mapping, add this hand (empty prefix
                 # means both hands)
                 if value.startswith(prefix):
@@ -150,7 +151,7 @@ class SrControllerTunerApp(object):
         # joint_prefix always in global ns
         if rospy.has_param("/hand/joint_prefix"):
             hand_joint_prefix_mapping = rospy.get_param("/hand/joint_prefix")
-            for _, value in hand_joint_prefix_mapping.items():
+            for _, value in list(hand_joint_prefix_mapping.items()):
                 # if prefix matches the mapping, add this joint prefix
                 if prefix in value:
                     hand_joint_prefixes.append(value)
@@ -194,7 +195,7 @@ class SrControllerTunerApp(object):
                         ctrl_srv_name, self.CONTROLLER_MANAGER_DETECTION_TIMEOUT)
                     self.single_loop = True
                     rospy.loginfo("Detected single loop")
-                except rospy.ROSException, e:
+                except rospy.ROSException as e:
                     rospy.loginfo(
                         "Controller manager not running: %s" % str(e))
                     rospy.loginfo("Running controller tuner in edit-only mode")
@@ -207,7 +208,7 @@ class SrControllerTunerApp(object):
         resp = None
         try:
             resp = controllers()
-        except rospy.ServiceException, e:
+        except rospy.ServiceException as e:
             rospy.logerr("Service did not process request: %s" % str(e))
 
         running_ctrls.append("Motor Force")
@@ -352,7 +353,7 @@ class SrControllerTunerApp(object):
                 "", controller_type, " is not a recognized controller type.")
 
         contrlr_settings_converted = {}
-        for param in controller_settings.items():
+        for param in list(controller_settings.items()):
             contrlr_settings_converted[param[0]] = float(param[1])
 
         if controller_type == "Motor Force":

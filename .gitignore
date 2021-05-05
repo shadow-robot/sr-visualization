@@ -49,4 +49,5 @@ sr_gui_joint_slider/devel/
 sr_gui_joint_slider/gtest/
 *.pyc
 *.idea
+*.bak
 

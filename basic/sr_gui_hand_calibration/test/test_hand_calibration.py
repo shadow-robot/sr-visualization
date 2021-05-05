@@ -18,6 +18,7 @@
 # Try as I might, I couldn't make Ubuntu leave it alone, so switched to the input events approach seen in
 # sr_triple_pedal.py. I'll leave this here in case it might be useful later.
 
+from __future__ import absolute_import
 import sys
 import os
 import rospy
@@ -61,9 +62,10 @@ class TestHandCalibration(unittest.TestCase):
         self.hand_model = HandCalibration(tree_widget=self._widget.tree_calibration,
                                           progress_bar=self._widget.progress)
 
-        self.assertEquals(self.hand_model.progress_bar.value(), 0)
+        self.assertEqual(self.hand_model.progress_bar.value(), 0)
         self.hand_model.load(self.mock_file.name)
-        self.assertEquals(self.hand_model.progress_bar.value(), 100)
+        self.assertEqual(self.hand_model.progress_bar.value(), 100)
+
 
 if __name__ == "__main__":
     rospy.init_node("test_hand_calibration")

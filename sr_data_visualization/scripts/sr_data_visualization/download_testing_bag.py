@@ -14,12 +14,15 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import absolute_import
 import os
 import sys
 import rospy
 import rospkg
 import threading
-import urllib
+import urllib.request
+import urllib.parse
+import urllib.error
 
 
 def show_progress(event):
@@ -27,7 +30,8 @@ def show_progress(event):
         sys.stdout.write('.')
         sys.stdout.flush()
         event.wait(1)
-    print "\n"
+    print("\n")
+
 
 bag_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'biotacs_and_everything_else.bag')
 
@@ -39,11 +43,11 @@ if not os.path.isfile(bag_file):
     trigger = threading.Event()
     t = threading.Thread(target=show_progress, args=(trigger,))
     t.start()
-    urllib.urlretrieve(url, bag_file)
+    urllib.request.urlretrieve(url, bag_file)
     trigger.set()
-    print "\n"
-    print "File downloaded: ", bag_file
+    print("\n")
+    print("File downloaded: ", bag_file)
     sys.exit()
 else:
-    print "Bag file already exists, doing nothing."
+    print("Bag file already exists, doing nothing.")
     sys.exit()

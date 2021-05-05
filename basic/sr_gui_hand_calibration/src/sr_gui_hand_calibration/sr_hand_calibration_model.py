@@ -15,6 +15,7 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
+from __future__ import absolute_import
 import rospy
 import rospkg
 import subprocess
@@ -59,7 +60,7 @@ class IndividualCalibration(QTreeWidgetItem):
         QTreeWidgetItem.__init__(self, parent_widget, [
                                  "", "", str(self.raw_value), str(self.calibrated_value)])
 
-        for col in xrange(self.tree_widget.columnCount()):
+        for col in range(self.tree_widget.columnCount()):
             self.setBackground(col, QColor(red))
 
         self.tree_widget.addTopLevelItem(self)
@@ -78,7 +79,7 @@ class IndividualCalibration(QTreeWidgetItem):
             self.joint_name, number_of_samples=100, accept_zeros=False)
         self.setText(2, str(self.raw_value))
 
-        for col in xrange(self.tree_widget.columnCount()):
+        for col in range(self.tree_widget.columnCount()):
             if self.text(2) != "":
                 self.setBackground(col, QColor(green))
 
@@ -89,7 +90,7 @@ class IndividualCalibration(QTreeWidgetItem):
         set the background to orange: those values are loaded
         from the file, not recalibrated
         """
-        for col in xrange(self.tree_widget.columnCount()):
+        for col in range(self.tree_widget.columnCount()):
             if self.text(2) != "":
                 self.setBackground(col, QColor(orange))
 
@@ -122,7 +123,7 @@ class IndividualCalibrationCoupled(IndividualCalibration):
                                  "", "", str(self.raw_values[0]) + ", " + str(self.raw_values[1]),
                                  str(self.calibrated_values[0]) + ", " + str(self.calibrated_values[1])])
 
-        for col in xrange(self.tree_widget.columnCount()):
+        for col in range(self.tree_widget.columnCount()):
             self.setBackground(col, QColor(red))
 
         self.tree_widget.addTopLevelItem(self)
@@ -141,7 +142,7 @@ class IndividualCalibrationCoupled(IndividualCalibration):
             raw_values_str.append(str(self.raw_values[idx]))
         self.setText(2, ", ".join(raw_values_str))
 
-        for col in xrange(self.tree_widget.columnCount()):
+        for col in range(self.tree_widget.columnCount()):
             if self.text(2) != "":
                 self.setBackground(col, QColor(green))
 
@@ -233,7 +234,7 @@ class JointCalibration(QTreeWidgetItem):
         try:
             with open(template_filename, "r") as f:
                 template = f.read()
-        except:
+        except Exception:
             rospy.logerr("Failed to open multiplot template file: {}".format(template_filename))
             return
 
@@ -246,7 +247,7 @@ class JointCalibration(QTreeWidgetItem):
         try:
             with open(temporary_file_name, "w+") as f:
                 f.write(template)
-        except:
+        except Exception:
             rospy.logerr("Failed to write temportary multiplot configuration file: {}".format(temporary_file_name))
             return
         self.multiplot_processes.append(subprocess.Popen(process))
@@ -553,7 +554,7 @@ class HandCalibration(QTreeWidgetItem):
                 self.is_active = False
 
         for finger in fingers:
-            if finger in self.joint_map.keys():
+            if finger in list(self.joint_map.keys()):
                 self.fingers.append(FingerCalibration(finger,
                                                       self.joint_map[finger],
                                                       self, tree_widget,
@@ -561,7 +562,7 @@ class HandCalibration(QTreeWidgetItem):
                                                       self.package_path))
 
             else:
-                print finger, " not found in the calibration map"
+                print(finger, " not found in the calibration map")
 
         self.joint_0_calibration_index = 0
 
@@ -576,7 +577,7 @@ class HandCalibration(QTreeWidgetItem):
         while it.value():
             try:
                 it.value().on_close()
-            except:
+            except Exception:
                 pass
             it += 1
 
@@ -586,7 +587,7 @@ class HandCalibration(QTreeWidgetItem):
         try:
             # only the IndividualCalibration have the calibrate method
             item.calibrate()
-        except:
+        except Exception:
             pass
 
         self.progress()
@@ -632,7 +633,7 @@ class HandCalibration(QTreeWidgetItem):
                 if it.value().is_calibrated:
                     nb_of_calibrated_items += 1
                 nb_of_items += 1
-            except:
+            except Exception:
                 pass
 
         self.progress_bar.setValue(
@@ -646,7 +647,7 @@ class HandCalibration(QTreeWidgetItem):
         f.close()
         yaml_config = yaml.load(document)
 
-        if "sr_calibrations" not in yaml_config.keys():
+        if "sr_calibrations" not in list(yaml_config.keys()):
             error_string = ('The selected calibration file does not contain calibration ' +
                             'values.')
             rospy.logwarn(error_string)
@@ -656,7 +657,7 @@ class HandCalibration(QTreeWidgetItem):
         if self.old_version:
             used_yaml_config = yaml_config["sr_calibrations"]
         else:
-            if "sr_calibrations_coupled" not in yaml_config.keys():
+            if "sr_calibrations_coupled" not in list(yaml_config.keys()):
                 error_string = ('The selected calibration file does not contain coupled thumb calibration ' +
                                 'values. Choose one that does, or switch to "Old Version" mode.')
                 rospy.logwarn(error_string)
@@ -684,7 +685,7 @@ class HandCalibration(QTreeWidgetItem):
         while it.value():
             try:
                 joint_configs.append(it.value().get_joint_calibration())
-            except:
+            except Exception:
                 pass
             it += 1
 
@@ -740,7 +741,7 @@ class HandCalibration(QTreeWidgetItem):
             try:
                 if not it.value().is_calibrated:
                     return False
-            except:
+            except Exception:
                 pass
             it += 1
 

@@ -12,6 +12,7 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import absolute_import
 import os
 import rospy
 import rospkg
@@ -45,7 +46,7 @@ class MotorBootloader(QThread):
                         'SimpleMotorFlasher', SimpleMotorFlasher)
                     resp = self.bootloader_service(
                         firmware_path.encode('ascii', 'ignore'), motor.motor_index)
-                except rospy.ServiceException, e:
+                except rospy.ServiceException as e:
                     self.failed['QString'].emit("Service did not process request: %s" % str(e))
                     return
 
@@ -122,7 +123,7 @@ class SrGuiBootloader(Plugin):
         try:
             path_to_bootloader = os.path.join(rospkg.RosPack().get_path(
                 'sr_external_dependencies'), 'compiled_firmware', 'released_firmware')
-        except:
+        except Exception:
             rospy.logwarn(
                 "couldn't find the sr_edc_controller_configuration package")
 

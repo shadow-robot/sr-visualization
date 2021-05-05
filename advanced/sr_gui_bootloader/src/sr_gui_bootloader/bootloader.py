@@ -12,6 +12,7 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import absolute_import
 import os
 import rospy
 import rospkg
@@ -52,7 +53,7 @@ class MotorBootloader(QThread):
                     self.bootloader_service = rospy.ServiceProxy(self.prefix + '/SimpleMotorFlasher',
                                                                  SimpleMotorFlasher)
                     resp = self.bootloader_service(firmware_path.encode('ascii', 'ignore'), motor.motor_index)
-                except rospy.ServiceException, e:
+                except rospy.ServiceException as e:
                     self.failed.emit("Service did not process request: %s" % str(e))
                     return
 
@@ -115,7 +116,7 @@ class SrGuiBootloader(Plugin):
             return
         else:
             self._widget.select_prefix.setCurrentIndex(0)
-            self._prefix = hand_parameters.mapping.values()[0]
+            self._prefix = list(hand_parameters.mapping.values())[0]
         self._widget.select_prefix.currentIndexChanged['QString'].connect(self.prefix_selected)
 
         # motors_frame is defined in the ui file with a grid layout
@@ -134,7 +135,7 @@ class SrGuiBootloader(Plugin):
         self._widget.btn_bootload.pressed.connect(self.on_bootload_pressed)
 
         # select the first available hand
-        self.prefix_selected(hand_parameters.mapping.values()[0])
+        self.prefix_selected(list(hand_parameters.mapping.values())[0])
 
     def on_select_bootloader_pressed(self):
         """
@@ -145,7 +146,7 @@ class SrGuiBootloader(Plugin):
             rp = rospkg.RosPack()
             path_to_bootloader = os.path.join(rospkg.RosPack().get_path(
                 'sr_external_dependencies'), '/compiled_firmware/released_firmware/')
-        except:
+        except Exception:
             rospy.logwarn(
                 "Couldn't find the sr_edc_controller_configuration package")
 
@@ -303,6 +304,7 @@ class SrGuiBootloader(Plugin):
     def prefix_selected(self, prefix):
         self._prefix = prefix
         self.populate_motors()
+
 
 if __name__ == "__main__":
     from QtWidgets import QApplication

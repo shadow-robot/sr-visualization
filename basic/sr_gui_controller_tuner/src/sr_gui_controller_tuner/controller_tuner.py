@@ -15,6 +15,7 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
+from __future__ import absolute_import
 import os
 import subprocess
 import math
@@ -275,7 +276,7 @@ class SrGuiControllerTuner(Plugin):
                 self._widget, "warning", "No hand is detected")
         else:
             self._widget.select_prefix.setCurrentIndex(0)
-            self._prefix = hand_parameters.mapping.values()[0]
+            self._prefix = list(hand_parameters.mapping.values())[0]
 
             self._widget.select_prefix.currentIndexChanged[
                 'QString'].connect(self.prefix_selected)
@@ -367,7 +368,7 @@ class SrGuiControllerTuner(Plugin):
         try:
             path_to_config = os.path.join(
                 rospkg.RosPack().get_path('sr_ethercat_hand_config'))
-        except:
+        except Exception:
             rospy.logwarn(
                 "couldn't find the sr_ethercat_hand_config package, do you have the sr_config stack installed?")
 
@@ -456,7 +457,7 @@ class SrGuiControllerTuner(Plugin):
         """
         Save all controllers
         """
-        for motor in self.ctrl_widgets.keys():
+        for motor in list(self.ctrl_widgets.keys()):
             self.save_controller(motor)
 
     def on_btn_set_selected_clicked_(self):
@@ -477,7 +478,7 @@ class SrGuiControllerTuner(Plugin):
         """
         Sets the current values for all controllers using the ros service.
         """
-        for motor in self.ctrl_widgets.keys():
+        for motor in list(self.ctrl_widgets.keys()):
             self.set_controller(motor)
 
     def on_btn_refresh_ctrl_clicked_(self):
@@ -511,7 +512,7 @@ class SrGuiControllerTuner(Plugin):
         dict_of_widgets = self.ctrl_widgets[joint_name]
 
         settings = {}
-        for item in dict_of_widgets.items():
+        for item in list(dict_of_widgets.items()):
             try:
                 settings[item[0]] = item[1].value()
             except AttributeError:
