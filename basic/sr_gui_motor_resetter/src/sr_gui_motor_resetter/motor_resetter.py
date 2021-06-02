@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Disabling E1002 check since it complains about super for no reason -
 # inheriting from QObject
