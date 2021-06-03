@@ -195,7 +195,7 @@ class MoveThread(QThread):
         string += "<param name=\"msg_type\" value=\"{}\"/>".format(
             message_type)
         string += "</node> </launch>"
-        tmp_launch_file = NamedTemporaryFile(delete=False)
+        tmp_launch_file = NamedTemporaryFile(delete=False, mode='w+t')
 
         tmp_launch_file.writelines(string)
         tmp_launch_file.close()
