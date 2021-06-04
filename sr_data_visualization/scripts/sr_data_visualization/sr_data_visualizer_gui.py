@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright 2020 Shadow Robot Company Ltd.
 #
@@ -1079,7 +1079,7 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
                     self.line_head[i].set_data(self.n[-1 - margin], self.y[i][-1 - margin])
                 self._drawn_artists = []
                 for line in self.line:
-                    self._drawn_artists.append(l)
+                    self._drawn_artists.append(line)
                 if self.tail_enable:
                     for line in self.line_tail:
                         self._drawn_artists.append(line)
