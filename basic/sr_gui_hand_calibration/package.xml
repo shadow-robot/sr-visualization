@@ -24,6 +24,8 @@
   
   
   <run_depend>plotjuggler</run_depend>
+  <run_depend>plotjuggler_ros</run_depend>
+  <run_depend>plotjuggler_msgs</run_depend>
   <run_depend>rospy</run_depend>
   <run_depend>rqt_gui</run_depend>
   <run_depend>rqt_gui_py</run_depend>
