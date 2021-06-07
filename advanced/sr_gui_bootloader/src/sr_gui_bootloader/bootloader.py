@@ -208,7 +208,7 @@ class SrGuiBootloader(Plugin):
                     for key_values in status.values:
                         if key_values.key.startswith("Firmware git revision"):
                             server_current_modified = key_values.value.split(" / ")
-
+                            print(key_values.value.split(" / "))
                             if server_current_modified[0] > self.server_revision:
                                 self.server_revision = int(server_current_modified[0].strip())
 
