@@ -208,13 +208,12 @@ class SrGuiBootloader(Plugin):
                     for key_values in status.values:
                         if key_values.key.startswith("Firmware git revision"):
                             server_current_modified = key_values.value.split(" / ")
-
-                            if server_current_modified[0] > self.server_revision:
+                            if int(server_current_modified[0]) > self.server_revision:
                                 self.server_revision = int(server_current_modified[0].strip())
 
                             palette = motor.revision_label.palette()
                             palette.setColor(motor.revision_label.foregroundRole(), Qt.green)
-                            if server_current_modified[0].strip() != server_current_modified[1].strip():
+                            if int(server_current_modified[0].strip()) != server_current_modified[1].strip():
                                 palette.setColor(motor.revision_label.foregroundRole(), QColor(255, 170, 23))
                                 motor.revision_label.setPalette(palette)
 
