@@ -52,7 +52,7 @@ class MotorBootloader(QThread):
                 try:
                     self.bootloader_service = rospy.ServiceProxy(self.prefix + '/SimpleMotorFlasher',
                                                                  SimpleMotorFlasher)
-                    resp = self.bootloader_service(firmware_path.encode('ascii', 'ignore'), motor.motor_index)
+                    resp = self.bootloader_service(firmware_path, motor.motor_index)
                 except rospy.ServiceException as e:
                     self.failed.emit("Service did not process request: %s" % str(e))
                     return
