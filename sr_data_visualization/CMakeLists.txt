@@ -20,6 +20,6 @@ catkin_package(
     sr_robot_msgs
 )
 
-install(DIRECTORY launch DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+install(DIRECTORY launch uis resource DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 install( FILES sr_data_visualizer_plugin.xml DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION} )
 
