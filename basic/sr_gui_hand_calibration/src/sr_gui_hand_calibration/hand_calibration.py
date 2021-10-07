@@ -19,6 +19,7 @@ from __future__ import absolute_import
 import os
 import rospy
 import rospkg
+import yaml
 
 from qt_gui.plugin import Plugin
 from PyQt5.uic import loadUi
@@ -39,6 +40,11 @@ class SrHandCalibration(Plugin):
     def __init__(self, context):
         super(SrHandCalibration, self).__init__(context)
         self.setObjectName('SrHandCalibration')
+
+        os.system('sr_hand_detector_node')
+        with open('/tmp/sr_hand_detector.yaml') as f:
+            detected_hands = yaml.safe_load(f)
+        rospy.logwarn(detected_hands)
 
         self._publisher = None
         self._widget = QWidget()
