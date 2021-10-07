@@ -41,12 +41,8 @@ class SrHandCalibration(Plugin):
         super(SrHandCalibration, self).__init__(context)
         self.setObjectName('SrHandCalibration')
 
-        os.system('sr_hand_detector_node')
-        with open('/tmp/sr_hand_detector.yaml') as f:
-            detected_hands = yaml.safe_load(f)
-        rospy.logwarn(detected_hands)
-
         self._publisher = None
+        self._available_hands = []
         self._widget = QWidget()
 
         ui_file = os.path.join(rospkg.RosPack().get_path(
@@ -67,6 +63,17 @@ class SrHandCalibration(Plugin):
         self._widget.btn_joint_0s.clicked.connect(self.btn_joint_0s_clicked_)
 
         self.populate_tree()
+
+    def get_available_hands(self):
+        os.system('sr_hand_detector_node')
+
+        with open('/tmp/sr_hand_detector.yaml') as f:
+            detected_hands = yaml.safe_load(f)
+
+        for hand in detected_hands:
+            self._available_hands.append(hand)
+        
+        rospy.logwarn(self._available_hands)
 
     def populate_tree(self, old_version=False):
         """
