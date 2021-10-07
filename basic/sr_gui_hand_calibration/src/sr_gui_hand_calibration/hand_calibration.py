@@ -62,6 +62,7 @@ class SrHandCalibration(Plugin):
         self._widget.cb_old_version.stateChanged.connect(self.cb_state_changed_)
         self._widget.btn_joint_0s.clicked.connect(self.btn_joint_0s_clicked_)
 
+        self.get_available_hands()
         self.populate_tree()
 
     def get_available_hands(self):
