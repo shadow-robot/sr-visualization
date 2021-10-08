@@ -349,7 +349,6 @@ class SrGuiAdvancedControls(Plugin):
                             success = False
                     except rospy.ServiceException:
                         success = False
-                    
 
             switch_controllers = rospy.ServiceProxy(
                 'controller_manager/switch_controller', SwitchController)
