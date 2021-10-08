@@ -20,6 +20,7 @@ import os
 import rospy
 import rospkg
 import yaml
+import sys
 
 from qt_gui.plugin import Plugin
 from PyQt5.uic import loadUi
@@ -42,7 +43,7 @@ class SrHandCalibration(Plugin):
         self.setObjectName('SrHandCalibration')
 
         self._publisher = None
-        self._available_hands = []
+        self._calibrated_hand = None
         self._widget = QWidget()
 
         ui_file = os.path.join(rospkg.RosPack().get_path(
@@ -62,19 +63,27 @@ class SrHandCalibration(Plugin):
         self._widget.cb_old_version.stateChanged.connect(self.cb_state_changed_)
         self._widget.btn_joint_0s.clicked.connect(self.btn_joint_0s_clicked_)
 
-        self.get_available_hands()
         self.populate_tree()
 
-    def get_available_hands(self):
+    def get_hand_serial(self):
         os.system('sr_hand_detector_node')
 
         with open('/tmp/sr_hand_detector.yaml') as f:
             detected_hands = yaml.safe_load(f)
 
-        for hand in detected_hands:
-            self._available_hands.append(hand)
+        if not detected_hands:
+            QMessageBox.warning(
+                self._widget, "warning", "No hands connected!")
+            return None
+
+        if len(detected_hands) > 1:
+            QMessageBox.warning(
+                self._widget, "warning", "Please plug in ONLY the hand you want to calibrate!")
+            return None
         
-        rospy.logwarn(self._available_hands)
+        return next(iter(detected_hands))
+
+
 
     def populate_tree(self, old_version=False):
         """
@@ -98,6 +107,18 @@ class SrHandCalibration(Plugin):
         Save calibration to a yaml file.
         sr_ethercat_hand_config package must be installed
         """
+
+        detected_hand = self.get_hand_serial()
+        if not detected_hand:
+            return
+
+        if self._calibrated_hand and detected_hand != self._calibrated_hand:
+            QMessageBox.warning(
+                self._widget, "warning", "You are trying to save to a different hand calibration than you loaded! Plug in the original hand before saving.")
+
+
+        # Fix path .......
+
         path_to_config = "~"
         # Reading the param that contains the config_dir suffix that we should
         # use for this hand (e.g. '' normally for a right hand  or 'lh' if this
@@ -134,6 +155,15 @@ class SrHandCalibration(Plugin):
         Load calibration from a yaml file.
         sr_ethercat_hand_config package must be installed
         """
+
+        self._calibrated_hand = self.get_hand_serial()
+        if not self._calibrated_hand:
+            return
+
+        rospy.logwarn(self._calibrated_hand)
+
+        # Fix path .......
+
         path_to_config = "~"
         # Reading the param that contains the config_dir suffix that we should
         # use for this hand (e.g. '' normally for a right hand  or 'lh' if this
@@ -173,7 +203,8 @@ class SrHandCalibration(Plugin):
             self._publisher.unregister()
             self._publisher = None
 
-        self.hand_model.unregister()
+        if self.hand_model:
+            self.hand_model.unregister()
 
     def shutdown_plugin(self):
         self._unregisterPublisher()
