@@ -119,7 +119,7 @@ class SrHandCalibration(Plugin):
         path_to_config = ""
         try:
             path_to_config = os.path.join(rospkg.RosPack().get_path('sr_hand_config'),
-                                          detected_hand, 'calibrations')
+                                          str(detected_hand), 'calibrations')
         except Exception:
             rospy.logwarn("couldn't find the sr_hand_config package")
 
@@ -155,7 +155,7 @@ class SrHandCalibration(Plugin):
         path_to_config = ""
         try:
             path_to_config = os.path.join(rospkg.RosPack().get_path('sr_hand_config'),
-                                          self._calibrated_hand, 'calibrations')
+                                          str(self._calibrated_hand), 'calibrations')
         except Exception:
             rospy.logwarn("couldn't find the sr_hand_config package")
 
