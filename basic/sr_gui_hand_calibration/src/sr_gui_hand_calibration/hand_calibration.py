@@ -138,7 +138,7 @@ class SrHandCalibration(Plugin):
         if not self._calibrated_hand:
             return
 
-        filename = rospkg.RosPack().get_path('sr_hand_config') + '/' + str(detected_hand) + '/calibrations/calibration.yaml'
+        filename = rospkg.RosPack().get_path('sr_hand_config') + '/' + str(self._calibrated_hand) + '/calibrations/calibration.yaml'
 
         self.hand_model.load(filename)
 
