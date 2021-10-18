@@ -80,7 +80,7 @@ class SrHandCalibration(Plugin):
             QMessageBox.warning(
                 self._widget, "warning", "Please plug in ONLY the hand you want to calibrate!")
             return None
-        
+
         return next(iter(detected_hands))
 
     def populate_tree(self, old_version=False):

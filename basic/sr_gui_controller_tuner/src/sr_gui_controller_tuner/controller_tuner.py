@@ -373,7 +373,6 @@ class SrGuiControllerTuner(Plugin):
             rospy.logwarn("Couldn't find the sr_hand_config package!")
 
         path_to_config = path_to_config + '/' + str(self.get_hand_serial())
-
         subpath = "/controls/host/"
 
         if self.sr_controller_tuner_app_.edit_only_mode:
@@ -440,7 +439,7 @@ class SrGuiControllerTuner(Plugin):
             QMessageBox.warning(
                 self._widget, "warning", "Please plug in ONLY the hand you want to tune!")
             return None
-        
+
         return next(iter(detected_hands))
 
     def on_btn_load_clicked_(self):
