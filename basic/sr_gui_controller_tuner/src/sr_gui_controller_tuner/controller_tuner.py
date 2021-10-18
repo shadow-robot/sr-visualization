@@ -21,6 +21,7 @@ import subprocess
 import math
 import time
 import rospy
+import yaml
 import rosparam
 import rospkg
 
@@ -373,14 +374,7 @@ class SrGuiControllerTuner(Plugin):
 
         path_to_config = path_to_config + '/' + str(self.get_hand_serial())
 
-        # Reading the param that contains the config_dir suffix that we should use for this hand (e.g.
-        # '' normally for a right hand  or 'lh' if this is for a left hand)
-        # the prefix for config dir must use the "checked" prefix, not the
-        # selected one (to handle GUI ns)
-        config_subdir = rospy.get_param(
-            self.sr_controller_tuner_app_.prefix + 'config_dir', '')
-        subpath = "/controls/host/" + config_subdir
-        rospy.logwarn(subpath)
+        subpath = "/controls/host/"
 
         if self.sr_controller_tuner_app_.edit_only_mode:
             filter_files = "*.yaml"
@@ -395,7 +389,7 @@ class SrGuiControllerTuner(Plugin):
 
         if self.controller_type == "Motor Force":
             filter_files = "Config (*motor" + filter_files + ")"
-            subpath = "/controls/motors/" + config_subdir
+            subpath = "/controls/motors/"
         elif self.controller_type == "Position":
             filter_files = "Config (*position_controller" + filter_files + ")"
         elif self.controller_type == "Muscle Position":
