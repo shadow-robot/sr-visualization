@@ -116,7 +116,21 @@ class SrHandCalibration(Plugin):
             QMessageBox.warning(
                 self._widget, "warning", "You are trying to save to a different hand calibration than you loaded!")
 
-        filename = rospkg.RosPack().get_path('sr_hand_config') + '/' + str(detected_hand) + '/calibrations/calibration.yaml'
+        path_to_config = ""
+        try:
+            path_to_config = os.path.join(rospkg.RosPack().get_path('sr_hand_config'),
+                                          detected_hand, 'calibrations')
+        except Exception:
+            rospy.logwarn("couldn't find the sr_hand_config package")
+
+        filter_files = "*.yaml"
+        filename, _ = QFileDialog.getOpenFileName(self._widget.tree_calibration,
+                                                  self._widget.tr('Save Calibration'),
+                                                  self._widget.tr(path_to_config),
+                                                  self._widget.tr(filter_files))
+
+        if filename == "":
+            return
 
         if not self.hand_model.is_calibration_complete():
             btn_pressed = QMessageBox.warning(
@@ -138,7 +152,21 @@ class SrHandCalibration(Plugin):
         if not self._calibrated_hand:
             return
 
-        filename = rospkg.RosPack().get_path('sr_hand_config') + '/' + str(self._calibrated_hand) + '/calibrations/calibration.yaml'
+        path_to_config = ""
+        try:
+            path_to_config = os.path.join(rospkg.RosPack().get_path('sr_hand_config'),
+                                          self._calibrated_hand, 'calibrations')
+        except Exception:
+            rospy.logwarn("couldn't find the sr_hand_config package")
+
+        filter_files = "*.yaml"
+        filename, _ = QFileDialog.getOpenFileName(self._widget.tree_calibration,
+                                                  self._widget.tr('Load Calibration'),
+                                                  self._widget.tr(path_to_config),
+                                                  self._widget.tr(filter_files))
+
+        if filename == "":
+            return
 
         self.hand_model.load(filename)
 
