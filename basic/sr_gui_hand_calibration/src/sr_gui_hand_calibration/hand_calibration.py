@@ -114,31 +114,34 @@ class SrHandCalibration(Plugin):
 
         if self._calibrated_hand and detected_hand != self._calibrated_hand:
             QMessageBox.warning(
-                self._widget, "warning", "You are trying to save to a different hand calibration than you loaded! Plug in the original hand before saving.")
+                self._widget, "warning", "You are trying to save to a different hand calibration than you loaded!")
 
 
         # Fix path .......
 
-        path_to_config = "~"
-        # Reading the param that contains the config_dir suffix that we should
-        # use for this hand (e.g. '' normally for a right hand  or 'lh' if this
-        # is for a left hand)
-        config_dir = rospy.get_param('config_dir', '')
-        try:
-            path_to_config = os.path.join(rospkg.RosPack().get_path(
-                'sr_ethercat_hand_config'), 'calibrations', config_dir)
-        except Exception:
-            rospy.logwarn("couldnt find the sr_ethercat_hand_config package")
+        # path_to_config = "~"
+        # # Reading the param that contains the config_dir suffix that we should
+        # # use for this hand (e.g. '' normally for a right hand  or 'lh' if this
+        # # is for a left hand)
+        # config_dir = rospy.get_param('config_dir', '')
+        # try:
+        #     path_to_config = os.path.join(rospkg.RosPack().get_path(
+        #         'sr_ethercat_hand_config'), 'calibrations', config_dir)
+        # except Exception:
+        #     rospy.logwarn("couldnt find the sr_ethercat_hand_config package")
 
-        filter_files = "*.yaml"
-        filename, _ = QFileDialog.getOpenFileName(
-            self._widget.tree_calibration, self._widget.tr('Save Calibration'),
-            self._widget.tr(
-                path_to_config),
-            self._widget.tr(filter_files))
+        # filter_files = "*.yaml"
+        # filename, _ = QFileDialog.getOpenFileName(
+        #     self._widget.tree_calibration, self._widget.tr('Save Calibration'),
+        #     self._widget.tr(
+        #         path_to_config),
+        #     self._widget.tr(filter_files))
 
-        if filename == "":
-            return
+        # if filename == "":
+        #     return
+
+        filename = rospkg.RosPack().get_path('sr_hand_config') + '/' + detected_hand + '/calibrations/calibration.yaml'
+        rospy.logwarn(filename)
 
         if not self.hand_model.is_calibration_complete():
             btn_pressed = QMessageBox.warning(
