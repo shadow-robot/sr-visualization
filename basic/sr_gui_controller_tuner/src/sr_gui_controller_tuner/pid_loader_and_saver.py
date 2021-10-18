@@ -97,14 +97,28 @@ class PidSaver(object):
 
 if __name__ == '__main__':
     path_to_config = "~"
+
+    os.system('sr_hand_detector_node')
+
+    with open('/tmp/sr_hand_detector.yaml') as f:
+        detected_hands = yaml.safe_load(f)
+
+    if not detected_hands:
+        raise ValueError ("No hands connected!")
+
+    if len(detected_hands) > 1:
+        raise ValueError ("Please plug in ONLY the hand you want to work with!")
+
+    hand_serial = next(iter(detected_hands))
+
     try:
-        path_to_config = os.path.join(
-            rospkg.RosPack().get_path("sr_edc_controller_configuration"))
+        path_to_config = rospkg.RosPack().get_path("sr_hand_config")
 
         pid_saver = PidSaver(
-            path_to_config + "/sr_edc_mixed_position_velocity_joint_controllers.yaml")
+            path_to_config + "/" + str(hand_serial) +
+                "/controls/host/pwm/sr_edc_mixed_position_velocity_joint_controllers.yaml")
         pid_saver.save_settings(
             ["sh_wrj2_mixed_position_velocity_controller", "pid"], {"d": 1.0})
     except Exception:
         rospy.logwarn(
-            "couldnt find the sr_edc_controller_configuration package")
+            "couldnt find the sr_hand_config package")
