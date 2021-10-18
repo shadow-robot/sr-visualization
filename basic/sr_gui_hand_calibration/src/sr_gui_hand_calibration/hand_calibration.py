@@ -103,7 +103,7 @@ class SrHandCalibration(Plugin):
     def btn_save_clicked_(self):
         """
         Save calibration to a yaml file.
-        sr_ethercat_hand_config package must be installed
+        sr_hand_config package must be installed
         """
 
         detected_hand = self.get_hand_serial()
@@ -143,7 +143,7 @@ class SrHandCalibration(Plugin):
     def btn_load_clicked_(self):
         """
         Load calibration from a yaml file.
-        sr_ethercat_hand_config package must be installed
+        sr_hand_config package must be installed
         """
 
         self._calibrated_hand = self.get_hand_serial()
