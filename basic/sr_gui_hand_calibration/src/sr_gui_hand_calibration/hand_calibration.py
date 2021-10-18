@@ -140,7 +140,7 @@ class SrHandCalibration(Plugin):
         # if filename == "":
         #     return
 
-        filename = rospkg.RosPack().get_path('sr_hand_config') + '/' + detected_hand + '/calibrations/calibration.yaml'
+        filename = rospkg.RosPack().get_path('sr_hand_config') + '/' + str(detected_hand) + '/calibrations/calibration.yaml'
         rospy.logwarn(filename)
 
         if not self.hand_model.is_calibration_complete():
