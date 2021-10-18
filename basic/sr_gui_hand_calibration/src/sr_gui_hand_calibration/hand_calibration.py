@@ -116,32 +116,7 @@ class SrHandCalibration(Plugin):
             QMessageBox.warning(
                 self._widget, "warning", "You are trying to save to a different hand calibration than you loaded!")
 
-
-        # Fix path .......
-
-        # path_to_config = "~"
-        # # Reading the param that contains the config_dir suffix that we should
-        # # use for this hand (e.g. '' normally for a right hand  or 'lh' if this
-        # # is for a left hand)
-        # config_dir = rospy.get_param('config_dir', '')
-        # try:
-        #     path_to_config = os.path.join(rospkg.RosPack().get_path(
-        #         'sr_ethercat_hand_config'), 'calibrations', config_dir)
-        # except Exception:
-        #     rospy.logwarn("couldnt find the sr_ethercat_hand_config package")
-
-        # filter_files = "*.yaml"
-        # filename, _ = QFileDialog.getOpenFileName(
-        #     self._widget.tree_calibration, self._widget.tr('Save Calibration'),
-        #     self._widget.tr(
-        #         path_to_config),
-        #     self._widget.tr(filter_files))
-
-        # if filename == "":
-        #     return
-
         filename = rospkg.RosPack().get_path('sr_hand_config') + '/' + str(detected_hand) + '/calibrations/calibration.yaml'
-        rospy.logwarn(filename)
 
         if not self.hand_model.is_calibration_complete():
             btn_pressed = QMessageBox.warning(
@@ -163,29 +138,7 @@ class SrHandCalibration(Plugin):
         if not self._calibrated_hand:
             return
 
-        rospy.logwarn(self._calibrated_hand)
-
-        # Fix path .......
-
-        path_to_config = "~"
-        # Reading the param that contains the config_dir suffix that we should
-        # use for this hand (e.g. '' normally for a right hand  or 'lh' if this
-        # is for a left hand)
-        config_dir = rospy.get_param('config_dir', '')
-        try:
-            path_to_config = os.path.join(rospkg.RosPack().get_path('sr_ethercat_hand_config'),
-                                          'calibrations', config_dir)
-        except Exception:
-            rospy.logwarn("couldn't find the sr_ethercat_hand_config package")
-
-        filter_files = "*.yaml"
-        filename, _ = QFileDialog.getOpenFileName(self._widget.tree_calibration,
-                                                  self._widget.tr('Load Calibration'),
-                                                  self._widget.tr(path_to_config),
-                                                  self._widget.tr(filter_files))
-
-        if filename == "":
-            return
+        filename = rospkg.RosPack().get_path('sr_hand_config') + '/' + str(detected_hand) + '/calibrations/calibration.yaml'
 
         self.hand_model.load(filename)
 
