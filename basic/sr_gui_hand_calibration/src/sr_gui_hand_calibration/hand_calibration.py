@@ -83,8 +83,6 @@ class SrHandCalibration(Plugin):
         
         return next(iter(detected_hands))
 
-
-
     def populate_tree(self, old_version=False):
         """
         Create tree with calibrations
@@ -121,7 +119,7 @@ class SrHandCalibration(Plugin):
             path_to_config = os.path.join(rospkg.RosPack().get_path('sr_hand_config'),
                                           str(detected_hand), 'calibrations')
         except Exception:
-            rospy.logwarn("couldn't find the sr_hand_config package")
+            rospy.logwarn("Couldn't find the sr_hand_config package!")
 
         filter_files = "*.yaml"
         filename, _ = QFileDialog.getOpenFileName(self._widget.tree_calibration,
@@ -157,7 +155,7 @@ class SrHandCalibration(Plugin):
             path_to_config = os.path.join(rospkg.RosPack().get_path('sr_hand_config'),
                                           str(self._calibrated_hand), 'calibrations')
         except Exception:
-            rospy.logwarn("couldn't find the sr_hand_config package")
+            rospy.logwarn("Couldn't find the sr_hand_config package!")
 
         filter_files = "*.yaml"
         filename, _ = QFileDialog.getOpenFileName(self._widget.tree_calibration,
