@@ -21,6 +21,7 @@ import subprocess
 import math
 import time
 import rospy
+import yaml
 import rosparam
 import rospkg
 
@@ -367,18 +368,13 @@ class SrGuiControllerTuner(Plugin):
         path_to_config = "~"
         try:
             path_to_config = os.path.join(
-                rospkg.RosPack().get_path('sr_ethercat_hand_config'))
+                rospkg.RosPack().get_path('sr_hand_config'))
         except Exception:
-            rospy.logwarn(
-                "couldn't find the sr_ethercat_hand_config package, do you have the sr_config stack installed?")
+            rospy.logwarn("Couldn't find the sr_hand_config package!")
 
-        # Reading the param that contains the config_dir suffix that we should use for this hand (e.g.
-        # '' normally for a right hand  or 'lh' if this is for a left hand)
-        # the prefix for config dir must use the "checked" prefix, not the
-        # selected one (to handle GUI ns)
-        config_subdir = rospy.get_param(
-            self.sr_controller_tuner_app_.prefix + 'config_dir', '')
-        subpath = "/controls/host/" + config_subdir
+        path_to_config = path_to_config + '/' + str(self.get_hand_serial())
+        subpath = "/controls/host/"
+
         if self.sr_controller_tuner_app_.edit_only_mode:
             filter_files = "*.yaml"
         else:
@@ -392,7 +388,7 @@ class SrGuiControllerTuner(Plugin):
 
         if self.controller_type == "Motor Force":
             filter_files = "Config (*motor" + filter_files + ")"
-            subpath = "/controls/motors/" + config_subdir
+            subpath = "/controls/motors/"
         elif self.controller_type == "Position":
             filter_files = "Config (*position_controller" + filter_files + ")"
         elif self.controller_type == "Muscle Position":
@@ -427,6 +423,24 @@ class SrGuiControllerTuner(Plugin):
         # been chosen
         self._widget.btn_save_all.setEnabled(True)
         self._widget.btn_save_selected.setEnabled(True)
+
+    def get_hand_serial(self):
+        os.system('sr_hand_detector_node')
+
+        with open('/tmp/sr_hand_detector.yaml') as f:
+            detected_hands = yaml.safe_load(f)
+
+        if not detected_hands:
+            QMessageBox.warning(
+                self._widget, "warning", "No hands connected!")
+            return None
+
+        if len(detected_hands) > 1:
+            QMessageBox.warning(
+                self._widget, "warning", "Please plug in ONLY the hand you want to tune!")
+            return None
+
+        return next(iter(detected_hands))
 
     def on_btn_load_clicked_(self):
         """

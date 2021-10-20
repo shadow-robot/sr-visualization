@@ -148,7 +148,7 @@ class SrGuiBootloader(Plugin):
                 'sr_external_dependencies'), '/compiled_firmware/released_firmware/')
         except Exception:
             rospy.logwarn(
-                "Couldn't find the sr_edc_controller_configuration package")
+                "Couldn't find the sr_external_dependencies package")
 
         filter_files = "*.hex"
         filename, _ = QFileDialog.getOpenFileName(
