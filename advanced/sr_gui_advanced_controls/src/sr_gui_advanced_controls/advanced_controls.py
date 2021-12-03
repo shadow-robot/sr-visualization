@@ -345,9 +345,9 @@ class SrGuiAdvancedControls(Plugin):
                             'controller_manager/load_controller',
                             LoadController)
                         resp1 = load_controllers(load_control)
+                        if not resp1.ok:
+                            success = False
                     except rospy.ServiceException:
-                        success = False
-                    if not resp1.ok:
                         success = False
 
             switch_controllers = rospy.ServiceProxy(
