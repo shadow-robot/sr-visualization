@@ -206,32 +206,31 @@ class JointCalibration(QTreeWidgetItem):
 
     def plot_raw_button_clicked(self):
         temporary_file_name = "{}/resource/tmp_plot.xml".format(self.package_path)
-        process = ["rosrun", "rqt_multiplot", "rqt_multiplot", "--multiplot-config", temporary_file_name,
-            "--multiplot-run-all"]
         if type(self.joint_name) is not list:
             if type(self.raw_value_index) is not list:
                 # Single joint, single sensor
                 template_filename = "{}/resource/rqt_multiplot_1_sensor.xml".format(self.package_path)
                 replace_list = [['sensor_id_0', str(self.raw_value_index)],
                                 ['sensor_name_0', self.joint_name]]
-
+                process = ["rosrun", "rqt_multiplot", "rqt_multiplot", "--multiplot-config", temporary_file_name,
+                           "--multiplot-run-all"]
             else:
                 # Single joint, two sensors
-                template_filename = "{}/resource/rqt_multiplot_2_sensors.xml".format(self.package_path)
+                template_filename = "{}/resource/plotjuggler_2_sensors.xml".format(self.package_path)
                 sensor_names = self.robot_lib.get_compound_names(self.joint_name)
                 replace_list = []
                 for i, sensor_index in enumerate(self.raw_value_index):
                     replace_list.append(["sensor_id_{}".format(i), str(sensor_index)])
                     replace_list.append(["sensor_name_{}".format(i), sensor_names[i]])
-                # process = ["rosrun", "plotjuggler", "plotjuggler", "-n", "-l", temporary_file_name]
+                process = ["rosrun", "plotjuggler", "plotjuggler", "-n", "-l", temporary_file_name]
         else:
             # Two coupled joints, each with a single sensor
-            template_filename = "{}/resource/rqt_multiplot_2_sensors.xml".format(self.package_path)
+            template_filename = "{}/resource/plotjuggler_2_sensors.xml".format(self.package_path)
             replace_list = []
             for i, joint_name in enumerate(self.joint_name):
                 replace_list.append(["sensor_id_{}".format(i), str(self.raw_value_index[i])])
                 replace_list.append(["sensor_name_{}".format(i), joint_name])
-                # process = ["rosrun", "plotjuggler", "plotjuggler", "-n", "-l", temporary_file_name]
+                process = ["rosrun", "plotjuggler", "plotjuggler", "-n", "-l", temporary_file_name]
         try:
             with open(template_filename, "r") as f:
                 template = f.read()
