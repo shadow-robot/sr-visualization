@@ -1,5 +1,5 @@
 <library path="src">
-  <class name="Controller Tuner" type="sr_gui_controller_tuner.controller_tuner.SrGuiControllerTuner"
+  <class name="Hand Tuning" type="sr_gui_controller_tuner.controller_tuner.SrGuiControllerTuner"
          base_class_type="rqt_gui_py::Plugin">
     <description>
       A plugin for tuning the sr_mechanism_controllers.
@@ -11,7 +11,7 @@
       <group>
         <label>Basic</label>
       </group>
-      <label>Controller Tuner</label>
+      <label>Hand Tuning</label>
       <icon type="file">resource/hand.png</icon>
       <statustip>A plugin for tuning the sr_mechanism_controllers.</statustip>
     </qtgui>

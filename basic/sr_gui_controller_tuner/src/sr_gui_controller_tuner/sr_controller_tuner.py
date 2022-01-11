@@ -198,7 +198,7 @@ class SrControllerTunerApp(object):
                 except rospy.ROSException as e:
                     rospy.loginfo(
                         "Controller manager not running: %s" % str(e))
-                    rospy.loginfo("Running controller tuner in edit-only mode")
+                    rospy.loginfo("Running Hand Tuning in edit-only mode")
                     return self.set_edit_only(running_ctrls)
             else:
                 return self.set_edit_only(running_ctrls)
@@ -234,7 +234,7 @@ class SrControllerTunerApp(object):
                                 return running_ctrls
 
         rospy.loginfo("No controllers currently running")
-        rospy.loginfo("Running controller tuner in edit-only mode")
+        rospy.loginfo("Running Hand Tuning in edit-only mode")
         del running_ctrls[:]
         return self.set_edit_only(running_ctrls)
 
