@@ -1,0 +1,19 @@
+<library path="src">
+  <class name="Hand Calibration" type="sr_gui_hand_calibration.hand_calibration.SrHandCalibration"
+         base_class_type="rqt_gui_py::Plugin">
+    <description>
+      A plugin for calibrating the Shadow EtherCAT Hand.
+    </description>
+    <qtgui>
+      <group>
+        <label>Shadow Robot</label>
+      </group>
+      <group>
+        <label>Advanced</label>
+      </group>
+      <icon type="file">resource/hand.png</icon>
+      <label>Hand Calibration</label>
+      <statustip>A plugin for calibrating the Shadow EtherCAT Hand.</statustip>
+    </qtgui>
+  </class>
+</library>
