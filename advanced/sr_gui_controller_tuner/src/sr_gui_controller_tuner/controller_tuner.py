@@ -339,7 +339,7 @@ class SrGuiControllerTuner(Plugin):
         self._widget.btn_save_all.setEnabled(False)
         self._widget.btn_save_selected.setEnabled(False)
 
-    def select_file_path_(self, default = False):
+    def select_file_path_(self, default=False):
         """
         Perform controller tuning and save settings to user specified file
         sr_config stack must be installed
@@ -405,7 +405,6 @@ class SrGuiControllerTuner(Plugin):
         # been chosen
         self._widget.btn_save_all.setEnabled(True)
         self._widget.btn_save_selected.setEnabled(True)
-
 
     def get_hand_serial(self):
         os.system('sr_hand_detector_node')
@@ -684,7 +683,7 @@ class SrGuiControllerTuner(Plugin):
         for col in range(0, self._widget.tree_ctrl_settings.columnCount()):
             self._widget.tree_ctrl_settings.resizeColumnToContents(col)
 
-        self.select_file_path_(default = True)
+        self.select_file_path_(default=True)
 
     def on_btn_stop_mvts_clicked_(self):
         for move_thread in self.move_threads:
@@ -717,7 +716,7 @@ class SrGuiControllerTuner(Plugin):
                   "just P gain for the torque control.\n" + \
                   "Max_PWM: This puts a limit on the final PWM value that will " + \
                   "be sent to the motor by the torque controller. It can be useful " + \
-                  "when setting up a controller for the first time to limit the "  + \
+                  "when setting up a controller for the first time to limit the " + \
                   "motor power to a safe level.\n" + \
                   "QDeadband: The error is considered to be zero if it is within " + \
                   "+/-deadband. This value should be set as a little more than the " + \
