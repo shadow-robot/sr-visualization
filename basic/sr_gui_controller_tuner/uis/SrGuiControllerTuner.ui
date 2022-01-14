@@ -33,7 +33,17 @@
           <number>0</number>
          </property>
          <item>
-          <spacer name="horizontalSpacer_3">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Hand Prefix</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="select_prefix"/>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_4">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
@@ -46,14 +56,11 @@
           </spacer>
          </item>
          <item>
-          <widget class="QLabel" name="label_2">
+          <widget class="QPushButton" name="information_btn">
            <property name="text">
-            <string>Hand Prefix</string>
+            <string>Info</string>
            </property>
           </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="select_prefix"/>
          </item>
         </layout>
        </item>

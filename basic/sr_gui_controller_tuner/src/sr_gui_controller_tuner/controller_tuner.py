@@ -305,6 +305,7 @@ class SrGuiControllerTuner(Plugin):
                 self.on_btn_stop_mvts_clicked_)
 
             self.prefix_selected(self._prefix)
+            self._widget.information_btn.clicked.connect(self.display_information)
 
     def on_btn_plot_pressed_(self, joint_name, btn):
         plot_thread = PlotThread(btn, joint_name, self.controller_type)
@@ -689,6 +690,50 @@ class SrGuiControllerTuner(Plugin):
         for move_thread in self.move_threads:
             move_thread.__del__()
         self.move_threads = []
+
+    def display_information(self, message):
+        message = "Position controller\n" + \
+                  "Here you can select a finger, thumb or wrist joints, " + \
+                  "and adjust the different position control parameters. " + \
+                  "Click Set Selected to send the new values to the motors " + \
+                  "and make them take effect.\n" + \
+                  "“P”, “I” & “D” terms: Gain parameters of the position " + \
+                  "PID controller. By default, Shadow tunes the paramenters " + \
+                  "using P or PD combinations. The user can add “I” gains " + \
+                  "in the control if they consider it necessary.\n" + \
+                  "Max_force: This puts a limit on the output (PWM) value " + \
+                  "that will be sent from the host to the motor by the " + \
+                  "position controller. It can be useful when setting up a " + \
+                  "controller for the first time to limit the motor power " + \
+                  "to a safe level.\n" + \
+                  "Position_Deadband: The error is considered to be zero " + \
+                  "if it is within ±deadband. This value should be set as a " + \
+                  "little more than the noise on the sensor. The units of " + \
+                  "deadband are the same as the value being controlled. " + \
+                  "So, the deadband for a position controller is in radians.\n" + \
+                  "Force controller\n" + \
+                  "“P”, “I” & “D” terms: Gain parameters of the torque PID " + \
+                  "controller. By default, Shadow tunes the paramenters using " + \
+                  "just P gain for the torque control.\n" + \
+                  "Max_PWM: This puts a limit on the final PWM value that will " + \
+                  "be sent to the motor by the torque controller. It can be useful " + \
+                  "when setting up a controller for the first time to limit the "  + \
+                  "motor power to a safe level.\n" + \
+                  "QDeadband: The error is considered to be zero if it is within " + \
+                  "+/-deadband. This value should be set as a little more than the " + \
+                  "noise on the sensor. The units of deadband are the same as the " + \
+                  "value being controlled. The deadband for a torgue controller is " + \
+                  "in the units of the strain gauges.\n" + \
+                  "Torque_Limit: This value is used to limit the PWM at the end of " + \
+                  "the control loop. The control algoritm reduces the final PWM " + \
+                  "that goes to the motor making sure that the force in the strain " + \
+                  "gauge doesn’t overcome this limit value."
+        msg = QMessageBox()
+        msg.setWindowTitle("Information")
+        msg.setIcon(QMessageBox().Information)
+        msg.setText(message)
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.exec_()
 
     #
     # Default methods for the rosgui plugins
