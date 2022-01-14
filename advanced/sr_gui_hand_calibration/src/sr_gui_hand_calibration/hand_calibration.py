@@ -64,6 +64,7 @@ class SrHandCalibration(Plugin):
         self._widget.btn_joint_0s.clicked.connect(self.btn_joint_0s_clicked_)
 
         self.populate_tree()
+        self._widget.information_btn.clicked.connect(self.display_information)
 
     def get_hand_serial(self):
         os.system('sr_hand_detector_node')
@@ -196,3 +197,18 @@ class SrHandCalibration(Plugin):
 
     def restore_settings(self, global_settings, perspective_settings):
         pass
+
+    def display_information(self, message):
+        message = "This plugin is used internally by Shadow to calibrate the raw data " + \
+                  "from the position sensors. The calibration has to be run on the " + \
+                  "NUC machine, therefore rqt has to be started from it. To do that, " + \
+                  "you can use a desktop icon prepared for this purpose.\n" + \
+                  "It’s very unlikely that the sensors moved inside of the hand, BUT, " + \
+                  "if you find misalligments with the model and you require a " + \
+                  "re-calibration, contact Shadow Robot Company here: <support@shadowrobot.com>."
+        msg = QMessageBox()
+        msg.setWindowTitle("Information")
+        msg.setIcon(QMessageBox().Information)
+        msg.setText(message)
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.exec_()
