@@ -209,11 +209,10 @@ class JointCalibration(QTreeWidgetItem):
         if type(self.joint_name) is not list:
             if type(self.raw_value_index) is not list:
                 # Single joint, single sensor
-                template_filename = "{}/resource/rqt_multiplot_1_sensor.xml".format(self.package_path)
+                template_filename = "{}/resource/plotjuggler_1_sensor.xml".format(self.package_path)
                 replace_list = [['sensor_id_0', str(self.raw_value_index)],
                                 ['sensor_name_0', self.joint_name]]
-                process = ["rosrun", "rqt_multiplot", "rqt_multiplot", "--multiplot-config", temporary_file_name,
-                           "--multiplot-run-all"]
+                process = ["rosrun", "plotjuggler", "plotjuggler", "-n", "-l", temporary_file_name]
             else:
                 # Single joint, two sensors
                 template_filename = "{}/resource/plotjuggler_2_sensors.xml".format(self.package_path)
