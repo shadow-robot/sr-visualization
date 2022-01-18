@@ -9,10 +9,10 @@
         <label>Shadow Robot</label>
       </group>
       <group>
-        <label>Basic</label>
+        <label>Advanced</label>
       </group>
       <icon type="file">resource/hand.png</icon>
-      <label>Shadow Hand Calibration</label>
+      <label>Hand Calibration</label>
       <statustip>A plugin for calibrating the Shadow EtherCAT Hand.</statustip>
     </qtgui>
   </class>
