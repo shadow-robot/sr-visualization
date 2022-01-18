@@ -93,30 +93,13 @@ class PlotThread(QThread):
 
         elif self.controller_type_ == "Position":
             rxplot_str += "sh_" + self.joint_name_.lower() + "_position_controller/state/set_point,sh_" + \
-                          self.joint_name_.lower() + "_position_controller/state/process_value sh_" + \
-                          self.joint_name_.lower() + "_position_controller/state/command"
+                          self.joint_name_.lower() + "_position_controller/state/process_value sh_"
         elif self.controller_type_ == "Muscle Position":
             rxplot_str += "sh_" + self.joint_name_.lower() + "_muscle_position_controller/state/set_point,sh_" + \
                           self.joint_name_.lower() + "_muscle_position_controller/state/process_value sh_" + \
                           self.joint_name_.lower() + "_muscle_position_controller/state/pseudo_command sh_" + \
                           self.joint_name_.lower() + "_muscle_position_controller/state/valve_muscle_0,sh_" + \
                           self.joint_name_.lower() + "_muscle_position_controller/state/valve_muscle_1"
-        elif self.controller_type_ == "Velocity":
-            rxplot_str += "sh_" + self.joint_name_.lower() + "_velocity_controller/state/set_point,sh_" + \
-                          self.joint_name_.lower() + "_velocity_controller/state/process_value"
-        elif self.controller_type_ == "Mixed Position/Velocity":
-            rxplot_str += "sh_" + \
-                          self.joint_name_.lower() + "_mixed_position_velocity_controller/state/set_point,sh_" + \
-                          self.joint_name_.lower() + "_mixed_position_velocity_controller/state/process_value sh_" + \
-                          self.joint_name_.lower() + "_mixed_position_velocity_controller/state/process_value_dot," + \
-                          "sh_" + \
-                          self.joint_name_.lower() + \
-                          "_mixed_position_velocity_controller/state/commanded_velocity " + \
-                          "sh_" + \
-                          self.joint_name_.lower() + "_mixed_position_velocity_controller/state/command,sh_" + \
-                          self.joint_name_.lower() + \
-                          "_mixed_position_velocity_controller/state/measured_effort,sh_" + \
-                          self.joint_name_.lower() + "_mixed_position_velocity_controller/state/friction_compensation"
         elif self.controller_type_ == "Effort":
             rxplot_str += "sh_" + self.joint_name_.lower() + "_effort_controller/state/set_point,sh_" + \
                           self.joint_name_.lower() + "_effort_controller/state/process_value"
@@ -163,7 +146,7 @@ class MoveThread(QThread):
         """
         Create a launch file dynamically
         """
-        # Not using automatic move for velocity and effort controllers
+        # Not using automatic move for effort controller
         controller_name_ = ""
         message_type = "ros"
         if self.controller_type_ == "Position":
@@ -172,11 +155,6 @@ class MoveThread(QThread):
         if self.controller_type_ == "Muscle Position":
             controller_name_ = "sh_" + \
                 self.joint_name_.lower() + "_muscle_position_controller"
-        elif self.controller_type_ == "Mixed Position/Velocity":
-            controller_name_ = "sh_" + \
-                self.joint_name_.lower() + \
-                "_mixed_position_velocity_controller"
-            message_type = "sr"
 
         min_max = self.get_min_max_()
         namespace = rospy.get_namespace()
@@ -315,7 +293,7 @@ class SrGuiControllerTuner(Plugin):
             self._widget.btn_save_all.pressed.connect(
                 self.on_btn_save_all_clicked_)
             self._widget.btn_select_file_path.pressed.connect(
-                self.on_btn_select_file_path_clicked_)
+                self.select_file_path_)
 
             self._widget.btn_set_selected.pressed.connect(
                 self.on_btn_set_selected_clicked_)
@@ -327,6 +305,7 @@ class SrGuiControllerTuner(Plugin):
                 self.on_btn_stop_mvts_clicked_)
 
             self.prefix_selected(self._prefix)
+            self._widget.information_btn.clicked.connect(self.display_information)
 
     def on_btn_plot_pressed_(self, joint_name, btn):
         plot_thread = PlotThread(btn, joint_name, self.controller_type)
@@ -360,7 +339,7 @@ class SrGuiControllerTuner(Plugin):
         self._widget.btn_save_all.setEnabled(False)
         self._widget.btn_save_selected.setEnabled(False)
 
-    def on_btn_select_file_path_clicked_(self):
+    def select_file_path_(self, default=False):
         """
         Perform controller tuning and save settings to user specified file
         sr_config stack must be installed
@@ -389,26 +368,29 @@ class SrGuiControllerTuner(Plugin):
         if self.controller_type == "Motor Force":
             filter_files = "Config (*motor" + filter_files + ")"
             subpath = "/controls/motors/"
+            default_path = "motor_board_effort_controllers.yaml"
         elif self.controller_type == "Position":
             filter_files = "Config (*position_controller" + filter_files + ")"
+            default_path = "pwm/sr_edc_joint_position_controllers_PWM.yaml"
         elif self.controller_type == "Muscle Position":
             filter_files = "Config (*muscle_joint_position_controller" + \
                 filter_files + ")"
-        elif self.controller_type == "Velocity":
-            filter_files = "Config (*velocity_controller" + filter_files + ")"
-        elif self.controller_type == "Mixed Position/Velocity":
-            filter_files = "Config (*position_velocity" + filter_files + ")"
+            default_path = ""
         elif self.controller_type == "Effort":
             filter_files = "Config (*effort_controller" + filter_files + ")"
+            default_path = "torque/sr_edc_effort_controllers.yaml"
 
         path_to_config += subpath
 
-        filename, _ = QFileDialog.getOpenFileName(
-            self._widget.tree_ctrl_settings, self._widget.tr(
-                'Save Controller Settings'),
-            self._widget.tr(
-                path_to_config),
-            self._widget.tr(filter_files))
+        if default:
+            filename = path_to_config + default_path
+        else:
+            filename, _ = QFileDialog.getOpenFileName(
+                self._widget.tree_ctrl_settings, self._widget.tr(
+                    'Save Controller Settings'),
+                self._widget.tr(
+                    path_to_config),
+                self._widget.tr(filter_files))
 
         if filename == "":
             return
@@ -511,7 +493,7 @@ class SrGuiControllerTuner(Plugin):
 
     def prefix_selected(self, prefix):
         """
-        Sets the prefix in the controller tuner app and
+        Sets the prefix in the Hand Tuning app and
         Refreshes the controllers
         """
         self._prefix = prefix
@@ -630,7 +612,7 @@ class SrGuiControllerTuner(Plugin):
                                                                 motor_name, self.ctrl_widgets[motor_name]["btn_plot"]))
                         layout_buttons.addWidget(btn_plot)
 
-                        if self.controller_type in ["Position", "Muscle Position", "Mixed Position/Velocity"]:
+                        if self.controller_type in ["Position", "Muscle Position"]:
                             # only adding Move button for position controllers
                             btn_move = QPushButton("Move")
                             self.ctrl_widgets[motor_name][
@@ -701,10 +683,56 @@ class SrGuiControllerTuner(Plugin):
         for col in range(0, self._widget.tree_ctrl_settings.columnCount()):
             self._widget.tree_ctrl_settings.resizeColumnToContents(col)
 
+        self.select_file_path_(default=True)
+
     def on_btn_stop_mvts_clicked_(self):
         for move_thread in self.move_threads:
             move_thread.__del__()
         self.move_threads = []
+
+    def display_information(self, message):
+        message = "Position controller\n" + \
+                  "Here you can select a finger, thumb or wrist joints, " + \
+                  "and adjust the different position control parameters. " + \
+                  "Click Set Selected to send the new values to the motors " + \
+                  "and make them take effect.\n" + \
+                  "“P”, “I” & “D” terms: Gain parameters of the position " + \
+                  "PID controller. By default, Shadow tunes the paramenters " + \
+                  "using P or PD combinations. The user can add “I” gains " + \
+                  "in the control if they consider it necessary.\n" + \
+                  "Max_force: This puts a limit on the output (PWM) value " + \
+                  "that will be sent from the host to the motor by the " + \
+                  "position controller. It can be useful when setting up a " + \
+                  "controller for the first time to limit the motor power " + \
+                  "to a safe level.\n" + \
+                  "Position_Deadband: The error is considered to be zero " + \
+                  "if it is within ±deadband. This value should be set as a " + \
+                  "little more than the noise on the sensor. The units of " + \
+                  "deadband are the same as the value being controlled. " + \
+                  "So, the deadband for a position controller is in radians.\n" + \
+                  "Force controller\n" + \
+                  "“P”, “I” & “D” terms: Gain parameters of the torque PID " + \
+                  "controller. By default, Shadow tunes the paramenters using " + \
+                  "just P gain for the torque control.\n" + \
+                  "Max_PWM: This puts a limit on the final PWM value that will " + \
+                  "be sent to the motor by the torque controller. It can be useful " + \
+                  "when setting up a controller for the first time to limit the " + \
+                  "motor power to a safe level.\n" + \
+                  "QDeadband: The error is considered to be zero if it is within " + \
+                  "+/-deadband. This value should be set as a little more than the " + \
+                  "noise on the sensor. The units of deadband are the same as the " + \
+                  "value being controlled. The deadband for a torgue controller is " + \
+                  "in the units of the strain gauges.\n" + \
+                  "Torque_Limit: This value is used to limit the PWM at the end of " + \
+                  "the control loop. The control algoritm reduces the final PWM " + \
+                  "that goes to the motor making sure that the force in the strain " + \
+                  "gauge doesn’t overcome this limit value."
+        msg = QMessageBox()
+        msg.setWindowTitle("Information")
+        msg.setIcon(QMessageBox().Information)
+        msg.setText(message)
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.exec_()
 
     #
     # Default methods for the rosgui plugins

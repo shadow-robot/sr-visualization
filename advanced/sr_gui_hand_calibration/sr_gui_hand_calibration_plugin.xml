@@ -1,5 +1,5 @@
 <library path="src">
-  <class name="SrHandCalibration" type="sr_gui_hand_calibration.hand_calibration.SrHandCalibration"
+  <class name="Hand Calibration" type="sr_gui_hand_calibration.hand_calibration.SrHandCalibration"
          base_class_type="rqt_gui_py::Plugin">
     <description>
       A plugin for calibrating the Shadow EtherCAT Hand.
