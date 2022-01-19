@@ -9,7 +9,7 @@
         <label>Shadow Robot</label>
       </group>
       <group>
-        <label>Basic</label>
+        <label>Advanced</label>
       </group>
       <icon type="file">resource/hand.png</icon>
       <label>Motor Resetter</label>
