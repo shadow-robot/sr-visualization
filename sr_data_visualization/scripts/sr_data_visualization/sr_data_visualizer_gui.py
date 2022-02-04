@@ -74,11 +74,14 @@ class SrDataVisualizer(Plugin):
         for key in self._hand_parameters.joint_prefix:
             self.hand_serial = key
         self._joint_prefix = self._hand_parameters.joint_prefix[self.hand_serial]
+        self.graph_dict_global = {}
+        self.graph_names_global = {}
+
         ui_file = os.path.join(rospkg.RosPack().get_path('sr_data_visualization'), 'uis', 'hand-e_visualizer.ui')
         loadUi(ui_file, self._widget)
         if __name__ != "__main__":
             context.add_widget(self._widget)
-        self._widget.setWindowTitle("Dexterous Hand Data Visualizer")
+        self._widget.setWindowTitle("Hand Data Visualizer")
 
         # Set white background color
         p = self._widget.palette()
@@ -120,6 +123,9 @@ class SrDataVisualizer(Plugin):
         self.reset_tab_1.clicked.connect(self.reset_1)
         self.reset_tab_2.clicked.connect(self.reset_2)
         self.reset_tab_3.clicked.connect(self.reset_3)
+        self.show_selected_1 = self._widget.findChild(QPushButton, "show_selected_1")
+        rospy.logwarn(str(self.show_selected_1))
+        self.show_selected_1.clicked.connect(lambda: self._show_selected("pos_vel_eff"))
 
         self.font_offset = -3
 
@@ -199,6 +205,55 @@ class SrDataVisualizer(Plugin):
         else:
             ncol = 3
         self._change_graphs(all=True, type=tab, ncol=ncol)
+
+    def _show_selected(self, tab_type):
+        graphs_to_show = {}
+        joints_avaliable = []
+        if tab_type == "pos_vel_eff":
+            graph_type = [key for key, value in list(self.graph_names_global.items()) if self.type_dict[0] in key]
+            rospy.logwarn(graph_type)
+            for element in list(graph_type):
+                for key, graph in self.graph_dict_global[element].items():
+                    button_name = key + "_" + tab_type + "_box"
+                    confirm_check = self._widget.findChild(QCheckBox, button_name)
+                    if confirm_check is not None:
+                        if key[:2] not in joints_avaliable:
+                            joints_avaliable.append(key[:2])
+                        if confirm_check.isChecked():
+                            graphs_to_show[key] = graph
+                    else:
+                        break
+        self._show_seleted_graphs(graphs_to_show, tab_type, joints_avaliable)
+        
+    def _show_seleted_graphs(self, graphs_to_show, tab_type, joints_avaliable):
+        no_collumns = len(graphs_to_show)
+        for joint in joints_avaliable:
+            group_name = tab_type + "_" + joint
+            rospy.logwarn(str(group_name))
+            hide_visibile_group = self._widget.findChild(QGroupBox, group_name)
+            if hide_visibile_group is not None:
+                hide_visibile_group.setVisible(False)
+            else:
+                break
+        group_name = tab_type + "_select"
+        select_box = self._widget.findChild(QGroupBox, group_name)
+        select_box.setVisible(True)
+
+        grid = QGridLayout()
+        for name, graph in graphs_to_show.items():
+            graph_name = QLabel()
+            graph_name.setText(name)
+            graph_created = QVBoxLayout()
+            graph_created.addWidget(graph_name)
+            graph_created.addWidget(graph)
+            grid.addWidget(graph_created)
+
+        select_box.setLayout(grid)
+        return
+
+
+        #  x = lay_dic.get(graphs["graph_names"][i])
+        # x.addWidget(self.graph_dict_global[graphs["type"]][graphs["graph_names"][i]])
 
     def _include_tactile_plugin(self):
         self.tactile_gui_list = []
@@ -505,10 +560,8 @@ class SrDataVisualizer(Plugin):
             p.setColor(self.tab_widget_main.backgroundRole(), Qt.white)
             self.tab_widget_main.setStyleSheet(stylesheet)
 
-        self.graph_dict_global = {}
         self.control_loop_callback_dict = {}
         self.subs = []
-        self.graph_names_global = {}
         for graphs in data["graphs"]:
             if self.show_tactiles or graphs["type"] != "biotacs":
                 ymin, ymax = self._find_max_range(graphs)

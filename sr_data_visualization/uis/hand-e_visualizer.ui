@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1648</width>
-    <height>850</height>
+    <width>1654</width>
+    <height>867</height>
    </rect>
   </property>
   <property name="font">
@@ -20,7 +20,7 @@
    <enum>Qt::NoFocus</enum>
   </property>
   <property name="windowTitle">
-   <string>Dexterous Hand Data Visualizer</string>
+   <string>Hand Data Visualizer</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_7">
    <item>
@@ -32,175 +32,18 @@
       </sizepolicy>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
-      <item row="0" column="0">
+      <item row="0" column="1">
        <widget class="QTabWidget" name="tabWidget_main">
         <property name="currentIndex">
          <number>0</number>
         </property>
-        <widget class="QWidget" name="tab_0">
+        <widget class="QWidget" name="pos_vel_eff_tab">
          <attribute name="title">
           <string>Joint States</string>
          </attribute>
          <layout class="QGridLayout" name="gridLayout_11">
-          <item row="0" column="0" rowspan="4">
-           <widget class="QGroupBox" name="groupBox_2">
-            <property name="title">
-             <string>Thumb</string>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_5">
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_7">
-               <property name="text">
-                <string>THJ1</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <layout class="QVBoxLayout" name="thj1_layout"/>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_8">
-               <property name="text">
-                <string>THJ2</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <layout class="QVBoxLayout" name="thj2_layout"/>
-             </item>
-             <item row="4" column="0">
-              <widget class="QLabel" name="label_9">
-               <property name="text">
-                <string>THJ3</string>
-               </property>
-              </widget>
-             </item>
-             <item row="5" column="0">
-              <layout class="QVBoxLayout" name="thj3_layout"/>
-             </item>
-             <item row="6" column="0">
-              <widget class="QLabel" name="label_10">
-               <property name="text">
-                <string>THJ4</string>
-               </property>
-              </widget>
-             </item>
-             <item row="7" column="0">
-              <layout class="QVBoxLayout" name="thj4_layout"/>
-             </item>
-             <item row="8" column="0">
-              <widget class="QLabel" name="label_27">
-               <property name="text">
-                <string>THJ5</string>
-               </property>
-              </widget>
-             </item>
-             <item row="9" column="0">
-              <layout class="QVBoxLayout" name="thj5_layout"/>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="0" column="1" rowspan="4">
-           <widget class="QGroupBox" name="groupBox_3">
-            <property name="title">
-             <string>Index</string>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_6">
-             <item row="5" column="0">
-              <layout class="QVBoxLayout" name="ffj3_layout"/>
-             </item>
-             <item row="1" column="0">
-              <layout class="QVBoxLayout" name="ffj1_layout"/>
-             </item>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_11">
-               <property name="text">
-                <string>FFJ1</string>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="0">
-              <widget class="QLabel" name="label_13">
-               <property name="text">
-                <string>FFJ3</string>
-               </property>
-              </widget>
-             </item>
-             <item row="6" column="0">
-              <widget class="QLabel" name="label_14">
-               <property name="text">
-                <string>FFJ4</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_12">
-               <property name="text">
-                <string>FFJ2</string>
-               </property>
-              </widget>
-             </item>
-             <item row="7" column="0">
-              <layout class="QVBoxLayout" name="ffj4_layout"/>
-             </item>
-             <item row="3" column="0">
-              <layout class="QVBoxLayout" name="ffj2_layout"/>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="0" column="2" rowspan="4">
-           <widget class="QGroupBox" name="groupBox_4">
-            <property name="title">
-             <string>Middle</string>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_7">
-             <item row="1" column="0">
-              <layout class="QVBoxLayout" name="mfj1_layout"/>
-             </item>
-             <item row="4" column="0">
-              <widget class="QLabel" name="label_17">
-               <property name="text">
-                <string>MFJ3</string>
-               </property>
-              </widget>
-             </item>
-             <item row="6" column="0">
-              <widget class="QLabel" name="label_18">
-               <property name="text">
-                <string>MFJ4</string>
-               </property>
-              </widget>
-             </item>
-             <item row="5" column="0">
-              <layout class="QVBoxLayout" name="mfj3_layout"/>
-             </item>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_15">
-               <property name="text">
-                <string>MFJ1</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_16">
-               <property name="text">
-                <string>MFJ2</string>
-               </property>
-              </widget>
-             </item>
-             <item row="7" column="0">
-              <layout class="QVBoxLayout" name="mfj4_layout"/>
-             </item>
-             <item row="3" column="0">
-              <layout class="QVBoxLayout" name="mfj2_layout"/>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="0" column="8">
-           <widget class="QGroupBox" name="groupBox_7">
+          <item row="0" column="10">
+           <widget class="QGroupBox" name="pos_vel_eff_wr">
             <property name="title">
              <string>Wrist</string>
             </property>
@@ -228,8 +71,65 @@
             </layout>
            </widget>
           </item>
-          <item row="0" column="4" rowspan="4">
-           <widget class="QGroupBox" name="groupBox_6">
+          <item row="1" column="10" rowspan="2">
+           <widget class="QGroupBox" name="pos_vel_eff_opt">
+            <property name="title">
+             <string>Display</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_14">
+             <item row="3" column="0">
+              <widget class="QRadioButton" name="radioButton_velocity">
+               <property name="text">
+                <string>Velocity (rad/s)</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QRadioButton" name="radioButton_position">
+               <property name="text">
+                <string>Position (rad)</string>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QRadioButton" name="radioButton_all">
+               <property name="text">
+                <string>All</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QRadioButton" name="radioButton_effort">
+               <property name="text">
+                <string>Effort</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="0">
+              <widget class="QPushButton" name="reset_tab1">
+               <property name="text">
+                <string>Reset Graphs</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QPushButton" name="show_selected_1">
+               <property name="text">
+                <string>Show Selected Graphs</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="0" column="6" rowspan="4">
+           <widget class="QGroupBox" name="pos_vel_eff_lf">
             <property name="title">
              <string>Little</string>
             </property>
@@ -287,8 +187,67 @@
             </layout>
            </widget>
           </item>
-          <item row="0" column="3" rowspan="4">
-           <widget class="QGroupBox" name="groupBox_5">
+          <item row="0" column="1" rowspan="4">
+           <widget class="QGroupBox" name="pos_vel_eff_th">
+            <property name="title">
+             <string>Thumb</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_5">
+             <item row="3" column="0">
+              <layout class="QVBoxLayout" name="thj2_layout"/>
+             </item>
+             <item row="9" column="0">
+              <layout class="QVBoxLayout" name="thj5_layout"/>
+             </item>
+             <item row="4" column="0">
+              <widget class="QCheckBox" name="thj3_pos_vel_eff_box">
+               <property name="text">
+                <string>THJ3</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QCheckBox" name="thj2_pos_vel_eff_box">
+               <property name="text">
+                <string>THJ2</string>
+               </property>
+              </widget>
+             </item>
+             <item row="7" column="0">
+              <layout class="QVBoxLayout" name="thj4_layout"/>
+             </item>
+             <item row="5" column="0">
+              <layout class="QVBoxLayout" name="thj3_layout"/>
+             </item>
+             <item row="0" column="0">
+              <widget class="QCheckBox" name="thj1_pos_vel_eff_box">
+               <property name="text">
+                <string>THJ1</string>
+               </property>
+              </widget>
+             </item>
+             <item row="8" column="0">
+              <widget class="QCheckBox" name="thj5_pos_vel_eff_box">
+               <property name="text">
+                <string>THJ5</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <layout class="QVBoxLayout" name="thj1_layout"/>
+             </item>
+             <item row="6" column="0">
+              <widget class="QCheckBox" name="thj4_pos_vel_eff_box">
+               <property name="text">
+                <string>THJ4</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="0" column="4" rowspan="4">
+           <widget class="QGroupBox" name="pos_vel_eff_rf">
             <property name="title">
              <string>Ring</string>
             </property>
@@ -336,59 +295,114 @@
             </layout>
            </widget>
           </item>
-          <item row="1" column="8" rowspan="2">
-           <widget class="QGroupBox" name="groupBox_9">
+          <item row="0" column="2" rowspan="4">
+           <widget class="QGroupBox" name="pos_vel_eff_ff">
             <property name="title">
-             <string>Display</string>
+             <string>Index</string>
             </property>
-            <layout class="QGridLayout" name="gridLayout_14">
-             <item row="3" column="0">
-              <widget class="QRadioButton" name="radioButton_velocity">
-               <property name="text">
-                <string>Velocity (rad/s)</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QRadioButton" name="radioButton_all">
-               <property name="text">
-                <string>All</string>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
+            <layout class="QGridLayout" name="gridLayout_6">
              <item row="2" column="0">
-              <widget class="QRadioButton" name="radioButton_effort">
+              <widget class="QCheckBox" name="ffj2_pos_vel_eff_box">
                <property name="text">
-                <string>Effort</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QRadioButton" name="radioButton_position">
-               <property name="text">
-                <string>Position (rad)</string>
-               </property>
-               <property name="checked">
-                <bool>false</bool>
+                <string>FFJ2</string>
                </property>
               </widget>
              </item>
              <item row="4" column="0">
-              <widget class="QPushButton" name="reset_tab1">
+              <widget class="QCheckBox" name="ffj3_pos_vel_eff_box">
                <property name="text">
-                <string>Reset Graphs</string>
+                <string>FFJ3</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <layout class="QVBoxLayout" name="ffj1_layout"/>
+             </item>
+             <item row="6" column="0">
+              <widget class="QCheckBox" name="ffj4_pos_vel_eff_box">
+               <property name="text">
+                <string>FFJ4</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QCheckBox" name="ffj1_pos_vel_eff_box">
+               <property name="text">
+                <string>FFJ1</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="0">
+              <layout class="QVBoxLayout" name="ffj3_layout"/>
+             </item>
+             <item row="7" column="0">
+              <layout class="QVBoxLayout" name="ffj4_layout"/>
+             </item>
+             <item row="3" column="0">
+              <layout class="QVBoxLayout" name="ffj2_layout"/>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="0" column="3" rowspan="4">
+           <widget class="QGroupBox" name="pos_vel_eff_mf">
+            <property name="title">
+             <string>Middle</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_7">
+             <item row="1" column="1">
+              <layout class="QVBoxLayout" name="mfj1_layout"/>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLabel" name="label_16">
+               <property name="text">
+                <string>MFJ2</string>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="1">
+              <widget class="QLabel" name="label_18">
+               <property name="text">
+                <string>MFJ4</string>
+               </property>
+              </widget>
+             </item>
+             <item row="7" column="1">
+              <layout class="QVBoxLayout" name="mfj4_layout"/>
+             </item>
+             <item row="5" column="1">
+              <layout class="QVBoxLayout" name="mfj3_layout"/>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLabel" name="label_15">
+               <property name="text">
+                <string>MFJ1</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <layout class="QVBoxLayout" name="mfj2_layout"/>
+             </item>
+             <item row="4" column="1">
+              <widget class="QLabel" name="label_17">
+               <property name="text">
+                <string>MFJ3</string>
                </property>
               </widget>
              </item>
             </layout>
            </widget>
           </item>
+          <item row="0" column="0">
+           <widget class="QGroupBox" name="pos_vel_eff_select">
+            <property name="title">
+             <string>Selected Joints</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="tab">
+        <widget class="QWidget" name="ctrl_tab">
          <attribute name="title">
           <string>Control Loops</string>
          </attribute>
@@ -713,7 +727,7 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="tab_2">
+        <widget class="QWidget" name="motor_tab">
          <attribute name="title">
           <string>Motor Stats</string>
          </attribute>
@@ -1133,7 +1147,7 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="tab_9">
+        <widget class="QWidget" name="palm_tab">
          <attribute name="title">
           <string>Palm Extras</string>
          </attribute>
@@ -1176,7 +1190,7 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="tab_11">
+        <widget class="QWidget" name="biotac_graph_tab">
          <attribute name="title">
           <string>Biotac Graphs</string>
          </attribute>
@@ -1268,7 +1282,7 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="tab_10">
+        <widget class="QWidget" name="biotac_vis_tab">
          <attribute name="title">
           <string>Biotac Visualizers</string>
          </attribute>

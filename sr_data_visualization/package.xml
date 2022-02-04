@@ -3,7 +3,7 @@
   <name>sr_data_visualization</name>
   <version>0.0.1</version>
   <description>
-    A package to show all the data coming from the dexterous hand.
+    A package to show all the data coming from the Shadow hand.
   </description>
   <author email="tom@shadowrobot.com">Tom Queen</author>
   <maintainer email="software@shadowrobot.com">Shadow Robot's software team</maintainer>
