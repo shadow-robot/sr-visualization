@@ -26,6 +26,7 @@ import string
 import re
 import time
 import atexit
+import math
 matplotlib.use("Qt5Agg")  # noqa
 from python_qt_binding.QtGui import *
 from python_qt_binding.QtCore import *
@@ -51,8 +52,9 @@ from control_msgs.msg import JointControllerState
 from diagnostic_msgs.msg import DiagnosticArray
 from std_msgs.msg import Float64MultiArray
 from QtGui import QIcon, QColor, QPainter, QFont
-from QtWidgets import QMessageBox, QWidget
-from QtCore import QRectF, QTimer
+from QtWidgets import *
+from QtCore import *
+from QtGui import *
 from sr_robot_msgs.msg import Biotac, BiotacAll
 from sr_utilities.hand_finder import HandFinder
 
@@ -69,6 +71,7 @@ class SrDataVisualizer(Plugin):
         self._joint_prefix = next(iter(list(self._hand_parameters.joint_prefix.values())))
         self._hand_g = False
         for hand, joints in list(self._hand_finder.hand_joints.items()):
+            rospy.logerr("JOITS: " + str(joints))
             if self._joint_prefix + 'WRJ1' not in joints:
                 self._hand_g = True
         for key in self._hand_parameters.joint_prefix:
@@ -124,8 +127,9 @@ class SrDataVisualizer(Plugin):
         self.reset_tab_2.clicked.connect(self.reset_2)
         self.reset_tab_3.clicked.connect(self.reset_3)
         self.show_selected_1 = self._widget.findChild(QPushButton, "show_selected_1")
-        rospy.logwarn(str(self.show_selected_1))
         self.show_selected_1.clicked.connect(lambda: self._show_selected("pos_vel_eff"))
+        # self.show_selected_2 = self._widget.findChild(QPushButton, "show_selected_2")
+        # self.show_selected_2.clicked.connect(lambda: self._show_selected("pos_vel_eff"))
 
         self.font_offset = -3
 
@@ -154,6 +158,12 @@ class SrDataVisualizer(Plugin):
                 print(exc)
 
         self._setup_radio_buttons()
+
+        # Start with all graphs shown group box so hide selection group boxes
+        group_box_to_hide = self._widget.findChild(QGroupBox, "pos_vel_eff_select")
+        group_box_to_hide.hide()
+        group_box_to_show = self._widget.findChild(QGroupBox, "pos_vel_eff_all")
+        group_box_to_show.show()
 
         self.tabWidget_motor_stats.setCurrentIndex(0)
         self.tabWidget_motor_stats.setCurrentIndex(1)
@@ -184,6 +194,10 @@ class SrDataVisualizer(Plugin):
 
     def reset_1(self):
         self._reset_graphs(0)
+        group_box_to_hide = self._widget.findChild(QGroupBox, "pos_vel_eff_select")
+        group_box_to_hide.hide()
+        group_box_to_show = self._widget.findChild(QGroupBox, "pos_vel_eff_all")
+        group_box_to_show.show()
         self.radio_button_all.setChecked(True)
 
     def reset_2(self):
@@ -210,6 +224,10 @@ class SrDataVisualizer(Plugin):
         graphs_to_show = {}
         joints_avaliable = []
         if tab_type == "pos_vel_eff":
+            group_box_to_hide = self._widget.findChild(QGroupBox, tab_type + "_all")
+            group_box_to_hide.hide()
+            group_box_to_show = self._widget.findChild(QGroupBox, tab_type + "_select")
+            group_box_to_show.show()
             graph_type = [key for key, value in list(self.graph_names_global.items()) if self.type_dict[0] in key]
             rospy.logwarn(graph_type)
             for element in list(graph_type):
@@ -227,27 +245,31 @@ class SrDataVisualizer(Plugin):
         
     def _show_seleted_graphs(self, graphs_to_show, tab_type, joints_avaliable):
         no_collumns = len(graphs_to_show)
-        for joint in joints_avaliable:
-            group_name = tab_type + "_" + joint
-            rospy.logwarn(str(group_name))
-            hide_visibile_group = self._widget.findChild(QGroupBox, group_name)
-            if hide_visibile_group is not None:
-                hide_visibile_group.setVisible(False)
-            else:
-                break
-        group_name = tab_type + "_select"
-        select_box = self._widget.findChild(QGroupBox, group_name)
-        select_box.setVisible(True)
+        # for joint in joints_avaliable:
+        #     group_name = tab_type + "_" + joint
+        #     rospy.logwarn(str(group_name))
+        #     hide_visibile_group = self._widget.findChild(QGroupBox, group_name)
+        #     if hide_visibile_group is not None:
+        #         hide_visibile_group.setVisible(False)
+        #     else:
+        #         break
 
         grid = QGridLayout()
+        selected_graphs_widgets = []
         for name, graph in graphs_to_show.items():
             graph_name = QLabel()
             graph_name.setText(name)
             graph_created = QVBoxLayout()
             graph_created.addWidget(graph_name)
             graph_created.addWidget(graph)
-            grid.addWidget(graph_created)
+            selected_graphs_widgets.append(graph_created)
+        
+        if len(selected_graphs_widgets) > 1:
+            for row in range(math.trunc((len(selected_graphs_widgets)/2))):
+                for collumn in range(math.trunc((len(selected_graphs_widgets)/2))):
+                    grid.addItem(selected_graphs_widgets[row], row, collumn)
 
+        select_box = self._widget.findChild(QGroupBox, tab_type + "_select")
         select_box.setLayout(grid)
         return
 
