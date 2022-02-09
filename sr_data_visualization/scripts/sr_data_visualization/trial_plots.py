@@ -94,13 +94,12 @@ class DataPlot(QwtPlot):
         self.phase = 0.0
 
     def _joint_state_cb(self, joint_state):
-        if self.ready_for_new:
-            for name, position, velocity, effort in zip(joint_state.name, joint_state.position,
-                                                            joint_state.velocity, joint_state.effort):
-                if name == self._joint_name:
-                    self.joint_state_data['Position'] = position
-                    self.joint_state_data['Effort'] = effort
-                    self.joint_state_data['Velocity'] = velocity
+        for name, position, velocity, effort in zip(joint_state.name, joint_state.position,
+                                                        joint_state.velocity, joint_state.effort):
+            if name == self._joint_name:
+                self.joint_state_data['Position'] = position
+                self.joint_state_data['Effort'] = effort
+                self.joint_state_data['Velocity'] = velocity
         # rospy.logerr(str(self.joint_state_data))
 
     def alignScales(self):
@@ -114,22 +113,9 @@ class DataPlot(QwtPlot):
             if scaleDraw:
                 scaleDraw.enableComponent(QwtAbstractScaleDraw.Backbone, False)
 
-    def new_data(self, data_type, data):
+    def timerEvent(self, e):
         # data moves from left to right:
         # shift data array right and assign new value data[0]
-        data = np.concatenate((data[:1], data[:-1]))
-        data[0] = data[data_type]
-        return data
-
-    def timerEvent(self, e):
-        self.ready_for_new = False
-        # self.position_plot.setData(self.x, self.new_data('Position', self.position_data))
-        # self.effort_plot.setData(self.x, self.new_data('Effort', self.effort_data))
-        # self.velocity_plot.setData(self.x,self.new_data('Velocity', self.velocity_data))
-        # self.replot()
-        # self.ready_for_new = True
-
-
         self.position_data = np.concatenate((self.position_data[:1], self.position_data[:-1]))
         self.position_data[0] = self.joint_state_data['Position']
 
@@ -143,23 +129,11 @@ class DataPlot(QwtPlot):
         self.effort_plot.setData(self.x, self.effort_data)
         self.velocity_plot.setData(self.x, self.velocity_data)
         self.replot()
-        self.ready_for_new = True
 
-        # # y moves from left to right:
-        # # shift y array right and assign new value y[0]
-        # self.y = np.concatenate((self.y[:1], self.y[:-1]))
-        # self.y[0] = np.sin(self.phase) * (-1.0 + 2.0 * random.random())
-
-        # # z moves from right to left:
-        # # Shift z array left and assign new value to z[n-1].
-        # self.z = np.concatenate((self.z[1:], self.z[:1]))
-        # self.z[-1] = 0.8 - (2.0 * self.phase / np.pi) + 0.4 * random.random()
-
-        # self.curveR.setData(self.x, self.y)
-        # self.curveL.setData(self.x, self.z)
-
-        # self.replot()
-        # self.phase += np.pi * 0.02
+        self.position_plot.setData(self.x, self.position_data)
+        self.effort_plot.setData(self.x, self.effort_data)
+        self.velocity_plot.setData(self.x, self.velocity_data)
+        self.replot()
 
 
 if __name__ == "__main__":
