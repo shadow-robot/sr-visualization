@@ -35,6 +35,7 @@ from qwt import (
 from sensor_msgs.msg import JointState
 from sr_utilities.hand_finder import HandFinder
 
+
 class DataVisualizer(QMainWindow):
     TITLE = "Data Visualizer"
     SIZE = (1000, 500)
@@ -55,21 +56,21 @@ class DataVisualizer(QMainWindow):
 
         self.init_main_widget()
         # self.tab_widget = CreateCentralTabs(self)
-        
+
         self.show()
 
     def init_main_widget(self):
         self.layout = QGridLayout(self)
-        
+
         # Initialize tab screen
         self.tab_widget = QTabWidget(self)
-        self.tab_widget.resize(300,200)
-        
+        self.tab_widget.resize(300, 200)
+
         # Create tabs
         self.create_all_tab("Joint States")
         self.create_all_tab("Joint States 2")
         self.create_all_tab("Joint States 3")
-      
+
         # Add tabs to widget
         self.layout.addWidget(self.tab_widget)
         self.setLayout(self.layout)
@@ -77,14 +78,13 @@ class DataVisualizer(QMainWindow):
         self.setCentralWidget(self.tab_widget)
 
         self.tab_widget.currentChanged.connect(self.tab_changed)
-    
+
     def create_all_tab(self, tab_name):
         self.tab_created = QWidget()
         self.tab_created.layout = QGridLayout(self)
 
-
         # for x in range(0,5):
-        #     for y in range 
+        #     for y in range
         joints = {
             0: [],
             1: [],
@@ -111,7 +111,7 @@ class DataVisualizer(QMainWindow):
                     joint_graph = JointGraph(joint)
 
                     self.tab_created.layout.addWidget(joint_graph.widget, row, collumn)
-                    row +=1
+                    row += 1
 
         if tab_name == "Joint States 2":
             THJ2 = JointGraph("rh_THJ2")
@@ -162,8 +162,8 @@ class DataPlot(QwtPlot):
     def __init__(self, joint_name, unattended=False):
         QwtPlot.__init__(self)
 
-        self._joint_name =  joint_name
-        
+        self._joint_name = joint_name
+
         self.setCanvasBackground(Qt.white)
         # not sure if autoscale is a good idea or not?
         # https://pythonhosted.org/python-qwt/reference/plot.html
@@ -211,11 +211,10 @@ class DataPlot(QwtPlot):
 
         self._plotting = True
         self.startTimer(10 if unattended else 50)
-        
 
     def _joint_state_cb(self, joint_state):
         for name, position, velocity, effort in zip(joint_state.name, joint_state.position,
-                                                        joint_state.velocity, joint_state.effort):
+                                                    joint_state.velocity, joint_state.effort):
             if name == self._joint_name:
                 self.joint_state_data['Position'] = position
                 self.joint_state_data['Effort'] = effort
@@ -248,7 +247,6 @@ class DataPlot(QwtPlot):
         self._plotting = plot
 
 
-
 if __name__ == "__main__":
     from qwt import tests
     rospy.init_node('trial_plots', anonymous=True)
@@ -258,3 +256,4 @@ if __name__ == "__main__":
     ex = DataVisualizer()
     sys.exit(app.exec_())
     # app = tests.test_widget(DataPlot, size=(500, 300))
+    
