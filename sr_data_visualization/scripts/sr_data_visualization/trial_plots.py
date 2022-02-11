@@ -68,13 +68,15 @@ class DataVisualizer(QMainWindow):
         # Create tabs
         self.create_all_tab("Joint States")
         self.create_all_tab("Joint States 2")
-        # self.create_all_tab("ANOTHER TAB2")
+        self.create_all_tab("Joint States 3")
       
         # Add tabs to widget
         self.layout.addWidget(self.tab_widget)
         self.setLayout(self.layout)
 
         self.setCentralWidget(self.tab_widget)
+
+        self.tab_widget.currentChanged.connect(self.tab_changed)
     
     def create_all_tab(self, tab_name):
         self.tab_created = QWidget()
@@ -106,36 +108,54 @@ class DataVisualizer(QMainWindow):
             for collumn, joint_names in joints.items():
                 row = 0
                 for joint in joint_names:
-                    joint_graph = self.create_joint_graph(joint)
+                    joint_graph = JointGraph(joint)
 
-                    self.tab_created.layout.addWidget(joint_graph, row, collumn)
+                    self.tab_created.layout.addWidget(joint_graph.widget, row, collumn)
                     row +=1
 
         if tab_name == "Joint States 2":
-            THJ2 = self.create_joint_graph("rh_THJ2")
-            FFJ2 = self.create_joint_graph("rh_FFJ2")
-            MFJ2 = self.create_joint_graph("rh_MFJ2")
-            RFJ2 = self.create_joint_graph("rh_RFJ2")
+            THJ2 = JointGraph("rh_THJ2")
+            FFJ2 = JointGraph("rh_FFJ2")
+            MFJ2 = JointGraph("rh_MFJ2")
+            RFJ2 = JointGraph("rh_RFJ2")
 
-            self.tab_created.layout.addWidget(THJ2, 0, 0)
-            self.tab_created.layout.addWidget(FFJ2, 0, 1)
-            self.tab_created.layout.addWidget(MFJ2, 0, 2)
-            self.tab_created.layout.addWidget(RFJ2, 0, 3)
+            self.tab_created.layout.addWidget(THJ2.widget, 0, 0)
+            self.tab_created.layout.addWidget(FFJ2.widget, 0, 1)
+            self.tab_created.layout.addWidget(MFJ2.widget, 0, 2)
+            self.tab_created.layout.addWidget(RFJ2.widget, 0, 3)
             
+        if tab_name == "Joint States 3":
+            THJ2 = JointGraph("rh_THJ2")
+
+            self.tab_created.layout.addWidget(THJ2.widget, 0, 0)
+
         self.tab_widget.addTab(self.tab_created, tab_name)
         self.tab_created.setLayout(self.tab_created.layout)
 
+    def tab_changed(self, index):
+        self.tab_widget.currentWidget
 
-    def create_joint_graph(self, joint):
+
+class JointGraph(QWidget):
+    def __init__(self, joint_name):
+        QWidget.__init__(self)
+
+        self.joint_name = joint_name
+        self.widget = self._create_joint_graph_widget()
+
+    def _create_joint_graph_widget(self):
         joint_graph_widget = QWidget()
         joint_graph_widget.layout = QGridLayout(self)
-        joint_check_box = QCheckBox(joint[3:])
-        joint_plot = DataPlot(joint)
-        joint_graph_widget.layout.addWidget(joint_check_box, 0, 0)
-        joint_graph_widget.layout.addWidget(joint_plot, 1, 0)
+        self.joint_check_box = QCheckBox(self.joint_name[3:])
+        self.joint_plot = DataPlot(self.joint_name)
+        joint_graph_widget.layout.addWidget(self.joint_check_box, 0, 0)
+        joint_graph_widget.layout.addWidget(self.joint_plot, 1, 0)
         joint_graph_widget.setLayout(joint_graph_widget.layout)
 
         return joint_graph_widget
+
+    def plot_data(self, plot):
+        self.joint_plot.plot_data(plot)
 
 
 class DataPlot(QwtPlot):
@@ -147,8 +167,8 @@ class DataPlot(QwtPlot):
         self.setCanvasBackground(Qt.white)
         # not sure if autoscale is a good idea or not?
         # https://pythonhosted.org/python-qwt/reference/plot.html
-        self.axisAutoScale(QwtPlot.xBottom)
-        self.axisAutoScale(QwtPlot.yLeft)
+        # self.axisAutoScale(QwtPlot.xBottom)
+        # self.axisAutoScale(QwtPlot.yLeft)
         # self.alignScales()
 
         # Initialize data
@@ -172,11 +192,11 @@ class DataPlot(QwtPlot):
         self.effort_plot.setPen(QPen(Qt.blue))
         self.velocity_plot.setPen(QPen(Qt.green))
 
-        mY = QwtPlotMarker()
-        mY.setLabelAlignment(Qt.AlignRight | Qt.AlignTop)
-        mY.setLineStyle(QwtPlotMarker.HLine)
-        mY.setYValue(0.0)
-        mY.attach(self)
+        # mY = QwtPlotMarker()
+        # mY.setLabelAlignment(Qt.AlignRight | Qt.AlignTop)
+        # mY.setLineStyle(QwtPlotMarker.HLine)
+        # mY.setYValue(0.0)
+        # mY.attach(self)
 
         self.setAxisTitle(QwtPlot.xBottom, "Time (seconds)")
 
@@ -189,8 +209,9 @@ class DataPlot(QwtPlot):
 
         self._joint_states_subscriber = rospy.Subscriber('joint_states', JointState, self._joint_state_cb, queue_size=1)
 
+        self._plotting = True
         self.startTimer(10 if unattended else 50)
-        self.phase = 0.0
+        
 
     def _joint_state_cb(self, joint_state):
         for name, position, velocity, effort in zip(joint_state.name, joint_state.position,
@@ -199,40 +220,33 @@ class DataPlot(QwtPlot):
                 self.joint_state_data['Position'] = position
                 self.joint_state_data['Effort'] = effort
                 self.joint_state_data['Velocity'] = velocity
-        # rospy.logerr(str(self.joint_state_data))
-
-    def alignScales(self):
-        self.canvas().setFrameStyle(QFrame.Box | QFrame.Plain)
-        self.canvas().setLineWidth(1)
-        for axis_id in QwtPlot.AXES:
-            scaleWidget = self.axisWidget(axis_id)
-            if scaleWidget:
-                scaleWidget.setMargin(0)
-            scaleDraw = self.axisScaleDraw(axis_id)
-            if scaleDraw:
-                scaleDraw.enableComponent(QwtAbstractScaleDraw.Backbone, False)
 
     def timerEvent(self, e):
-        # data moves from left to right:
-        # shift data array right and assign new value data[0]
-        self.position_data = np.concatenate((self.position_data[:1], self.position_data[:-1]))
-        self.position_data[0] = self.joint_state_data['Position']
+        if self._plotting:
+            # data moves from left to right:
+            # shift data array right and assign new value data[0]
+            self.position_data = np.concatenate((self.position_data[:1], self.position_data[:-1]))
+            self.position_data[0] = self.joint_state_data['Position']
 
-        self.effort_data = np.concatenate((self.effort_data[:1], self.effort_data[:-1]))
-        self.effort_data[0] = self.joint_state_data['Effort']
+            self.effort_data = np.concatenate((self.effort_data[:1], self.effort_data[:-1]))
+            self.effort_data[0] = self.joint_state_data['Effort']
 
-        self.velocity_data = np.concatenate((self.velocity_data[:1], self.velocity_data[:-1]))
-        self.velocity_data[0] = self.joint_state_data['Velocity']
+            self.velocity_data = np.concatenate((self.velocity_data[:1], self.velocity_data[:-1]))
+            self.velocity_data[0] = self.joint_state_data['Velocity']
 
-        self.position_plot.setData(self.x, self.position_data)
-        self.effort_plot.setData(self.x, self.effort_data)
-        self.velocity_plot.setData(self.x, self.velocity_data)
-        self.replot()
+            self.position_plot.setData(self.x, self.position_data)
+            self.effort_plot.setData(self.x, self.effort_data)
+            self.velocity_plot.setData(self.x, self.velocity_data)
+            self.replot()
 
-        self.position_plot.setData(self.x, self.position_data)
-        self.effort_plot.setData(self.x, self.effort_data)
-        self.velocity_plot.setData(self.x, self.velocity_data)
-        self.replot()
+            self.position_plot.setData(self.x, self.position_data)
+            self.effort_plot.setData(self.x, self.effort_data)
+            self.velocity_plot.setData(self.x, self.velocity_data)
+            self.replot()
+
+    def plot_data(self, plot):
+        self._plotting = plot
+
 
 
 if __name__ == "__main__":
