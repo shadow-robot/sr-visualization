@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import absolute_import
+
 import random
 import numpy as np
 import rospy
@@ -55,7 +57,6 @@ class DataVisualizer(QMainWindow):
         self.setWindowTitle(title)
 
         self.init_main_widget()
-        # self.tab_widget = CreateCentralTabs(self)
 
         self.show()
 
@@ -123,7 +124,7 @@ class DataVisualizer(QMainWindow):
             self.tab_created.layout.addWidget(FFJ2.widget, 0, 1)
             self.tab_created.layout.addWidget(MFJ2.widget, 0, 2)
             self.tab_created.layout.addWidget(RFJ2.widget, 0, 3)
-            
+
         if tab_name == "Joint States 3":
             THJ2 = JointGraph("rh_THJ2")
 
@@ -256,4 +257,3 @@ if __name__ == "__main__":
     ex = DataVisualizer()
     sys.exit(app.exec_())
     # app = tests.test_widget(DataPlot, size=(500, 300))
-    
