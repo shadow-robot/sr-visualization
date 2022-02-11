@@ -17,6 +17,7 @@
 import random
 import numpy as np
 import rospy
+import sys
 
 from qtpy.QtWidgets import QFrame
 from qtpy.QtGui import QPen, QBrush
@@ -222,5 +223,9 @@ class DataPlot(QwtPlot):
 if __name__ == "__main__":
     from qwt import tests
     rospy.init_node('trial_plots', anonymous=True)
-    app = tests.test_widget(DataVisualizer, options=False)
+    # app = tests.test_widget(DataVisualizer, options=False)
+
+    app = QApplication(sys.argv)
+    ex = DataVisualizer()
+    sys.exit(app.exec_())
     # app = tests.test_widget(DataPlot, size=(500, 300))
