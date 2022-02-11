@@ -79,22 +79,37 @@ class DataVisualizer(QMainWindow):
     def create_all_tab(self, tab_name):
         self.tab_created = QWidget()
         self.tab_created.layout = QGridLayout(self)
-    
 
 
         # for x in range(0,5):
         #     for y in range 
-        # for joint in self._hand_joints:
-        if tab_name == "Joint States":
-            THJ1 = self.create_joint_graph("rh_THJ1")
-            FFJ1 = self.create_joint_graph("rh_FFJ1")
-            MFJ1 = self.create_joint_graph("rh_MFJ1")
-            RFJ1 = self.create_joint_graph("rh_RFJ1")
+        joints = {
+            0: [],
+            1: [],
+            2: [],
+            3: [],
+            4: []
+        }
+        for joint in self._hand_joints[self._joint_prefix[:-1]]:
+            if "_THJ" in joint:
+                joints[0].append(joint)
+            if "_FFJ" in joint:
+                joints[1].append(joint)
+            if "_MFJ" in joint:
+                joints[2].append(joint)
+            if "_RFJ" in joint:
+                joints[3].append(joint)
+            if "_LFJ" in joint:
+                joints[4].append(joint)
 
-            self.tab_created.layout.addWidget(THJ1, 0, 0)
-            self.tab_created.layout.addWidget(FFJ1, 0, 1)
-            self.tab_created.layout.addWidget(MFJ1, 0, 2)
-            self.tab_created.layout.addWidget(RFJ1, 0, 3)
+        if tab_name == "Joint States":
+            for collumn, joint_names in joints.items():
+                row = 0
+                for joint in joint_names:
+                    joint_graph = self.create_joint_graph(joint)
+
+                    self.tab_created.layout.addWidget(joint_graph, row, collumn)
+                    row +=1
 
         if tab_name == "Joint States 2":
             THJ2 = self.create_joint_graph("rh_THJ2")
