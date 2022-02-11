@@ -134,10 +134,20 @@ class DataVisualizer(QMainWindow):
         self.tab_created.setLayout(self.tab_created.layout)
 
     def tab_changed(self, index):
-        self.tab_widget.currentWidget
-
+        for tab in range((self.tab_widget.count()-1)):
+            if tab is not index:
+                graphs = self.tab_widget.widget(tab).findChildren(DataPlot)
+                for graph in graphs:
+                    graph.plot_data(False)
+            else:
+                graphs = self.tab_widget.widget(tab).findChildren(DataPlot)
+                for graph in graphs:
+                    graph.plot_data(True)
 
 class JointGraph(QWidget):
+    """
+        Creates the joint graph widget
+    """
     def __init__(self, joint_name):
         QWidget.__init__(self)
 
@@ -158,8 +168,14 @@ class JointGraph(QWidget):
     def plot_data(self, plot):
         self.joint_plot.plot_data(plot)
 
+    def clear_data(self):
+        self.joint_plot.clear_data()
+
 
 class DataPlot(QwtPlot):
+    """
+        Creates the QwtPlot of the data
+    """
     def __init__(self, joint_name, unattended=False):
         QwtPlot.__init__(self)
 
@@ -246,6 +262,9 @@ class DataPlot(QwtPlot):
 
     def plot_data(self, plot):
         self._plotting = plot
+
+    def clear_data(self):
+        
 
 
 if __name__ == "__main__":
