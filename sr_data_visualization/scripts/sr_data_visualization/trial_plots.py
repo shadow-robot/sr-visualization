@@ -24,7 +24,7 @@ import sys
 from qtpy.QtWidgets import QFrame
 from qtpy.QtGui import QPen, QBrush
 from qtpy.QtCore import QSize, Qt, QTimer
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QWidget, QAction, QTabWidget, QGridLayout, QCheckBox
+from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QWidget, QAction, QTabWidget, QGridLayout, QCheckBox, QRadioButton, QVBoxLayout
 from qwt import (
     QwtPlot,
     QwtPlotMarker,
@@ -47,8 +47,8 @@ class DataVisualizer(QMainWindow):
 
         self._hand_finder = HandFinder()
         self._hand_parameters = self._hand_finder.get_hand_parameters()
-        self._joint_prefix = next(iter(list(self._hand_parameters.joint_prefix.values())))
-        self._hand_joints = self._hand_finder.get_hand_joints()
+        self.joint_prefix = next(iter(list(self._hand_parameters.joint_prefix.values())))
+        self.hand_joints = self._hand_finder.get_hand_joints()
 
         self.init_ui()
 
@@ -68,9 +68,9 @@ class DataVisualizer(QMainWindow):
         self.tab_widget.resize(300, 200)
 
         # Create tabs
-        self.create_all_tab("Joint States")
-        self.create_all_tab("Joint States 2")
-        self.create_all_tab("Joint States 3")
+        self.create_tab("Joint States")
+        # self.create_all_tab("Joint States 2")
+        # self.create_all_tab("Joint States 3")
 
         # Add tabs to widget
         self.layout.addWidget(self.tab_widget)
@@ -80,58 +80,12 @@ class DataVisualizer(QMainWindow):
 
         self.tab_widget.currentChanged.connect(self.tab_changed)
 
-    def create_all_tab(self, tab_name):
-        self.tab_created = QWidget()
-        self.tab_created.layout = QGridLayout(self)
 
-        # for x in range(0,5):
-        #     for y in range
-        joints = {
-            0: [],
-            1: [],
-            2: [],
-            3: [],
-            4: []
-        }
-        for joint in self._hand_joints[self._joint_prefix[:-1]]:
-            if "_THJ" in joint:
-                joints[0].append(joint)
-            if "_FFJ" in joint:
-                joints[1].append(joint)
-            if "_MFJ" in joint:
-                joints[2].append(joint)
-            if "_RFJ" in joint:
-                joints[3].append(joint)
-            if "_LFJ" in joint:
-                joints[4].append(joint)
+    def create_tab(self, tab_name):
+        self.tab_created = DataTab(tab_name, self.hand_joints, self.joint_prefix)
 
-        if tab_name == "Joint States":
-            for collumn, joint_names in joints.items():
-                row = 0
-                for joint in joint_names:
-                    joint_graph = JointGraph(joint)
-
-                    self.tab_created.layout.addWidget(joint_graph.widget, row, collumn)
-                    row += 1
-
-        if tab_name == "Joint States 2":
-            THJ2 = JointGraph("rh_THJ2")
-            FFJ2 = JointGraph("rh_FFJ2")
-            MFJ2 = JointGraph("rh_MFJ2")
-            RFJ2 = JointGraph("rh_RFJ2")
-
-            self.tab_created.layout.addWidget(THJ2.widget, 0, 0)
-            self.tab_created.layout.addWidget(FFJ2.widget, 0, 1)
-            self.tab_created.layout.addWidget(MFJ2.widget, 0, 2)
-            self.tab_created.layout.addWidget(RFJ2.widget, 0, 3)
-
-        if tab_name == "Joint States 3":
-            THJ2 = JointGraph("rh_THJ2")
-
-            self.tab_created.layout.addWidget(THJ2.widget, 0, 0)
-
-        self.tab_widget.addTab(self.tab_created, tab_name)
-        self.tab_created.setLayout(self.tab_created.layout)
+        self.tab_widget.addTab(self.tab_created.full_tab, tab_name)
+        self.tab_created.setLayout(self.tab_created.full_tab.layout)
 
     def tab_changed(self, index):
         for tab in range((self.tab_widget.count()-1)):
@@ -144,6 +98,96 @@ class DataVisualizer(QMainWindow):
                 for graph in graphs:
                     graph.plot_data(True)
 
+class DataTab(QWidget):
+    """
+        Creates the joint graph widget
+    """
+    def __init__(self, tab_name, hand_joints, joint_prefix):
+        QWidget.__init__(self)
+
+        self.tab_name = tab_name
+        # self.options = self.create_tab_options()
+        self.graphs = self.create_all_graphs(hand_joints, joint_prefix)
+        self.full_tab = self.create_full_tab()
+
+    def create_full_tab(self):
+        full_tab = QWidget()
+        full_tab.layout = QVBoxLayout(self)
+
+        # full_tab.layout.addWidget(self.options, 0, 0)
+        full_tab.layout.addWidget(self.graphs)
+        full_tab.setLayout(full_tab.layout)
+
+        return full_tab
+
+    # def create_tab_options(self):
+    #   layout = QGridLayout()
+    #   b1 = QRadioButton("Button1")
+    #   b1.setChecked(True)
+    # #   self.b1.toggled.connect(lambda:self.btnstate(self.b1))
+    #   layout.addWidget(b1)
+		
+    #   b2 = QRadioButton("Button2")
+    # #   self.b2.toggled.connect(lambda:self.btnstate(self.b2))
+
+    #   layout.addWidget(b2)
+      
+
+    #   return layout
+
+    def create_all_graphs(self, hand_joints, joint_prefix):
+        graphs = QWidget()
+        graphs.layout = QGridLayout(self)
+
+        # for x in range(0,5):
+        #     for y in range
+        joints = {
+            0: [],
+            1: [],
+            2: [],
+            3: [],
+            4: []
+        }
+        for joint in hand_joints[joint_prefix[:-1]]:
+            if "_THJ" in joint:
+                joints[0].append(joint)
+            if "_FFJ" in joint:
+                joints[1].append(joint)
+            if "_MFJ" in joint:
+                joints[2].append(joint)
+            if "_RFJ" in joint:
+                joints[3].append(joint)
+            if "_LFJ" in joint:
+                joints[4].append(joint)
+
+        if self.tab_name == "Joint States":
+            for collumn, joint_names in joints.items():
+                row = 0
+                for joint in joint_names:
+                    joint_graph = JointGraph(joint)
+
+                    graphs.layout.addWidget(joint_graph.joint_widget, row, collumn)
+                    row += 1
+
+        if self.tab_name == "Joint States 2":
+            THJ2 = JointGraph("rh_THJ2")
+            FFJ2 = JointGraph("rh_FFJ2")
+            MFJ2 = JointGraph("rh_MFJ2")
+            RFJ2 = JointGraph("rh_RFJ2")
+
+            graphs.layout.addWidget(THJ2.joint_widget, 0, 0)
+            graphs.layout.addWidget(FFJ2.joint_widget, 0, 1)
+            graphs.layout.addWidget(MFJ2.joint_widget, 0, 2)
+            graphs.layout.addWidget(RFJ2.joint_widget, 0, 3)
+
+        if self.tab_name == "Joint States 3":
+            THJ2 = JointGraph("rh_THJ2")
+
+            graphs.layout.addWidget(THJ2.joint_widget, 0, 0)
+
+        return graphs
+
+
 class JointGraph(QWidget):
     """
         Creates the joint graph widget
@@ -152,7 +196,7 @@ class JointGraph(QWidget):
         QWidget.__init__(self)
 
         self.joint_name = joint_name
-        self.widget = self._create_joint_graph_widget()
+        self.joint_widget = self._create_joint_graph_widget()
 
     def _create_joint_graph_widget(self):
         joint_graph_widget = QWidget()
@@ -236,7 +280,6 @@ class DataPlot(QwtPlot):
                 self.joint_state_data['Effort'] = effort
                 self.joint_state_data['Velocity'] = velocity
 
-
     def timerEvent(self):
         # data moves from left to right:
         # shift data array right and assign new value data[0]
@@ -258,14 +301,14 @@ class DataPlot(QwtPlot):
         self.effort_plot.setData(self.x, self.effort_data)
         self.velocity_plot.setData(self.x, self.velocity_data)
 
-        rospy.logerr(str(len(self.effort_data)) + "\n" + str(self.effort_data))
+        # rospy.logerr(str(len(self.effort_data)) + "\n" + str(self.effort_data))
         self.replot()
 
     def plot_data(self, plot):
         if plot:
             self.timer.start()
         else:
-            self.timer.stop()        
+            self.timer.stop()
 
 
 if __name__ == "__main__":
