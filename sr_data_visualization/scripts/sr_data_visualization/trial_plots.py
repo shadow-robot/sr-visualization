@@ -61,8 +61,6 @@ class DataVisualizer(QMainWindow):
         self.show()
 
     def init_main_widget(self):
-        self.layout = QGridLayout(self)
-
         # Initialize tab screen
         self.tab_widget = QTabWidget(self)
         self.tab_widget.resize(300, 200)
@@ -73,19 +71,18 @@ class DataVisualizer(QMainWindow):
         # self.create_all_tab("Joint States 3")
 
         # Add tabs to widget
-        self.layout.addWidget(self.tab_widget)
-        self.setLayout(self.layout)
-
-        self.setCentralWidget(self.tab_widget)
+        # self.layout.addWidget(self.tab_widget)
+        # self.setLayout(self.layout)
 
         self.tab_widget.currentChanged.connect(self.tab_changed)
 
+
+        self.setCentralWidget(self.tab_widget)
 
     def create_tab(self, tab_name):
         self.tab_created = DataTab(tab_name, self.hand_joints, self.joint_prefix)
 
         self.tab_widget.addTab(self.tab_created.full_tab, tab_name)
-        self.tab_created.setLayout(self.tab_created.full_tab.layout)
 
     def tab_changed(self, index):
         for tab in range((self.tab_widget.count()-1)):
@@ -114,30 +111,18 @@ class DataTab(QWidget):
         full_tab = QWidget()
         full_tab.layout = QVBoxLayout(self)
 
-        # full_tab.layout.addWidget(self.options, 0, 0)
+        # full_tab.layout.addWidget(self.options)
         full_tab.layout.addWidget(self.graphs)
         full_tab.setLayout(full_tab.layout)
 
         return full_tab
 
     # def create_tab_options(self):
-    #   layout = QGridLayout()
-    #   b1 = QRadioButton("Button1")
-    #   b1.setChecked(True)
-    # #   self.b1.toggled.connect(lambda:self.btnstate(self.b1))
-    #   layout.addWidget(b1)
-		
-    #   b2 = QRadioButton("Button2")
-    # #   self.b2.toggled.connect(lambda:self.btnstate(self.b2))
 
-    #   layout.addWidget(b2)
-      
-
-    #   return layout
 
     def create_all_graphs(self, hand_joints, joint_prefix):
         graphs = QWidget()
-        graphs.layout = QGridLayout(self)
+        graphs.layout = QGridLayout()
 
         # for x in range(0,5):
         #     for y in range
