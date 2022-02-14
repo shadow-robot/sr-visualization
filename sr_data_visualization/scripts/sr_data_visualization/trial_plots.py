@@ -23,7 +23,7 @@ import sys
 
 from qtpy.QtWidgets import QFrame
 from qtpy.QtGui import QPen, QBrush
-from qtpy.QtCore import QSize, Qt
+from qtpy.QtCore import QSize, Qt, QTimer
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QWidget, QAction, QTabWidget, QGridLayout, QCheckBox
 from qwt import (
     QwtPlot,
@@ -168,9 +168,6 @@ class JointGraph(QWidget):
     def plot_data(self, plot):
         self.joint_plot.plot_data(plot)
 
-    def clear_data(self):
-        self.joint_plot.clear_data()
-
 
 class DataPlot(QwtPlot):
     """
@@ -180,6 +177,7 @@ class DataPlot(QwtPlot):
         QwtPlot.__init__(self)
 
         self._joint_name = joint_name
+        self.unattended = unattended
 
         self.setCanvasBackground(Qt.white)
         # not sure if autoscale is a good idea or not?
@@ -226,8 +224,9 @@ class DataPlot(QwtPlot):
 
         self._joint_states_subscriber = rospy.Subscriber('joint_states', JointState, self._joint_state_cb, queue_size=1)
 
-        self._plotting = True
-        self.startTimer(10 if unattended else 50)
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.timerEvent)
+        self.timer.start(10 if self.unattended else 50)
 
     def _joint_state_cb(self, joint_state):
         for name, position, velocity, effort in zip(joint_state.name, joint_state.position,
@@ -237,42 +236,42 @@ class DataPlot(QwtPlot):
                 self.joint_state_data['Effort'] = effort
                 self.joint_state_data['Velocity'] = velocity
 
-    def timerEvent(self, e):
-        if self._plotting:
-            # data moves from left to right:
-            # shift data array right and assign new value data[0]
-            self.position_data = np.concatenate((self.position_data[:1], self.position_data[:-1]))
-            self.position_data[0] = self.joint_state_data['Position']
 
-            self.effort_data = np.concatenate((self.effort_data[:1], self.effort_data[:-1]))
-            self.effort_data[0] = self.joint_state_data['Effort']
+    def timerEvent(self):
+        # data moves from left to right:
+        # shift data array right and assign new value data[0]
+        self.position_data = np.concatenate((self.position_data[:1], self.position_data[:-1]))
+        self.position_data[0] = self.joint_state_data['Position']
 
-            self.velocity_data = np.concatenate((self.velocity_data[:1], self.velocity_data[:-1]))
-            self.velocity_data[0] = self.joint_state_data['Velocity']
+        self.effort_data = np.concatenate((self.effort_data[:1], self.effort_data[:-1]))
+        self.effort_data[0] = self.joint_state_data['Effort']
 
-            self.position_plot.setData(self.x, self.position_data)
-            self.effort_plot.setData(self.x, self.effort_data)
-            self.velocity_plot.setData(self.x, self.velocity_data)
-            self.replot()
+        self.velocity_data = np.concatenate((self.velocity_data[:1], self.velocity_data[:-1]))
+        self.velocity_data[0] = self.joint_state_data['Velocity']
 
-            self.position_plot.setData(self.x, self.position_data)
-            self.effort_plot.setData(self.x, self.effort_data)
-            self.velocity_plot.setData(self.x, self.velocity_data)
-            self.replot()
+        self.position_plot.setData(self.x, self.position_data)
+        self.effort_plot.setData(self.x, self.effort_data)
+        self.velocity_plot.setData(self.x, self.velocity_data)
+        self.replot()
+
+        self.position_plot.setData(self.x, self.position_data)
+        self.effort_plot.setData(self.x, self.effort_data)
+        self.velocity_plot.setData(self.x, self.velocity_data)
+
+        rospy.logerr(str(len(self.effort_data)) + "\n" + str(self.effort_data))
+        self.replot()
 
     def plot_data(self, plot):
-        self._plotting = plot
-
-    def clear_data(self):
-        
+        if plot:
+            self.timer.start()
+        else:
+            self.timer.stop()        
 
 
 if __name__ == "__main__":
     from qwt import tests
     rospy.init_node('trial_plots', anonymous=True)
-    # app = tests.test_widget(DataVisualizer, options=False)
 
     app = QApplication(sys.argv)
     ex = DataVisualizer()
     sys.exit(app.exec_())
-    # app = tests.test_widget(DataPlot, size=(500, 300))
