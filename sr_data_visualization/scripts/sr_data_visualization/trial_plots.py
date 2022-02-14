@@ -24,7 +24,18 @@ import sys
 from qtpy.QtWidgets import QFrame
 from qtpy.QtGui import QPen, QBrush
 from qtpy.QtCore import QSize, Qt, QTimer
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QWidget, QAction, QTabWidget, QGridLayout, QCheckBox, QRadioButton, QVBoxLayout
+from PyQt5.QtWidgets import (
+    QMainWindow,
+    QApplication,
+    QPushButton,
+    QWidget, QAction,
+    QTabWidget,
+    QGridLayout,
+    QCheckBox,
+    QRadioButton,
+    QVBoxLayout,
+    QHBoxLayout,
+)
 from qwt import (
     QwtPlot,
     QwtPlotMarker,
@@ -40,7 +51,7 @@ from sr_utilities.hand_finder import HandFinder
 
 class DataVisualizer(QMainWindow):
     TITLE = "Data Visualizer"
-    SIZE = (1000, 500)
+    # SIZE = (500, 500)
 
     def __init__(self):
         super(DataVisualizer, self).__init__()
@@ -63,26 +74,21 @@ class DataVisualizer(QMainWindow):
     def init_main_widget(self):
         # Initialize tab screen
         self.tab_widget = QTabWidget(self)
-        self.tab_widget.resize(300, 200)
 
         # Create tabs
         self.create_tab("Joint States")
-        # self.create_all_tab("Joint States 2")
-        # self.create_all_tab("Joint States 3")
-
-        # Add tabs to widget
-        # self.layout.addWidget(self.tab_widget)
-        # self.setLayout(self.layout)
+        self.create_tab("Joint States 2")
+        self.create_tab("Joint States 3")
 
         self.tab_widget.currentChanged.connect(self.tab_changed)
 
-
+        # Add tabs to widget
         self.setCentralWidget(self.tab_widget)
 
     def create_tab(self, tab_name):
         self.tab_created = DataTab(tab_name, self.hand_joints, self.joint_prefix)
-
-        self.tab_widget.addTab(self.tab_created.full_tab, tab_name)
+        print(self.tab_created.findChildren(JointGraph))
+        self.tab_widget.addTab(self.tab_created, tab_name)
 
     def tab_changed(self, index):
         for tab in range((self.tab_widget.count()-1)):
@@ -103,29 +109,18 @@ class DataTab(QWidget):
         QWidget.__init__(self)
 
         self.tab_name = tab_name
-        # self.options = self.create_tab_options()
-        self.graphs = self.create_all_graphs(hand_joints, joint_prefix)
-        self.full_tab = self.create_full_tab()
+        self.hand_joints = hand_joints
+        self.joint_prefix = joint_prefix
+        self.init_ui()
+        self.create_full_tab()
+
+    def init_ui(self):
+        self.layout = QVBoxLayout(self)
+        self.layout.setContentsMargins(0, 0, 0, 0)
 
     def create_full_tab(self):
-        full_tab = QWidget()
-        full_tab.layout = QVBoxLayout(self)
+        self.layout.addWidget(TabOptions(self.tab_name))
 
-        # full_tab.layout.addWidget(self.options)
-        full_tab.layout.addWidget(self.graphs)
-        full_tab.setLayout(full_tab.layout)
-
-        return full_tab
-
-    # def create_tab_options(self):
-
-
-    def create_all_graphs(self, hand_joints, joint_prefix):
-        graphs = QWidget()
-        graphs.layout = QGridLayout()
-
-        # for x in range(0,5):
-        #     for y in range
         joints = {
             0: [],
             1: [],
@@ -133,7 +128,7 @@ class DataTab(QWidget):
             3: [],
             4: []
         }
-        for joint in hand_joints[joint_prefix[:-1]]:
+        for joint in self.hand_joints[self.joint_prefix[:-1]]:
             if "_THJ" in joint:
                 joints[0].append(joint)
             if "_FFJ" in joint:
@@ -145,32 +140,50 @@ class DataTab(QWidget):
             if "_LFJ" in joint:
                 joints[4].append(joint)
 
+        graphs_layout = QGridLayout()
+
         if self.tab_name == "Joint States":
             for collumn, joint_names in joints.items():
                 row = 0
                 for joint in joint_names:
-                    joint_graph = JointGraph(joint)
-
-                    graphs.layout.addWidget(joint_graph.joint_widget, row, collumn)
+                    graphs_layout.addWidget(JointGraph(joint), row, collumn)
                     row += 1
 
         if self.tab_name == "Joint States 2":
-            THJ2 = JointGraph("rh_THJ2")
-            FFJ2 = JointGraph("rh_FFJ2")
-            MFJ2 = JointGraph("rh_MFJ2")
-            RFJ2 = JointGraph("rh_RFJ2")
-
-            graphs.layout.addWidget(THJ2.joint_widget, 0, 0)
-            graphs.layout.addWidget(FFJ2.joint_widget, 0, 1)
-            graphs.layout.addWidget(MFJ2.joint_widget, 0, 2)
-            graphs.layout.addWidget(RFJ2.joint_widget, 0, 3)
+            graphs_layout.addWidget(JointGraph("rh_THJ2"), 0, 0)
+            graphs_layout.addWidget(JointGraph("rh_FFJ2"), 0, 1)
+            graphs_layout.addWidget(JointGraph("rh_MFJ2"), 0, 2)
+            graphs_layout.addWidget(JointGraph("rh_RFJ2"), 0, 3)
 
         if self.tab_name == "Joint States 3":
-            THJ2 = JointGraph("rh_THJ2")
+            graphs_layout.addWidget(JointGraph("rh_THJ2"), 0, 0)
 
-            graphs.layout.addWidget(THJ2.joint_widget, 0, 0)
+        self.layout.addLayout(graphs_layout)
 
-        return graphs
+
+class TabOptions(QWidget):
+    """
+        Creates the options of filtering and selection for the tab
+    """
+    def __init__(self, tab_name):
+        super().__init__()
+
+        self.tab_name = tab_name
+        self.init_ui()
+        self.create_tab_options()
+        self.setLayout(self.layout)
+
+    def init_ui(self):
+        self.layout = QHBoxLayout(self)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+
+    def create_tab_options(self):
+        self.layout.addWidget(QRadioButton("Position"))
+        self.layout.addWidget(QRadioButton("Velocity"))
+        self.layout.addWidget(QRadioButton("Effort"))
+        self.layout.addWidget(QRadioButton("All"))
+        self.layout.addWidget(QPushButton("Show Selected"))
+        self.layout.addWidget(QPushButton("Reset"))
 
 
 class JointGraph(QWidget):
@@ -181,18 +194,19 @@ class JointGraph(QWidget):
         QWidget.__init__(self)
 
         self.joint_name = joint_name
-        self.joint_widget = self._create_joint_graph_widget()
+        self.init_ui()
+        self._create_joint_graph_widget()
+
+    def init_ui(self):
+        self.layout = QVBoxLayout(self)
+        self.layout.setContentsMargins(0, 0, 0, 0)
 
     def _create_joint_graph_widget(self):
-        joint_graph_widget = QWidget()
-        joint_graph_widget.layout = QGridLayout(self)
-        self.joint_check_box = QCheckBox(self.joint_name[3:])
+        self.joint_check_box = QCheckBox(self.joint_name)
         self.joint_plot = DataPlot(self.joint_name)
-        joint_graph_widget.layout.addWidget(self.joint_check_box, 0, 0)
-        joint_graph_widget.layout.addWidget(self.joint_plot, 1, 0)
-        joint_graph_widget.setLayout(joint_graph_widget.layout)
-
-        return joint_graph_widget
+        self.layout.addWidget(self.joint_check_box)
+        self.layout.addWidget(self.joint_plot)
+        self.setLayout(self.layout)
 
     def plot_data(self, plot):
         self.joint_plot.plot_data(plot)
