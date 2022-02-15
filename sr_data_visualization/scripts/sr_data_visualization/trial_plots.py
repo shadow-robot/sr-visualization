@@ -80,6 +80,10 @@ class DataVisualizer(QMainWindow):
         self.create_tab("Joint States 2")
         self.create_tab("Joint States 3")
 
+        # self.create_tab("joint_states")
+        # self.create_tab("Joint States 2")
+        # self.create_tab("Joint States 3")
+
         self.tab_widget.currentChanged.connect(self.tab_changed)
 
         # Add tabs to widget
@@ -87,7 +91,6 @@ class DataVisualizer(QMainWindow):
 
     def create_tab(self, tab_name):
         self.tab_created = DataTab(tab_name, self.hand_joints, self.joint_prefix)
-        print(self.tab_created.findChildren(JointGraph))
         self.tab_widget.addTab(self.tab_created, tab_name)
 
     def tab_changed(self, index):
@@ -101,6 +104,7 @@ class DataVisualizer(QMainWindow):
                 for graph in graphs:
                     graph.plot_data(True)
 
+
 class DataTab(QWidget):
     """
         Creates the joint graph widget
@@ -113,13 +117,15 @@ class DataTab(QWidget):
         self.joint_prefix = joint_prefix
         self.init_ui()
         self.create_full_tab()
+        # self.button_connections()
 
     def init_ui(self):
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
 
     def create_full_tab(self):
-        self.layout.addWidget(TabOptions(self.tab_name))
+        self.tab_options = TabOptions(self.tab_name)
+        self.layout.addWidget(self.tab_options)
 
         joints = {
             0: [],
@@ -160,6 +166,16 @@ class DataTab(QWidget):
 
         self.layout.addLayout(graphs_layout)
 
+    # def button_connections(self):
+    #     position = self.tab_options.findChildren(QRadioButton)
+    #     print(str(position))
+    #     position.position_buttontoggled.connect(lambda: self.radio_button_selected("Position"))
+
+    # def radio_button_selected(self, radio_button):
+    #     if radio_button == "Position":
+    #         rospy.logerr("HERE")
+        
+
 
 class TabOptions(QWidget):
     """
@@ -168,7 +184,7 @@ class TabOptions(QWidget):
     def __init__(self, tab_name):
         super().__init__()
 
-        self.tab_name = tab_name
+        self.setObjectName(tab_name + "_options")
         self.init_ui()
         self.create_tab_options()
         self.setLayout(self.layout)
@@ -178,7 +194,8 @@ class TabOptions(QWidget):
         self.layout.setContentsMargins(0, 0, 0, 0)
 
     def create_tab_options(self):
-        self.layout.addWidget(QRadioButton("Position"))
+        self.position_button = QRadioButton("Position")
+        self.layout.addWidget(self.position_button)
         self.layout.addWidget(QRadioButton("Velocity"))
         self.layout.addWidget(QRadioButton("Effort"))
         self.layout.addWidget(QRadioButton("All"))
@@ -194,6 +211,7 @@ class JointGraph(QWidget):
         QWidget.__init__(self)
 
         self.joint_name = joint_name
+        self.setObjectName(self.joint_name)
         self.init_ui()
         self._create_joint_graph_widget()
 
@@ -223,6 +241,7 @@ class DataPlot(QwtPlot):
         self.unattended = unattended
 
         self.setCanvasBackground(Qt.white)
+        self.setMaximumSize(300, 150)
         # not sure if autoscale is a good idea or not?
         # https://pythonhosted.org/python-qwt/reference/plot.html
         # self.axisAutoScale(QwtPlot.xBottom)
