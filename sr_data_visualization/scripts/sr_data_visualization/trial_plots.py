@@ -77,8 +77,6 @@ class DataVisualizer(QMainWindow):
 
         # Create tabs
         self.create_tab("Joint States")
-        # self.create_tab("Joint States 2")
-        # self.create_tab("Joint States 3")
 
         self.tab_widget.currentChanged.connect(self.tab_changed)
 
@@ -115,6 +113,8 @@ class DataTab(QWidget):
         self.create_full_tab()
         self.button_connections()
 
+        self.number_checked = 0
+
     def init_ui(self):
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
@@ -125,15 +125,6 @@ class DataTab(QWidget):
 
         self.graphs_layout = QGridLayout()
         self.create_all_graphs()
-
-        # if self.tab_name == "Joint States 2":
-        #     graphs_layout.addWidget(JointGraph("rh_THJ2"), 0, 0)
-        #     graphs_layout.addWidget(JointGraph("rh_FFJ2"), 0, 1)
-        #     graphs_layout.addWidget(JointGraph("rh_MFJ2"), 0, 2)
-        #     graphs_layout.addWidget(JointGraph("rh_RFJ2"), 0, 3)
-
-        # if self.tab_name == "Joint States 3":
-        #     graphs_layout.addWidget(JointGraph("rh_THJ2"), 0, 0)
 
         self.layout.addLayout(self.graphs_layout)
  
@@ -160,10 +151,12 @@ class DataTab(QWidget):
             elif "_WRJ" in joint:
                 joints[5].append(joint)
 
-        for collumn, joint_names in joints.items():
+        for column, joint_names in joints.items():
             row = 0
             for joint in joint_names:
-                self.graphs_layout.addWidget(JointGraph(joint), row, collumn)
+                graph = JointGraph(joint, row, column)
+                graph.joint_check_box.stateChanged.connect(self.update_number)
+                self.graphs_layout.addWidget(graph, row, column)
                 row += 1
 
     def button_connections(self):
@@ -179,16 +172,28 @@ class DataTab(QWidget):
             child.joint_plot.turn_off_trace(radio_button)
 
     def check_button_selected(self, selection_type):
+            index_to_display = 0
+            max_no_columns = 4
+            # self.temp_layout = QGridLayout()
             for child in self.findChildren(JointGraph):
                 if selection_type == "selection":
                     if not child.joint_check_box.isChecked():
                         child.hide()
+                    else:
+                        self.graphs_layout.addWidget(child, index_to_display//max_no_columns, index_to_display%max_no_columns)
+                        index_to_display += 1
                 elif selection_type == "all":
                     if child.joint_check_box.isChecked():
                         child.joint_check_box.setCheckState(False)
+                        self.graphs_layout.addWidget(child, child.initial_row, child.initial_column)
                     else:
                         child.show()
     
+    def update_number(self):
+        if self.sender().isChecked():
+            self.number_checked += 1
+        else:
+            self.number_checked -= 1
 
 class TabOptions(QWidget):
     """
@@ -238,10 +243,12 @@ class JointGraph(QWidget):
     """
         Creates the joint graph widget
     """
-    def __init__(self, joint_name):
+    def __init__(self, joint_name, row, column):
         QWidget.__init__(self)
 
         self.joint_name = joint_name
+        self.initial_row = row
+        self.initial_column = column
         self.setObjectName(self.joint_name)
         self.init_ui()
         self._create_joint_graph_widget()
@@ -258,6 +265,7 @@ class JointGraph(QWidget):
         self.setLayout(self.layout)
 
 
+
 class DataPlot(QwtPlot):
     """
         Creates the QwtPlot of the data
@@ -269,7 +277,8 @@ class DataPlot(QwtPlot):
         self.unattended = unattended
 
         self.setCanvasBackground(Qt.white)
-        self.setMaximumSize(300, 150)
+        # self.setMaximumSize(300, 150)
+        self.setMinimumSize(300, 150)
         # not sure if autoscale is a good idea or not?
         # https://pythonhosted.org/python-qwt/reference/plot.html
         # self.axisAutoScale(QwtPlot.xBottom)
@@ -336,6 +345,9 @@ class DataPlot(QwtPlot):
         self.effort_plot.setData(self.x, self.effort_data)
         self.velocity_plot.setData(self.x, self.velocity_data)
         self.replot()
+
+    # def set_graph_size(self, width, height):
+        
 
     def plot_data(self, plot):
         if plot:
