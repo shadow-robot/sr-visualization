@@ -77,8 +77,8 @@ class DataVisualizer(QMainWindow):
 
         # Create tabs
         self.create_tab("Joint States")
-        self.create_tab("Joint States 2")
-        self.create_tab("Joint States 3")
+        # self.create_tab("Joint States 2")
+        # self.create_tab("Joint States 3")
 
         self.tab_widget.currentChanged.connect(self.tab_changed)
 
@@ -123,57 +123,72 @@ class DataTab(QWidget):
         self.tab_options = TabOptions(self.tab_name)
         self.layout.addWidget(self.tab_options)
 
+        self.graphs_layout = QGridLayout()
+        self.create_all_graphs()
+
+        # if self.tab_name == "Joint States 2":
+        #     graphs_layout.addWidget(JointGraph("rh_THJ2"), 0, 0)
+        #     graphs_layout.addWidget(JointGraph("rh_FFJ2"), 0, 1)
+        #     graphs_layout.addWidget(JointGraph("rh_MFJ2"), 0, 2)
+        #     graphs_layout.addWidget(JointGraph("rh_RFJ2"), 0, 3)
+
+        # if self.tab_name == "Joint States 3":
+        #     graphs_layout.addWidget(JointGraph("rh_THJ2"), 0, 0)
+
+        self.layout.addLayout(self.graphs_layout)
+ 
+    def create_all_graphs(self):
         joints = {
             0: [],
             1: [],
             2: [],
             3: [],
-            4: []
+            4: [],
+            5: []
         }
         for joint in self.hand_joints[self.joint_prefix[:-1]]:
             if "_THJ" in joint:
                 joints[0].append(joint)
-            if "_FFJ" in joint:
+            elif "_FFJ" in joint:
                 joints[1].append(joint)
-            if "_MFJ" in joint:
+            elif "_MFJ" in joint:
                 joints[2].append(joint)
-            if "_RFJ" in joint:
+            elif "_RFJ" in joint:
                 joints[3].append(joint)
-            if "_LFJ" in joint:
+            elif "_LFJ" in joint:
                 joints[4].append(joint)
+            elif "_WRJ" in joint:
+                joints[5].append(joint)
 
-        graphs_layout = QGridLayout()
-
-        if self.tab_name == "Joint States":
-            for collumn, joint_names in joints.items():
-                row = 0
-                for joint in joint_names:
-                    graphs_layout.addWidget(JointGraph(joint), row, collumn)
-                    row += 1
-
-        if self.tab_name == "Joint States 2":
-            graphs_layout.addWidget(JointGraph("rh_THJ2"), 0, 0)
-            graphs_layout.addWidget(JointGraph("rh_FFJ2"), 0, 1)
-            graphs_layout.addWidget(JointGraph("rh_MFJ2"), 0, 2)
-            graphs_layout.addWidget(JointGraph("rh_RFJ2"), 0, 3)
-
-        if self.tab_name == "Joint States 3":
-            graphs_layout.addWidget(JointGraph("rh_THJ2"), 0, 0)
-
-        self.layout.addLayout(graphs_layout)
-        
+        for collumn, joint_names in joints.items():
+            row = 0
+            for joint in joint_names:
+                self.graphs_layout.addWidget(JointGraph(joint), row, collumn)
+                row += 1
 
     def button_connections(self):
         self.tab_options.position_button.toggled.connect(lambda: self.radio_button_selected("position"))
         self.tab_options.velocity_button.toggled.connect(lambda: self.radio_button_selected("velocity"))
         self.tab_options.effort_button.toggled.connect(lambda: self.radio_button_selected("effort"))
         self.tab_options.all_button.toggled.connect(lambda: self.radio_button_selected("all"))
+        self.tab_options.show_seleted_button.clicked.connect(lambda: self.check_button_selected("selection"))
+        self.tab_options.reset_button.clicked.connect(lambda: self.check_button_selected("all"))
 
     def radio_button_selected(self, radio_button):
         for child in self.findChildren(JointGraph):
             child.joint_plot.turn_off_trace(radio_button)
-        
 
+    def check_button_selected(self, selection_type):
+            for child in self.findChildren(JointGraph):
+                if selection_type == "selection":
+                    if not child.joint_check_box.isChecked():
+                        child.hide()
+                elif selection_type == "all":
+                    if child.joint_check_box.isChecked():
+                        child.joint_check_box.setCheckState(False)
+                    else:
+                        child.show()
+    
 
 class TabOptions(QWidget):
     """
@@ -210,8 +225,13 @@ class TabOptions(QWidget):
 
         self.all_button.setChecked(True)
 
-        self.layout.addWidget(QPushButton("Show Selected"))
-        self.layout.addWidget(QPushButton("Reset"))
+        self.show_seleted_button = QPushButton("Show Selected")
+        self.show_seleted_button.setObjectName("show_seleted_button")
+        self.layout.addWidget(self.show_seleted_button)
+
+        self.reset_button = QPushButton("Reset")
+        self.reset_button.setObjectName("reset_button")
+        self.layout.addWidget(self.reset_button)
 
 
 class JointGraph(QWidget):
@@ -277,12 +297,6 @@ class DataPlot(QwtPlot):
         self.effort_plot.setPen(QPen(Qt.blue))
         self.velocity_plot.setPen(QPen(Qt.green))
 
-        # mY = QwtPlotMarker()
-        # mY.setLabelAlignment(Qt.AlignRight | Qt.AlignTop)
-        # mY.setLineStyle(QwtPlotMarker.HLine)
-        # mY.setYValue(0.0)
-        # mY.attach(self)
-
         self.setAxisTitle(QwtPlot.xBottom, "Time (seconds)")
 
         self.ready_for_new = True
@@ -325,9 +339,11 @@ class DataPlot(QwtPlot):
 
     def plot_data(self, plot):
         if plot:
+            self._joint_states_subscriber = rospy.Subscriber('joint_states', JointState, self._joint_state_cb, queue_size=1)
             self.timer.start()
         else:
             self.timer.stop()
+            self._joint_states_subscriber.unregister()
 
     def turn_off_trace(self, trace_name):
         if trace_name == "position":
