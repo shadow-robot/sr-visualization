@@ -154,7 +154,6 @@ class DataTab(QWidget):
             row = 0
             for joint in joint_names:
                 graph = JointGraph(joint, row, column)
-                graph.joint_check_box.stateChanged.connect(self.update_number)
                 self.graphs_layout.addWidget(graph, row, column)
                 row += 1
 
@@ -180,8 +179,8 @@ class DataTab(QWidget):
                     child.hide()
                 else:
                     self.graphs_layout.addWidget(child,
-                                                    index_to_display // max_no_columns,
-                                                    index_to_display % max_no_columns)
+                                                 index_to_display // max_no_columns,
+                                                 index_to_display % max_no_columns)
                     index_to_display += 1
             elif selection_type == "all":
                 if child.joint_check_box.isChecked():
