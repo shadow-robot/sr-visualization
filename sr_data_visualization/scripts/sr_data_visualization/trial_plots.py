@@ -171,24 +171,24 @@ class DataTab(QWidget):
             child.joint_plot.turn_off_trace(radio_button)
 
     def check_button_selected(self, selection_type):
-            index_to_display = 0
-            max_no_columns = 4
-            # self.temp_layout = QGridLayout()
-            for child in self.findChildren(JointGraph):
-                if selection_type == "selection":
-                    if not child.joint_check_box.isChecked():
-                        child.hide()
-                    else:
-                        self.graphs_layout.addWidget(child,
-                                                     index_to_display // max_no_columns,
-                                                     index_to_display % max_no_columns)
-                        index_to_display += 1
-                elif selection_type == "all":
-                    if child.joint_check_box.isChecked():
-                        child.joint_check_box.setCheckState(False)
-                        self.graphs_layout.addWidget(child, child.initial_row, child.initial_column)
-                    else:
-                        child.show()
+        index_to_display = 0
+        max_no_columns = 4
+        # self.temp_layout = QGridLayout()
+        for child in self.findChildren(JointGraph):
+            if selection_type == "selection":
+                if not child.joint_check_box.isChecked():
+                    child.hide()
+                else:
+                    self.graphs_layout.addWidget(child,
+                                                    index_to_display // max_no_columns,
+                                                    index_to_display % max_no_columns)
+                    index_to_display += 1
+            elif selection_type == "all":
+                if child.joint_check_box.isChecked():
+                    child.joint_check_box.setCheckState(False)
+                    self.graphs_layout.addWidget(child, child.initial_row, child.initial_column)
+                else:
+                    child.show()
 
 
 class TabOptions(QWidget):
