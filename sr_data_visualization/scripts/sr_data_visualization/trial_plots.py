@@ -113,8 +113,6 @@ class DataTab(QWidget):
         self.create_full_tab()
         self.button_connections()
 
-        self.number_checked = 0
-
     def init_ui(self):
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
@@ -127,7 +125,7 @@ class DataTab(QWidget):
         self.create_all_graphs()
 
         self.layout.addLayout(self.graphs_layout)
- 
+
     def create_all_graphs(self):
         joints = {
             0: [],
@@ -137,6 +135,7 @@ class DataTab(QWidget):
             4: [],
             5: []
         }
+
         for joint in self.hand_joints[self.joint_prefix[:-1]]:
             if "_THJ" in joint:
                 joints[0].append(joint)
@@ -180,7 +179,9 @@ class DataTab(QWidget):
                     if not child.joint_check_box.isChecked():
                         child.hide()
                     else:
-                        self.graphs_layout.addWidget(child, index_to_display//max_no_columns, index_to_display%max_no_columns)
+                        self.graphs_layout.addWidget(child,
+                                                     index_to_display // max_no_columns,
+                                                     index_to_display % max_no_columns)
                         index_to_display += 1
                 elif selection_type == "all":
                     if child.joint_check_box.isChecked():
@@ -188,12 +189,7 @@ class DataTab(QWidget):
                         self.graphs_layout.addWidget(child, child.initial_row, child.initial_column)
                     else:
                         child.show()
-    
-    def update_number(self):
-        if self.sender().isChecked():
-            self.number_checked += 1
-        else:
-            self.number_checked -= 1
+
 
 class TabOptions(QWidget):
     """
@@ -202,7 +198,6 @@ class TabOptions(QWidget):
     def __init__(self, tab_name):
         super().__init__()
 
-        # self.setObjectName(tab_name + "_options")
         self.init_ui()
         self.create_tab_options()
         self.setLayout(self.layout)
@@ -265,7 +260,6 @@ class JointGraph(QWidget):
         self.setLayout(self.layout)
 
 
-
 class DataPlot(QwtPlot):
     """
         Creates the QwtPlot of the data
@@ -277,13 +271,7 @@ class DataPlot(QwtPlot):
         self.unattended = unattended
 
         self.setCanvasBackground(Qt.white)
-        # self.setMaximumSize(300, 150)
         self.setMinimumSize(300, 150)
-        # not sure if autoscale is a good idea or not?
-        # https://pythonhosted.org/python-qwt/reference/plot.html
-        # self.axisAutoScale(QwtPlot.xBottom)
-        # self.axisAutoScale(QwtPlot.yLeft)
-        # self.alignScales()
 
         # Initialize data
         self.x = np.arange(0.0, 100.1, 0.5)
@@ -330,8 +318,8 @@ class DataPlot(QwtPlot):
                 self.joint_state_data['Velocity'] = velocity
 
     def timerEvent(self):
-        # data moves from left to right:
-        # shift data array right and assign new value data[0]
+        # Data moves from left to right:
+        # Shift data array right and assign new value data[0]
         self.position_data = np.concatenate((self.position_data[:1], self.position_data[:-1]))
         self.position_data[0] = self.joint_state_data['Position']
 
@@ -346,12 +334,12 @@ class DataPlot(QwtPlot):
         self.velocity_plot.setData(self.x, self.velocity_data)
         self.replot()
 
-    # def set_graph_size(self, width, height):
-        
-
     def plot_data(self, plot):
         if plot:
-            self._joint_states_subscriber = rospy.Subscriber('joint_states', JointState, self._joint_state_cb, queue_size=1)
+            self._joint_states_subscriber = rospy.Subscriber('joint_states',
+                                                             JointState,
+                                                             self._joint_state_cb,
+                                                             queue_size=1)
             self.timer.start()
         else:
             self.timer.stop()
@@ -362,21 +350,21 @@ class DataPlot(QwtPlot):
             self.position_plot.attach(self)
             self.effort_plot.detach()
             self.velocity_plot.detach()
-        if trace_name  == "velocity":
+        if trace_name == "velocity":
             self.velocity_plot.attach(self)
             self.effort_plot.detach()
             self.position_plot.detach()
-        if trace_name  == "effort":
+        if trace_name == "effort":
             self.effort_plot.attach(self)
             self.velocity_plot.detach()
             self.position_plot.detach()
-        if trace_name  == "all":
+        if trace_name == "all":
             self.position_plot.attach(self)
             self.velocity_plot.attach(self)
             self.effort_plot.attach(self)
 
+
 if __name__ == "__main__":
-    from qwt import tests
     rospy.init_node('trial_plots', anonymous=True)
 
     app = QApplication(sys.argv)
