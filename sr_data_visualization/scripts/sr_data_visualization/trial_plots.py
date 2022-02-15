@@ -80,10 +80,6 @@ class DataVisualizer(QMainWindow):
         self.create_tab("Joint States 2")
         self.create_tab("Joint States 3")
 
-        # self.create_tab("joint_states")
-        # self.create_tab("Joint States 2")
-        # self.create_tab("Joint States 3")
-
         self.tab_widget.currentChanged.connect(self.tab_changed)
 
         # Add tabs to widget
@@ -117,7 +113,7 @@ class DataTab(QWidget):
         self.joint_prefix = joint_prefix
         self.init_ui()
         self.create_full_tab()
-        # self.button_connections()
+        self.button_connections()
 
     def init_ui(self):
         self.layout = QVBoxLayout(self)
@@ -165,15 +161,17 @@ class DataTab(QWidget):
             graphs_layout.addWidget(JointGraph("rh_THJ2"), 0, 0)
 
         self.layout.addLayout(graphs_layout)
+        
 
-    # def button_connections(self):
-    #     position = self.tab_options.findChildren(QRadioButton)
-    #     print(str(position))
-    #     position.position_buttontoggled.connect(lambda: self.radio_button_selected("Position"))
+    def button_connections(self):
+        self.tab_options.position_button.toggled.connect(lambda: self.radio_button_selected("position"))
+        self.tab_options.velocity_button.toggled.connect(lambda: self.radio_button_selected("velocity"))
+        self.tab_options.effort_button.toggled.connect(lambda: self.radio_button_selected("effort"))
+        self.tab_options.all_button.toggled.connect(lambda: self.radio_button_selected("all"))
 
-    # def radio_button_selected(self, radio_button):
-    #     if radio_button == "Position":
-    #         rospy.logerr("HERE")
+    def radio_button_selected(self, radio_button):
+        for child in self.findChildren(JointGraph):
+            child.joint_plot.turn_off_trace(radio_button)
         
 
 
@@ -184,7 +182,7 @@ class TabOptions(QWidget):
     def __init__(self, tab_name):
         super().__init__()
 
-        self.setObjectName(tab_name + "_options")
+        # self.setObjectName(tab_name + "_options")
         self.init_ui()
         self.create_tab_options()
         self.setLayout(self.layout)
@@ -195,10 +193,23 @@ class TabOptions(QWidget):
 
     def create_tab_options(self):
         self.position_button = QRadioButton("Position")
+        self.position_button.setObjectName("toggle_position")
         self.layout.addWidget(self.position_button)
-        self.layout.addWidget(QRadioButton("Velocity"))
-        self.layout.addWidget(QRadioButton("Effort"))
-        self.layout.addWidget(QRadioButton("All"))
+
+        self.velocity_button = QRadioButton("Velocity")
+        self.velocity_button.setObjectName("toggle_velocity")
+        self.layout.addWidget(self.velocity_button)
+
+        self.effort_button = QRadioButton("Effort")
+        self.effort_button.setObjectName("toggle_effort")
+        self.layout.addWidget(self.effort_button)
+
+        self.all_button = QRadioButton("All")
+        self.all_button.setObjectName("toggle_all")
+        self.layout.addWidget(self.all_button)
+
+        self.all_button.setChecked(True)
+
         self.layout.addWidget(QPushButton("Show Selected"))
         self.layout.addWidget(QPushButton("Reset"))
 
@@ -225,9 +236,6 @@ class JointGraph(QWidget):
         self.layout.addWidget(self.joint_check_box)
         self.layout.addWidget(self.joint_plot)
         self.setLayout(self.layout)
-
-    def plot_data(self, plot):
-        self.joint_plot.plot_data(plot)
 
 
 class DataPlot(QwtPlot):
@@ -315,19 +323,29 @@ class DataPlot(QwtPlot):
         self.velocity_plot.setData(self.x, self.velocity_data)
         self.replot()
 
-        self.position_plot.setData(self.x, self.position_data)
-        self.effort_plot.setData(self.x, self.effort_data)
-        self.velocity_plot.setData(self.x, self.velocity_data)
-
-        # rospy.logerr(str(len(self.effort_data)) + "\n" + str(self.effort_data))
-        self.replot()
-
     def plot_data(self, plot):
         if plot:
             self.timer.start()
         else:
             self.timer.stop()
 
+    def turn_off_trace(self, trace_name):
+        if trace_name == "position":
+            self.position_plot.attach(self)
+            self.effort_plot.detach()
+            self.velocity_plot.detach()
+        if trace_name  == "velocity":
+            self.velocity_plot.attach(self)
+            self.effort_plot.detach()
+            self.position_plot.detach()
+        if trace_name  == "effort":
+            self.effort_plot.attach(self)
+            self.velocity_plot.detach()
+            self.position_plot.detach()
+        if trace_name  == "all":
+            self.position_plot.attach(self)
+            self.velocity_plot.attach(self)
+            self.effort_plot.attach(self)
 
 if __name__ == "__main__":
     from qwt import tests
