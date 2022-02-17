@@ -53,7 +53,6 @@ class JointStatesDataPlot(QwtPlot):
         # self.setTitle(self._joint_name)
         self.insertLegend(QwtLegend(), QwtPlot.TopLegend)
 
-
         # Create plots
         self.position_plot = QwtPlotCurve("Position")
         self.position_plot.attach(self)
@@ -188,7 +187,8 @@ class ControlLoopsDataPlot(QwtPlot):
             'Output': 0.0
         }
 
-        self._position_controller_subscriber = rospy.Subscriber('/sh_' + self._joint_name.lower() + '_position_controller/state',
+        self._position_controller_subscriber = rospy.Subscriber('/sh_' + self._joint_name.lower() + \
+                                                                '_position_controller/state',
                                                                 JointControllerState,
                                                                 self._position_controller_cb,
                                                                 queue_size=1)
@@ -224,8 +224,6 @@ class ControlLoopsDataPlot(QwtPlot):
         self.output_data = np.concatenate((self.output_data[:1], self.output_data[:-1]))
         self.output_data[0] = self.joint_state_data['Output']
 
-
-
         self.setpoint_plot.setData(self.x, self.setpoint_data)
         self.input_plot.setData(self.x, self.input_data)
         self.dinputdt_plot.setData(self.x, self.dinputdt_data)
@@ -235,7 +233,8 @@ class ControlLoopsDataPlot(QwtPlot):
 
     def plot_data(self, plot):
         if plot:
-            self._position_controller_subscriber = rospy.Subscriber('/sh_' + self._joint_name.lower() + '_position_controller/state',
+            self._position_controller_subscriber = rospy.Subscriber('/sh_' + self._joint_name.lower() + \
+                                                                    '_position_controller/state',
                                                                     JointControllerState,
                                                                     self._position_controller_cb,
                                                                     queue_size=1)

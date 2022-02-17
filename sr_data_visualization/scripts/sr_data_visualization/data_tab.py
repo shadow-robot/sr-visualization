@@ -93,6 +93,7 @@ class GenericDataTab(QWidget):
                 else:
                     child.show()
 
+
 class JointStatesDataTab(GenericDataTab):
     """
         Creates the joint graph widget
@@ -139,6 +140,7 @@ class JointStatesDataTab(GenericDataTab):
         self.tab_options.position_button.toggled.connect(lambda: self.radio_button_selected("position"))
         self.tab_options.velocity_button.toggled.connect(lambda: self.radio_button_selected("velocity"))
         self.tab_options.effort_button.toggled.connect(lambda: self.radio_button_selected("effort"))
+
 
 class ControlLoopsDataTab(GenericDataTab):
     """

@@ -69,6 +69,7 @@ class GenericTabOptions(QWidget):
         self.reset_button.setObjectName("reset_button")
         self.check_layout.addWidget(self.reset_button)
 
+
 class JointStatesTabOptions(GenericTabOptions):
     """
         Creates the options of filtering and selection for the tab
@@ -88,6 +89,7 @@ class JointStatesTabOptions(GenericTabOptions):
         self.effort_button = QRadioButton("Effort")
         self.effort_button.setObjectName("toggle_effort")
         self.check_layout.addWidget(self.effort_button)
+
 
 class ControlLoopsTabOptions(GenericTabOptions):
     """
