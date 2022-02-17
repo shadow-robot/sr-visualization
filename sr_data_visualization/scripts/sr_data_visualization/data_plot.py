@@ -28,8 +28,6 @@ from qwt import (
     QwtAbstractScaleDraw,
 )
 
-from sensor_msgs.msg import JointState
-from control_msgs.msg import JointControllerState
 
 class Trace():
     def __init__(self, trace_name, trace_colour, x):
@@ -70,7 +68,6 @@ class GenericDataPlot(QwtPlot):
 
     def create_traces(self):
         pass
-
 
     def _callback(self, data):
         pass

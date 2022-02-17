@@ -29,6 +29,7 @@ from tab_options import JointStatesTabOptions, ControlLoopsTabOptions
 from sensor_msgs.msg import JointState
 from control_msgs.msg import JointControllerState
 
+
 class GenericDataTab(QWidget):
     """
         Creates the joint graph widget
