@@ -187,7 +187,7 @@ class ControlLoopsDataPlot(QwtPlot):
             'Output': 0.0
         }
 
-        self._position_controller_subscriber = rospy.Subscriber('/sh_' + self._joint_name.lower() + \
+        self._position_controller_subscriber = rospy.Subscriber('/sh_' + self._joint_name.lower() +
                                                                 '_position_controller/state',
                                                                 JointControllerState,
                                                                 self._position_controller_cb,
@@ -197,7 +197,6 @@ class ControlLoopsDataPlot(QwtPlot):
         self.timer.timeout.connect(self.timerEvent)
         # self.timer.start()
         self.timer.start(10 if self.unattended else 50)
-
 
     def _position_controller_cb(self, data):
         self.joint_state_data['Set Point'] = data.set_point
@@ -233,7 +232,7 @@ class ControlLoopsDataPlot(QwtPlot):
 
     def plot_data(self, plot):
         if plot:
-            self._position_controller_subscriber = rospy.Subscriber('/sh_' + self._joint_name.lower() + \
+            self._position_controller_subscriber = rospy.Subscriber('/sh_' + self._joint_name.lower() +
                                                                     '_position_controller/state',
                                                                     JointControllerState,
                                                                     self._position_controller_cb,
