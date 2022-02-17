@@ -35,6 +35,7 @@ from PyQt5.QtWidgets import (
     QRadioButton,
     QVBoxLayout,
     QHBoxLayout,
+    QGroupBox
 )
 from qwt import (
     QwtPlot,
@@ -84,7 +85,7 @@ class DataVisualizer(QMainWindow):
         self.setCentralWidget(self.tab_widget)
 
     def create_tab(self, tab_name):
-        self.tab_created = DataTab(tab_name, self.hand_joints, self.joint_prefix)
+        self.tab_created = DataTab(tab_name, self.hand_joints, self.joint_prefix, parent=self)
         self.tab_widget.addTab(self.tab_created, tab_name)
 
     def tab_changed(self, index):
@@ -103,22 +104,23 @@ class DataTab(QWidget):
     """
         Creates the joint graph widget
     """
-    def __init__(self, tab_name, hand_joints, joint_prefix):
-        QWidget.__init__(self)
+    def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
+        QWidget.__init__(self, parent=parent)
 
         self.tab_name = tab_name
         self.hand_joints = hand_joints
         self.joint_prefix = joint_prefix
         self.init_ui()
         self.create_full_tab()
-        self.button_connections()
+        self.optional_button_connections()
+        self.generic_button_connections()
 
     def init_ui(self):
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
 
     def create_full_tab(self):
-        self.tab_options = TabOptions(self.tab_name)
+        self.tab_options = TabOptions(self.tab_name, parent=self)
         self.layout.addWidget(self.tab_options)
 
         self.graphs_layout = QGridLayout()
@@ -153,14 +155,17 @@ class DataTab(QWidget):
         for column, joint_names in joints.items():
             row = 0
             for joint in joint_names:
-                graph = JointGraph(joint, row, column)
+                data_plot = DataPlot(joint)
+                graph = JointGraph(joint, data_plot, row, column, parent=self)
                 self.graphs_layout.addWidget(graph, row, column)
                 row += 1
 
-    def button_connections(self):
+    def optional_button_connections(self):
         self.tab_options.position_button.toggled.connect(lambda: self.radio_button_selected("position"))
         self.tab_options.velocity_button.toggled.connect(lambda: self.radio_button_selected("velocity"))
         self.tab_options.effort_button.toggled.connect(lambda: self.radio_button_selected("effort"))
+
+    def generic_button_connections(self):
         self.tab_options.all_button.toggled.connect(lambda: self.radio_button_selected("all"))
         self.tab_options.show_seleted_button.clicked.connect(lambda: self.check_button_selected("selection"))
         self.tab_options.reset_button.clicked.connect(lambda: self.check_button_selected("all"))
@@ -194,68 +199,86 @@ class TabOptions(QWidget):
     """
         Creates the options of filtering and selection for the tab
     """
-    def __init__(self, tab_name):
-        super().__init__()
+    def __init__(self, tab_name, parent=None):
+        QWidget.__init__(self, parent=parent)
 
         self.init_ui()
         self.create_tab_options()
         self.setLayout(self.layout)
 
     def init_ui(self):
-        self.layout = QHBoxLayout(self)
+        self.layout = QGridLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
 
     def create_tab_options(self):
+        groupbox = QGroupBox("Graph Options")
+        self.layout.addWidget(groupbox)
+
+        self.check_layout = QHBoxLayout()
+        groupbox.setLayout(self.check_layout)
+
+        self.create_variable_trace_buttons()
+        self.create_common_buttons()
+
+    def create_variable_trace_buttons(self):
         self.position_button = QRadioButton("Position")
         self.position_button.setObjectName("toggle_position")
-        self.layout.addWidget(self.position_button)
+        self.check_layout.addWidget(self.position_button)
 
         self.velocity_button = QRadioButton("Velocity")
         self.velocity_button.setObjectName("toggle_velocity")
-        self.layout.addWidget(self.velocity_button)
+        self.check_layout.addWidget(self.velocity_button)
 
         self.effort_button = QRadioButton("Effort")
         self.effort_button.setObjectName("toggle_effort")
-        self.layout.addWidget(self.effort_button)
+        self.check_layout.addWidget(self.effort_button)
 
+    def create_common_buttons(self):
         self.all_button = QRadioButton("All")
         self.all_button.setObjectName("toggle_all")
-        self.layout.addWidget(self.all_button)
+        self.check_layout.addWidget(self.all_button)
 
         self.all_button.setChecked(True)
 
         self.show_seleted_button = QPushButton("Show Selected")
         self.show_seleted_button.setObjectName("show_seleted_button")
-        self.layout.addWidget(self.show_seleted_button)
+        self.check_layout.addWidget(self.show_seleted_button)
 
         self.reset_button = QPushButton("Reset")
         self.reset_button.setObjectName("reset_button")
-        self.layout.addWidget(self.reset_button)
+        self.check_layout.addWidget(self.reset_button)
 
 
 class JointGraph(QWidget):
     """
         Creates the joint graph widget
     """
-    def __init__(self, joint_name, row, column):
-        QWidget.__init__(self)
+    def __init__(self, joint_name, joint_data_plot, row, column, parent=None):
+        QWidget.__init__(self, parent=parent)
 
         self.joint_name = joint_name
         self.initial_row = row
         self.initial_column = column
         self.setObjectName(self.joint_name)
         self.init_ui()
-        self._create_joint_graph_widget()
+        self._create_joint_graph_widget(joint_data_plot)
 
     def init_ui(self):
-        self.layout = QVBoxLayout(self)
+        self.layout = QGridLayout()
         self.layout.setContentsMargins(0, 0, 0, 0)
 
-    def _create_joint_graph_widget(self):
+    def _create_joint_graph_widget(self, joint_data_plot):
+        groupbox = QGroupBox()
+        self.layout.addWidget(groupbox)
+
+        self.check_layout = QVBoxLayout()
+        groupbox.setLayout(self.check_layout)
+
         self.joint_check_box = QCheckBox(self.joint_name)
-        self.joint_plot = DataPlot(self.joint_name)
-        self.layout.addWidget(self.joint_check_box)
-        self.layout.addWidget(self.joint_plot)
+        self.joint_plot = joint_data_plot
+        self.check_layout.addWidget(self.joint_check_box)
+        self.check_layout.addWidget(self.joint_plot)
+
         self.setLayout(self.layout)
 
 
@@ -263,14 +286,13 @@ class DataPlot(QwtPlot):
     """
         Creates the QwtPlot of the data
     """
-    def __init__(self, joint_name, unattended=False):
+    def __init__(self, joint_name):
         QwtPlot.__init__(self)
 
         self._joint_name = joint_name
-        self.unattended = unattended
 
         self.setCanvasBackground(Qt.white)
-        self.setMinimumSize(300, 150)
+        self.setMinimumSize(250, 100)
 
         # Initialize data
         self.x = np.arange(0.0, 100.1, 0.5)
@@ -280,6 +302,7 @@ class DataPlot(QwtPlot):
 
         # self.setTitle(self._joint_name)
         self.insertLegend(QwtLegend(), QwtPlot.TopLegend)
+
 
         # Create plots
         self.position_plot = QwtPlotCurve("Position")
@@ -306,7 +329,7 @@ class DataPlot(QwtPlot):
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.timerEvent)
-        self.timer.start(10 if self.unattended else 50)
+        self.timer.start()
 
     def _joint_state_cb(self, joint_state):
         for name, position, velocity, effort in zip(joint_state.name, joint_state.position,
