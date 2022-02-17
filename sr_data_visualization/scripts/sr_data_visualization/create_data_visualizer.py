@@ -55,34 +55,43 @@ class DataVisualizer(QMainWindow):
 
     def init_main_widget(self):
         # Initialize tab screen
-        self.tab_widget = QTabWidget(self)
+        self.tab_container = QTabWidget(self)
 
         # Create tabs
         self.create_tab("Joint States")
         self.create_tab("Control Loops")
+        # self.create_tab("Motor Stats")
 
-        self.tab_widget.currentChanged.connect(self.tab_changed)
+        # self.tab_container.currentChanged.connect(self.tab_changed)
 
         # Add tabs to widget
-        self.setCentralWidget(self.tab_widget)
+        self.setCentralWidget(self.tab_container)
 
     def create_tab(self, tab_name):
         if tab_name == "Joint States":
             self.tab_created = JointStatesDataTab(tab_name, self.hand_joints, self.joint_prefix, parent=self)
         elif tab_name == "Control Loops":
             self.tab_created = ControlLoopsDataTab(tab_name, self.hand_joints, self.joint_prefix, parent=self)
-        self.tab_widget.addTab(self.tab_created, tab_name)
+        self.tab_container.addTab(self.tab_created, tab_name)
+
+    # def tab_changed(self,i): #changed!
+    #     print("Current Tab Index: %d" % i )
 
     def tab_changed(self, index):
-        for tab in range((self.tab_widget.count()-1)):
+        tabs = {
+            0: JointStatesDataPlot,
+            1: ControlLoopsDataPlot
+        }
+
+        for tab in range((self.tab_container.count()-1)):
+            graphs = self.tab_container.widget(tab).findChildren(tabs[tab])
             if tab is not index:
-                graphs = self.tab_widget.widget(tab).findChildren(JointStatesDataPlot)
                 for graph in graphs:
                     graph.plot_data(False)
-            else:
-                graphs = self.tab_widget.widget(tab).findChildren(JointStatesDataPlot)
-                for graph in graphs:
-                    graph.plot_data(True)
+            # else:
+            #     graphs = self.tab_container.widget(tab).findChildren(tabs[tab])
+            #     for graph in graphs:
+            #         graph.plot_data(True)
 
 
 if __name__ == "__main__":

@@ -26,6 +26,8 @@ from joint_graph_widget import JointGraph
 from data_plot import JointStatesDataPlot, ControlLoopsDataPlot
 from tab_options import JointStatesTabOptions, ControlLoopsTabOptions
 
+from sensor_msgs.msg import JointState
+from control_msgs.msg import JointControllerState
 
 class GenericDataTab(QWidget):
     """
@@ -65,9 +67,9 @@ class GenericDataTab(QWidget):
         pass
 
     def generic_button_connections(self):
-        self.tab_options.all_button.toggled.connect(lambda: self.radio_button_selected("all"))
-        self.tab_options.show_seleted_button.clicked.connect(lambda: self.check_button_selected("selection"))
-        self.tab_options.reset_button.clicked.connect(lambda: self.check_button_selected("all"))
+        self.tab_options.all_button.toggled.connect(lambda: self.radio_button_selected("All"))
+        self.tab_options.show_seleted_button.clicked.connect(lambda: self.check_button_selected("Selection"))
+        self.tab_options.reset_button.clicked.connect(lambda: self.check_button_selected("All"))
 
     def radio_button_selected(self, radio_button):
         for child in self.findChildren(JointGraph):
@@ -78,7 +80,7 @@ class GenericDataTab(QWidget):
         max_no_columns = 4
         # self.temp_layout = QGridLayout()
         for child in self.findChildren(JointGraph):
-            if selection_type == "selection":
+            if selection_type == "Selection":
                 if not child.joint_check_box.isChecked():
                     child.hide()
                 else:
@@ -86,7 +88,7 @@ class GenericDataTab(QWidget):
                                                  index_to_display // max_no_columns,
                                                  index_to_display % max_no_columns)
                     index_to_display += 1
-            elif selection_type == "all":
+            elif selection_type == "All":
                 if child.joint_check_box.isChecked():
                     child.joint_check_box.setCheckState(False)
                     self.graphs_layout.addWidget(child, child.initial_row, child.initial_column)
@@ -131,15 +133,15 @@ class JointStatesDataTab(GenericDataTab):
         for column, joint_names in joints.items():
             row = 0
             for joint in joint_names:
-                data_plot = JointStatesDataPlot(joint)
+                data_plot = JointStatesDataPlot(joint, 'joint_states', JointState)
                 graph = JointGraph(joint, data_plot, row, column)
                 self.graphs_layout.addWidget(graph, row, column)
                 row += 1
 
     def optional_button_connections(self):
-        self.tab_options.position_button.toggled.connect(lambda: self.radio_button_selected("position"))
-        self.tab_options.velocity_button.toggled.connect(lambda: self.radio_button_selected("velocity"))
-        self.tab_options.effort_button.toggled.connect(lambda: self.radio_button_selected("effort"))
+        self.tab_options.position_button.toggled.connect(lambda: self.radio_button_selected("Position"))
+        self.tab_options.velocity_button.toggled.connect(lambda: self.radio_button_selected("Velocity"))
+        self.tab_options.effort_button.toggled.connect(lambda: self.radio_button_selected("Effort"))
 
 
 class ControlLoopsDataTab(GenericDataTab):
@@ -192,14 +194,16 @@ class ControlLoopsDataTab(GenericDataTab):
             row = 0
             if joint_names is not None:
                 for joint in joint_names:
-                    data_plot = ControlLoopsDataPlot(joint)
+                    topic_name = '/sh_' + joint.lower() + '_position_controller/state'
+                    topic_type = JointControllerState
+                    data_plot = ControlLoopsDataPlot(joint, topic_name, topic_type)
                     graph = JointGraph(joint, data_plot, row, column)
                     self.graphs_layout.addWidget(graph, row, column)
                     row += 1
 
     def optional_button_connections(self):
-        self.tab_options.setpoint_button.toggled.connect(lambda: self.radio_button_selected("setpoint"))
-        self.tab_options.input_button.toggled.connect(lambda: self.radio_button_selected("input"))
-        self.tab_options.dinputdt_button.toggled.connect(lambda: self.radio_button_selected("dinputdt"))
-        self.tab_options.error_button.toggled.connect(lambda: self.radio_button_selected("error"))
-        self.tab_options.output_button.toggled.connect(lambda: self.radio_button_selected("output"))
+        self.tab_options.setpoint_button.toggled.connect(lambda: self.radio_button_selected("Set Point"))
+        self.tab_options.input_button.toggled.connect(lambda: self.radio_button_selected("Input"))
+        self.tab_options.dinputdt_button.toggled.connect(lambda: self.radio_button_selected("dInput/dt"))
+        self.tab_options.error_button.toggled.connect(lambda: self.radio_button_selected("Error"))
+        self.tab_options.output_button.toggled.connect(lambda: self.radio_button_selected("Output"))
