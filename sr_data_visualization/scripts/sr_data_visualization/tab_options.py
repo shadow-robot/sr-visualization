@@ -16,6 +16,11 @@
 
 from __future__ import absolute_import
 
+import os
+import rospkg
+
+from PyQt5.QtGui import QIcon
+
 from PyQt5.QtWidgets import (
     QPushButton,
     QWidget,
@@ -30,6 +35,15 @@ class GenericTabOptions(QWidget):
     """
         Creates the options of filtering and selection for the tab
     """
+    # ICON_DIR = os.path.join(
+    #     rospkg.RosPack().get_path('sr_visualization_icons'), 'icons')
+    # GREEN_ICON = QIcon(os.path.join(ICON_DIR, 'green.png'))
+    # RED_ICON = QIcon(os.path.join(ICON_DIR, 'red.png'))
+    # BLUE_ICON = QIcon(os.path.join(ICON_DIR, 'blue.png'))
+    # MAGENTA_ICON = QIcon(os.path.join(ICON_DIR, 'magenta.png'))
+    # YELLOW_ICON = QIcon(os.path.join(ICON_DIR, 'yellow.png'))
+    # CYON_ICON = QIcon(os.path.join(ICON_DIR, 'cyon.png'))
+
     def __init__(self, tab_name, parent=None):
         super().__init__(parent=parent)
 
@@ -129,21 +143,120 @@ class MotorStats1TabOptions(GenericTabOptions):
 
     def create_variable_trace_buttons(self):
         self.strain_right_button = QRadioButton("Strain Gauge Right")
-        # self.strain_right_button.setObjectName("toggle_strain_right")
         self.check_layout.addWidget(self.strain_right_button)
 
         self.strain_left_button = QRadioButton("Strain Gauge Left")
-        # self.strain_left_button.setObjectName("toggle_input")
         self.check_layout.addWidget(self.strain_left_button)
 
         self.pwm_button = QRadioButton("Measured PWM")
-        # self.pwm_button.setObjectName("toggle_dinputdt")
         self.check_layout.addWidget(self.pwm_button)
 
         self.current_button = QRadioButton("Measured Current")
-        # self.current_button.setObjectName("toggle_error")
         self.check_layout.addWidget(self.current_button)
 
         self.voltage_button = QRadioButton("Measured Voltage")
-        # self.voltage_button.setObjectName("toggle_output")
         self.check_layout.addWidget(self.voltage_button)
+
+
+class MotorStats2TabOptions(GenericTabOptions):
+    """
+        Creates the options of filtering and selection for the tab
+    """
+    def __init__(self, tab_name, parent=None):
+        super().__init__(tab_name, parent)
+
+    def create_variable_trace_buttons(self):
+        self.effort_button = QRadioButton("Measured Effort")
+        # self.effort_button.setIcon(GREEN_ICON)
+        self.check_layout.addWidget(self.effort_button)
+
+        self.temp_button = QRadioButton("Temperature")
+        self.check_layout.addWidget(self.temp_button)
+
+        self.unf_position_button = QRadioButton("Unfiltered Position")
+        self.check_layout.addWidget(self.unf_position_button)
+
+        self.unf_force_button = QRadioButton("Unfiltered Force")
+        self.check_layout.addWidget(self.unf_force_button)
+
+        self.last_effort_button = QRadioButton("Last Commanded Effort")
+        self.check_layout.addWidget(self.last_effort_button)
+
+        self.encoder_pos_button = QRadioButton("Encoder Position")
+        self.check_layout.addWidget(self.encoder_pos_button)
+
+
+class PalmExtrasAcellTabOptions(GenericTabOptions):
+    """
+        Creates the options of filtering and selection for the tab
+    """
+    def __init__(self, tab_name, parent=None):
+        super().__init__(tab_name, parent)
+
+    def create_variable_trace_buttons(self):
+        self.accel_x_button = QRadioButton("Accel X")
+        # self.effort_button.setIcon(GREEN_ICON)
+        self.check_layout.addWidget(self.accel_x_button)
+
+        self.accel_y_button = QRadioButton("Accel Y")
+        self.check_layout.addWidget(self.accel_y_button)
+
+        self.accel_z_button = QRadioButton("Accel Z")
+        self.check_layout.addWidget(self.accel_z_button)
+
+    def create_common_buttons(self):
+        self.all_accel_button = QRadioButton("All")
+        self.check_layout.addWidget(self.all_accel_button)
+
+        self.all_accel_button.setChecked(True)
+
+
+class PalmExtrasGyroTabOptions(GenericTabOptions):
+    """
+        Creates the options of filtering and selection for the tab
+    """
+    def __init__(self, tab_name, parent=None):
+        super().__init__(tab_name, parent)
+
+    def create_variable_trace_buttons(self):
+        self.gyro_x_button = QRadioButton("Gyro X")
+        self.check_layout.addWidget(self.gyro_x_button)
+
+        self.gyro_y_button = QRadioButton("Gyro Y")
+        self.check_layout.addWidget(self.gyro_y_button)
+
+        self.gyro_z_button = QRadioButton("Gyro Z")
+        self.check_layout.addWidget(self.gyro_z_button)
+
+    def create_common_buttons(self):
+        self.all_gyro_button = QRadioButton("All")
+        self.check_layout.addWidget(self.all_gyro_button)
+
+        self.all_gyro_button.setChecked(True)
+
+
+class PalmExtrasADCTabOptions(GenericTabOptions):
+    """
+        Creates the options of filtering and selection for the tab
+    """
+    def __init__(self, tab_name, parent=None):
+        super().__init__(tab_name, parent)
+
+    def create_variable_trace_buttons(self):
+        self.adc0_button = QRadioButton("ADC0")
+        self.check_layout.addWidget(self.adc0_button)
+
+        self.adc1_button = QRadioButton("ADC1")
+        self.check_layout.addWidget(self.adc1_button)
+
+        self.adc2_button = QRadioButton("ADC2")
+        self.check_layout.addWidget(self.adc2_button)
+
+        self.adc3_button = QRadioButton("ADC3")
+        self.check_layout.addWidget(self.adc3_button)
+
+    def create_common_buttons(self):
+        self.all_adc_button = QRadioButton("All")
+        self.check_layout.addWidget(self.all_adc_button)
+
+        self.all_adc_button.setChecked(True)

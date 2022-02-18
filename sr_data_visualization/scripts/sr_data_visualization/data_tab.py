@@ -23,13 +23,29 @@ from PyQt5.QtWidgets import (
 )
 
 from joint_graph_widget import JointGraph
-from data_plot import JointStatesDataPlot, ControlLoopsDataPlot
-from tab_options import JointStatesTabOptions, ControlLoopsTabOptions
+from data_plot import (
+    JointStatesDataPlot,
+    ControlLoopsDataPlot,
+    MotorStats1DataPlot,
+    MotorStats2DataPlot,
+    PalmExtrasAcellDataPlot,
+    PalmExtrasGyroDataPlot,
+    PalmExtrasADCDataPlot
+)
+from tab_options import (
+    JointStatesTabOptions,
+    ControlLoopsTabOptions,
+    MotorStats1TabOptions,
+    MotorStats2TabOptions,
+    PalmExtrasAcellTabOptions,
+    PalmExtrasGyroTabOptions,
+    PalmExtrasADCTabOptions
+)
 
 from sensor_msgs.msg import JointState
 from control_msgs.msg import JointControllerState
 from diagnostic_msgs.msg import DiagnosticArray
-
+from std_msgs.msg import Float64MultiArray
 
 
 class GenericDataTab(QWidget):
@@ -44,8 +60,6 @@ class GenericDataTab(QWidget):
         self.joint_prefix = joint_prefix
         self.init_ui()
         self.create_full_tab()
-        self.optional_button_connections()
-        self.generic_button_connections()
 
     def init_ui(self):
         self.layout = QVBoxLayout(self)
@@ -59,6 +73,9 @@ class GenericDataTab(QWidget):
         self.create_all_graphs()
 
         self.layout.addLayout(self.graphs_layout)
+
+        self.optional_button_connections()
+        self.generic_button_connections()
 
     def create_tab_options(self):
         pass
@@ -76,7 +93,7 @@ class GenericDataTab(QWidget):
 
     def radio_button_selected(self, radio_button):
         for child in self.findChildren(JointGraph):
-            child.joint_plot.turn_off_trace(radio_button)
+            child.joint_plot.show_trace(radio_button)
 
     def check_button_selected(self, selection_type):
         index_to_display = 0
@@ -211,7 +228,7 @@ class ControlLoopsDataTab(GenericDataTab):
         self.tab_options.error_button.toggled.connect(lambda: self.radio_button_selected("Error"))
         self.tab_options.output_button.toggled.connect(lambda: self.radio_button_selected("Output"))
 
-class ControlLoopsDataTab(GenericDataTab):
+class MotorStats1DataTab(GenericDataTab):
     """
         Creates the joint graph widget
     """
@@ -219,7 +236,7 @@ class ControlLoopsDataTab(GenericDataTab):
         super().__init__(tab_name, hand_joints, joint_prefix, parent)
 
     def create_tab_options(self):
-        self.tab_options = ControlLoopsTabOptions(self.tab_name)
+        self.tab_options = MotorStats1TabOptions(self.tab_name)
 
     def create_all_graphs(self):
         joints = {
@@ -261,7 +278,7 @@ class ControlLoopsDataTab(GenericDataTab):
             row = 0
             if joint_names is not None:
                 for joint in joint_names:
-                    topic_name = '/diagnostics'
+                    topic_name = '/diagnostics_agg'
                     topic_type = DiagnosticArray
                     data_plot = MotorStats1DataPlot(joint, topic_name, topic_type)
                     graph = JointGraph(joint, data_plot, row, column)
@@ -274,3 +291,134 @@ class ControlLoopsDataTab(GenericDataTab):
         self.tab_options.pwm_button.toggled.connect(lambda: self.radio_button_selected("Measured PWM"))
         self.tab_options.current_button.toggled.connect(lambda: self.radio_button_selected("Measured Current"))
         self.tab_options.voltage_button.toggled.connect(lambda: self.radio_button_selected("Measured Voltage"))
+
+
+class MotorStats2DataTab(GenericDataTab):
+    """
+        Creates the joint graph widget
+    """
+    def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
+        super().__init__(tab_name, hand_joints, joint_prefix, parent)
+
+    def create_tab_options(self):
+        self.tab_options = MotorStats2TabOptions(self.tab_name)
+
+    def create_all_graphs(self):
+        joints = {
+            0: [],
+            1: [],
+            2: [],
+            3: [],
+            4: [],
+            5: []
+        }
+
+        for joint in self.hand_joints[self.joint_prefix[:-1]]:
+            if "_THJ" in joint:
+                joints[0].append(joint)
+            elif "_FFJ" in joint:
+                if "J1" in joint:
+                    joints[1].append(joint[:-1] + "0")
+                elif "J2" not in joint:
+                    joints[1].append(joint)
+            elif "_MFJ" in joint:
+                if "J1" in joint:
+                    joints[2].append(joint[:-1] + "0")
+                elif "J2" not in joint:
+                    joints[2].append(joint)
+            elif "_RFJ" in joint:
+                if "J1" in joint:
+                    joints[3].append(joint[:-1] + "0")
+                elif "J2" not in joint:
+                    joints[3].append(joint)
+            elif "_LFJ" in joint:
+                if "J1" in joint:
+                    joints[4].append(joint[:-1] + "0")
+                elif "J2" not in joint:
+                    joints[4].append(joint)
+            elif "_WRJ" in joint:
+                joints[5].append(joint)
+
+        for column, joint_names in joints.items():
+            row = 0
+            if joint_names is not None:
+                for joint in joint_names:
+                    topic_name = '/diagnostics_agg'
+                    topic_type = DiagnosticArray
+                    data_plot = MotorStats2DataPlot(joint, topic_name, topic_type)
+                    graph = JointGraph(joint, data_plot, row, column)
+                    self.graphs_layout.addWidget(graph, row, column)
+                    row += 1
+
+    def optional_button_connections(self):
+        self.tab_options.effort_button.toggled.connect(lambda: self.radio_button_selected("Measured Effort"))
+        self.tab_options.temp_button.toggled.connect(lambda: self.radio_button_selected("Temperature"))
+        self.tab_options.unf_position_button.toggled.connect(lambda: self.radio_button_selected("Unfiltered Position"))
+        self.tab_options.unf_force_button.toggled.connect(lambda: self.radio_button_selected("Unfiltered Force"))
+        self.tab_options.last_effort_button.toggled.connect(lambda: self.radio_button_selected("Last Commanded Effort"))
+        self.tab_options.encoder_pos_button.toggled.connect(lambda: self.radio_button_selected("Encoder Position"))
+
+
+class PalmExtrasDataTab(GenericDataTab):
+    """
+        Creates the joint graph widget
+    """
+    def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
+        super().__init__(tab_name, hand_joints, joint_prefix, parent)
+
+    def create_full_tab(self):
+        topic_name = '/rh/palm_extras'
+        topic_type = Float64MultiArray
+
+        self.accel_tab_options = PalmExtrasAcellTabOptions(self.tab_name)
+        self.layout.addWidget(self.accel_tab_options)
+        
+        self.accel_data_plot = PalmExtrasAcellDataPlot("Acceleration", topic_name, topic_type)
+        accel_graph = JointGraph("Acceleration", self.accel_data_plot, 0, 0, check_box=False)
+        self.layout.addWidget(accel_graph)
+
+        self.layout.addStretch(1)
+
+        self.gyro_tab_options = PalmExtrasGyroTabOptions(self.tab_name)
+        self.layout.addWidget(self.gyro_tab_options)
+
+        self.gyro_data_plot = PalmExtrasGyroDataPlot("Gyrometer", topic_name, topic_type)
+        gyro_graph = JointGraph("Gyrometer", self.gyro_data_plot, 1, 0, check_box=False)
+        self.layout.addWidget(gyro_graph)
+
+        self.adc_tab_options = PalmExtrasADCTabOptions(self.tab_name)
+        self.layout.addWidget(self.adc_tab_options)
+
+        self.adc_data_plot = PalmExtrasADCDataPlot("ADC", topic_name, topic_type)
+        adc_graph = JointGraph("ADC", self.adc_data_plot, 1, 0, check_box=False)
+        self.layout.addWidget(adc_graph)
+
+        self.optional_button_connections()
+        self.generic_button_connections()
+
+    def optional_button_connections(self):
+        self.accel_tab_options.accel_x_button.toggled.connect(lambda: self.radio_button_selected("Accel X", "accel"))
+        self.accel_tab_options.accel_y_button.toggled.connect(lambda: self.radio_button_selected("Accel Y", "accel"))
+        self.accel_tab_options.accel_z_button.toggled.connect(lambda: self.radio_button_selected("Accel Z", "accel"))
+
+        self.gyro_tab_options.gyro_x_button.toggled.connect(lambda: self.radio_button_selected("Gyro X", "gyro"))
+        self.gyro_tab_options.gyro_y_button.toggled.connect(lambda: self.radio_button_selected("Gyro Y", "gyro"))
+        self.gyro_tab_options.gyro_z_button.toggled.connect(lambda: self.radio_button_selected("Gyro Z", "gyro"))
+
+        self.adc_tab_options.adc0_button.toggled.connect(lambda: self.radio_button_selected("ADC0", "adc"))
+        self.adc_tab_options.adc1_button.toggled.connect(lambda: self.radio_button_selected("ADC1", "adc"))
+        self.adc_tab_options.adc2_button.toggled.connect(lambda: self.radio_button_selected("ADC2", "adc"))
+        self.adc_tab_options.adc3_button.toggled.connect(lambda: self.radio_button_selected("ADC3", "adc"))
+
+    def generic_button_connections(self):
+        self.accel_tab_options.all_accel_button.toggled.connect(lambda: self.radio_button_selected("All", "accel"))
+        self.gyro_tab_options.all_gyro_button.toggled.connect(lambda: self.radio_button_selected("All", "gyro"))
+        self.adc_tab_options.all_adc_button.toggled.connect(lambda: self.radio_button_selected("All", "adc"))
+
+    def radio_button_selected(self, radio_button, graph):
+        if graph == "accel":
+            self.accel_data_plot.show_trace(radio_button)
+        elif graph == "gyro":
+            self.gyro_data_plot.show_trace(radio_button)
+        elif graph == "adc":
+            self.adc_data_plot.show_trace(radio_button)

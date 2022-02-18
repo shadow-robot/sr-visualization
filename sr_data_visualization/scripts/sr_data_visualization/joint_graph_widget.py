@@ -29,12 +29,19 @@ class JointGraph(QWidget):
     """
         Creates the joint graph widget
     """
-    def __init__(self, joint_name, joint_data_plot, row, column, parent=None):
+    def __init__(self,
+                 joint_name,
+                 joint_data_plot,
+                 row,
+                 column,
+                 parent=None,
+                 check_box=True):
         QWidget.__init__(self, parent=parent)
 
         self.joint_name = joint_name
         self.initial_row = row
         self.initial_column = column
+        self.check_box = check_box
         self.setObjectName(self.joint_name)
         self.init_ui()
         self._create_joint_graph_widget(joint_data_plot)
@@ -44,15 +51,21 @@ class JointGraph(QWidget):
         self.layout.setContentsMargins(0, 0, 0, 0)
 
     def _create_joint_graph_widget(self, joint_data_plot):
-        groupbox = QGroupBox()
-        self.layout.addWidget(groupbox)
-
         self.check_layout = QVBoxLayout()
-        groupbox.setLayout(self.check_layout)
 
-        self.joint_check_box = QCheckBox(self.joint_name)
+        if self.check_box:
+            groupbox = QGroupBox()
+            self.layout.addWidget(groupbox)
+
+            self.joint_check_box = QCheckBox(self.joint_name)
+            self.check_layout.addWidget(self.joint_check_box)
+        else:
+            groupbox = QGroupBox(self.joint_name)
+            self.layout.addWidget(groupbox)
+
         self.joint_plot = joint_data_plot
-        self.check_layout.addWidget(self.joint_check_box)
         self.check_layout.addWidget(self.joint_plot)
+
+        groupbox.setLayout(self.check_layout)
 
         self.setLayout(self.layout)

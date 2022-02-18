@@ -55,8 +55,8 @@ class GenericDataPlot(QwtPlot):
         # Initialize data
         self.x = np.arange(0.0, 100.1, 0.5)
 
-        self.insertLegend(QwtLegend(), QwtPlot.TopLegend)
-        self.setAxisTitle(QwtPlot.xBottom, "Time (seconds)")
+        # self.insertLegend(QwtLegend(), QwtPlot.TopLegend)
+        # self.setAxisTitle(QwtPlot.xBottom, "Time (seconds)")
 
         self.create_traces()
         for trace in self.traces:
@@ -96,7 +96,7 @@ class GenericDataPlot(QwtPlot):
             self.timer.stop()
             self._subscriber.unregister()
 
-    def turn_off_trace(self, trace_name):
+    def show_trace(self, trace_name):
         for trace in self.traces:
             if trace_name == "All" or trace_name == trace.name:
                 trace.plot.attach(self)
@@ -153,6 +153,7 @@ class MotorStats1DataPlot(GenericDataPlot):
     """
     def __init__(self, joint_name, topic_name, topic_type):
         super().__init__(joint_name, topic_name, topic_type)
+        self.joint_name = joint_name
 
     def create_traces(self):
         self.traces = [Trace("Strain Gauge Right", QPen(Qt.red), self.x),
@@ -162,8 +163,116 @@ class MotorStats1DataPlot(GenericDataPlot):
                        Trace("Measured Voltage", QPen(Qt.magenta), self.x)]
 
     def _callback(self, data):
-        self.traces[0].cb_data = data.strain_right
-        self.traces[1].cb_data = data.srain
-        self.traces[2].cb_data = data.process_value_dot
-        self.traces[3].cb_data = data.error
-        self.traces[4].cb_data = data.command
+        for message in data.status:
+            parts = message.name.split('/')
+            if len(parts) == 4:
+                parts = parts[3].split(' ')
+                if len(parts) == 3 and parts[1] == 'SRDMotor':
+                    joint = parts[0] + '_' + parts[2]
+                    if joint in self.joint_name:
+                        for item in message.values:
+                            if item.key == self.traces[0].name:
+                                self.traces[0].cb_data = item.value
+                            elif item.key == self.traces[1].name:
+                                self.traces[1].cb_data = item.value
+                            elif item.key == self.traces[2].name:
+                                self.traces[2].cb_data = item.value
+                            elif item.key == self.traces[3].name:
+                                self.traces[3].cb_data = item.value
+                            elif item.key == self.traces[4].name:
+                                self.traces[4].cb_data = item.value
+
+
+class MotorStats2DataPlot(GenericDataPlot):
+    """
+        Creates the QwtPlot of the data
+    """
+    def __init__(self, joint_name, topic_name, topic_type):
+        super().__init__(joint_name, topic_name, topic_type)
+        self.joint_name = joint_name
+
+    def create_traces(self):
+        self.traces = [Trace("Measured Effort", QPen(Qt.red), self.x),
+                       Trace("Temperature", QPen(Qt.blue), self.x),
+                       Trace("Unfiltered position", QPen(Qt.green), self.x),
+                       Trace("Unfiltered force", QPen(Qt.yellow), self.x),
+                       Trace("Last Commanded Effort", QPen(Qt.magenta), self.x),
+                       Trace("Encoder Position", QPen(Qt.cyan), self.x)]
+
+    def _callback(self, data):
+        for message in data.status:
+            parts = message.name.split('/')
+            if len(parts) == 4:
+                parts = parts[3].split(' ')
+                if len(parts) == 3 and parts[1] == 'SRDMotor':
+                    joint = parts[0] + '_' + parts[2]
+                    if joint in self.joint_name:
+                        for item in message.values:
+                            if item.key == self.traces[0].name:
+                                self.traces[0].cb_data = item.value
+                            elif item.key == self.traces[1].name:
+                                self.traces[1].cb_data = item.value
+                            elif item.key == self.traces[2].name:
+                                self.traces[2].cb_data = item.value
+                            elif item.key == self.traces[3].name:
+                                self.traces[3].cb_data = item.value
+                            elif item.key == self.traces[4].name:
+                                self.traces[4].cb_data = item.value
+                            elif item.key == self.traces[5].name:
+                                self.traces[5].cb_data = item.value
+
+
+class PalmExtrasAcellDataPlot(GenericDataPlot):
+    """
+        Creates the QwtPlot of the data
+    """
+    def __init__(self, joint_name, topic_name, topic_type):
+        super().__init__(joint_name, topic_name, topic_type)
+
+    def create_traces(self):
+        self.traces = [Trace("Accel X", QPen(Qt.red), self.x),
+                       Trace("Accel Y", QPen(Qt.blue), self.x),
+                       Trace("Accel Z", QPen(Qt.green), self.x)]
+
+    def _callback(self, data):
+        self.traces[0].cb_data = data.data[0]
+        self.traces[1].cb_data = data.data[1]
+        self.traces[2].cb_data = data.data[2]
+
+
+class PalmExtrasGyroDataPlot(GenericDataPlot):
+    """
+        Creates the QwtPlot of the data
+    """
+    def __init__(self, joint_name, topic_name, topic_type):
+        super().__init__(joint_name, topic_name, topic_type)
+
+    def create_traces(self):
+        self.traces = [Trace("Gyro X", QPen(Qt.red), self.x),
+                       Trace("Gyro Y", QPen(Qt.blue), self.x),
+                       Trace("Gyro Z", QPen(Qt.green), self.x)]
+
+    def _callback(self, data):
+        self.traces[0].cb_data = data.data[3]
+        self.traces[1].cb_data = data.data[4]
+        self.traces[2].cb_data = data.data[5]
+
+
+class PalmExtrasADCDataPlot(GenericDataPlot):
+    """
+        Creates the QwtPlot of the data
+    """
+    def __init__(self, joint_name, topic_name, topic_type):
+        super().__init__(joint_name, topic_name, topic_type)
+
+    def create_traces(self):
+        self.traces = [Trace("ADC0", QPen(Qt.red), self.x),
+                       Trace("ADC1", QPen(Qt.blue), self.x),
+                       Trace("ADC2", QPen(Qt.green), self.x),
+                       Trace("ADC3", QPen(Qt.yellow), self.x)]
+
+    def _callback(self, data):
+        self.traces[0].cb_data = data.data[6]
+        self.traces[1].cb_data = data.data[7]
+        self.traces[2].cb_data = data.data[8]
+        self.traces[3].cb_data = data.data[9]

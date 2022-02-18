@@ -27,13 +27,18 @@ from PyQt5.QtWidgets import (
 
 from sr_utilities.hand_finder import HandFinder
 
-from data_plot import JointStatesDataPlot, ControlLoopsDataPlot
-from data_tab import JointStatesDataTab, ControlLoopsDataTab
+from data_tab import (
+    GenericDataTab,
+    JointStatesDataTab,
+    ControlLoopsDataTab,
+    MotorStats1DataTab,
+    MotorStats2DataTab,
+    PalmExtrasDataTab
+)
 
 
 class DataVisualizer(QMainWindow):
     TITLE = "Data Visualizer"
-    # SIZE = (500, 500)
 
     def __init__(self):
         super(DataVisualizer, self).__init__()
@@ -61,9 +66,10 @@ class DataVisualizer(QMainWindow):
         self.create_tab("Joint States")
         self.create_tab("Control Loops")
         self.create_tab("Motor Stats 1")
-        # self.create_tab("Motor Stats 2")
+        self.create_tab("Motor Stats 2")
+        self.create_tab("Palm Extras")
 
-        # self.tab_container.currentChanged.connect(self.tab_changed)
+        self.tab_container.currentChanged.connect(self.tab_changed)
 
         # Add tabs to widget
         self.setCentralWidget(self.tab_container)
@@ -75,24 +81,23 @@ class DataVisualizer(QMainWindow):
             self.tab_created = ControlLoopsDataTab(tab_name, self.hand_joints, self.joint_prefix, parent=self)
         elif tab_name == "Motor Stats 1":
             self.tab_created = MotorStats1DataTab(tab_name, self.hand_joints, self.joint_prefix, parent=self)
+        elif tab_name == "Motor Stats 2":
+            self.tab_created = MotorStats2DataTab(tab_name, self.hand_joints, self.joint_prefix, parent=self)
+        elif tab_name == "Palm Extras":
+            self.tab_created = PalmExtrasDataTab(tab_name, self.hand_joints, self.joint_prefix, parent=self)
+
         self.tab_container.addTab(self.tab_created, tab_name)
 
-    # def tab_changed(self,i): #changed!
-    #     print("Current Tab Index: %d" % i )
 
+    #### FIX THIS - BROKEN
     def tab_changed(self, index):
-        tabs = {
-            0: JointStatesDataPlot,
-            1: ControlLoopsDataPlot
-        }
-
-        for tab in range((self.tab_container.count()-1)):
-            graphs = self.tab_container.widget(tab).findChildren(tabs[tab])
+        for tab in range((self.tab_container.count())):
+            graphs = self.tab_container.widget(tab).findChildren(GenericDataTab)
             if tab is not index:
                 for graph in graphs:
                     graph.plot_data(False)
             # else:
-            #     graphs = self.tab_container.widget(tab).findChildren(tabs[tab])
+            #     graphs = self.tab_container.widget(tab).findChildren(GenericDataTab)
             #     for graph in graphs:
             #         graph.plot_data(True)
 
