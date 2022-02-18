@@ -60,7 +60,8 @@ class DataVisualizer(QMainWindow):
         # Create tabs
         self.create_tab("Joint States")
         self.create_tab("Control Loops")
-        # self.create_tab("Motor Stats")
+        self.create_tab("Motor Stats 1")
+        # self.create_tab("Motor Stats 2")
 
         # self.tab_container.currentChanged.connect(self.tab_changed)
 
@@ -72,6 +73,8 @@ class DataVisualizer(QMainWindow):
             self.tab_created = JointStatesDataTab(tab_name, self.hand_joints, self.joint_prefix, parent=self)
         elif tab_name == "Control Loops":
             self.tab_created = ControlLoopsDataTab(tab_name, self.hand_joints, self.joint_prefix, parent=self)
+        elif tab_name == "Motor Stats 1":
+            self.tab_created = MotorStats1DataTab(tab_name, self.hand_joints, self.joint_prefix, parent=self)
         self.tab_container.addTab(self.tab_created, tab_name)
 
     # def tab_changed(self,i): #changed!

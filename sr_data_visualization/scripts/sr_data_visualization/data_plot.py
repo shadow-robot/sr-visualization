@@ -145,3 +145,25 @@ class ControlLoopsDataPlot(GenericDataPlot):
         self.traces[2].cb_data = data.process_value_dot
         self.traces[3].cb_data = data.error
         self.traces[4].cb_data = data.command
+
+
+class MotorStats1DataPlot(GenericDataPlot):
+    """
+        Creates the QwtPlot of the data
+    """
+    def __init__(self, joint_name, topic_name, topic_type):
+        super().__init__(joint_name, topic_name, topic_type)
+
+    def create_traces(self):
+        self.traces = [Trace("Strain Gauge Right", QPen(Qt.red), self.x),
+                       Trace("Strain Gauge Left", QPen(Qt.blue), self.x),
+                       Trace("Measured PWM", QPen(Qt.green), self.x),
+                       Trace("Measured Current", QPen(Qt.yellow), self.x),
+                       Trace("Measured Voltage", QPen(Qt.magenta), self.x)]
+
+    def _callback(self, data):
+        self.traces[0].cb_data = data.strain_right
+        self.traces[1].cb_data = data.srain
+        self.traces[2].cb_data = data.process_value_dot
+        self.traces[3].cb_data = data.error
+        self.traces[4].cb_data = data.command

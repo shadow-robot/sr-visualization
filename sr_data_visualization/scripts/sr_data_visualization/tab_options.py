@@ -118,3 +118,32 @@ class ControlLoopsTabOptions(GenericTabOptions):
         self.output_button = QRadioButton("Output")
         self.output_button.setObjectName("toggle_output")
         self.check_layout.addWidget(self.output_button)
+
+
+class MotorStats1TabOptions(GenericTabOptions):
+    """
+        Creates the options of filtering and selection for the tab
+    """
+    def __init__(self, tab_name, parent=None):
+        super().__init__(tab_name, parent)
+
+    def create_variable_trace_buttons(self):
+        self.strain_right_button = QRadioButton("Strain Gauge Right")
+        # self.strain_right_button.setObjectName("toggle_strain_right")
+        self.check_layout.addWidget(self.strain_right_button)
+
+        self.strain_left_button = QRadioButton("Strain Gauge Left")
+        # self.strain_left_button.setObjectName("toggle_input")
+        self.check_layout.addWidget(self.strain_left_button)
+
+        self.pwm_button = QRadioButton("Measured PWM")
+        # self.pwm_button.setObjectName("toggle_dinputdt")
+        self.check_layout.addWidget(self.pwm_button)
+
+        self.current_button = QRadioButton("Measured Current")
+        # self.current_button.setObjectName("toggle_error")
+        self.check_layout.addWidget(self.current_button)
+
+        self.voltage_button = QRadioButton("Measured Voltage")
+        # self.voltage_button.setObjectName("toggle_output")
+        self.check_layout.addWidget(self.voltage_button)

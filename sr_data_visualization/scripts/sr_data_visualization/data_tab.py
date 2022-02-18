@@ -28,6 +28,8 @@ from tab_options import JointStatesTabOptions, ControlLoopsTabOptions
 
 from sensor_msgs.msg import JointState
 from control_msgs.msg import JointControllerState
+from diagnostic_msgs.msg import DiagnosticArray
+
 
 
 class GenericDataTab(QWidget):
@@ -208,3 +210,67 @@ class ControlLoopsDataTab(GenericDataTab):
         self.tab_options.dinputdt_button.toggled.connect(lambda: self.radio_button_selected("dInput/dt"))
         self.tab_options.error_button.toggled.connect(lambda: self.radio_button_selected("Error"))
         self.tab_options.output_button.toggled.connect(lambda: self.radio_button_selected("Output"))
+
+class ControlLoopsDataTab(GenericDataTab):
+    """
+        Creates the joint graph widget
+    """
+    def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
+        super().__init__(tab_name, hand_joints, joint_prefix, parent)
+
+    def create_tab_options(self):
+        self.tab_options = ControlLoopsTabOptions(self.tab_name)
+
+    def create_all_graphs(self):
+        joints = {
+            0: [],
+            1: [],
+            2: [],
+            3: [],
+            4: [],
+            5: []
+        }
+
+        for joint in self.hand_joints[self.joint_prefix[:-1]]:
+            if "_THJ" in joint:
+                joints[0].append(joint)
+            elif "_FFJ" in joint:
+                if "J1" in joint:
+                    joints[1].append(joint[:-1] + "0")
+                elif "J2" not in joint:
+                    joints[1].append(joint)
+            elif "_MFJ" in joint:
+                if "J1" in joint:
+                    joints[2].append(joint[:-1] + "0")
+                elif "J2" not in joint:
+                    joints[2].append(joint)
+            elif "_RFJ" in joint:
+                if "J1" in joint:
+                    joints[3].append(joint[:-1] + "0")
+                elif "J2" not in joint:
+                    joints[3].append(joint)
+            elif "_LFJ" in joint:
+                if "J1" in joint:
+                    joints[4].append(joint[:-1] + "0")
+                elif "J2" not in joint:
+                    joints[4].append(joint)
+            elif "_WRJ" in joint:
+                joints[5].append(joint)
+
+        for column, joint_names in joints.items():
+            row = 0
+            if joint_names is not None:
+                for joint in joint_names:
+                    topic_name = '/diagnostics'
+                    topic_type = DiagnosticArray
+                    data_plot = MotorStats1DataPlot(joint, topic_name, topic_type)
+                    graph = JointGraph(joint, data_plot, row, column)
+                    self.graphs_layout.addWidget(graph, row, column)
+                    row += 1
+
+    def optional_button_connections(self):
+        self.tab_options.strain_right_button.toggled.connect(lambda: self.radio_button_selected("Strain Gauge Right"))
+        self.tab_options.strain_left_button.toggled.connect(lambda: self.radio_button_selected("Strain Gauge Left"))
+        self.tab_options.pwm_button.toggled.connect(lambda: self.radio_button_selected("Measured PWM"))
+        self.tab_options.current_button.toggled.connect(lambda: self.radio_button_selected("Measured Current"))
+        self.tab_options.voltage_button.toggled.connect(lambda: self.radio_button_selected("Measured Voltage"))
