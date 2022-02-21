@@ -26,16 +26,19 @@ from qwt import (
     QwtLegend,
     QwtPlotCurve,
     QwtAbstractScaleDraw,
+    QwtScaleDraw
 )
 
 
 class Trace():
-    def __init__(self, trace_name, trace_colour, x):
+    def __init__(self, trace_name, trace_colour, x): #, min_val, max_val
         self.name = trace_name
         self.plot = QwtPlotCurve(trace_name)
         self.plot.setPen(trace_colour)
         self.data = np.zeros(len(x), float)
         self.cb_data = 0.0
+        # self.max_val = max_val
+        # self.min_val = min_val
 
 
 class GenericDataPlot(QwtPlot):
@@ -52,11 +55,19 @@ class GenericDataPlot(QwtPlot):
         self.setCanvasBackground(Qt.white)
         self.setMinimumSize(250, 100)
 
+        self.axisScaleDraw(QwtPlot.xBottom).enableComponent(QwtScaleDraw.Labels, False)
+        self.axisScaleDraw(QwtPlot.yLeft).enableComponent(QwtScaleDraw.Labels, False)
+        # self.setAxisScale(QwtPlot.yLeft, -3.0, 3.0)
+
         # Initialize data
         self.x = np.arange(0.0, 100.1, 0.5)
 
         # self.insertLegend(QwtLegend(), QwtPlot.TopLegend)
         # self.setAxisTitle(QwtPlot.xBottom, "Time (seconds)")
+        # self.setAxisScale
+
+        # self.setAxisScale(QwtPlot.yLeft, 0, 1.8,0.5 )
+        # self.setAxisScale(QwtPlot.yLeft, 0, 1000, 0.5 )
 
         self.create_traces()
         for trace in self.traces:
@@ -98,8 +109,13 @@ class GenericDataPlot(QwtPlot):
 
     def show_trace(self, trace_name):
         for trace in self.traces:
-            if trace_name == "All" or trace_name == trace.name:
+            if trace_name == trace.name:
+                self.axisScaleDraw(QwtPlot.yLeft).enableComponent(QwtScaleDraw.Labels, True)
+                # self.plot().setAxisScale(QwtPlot.yLeft, trace.min_val, trace.max_val)
                 trace.plot.attach(self)
+            elif trace_name == "All":
+                trace.plot.attach(self)
+                self.axisScaleDraw(QwtPlot.yLeft).enableComponent(QwtScaleDraw.Labels, False)
             else:
                 trace.plot.detach()
 
@@ -112,9 +128,9 @@ class JointStatesDataPlot(GenericDataPlot):
         super().__init__(joint_name, topic_name, topic_type)
 
     def create_traces(self):
-        self.traces = [Trace("Position", QPen(Qt.red), self.x),
-                       Trace("Effort", QPen(Qt.blue), self.x),
-                       Trace("Velocity", QPen(Qt.green), self.x)]
+        self.traces = [Trace("Position", QPen(Qt.red), self.x), #, -3.14, 3.14
+                       Trace("Effort", QPen(Qt.blue), self.x), # , -3.14, 3.14
+                       Trace("Velocity", QPen(Qt.green), self.x)] # , -600, 600
 
     def _callback(self, data):
         for name, position, velocity, effort in zip(data.name, data.position,

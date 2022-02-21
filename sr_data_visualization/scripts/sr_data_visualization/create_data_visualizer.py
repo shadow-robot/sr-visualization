@@ -36,6 +36,7 @@ from data_tab import (
     PalmExtrasDataTab
 )
 
+from data_plot import GenericDataPlot
 
 class DataVisualizer(QMainWindow):
     TITLE = "Data Visualizer"
@@ -88,18 +89,15 @@ class DataVisualizer(QMainWindow):
 
         self.tab_container.addTab(self.tab_created, tab_name)
 
-
-    #### FIX THIS - BROKEN
     def tab_changed(self, index):
         for tab in range((self.tab_container.count())):
-            graphs = self.tab_container.widget(tab).findChildren(GenericDataTab)
+            graphs = self.tab_container.widget(tab).findChildren(GenericDataPlot)
             if tab is not index:
                 for graph in graphs:
                     graph.plot_data(False)
-            # else:
-            #     graphs = self.tab_container.widget(tab).findChildren(GenericDataTab)
-            #     for graph in graphs:
-            #         graph.plot_data(True)
+            else:
+                for graph in graphs:
+                    graph.plot_data(True)
 
 
 if __name__ == "__main__":

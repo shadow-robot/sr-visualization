@@ -228,6 +228,7 @@ class ControlLoopsDataTab(GenericDataTab):
         self.tab_options.error_button.toggled.connect(lambda: self.radio_button_selected("Error"))
         self.tab_options.output_button.toggled.connect(lambda: self.radio_button_selected("Output"))
 
+
 class MotorStats1DataTab(GenericDataTab):
     """
         Creates the joint graph widget
@@ -372,7 +373,7 @@ class PalmExtrasDataTab(GenericDataTab):
 
         self.accel_tab_options = PalmExtrasAcellTabOptions(self.tab_name)
         self.layout.addWidget(self.accel_tab_options)
-        
+
         self.accel_data_plot = PalmExtrasAcellDataPlot("Acceleration", topic_name, topic_type)
         accel_graph = JointGraph("Acceleration", self.accel_data_plot, 0, 0, check_box=False)
         self.layout.addWidget(accel_graph)
