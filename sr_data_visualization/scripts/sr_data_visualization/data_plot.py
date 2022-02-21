@@ -128,9 +128,9 @@ class JointStatesDataPlot(GenericDataPlot):
         super().__init__(joint_name, topic_name, topic_type)
 
     def create_traces(self):
-        self.traces = [Trace("Position", QPen(Qt.red), self.x), #, -3.14, 3.14
-                       Trace("Effort", QPen(Qt.blue), self.x), # , -3.14, 3.14
-                       Trace("Velocity", QPen(Qt.green), self.x)] # , -600, 600
+        self.traces = [Trace("Position", QPen(Qt.red), self.x),  #, -3.14, 3.14
+                       Trace("Effort", QPen(Qt.blue), self.x),  # , -3.14, 3.14
+                       Trace("Velocity", QPen(Qt.green), self.x)]  # , -600, 600
 
     def _callback(self, data):
         for name, position, velocity, effort in zip(data.name, data.position,

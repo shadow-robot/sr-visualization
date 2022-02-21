@@ -38,6 +38,7 @@ from data_tab import (
 
 from data_plot import GenericDataPlot
 
+
 class DataVisualizer(QMainWindow):
     TITLE = "Data Visualizer"
 
