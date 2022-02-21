@@ -19,13 +19,11 @@ from __future__ import absolute_import
 import numpy as np
 import rospy
 
-from qtpy.QtGui import QPen
-from qtpy.QtCore import Qt, QTimer
+from python_qt_binding.QtGui import QPen
+from python_qt_binding.QtCore import Qt, QTimer
 from qwt import (
     QwtPlot,
-    QwtLegend,
     QwtPlotCurve,
-    QwtAbstractScaleDraw,
     QwtScaleDraw
 )
 

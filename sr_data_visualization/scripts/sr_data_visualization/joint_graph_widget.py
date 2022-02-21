@@ -16,7 +16,7 @@
 
 from __future__ import absolute_import
 
-from PyQt5.QtWidgets import (
+from python_qt_binding.QtWidgets import (
     QWidget,
     QGridLayout,
     QCheckBox,

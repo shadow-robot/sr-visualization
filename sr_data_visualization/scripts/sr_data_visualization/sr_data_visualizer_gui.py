@@ -19,9 +19,9 @@ from __future__ import absolute_import
 import rospy
 import sys
 
-from PyQt5.QtCore import Qt
+from python_qt_binding.QtCore import Qt
 
-from PyQt5.QtWidgets import (
+from python_qt_binding.QtWidgets import (
     QMainWindow,
     QWidget,
     QApplication,
@@ -33,7 +33,7 @@ from PyQt5.QtWidgets import (
 
 from sr_utilities.hand_finder import HandFinder
 
-from data_tab import (
+from sr_data_visualization.data_tab import (
     GenericDataTab,
     JointStatesDataTab,
     ControlLoopsDataTab,
@@ -42,7 +42,7 @@ from data_tab import (
     PalmExtrasDataTab
 )
 
-from data_plot import GenericDataPlot
+from sr_data_visualization.data_plot import GenericDataPlot
 
 
 class SrDataVisualizer(QMainWindow):

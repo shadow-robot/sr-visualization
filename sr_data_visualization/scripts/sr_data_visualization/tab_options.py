@@ -19,9 +19,9 @@ from __future__ import absolute_import
 import os
 import rospkg
 
-from PyQt5.QtGui import QIcon
+from python_qt_binding.QtGui import QIcon
 
-from PyQt5.QtWidgets import (
+from python_qt_binding.QtWidgets import (
     QPushButton,
     QWidget,
     QGridLayout,

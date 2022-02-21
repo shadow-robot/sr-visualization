@@ -16,14 +16,15 @@
 
 from __future__ import absolute_import
 
-from PyQt5.QtWidgets import (
+from python_qt_binding.QtWidgets import (
     QWidget,
     QGridLayout,
     QVBoxLayout,
 )
 
-from joint_graph_widget import JointGraph
-from data_plot import (
+from sr_data_visualization.joint_graph_widget import JointGraph
+
+from sr_data_visualization.data_plot import (
     JointStatesDataPlot,
     ControlLoopsDataPlot,
     MotorStats1DataPlot,
@@ -32,7 +33,7 @@ from data_plot import (
     PalmExtrasGyroDataPlot,
     PalmExtrasADCDataPlot
 )
-from tab_options import (
+from sr_data_visualization.tab_options import (
     JointStatesTabOptions,
     ControlLoopsTabOptions,
     MotorStats1TabOptions,
