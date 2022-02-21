@@ -42,10 +42,12 @@ from sr_data_visualization.data_tab import (
     PalmExtrasDataTab
 )
 
+from qt_gui.plugin import Plugin
+
 from sr_data_visualization.data_plot import GenericDataPlot
 
 
-class SrDataVisualizer(QMainWindow):
+class SrDataVisualizer(Plugin):
     TITLE = "Data Visualizer"
 
     def __init__(self):
@@ -60,7 +62,7 @@ class SrDataVisualizer(QMainWindow):
 
     def init_ui(self):
         title = self.TITLE
-        self.setWindowTitle(title)
+        # self.setWindowTitle(title)
 
         self.widget = QWidget()
         self.widget_layout = QVBoxLayout()
@@ -69,9 +71,9 @@ class SrDataVisualizer(QMainWindow):
         self.init_main_widget()
 
         self.widget.setLayout(self.widget_layout)
-        self.setCentralWidget(self.widget)
+        # self.setCentralWidget(self.widget)
 
-        self.show()
+        # self.show()
 
     def init_main_widget(self):
         # Create info button on the top right of the gui

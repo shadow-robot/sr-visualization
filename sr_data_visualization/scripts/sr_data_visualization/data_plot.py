@@ -21,25 +21,26 @@ import rospy
 
 from python_qt_binding.QtGui import QPen
 from python_qt_binding.QtCore import Qt, QTimer
-from qwt import (
-    QwtPlot,
-    QwtPlotCurve,
-    QwtScaleDraw
-)
+# from Qwt import (
+#     QwtPlot,
+#     QwtPlotCurve,
+#     QwtScaleDraw
+# )
 
+import Qwt
 
 class Trace():
     def __init__(self, trace_name, trace_colour, x_data):
         self.name = trace_name
-        self.plot = QwtPlotCurve(trace_name)
+        self.plot = Qwt.QwtPlotCurve(trace_name)
         self.plot.setPen(trace_colour)
         self.data = np.zeros(len(x_data), float)
         self.cb_data = 0.0
 
 
-class GenericDataPlot(QwtPlot):
+class GenericDataPlot(Qwt.QwtPlot):
     def __init__(self, joint_name, topic_name, topic_type):
-        QwtPlot.__init__(self)
+        Qwt.QwtPlot.__init__(self)
 
         self._joint_name = joint_name
         self.topic_name = topic_name
@@ -48,8 +49,8 @@ class GenericDataPlot(QwtPlot):
         self.setCanvasBackground(Qt.white)
         self.setMinimumSize(250, 100)
 
-        self.axisScaleDraw(QwtPlot.xBottom).enableComponent(QwtScaleDraw.Labels, False)
-        self.axisScaleDraw(QwtPlot.yLeft).enableComponent(QwtScaleDraw.Labels, False)
+        self.axisScaleDraw(Qwt.QwtPlot.xBottom).enableComponent(Qwt.QwtScaleDraw.Labels, False)
+        self.axisScaleDraw(Qwt.QwtPlot.yLeft).enableComponent(Qwt.QwtScaleDraw.Labels, False)
 
         # Initialize data
         self.x_data = np.arange(0.0, 100.1, 0.5)
@@ -95,12 +96,12 @@ class GenericDataPlot(QwtPlot):
     def show_trace(self, trace_name):
         for trace in self.traces:
             if trace_name == trace.name:
-                self.axisScaleDraw(QwtPlot.yLeft).enableComponent(QwtScaleDraw.Labels, True)
-                self.axisAutoScale(QwtPlot.yLeft)
+                self.axisScaleDraw(Qwt.QwtPlot.yLeft).enableComponent(Qwt.QwtScaleDraw.Labels, True)
+                self.axisAutoScale(Qwt.QwtPlot.yLeft)
                 trace.plot.attach(self)
             elif trace_name == "All":
                 trace.plot.attach(self)
-                self.axisScaleDraw(QwtPlot.yLeft).enableComponent(QwtScaleDraw.Labels, False)
+                self.axisScaleDraw(Qwt.QwtPlot.yLeft).enableComponent(Qwt.QwtScaleDraw.Labels, False)
             else:
                 trace.plot.detach()
 
