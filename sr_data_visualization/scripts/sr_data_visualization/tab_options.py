@@ -32,10 +32,6 @@ from PyQt5.QtWidgets import (
 
 
 class GenericTabOptions(QWidget):
-    """
-        Creates the options of filtering and selection for the tab
-    """
-
     def __init__(self, tab_name, parent=None):
         super().__init__(parent=parent)
 
@@ -88,14 +84,11 @@ class GenericTabOptions(QWidget):
 
 
 class JointStatesTabOptions(GenericTabOptions):
-    """
-        Creates the options of filtering and selection for the tab
-    """
     def __init__(self, tab_name, parent=None):
         super().__init__(tab_name, parent)
 
     def create_variable_trace_buttons(self):
-        self.position_button = QRadioButton("Position")
+        self.position_button = QRadioButton("Position (rad)")
         self.position_button.setIcon(self.ICONS['RED'])
         self.check_layout.addWidget(self.position_button)
 
@@ -103,28 +96,25 @@ class JointStatesTabOptions(GenericTabOptions):
         self.effort_button.setIcon(self.ICONS['BLUE'])
         self.check_layout.addWidget(self.effort_button)
 
-        self.velocity_button = QRadioButton("Velocity")
+        self.velocity_button = QRadioButton("Velocity (rad/s)")
         self.velocity_button.setIcon(self.ICONS['GREEN'])
         self.check_layout.addWidget(self.velocity_button)
 
 
 class ControlLoopsTabOptions(GenericTabOptions):
-    """
-        Creates the options of filtering and selection for the tab
-    """
     def __init__(self, tab_name, parent=None):
         super().__init__(tab_name, parent)
 
     def create_variable_trace_buttons(self):
-        self.setpoint_button = QRadioButton("Set Point")
+        self.setpoint_button = QRadioButton("Set Point (rad)")
         self.setpoint_button.setIcon(self.ICONS['RED'])
         self.check_layout.addWidget(self.setpoint_button)
 
-        self.input_button = QRadioButton("Input")
+        self.input_button = QRadioButton("Input (rad)")
         self.input_button.setIcon(self.ICONS['BLUE'])
         self.check_layout.addWidget(self.input_button)
 
-        self.dinputdt_button = QRadioButton("dInput/dt")
+        self.dinputdt_button = QRadioButton("dInput/dt (rad/s)")
         self.dinputdt_button.setIcon(self.ICONS['GREEN'])
         self.check_layout.addWidget(self.dinputdt_button)
 
@@ -138,9 +128,6 @@ class ControlLoopsTabOptions(GenericTabOptions):
 
 
 class MotorStats1TabOptions(GenericTabOptions):
-    """
-        Creates the options of filtering and selection for the tab
-    """
     def __init__(self, tab_name, parent=None):
         super().__init__(tab_name, parent)
 
@@ -157,19 +144,16 @@ class MotorStats1TabOptions(GenericTabOptions):
         self.pwm_button.setIcon(self.ICONS['GREEN'])
         self.check_layout.addWidget(self.pwm_button)
 
-        self.current_button = QRadioButton("Measured Current")
+        self.current_button = QRadioButton("Measured Current (A)")
         self.current_button.setIcon(self.ICONS['YELLOW'])
         self.check_layout.addWidget(self.current_button)
 
-        self.voltage_button = QRadioButton("Measured Voltage")
+        self.voltage_button = QRadioButton("Measured Voltage (V)")
         self.voltage_button.setIcon(self.ICONS['MAGENTA'])
         self.check_layout.addWidget(self.voltage_button)
 
 
 class MotorStats2TabOptions(GenericTabOptions):
-    """
-        Creates the options of filtering and selection for the tab
-    """
     def __init__(self, tab_name, parent=None):
         super().__init__(tab_name, parent)
 
@@ -178,7 +162,7 @@ class MotorStats2TabOptions(GenericTabOptions):
         self.effort_button.setIcon(self.ICONS['RED'])
         self.check_layout.addWidget(self.effort_button)
 
-        self.temp_button = QRadioButton("Temperature")
+        self.temp_button = QRadioButton("Temperature (ºC)")
         self.temp_button.setIcon(self.ICONS['BLUE'])
         self.check_layout.addWidget(self.temp_button)
 
@@ -194,15 +178,12 @@ class MotorStats2TabOptions(GenericTabOptions):
         self.last_effort_button.setIcon(self.ICONS['MAGENTA'])
         self.check_layout.addWidget(self.last_effort_button)
 
-        self.encoder_pos_button = QRadioButton("Encoder Position")
+        self.encoder_pos_button = QRadioButton("Encoder Position (rad)")
         self.encoder_pos_button.setIcon(self.ICONS['CYAN'])
         self.check_layout.addWidget(self.encoder_pos_button)
 
 
 class PalmExtrasAcellTabOptions(GenericTabOptions):
-    """
-        Creates the options of filtering and selection for the tab
-    """
     def __init__(self, tab_name, parent=None):
         super().__init__(tab_name, parent)
 
@@ -227,9 +208,6 @@ class PalmExtrasAcellTabOptions(GenericTabOptions):
 
 
 class PalmExtrasGyroTabOptions(GenericTabOptions):
-    """
-        Creates the options of filtering and selection for the tab
-    """
     def __init__(self, tab_name, parent=None):
         super().__init__(tab_name, parent)
 
@@ -254,9 +232,6 @@ class PalmExtrasGyroTabOptions(GenericTabOptions):
 
 
 class PalmExtrasADCTabOptions(GenericTabOptions):
-    """
-        Creates the options of filtering and selection for the tab
-    """
     def __init__(self, tab_name, parent=None):
         super().__init__(tab_name, parent)
 

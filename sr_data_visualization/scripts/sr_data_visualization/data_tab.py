@@ -49,9 +49,6 @@ from std_msgs.msg import Float64MultiArray
 
 
 class GenericDataTab(QWidget):
-    """
-        Creates the joint graph widget
-    """
     def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
         QWidget.__init__(self, parent=parent)
 
@@ -98,7 +95,7 @@ class GenericDataTab(QWidget):
     def check_button_selected(self, selection_type):
         index_to_display = 0
         max_no_columns = 4
-        # self.temp_layout = QGridLayout()
+
         for child in self.findChildren(JointGraph):
             if selection_type == "Selection":
                 if not child.joint_check_box.isChecked():
@@ -117,9 +114,6 @@ class GenericDataTab(QWidget):
 
 
 class JointStatesDataTab(GenericDataTab):
-    """
-        Creates the joint graph widget
-    """
     def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
         super().__init__(tab_name, hand_joints, joint_prefix, parent)
 
@@ -165,9 +159,6 @@ class JointStatesDataTab(GenericDataTab):
 
 
 class ControlLoopsDataTab(GenericDataTab):
-    """
-        Creates the joint graph widget
-    """
     def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
         super().__init__(tab_name, hand_joints, joint_prefix, parent)
 
@@ -230,9 +221,6 @@ class ControlLoopsDataTab(GenericDataTab):
 
 
 class MotorStats1DataTab(GenericDataTab):
-    """
-        Creates the joint graph widget
-    """
     def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
         super().__init__(tab_name, hand_joints, joint_prefix, parent)
 
@@ -295,9 +283,6 @@ class MotorStats1DataTab(GenericDataTab):
 
 
 class MotorStats2DataTab(GenericDataTab):
-    """
-        Creates the joint graph widget
-    """
     def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
         super().__init__(tab_name, hand_joints, joint_prefix, parent)
 
@@ -361,9 +346,6 @@ class MotorStats2DataTab(GenericDataTab):
 
 
 class PalmExtrasDataTab(GenericDataTab):
-    """
-        Creates the joint graph widget
-    """
     def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
         super().__init__(tab_name, hand_joints, joint_prefix, parent)
 

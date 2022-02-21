@@ -31,20 +31,15 @@ from qwt import (
 
 
 class Trace():
-    def __init__(self, trace_name, trace_colour, x): #, min_val, max_val
+    def __init__(self, trace_name, trace_colour, x_data):
         self.name = trace_name
         self.plot = QwtPlotCurve(trace_name)
         self.plot.setPen(trace_colour)
-        self.data = np.zeros(len(x), float)
+        self.data = np.zeros(len(x_data), float)
         self.cb_data = 0.0
-        # self.max_val = max_val
-        # self.min_val = min_val
 
 
 class GenericDataPlot(QwtPlot):
-    """
-        Creates the QwtPlot of the data
-    """
     def __init__(self, joint_name, topic_name, topic_type):
         QwtPlot.__init__(self)
 
@@ -57,17 +52,9 @@ class GenericDataPlot(QwtPlot):
 
         self.axisScaleDraw(QwtPlot.xBottom).enableComponent(QwtScaleDraw.Labels, False)
         self.axisScaleDraw(QwtPlot.yLeft).enableComponent(QwtScaleDraw.Labels, False)
-        # self.setAxisScale(QwtPlot.yLeft, -3.0, 3.0)
 
         # Initialize data
-        self.x = np.arange(0.0, 100.1, 0.5)
-
-        # self.insertLegend(QwtLegend(), QwtPlot.TopLegend)
-        # self.setAxisTitle(QwtPlot.xBottom, "Time (seconds)")
-        # self.setAxisScale
-
-        # self.setAxisScale(QwtPlot.yLeft, 0, 1.8,0.5 )
-        # self.setAxisScale(QwtPlot.yLeft, 0, 1000, 0.5 )
+        self.x_data = np.arange(0.0, 100.1, 0.5)
 
         self.create_traces()
         for trace in self.traces:
@@ -94,7 +81,7 @@ class GenericDataPlot(QwtPlot):
         for trace in self.traces:
             trace.data = np.concatenate((trace.data[:1], trace.data[:-1]))
             trace.data[0] = trace.cb_data
-            trace.plot.setData(self.x, trace.data)
+            trace.plot.setData(self.x_data, trace.data)
 
         self.replot()
 
@@ -111,7 +98,7 @@ class GenericDataPlot(QwtPlot):
         for trace in self.traces:
             if trace_name == trace.name:
                 self.axisScaleDraw(QwtPlot.yLeft).enableComponent(QwtScaleDraw.Labels, True)
-                # self.plot().setAxisScale(QwtPlot.yLeft, trace.min_val, trace.max_val)
+                self.axisAutoScale(QwtPlot.yLeft)
                 trace.plot.attach(self)
             elif trace_name == "All":
                 trace.plot.attach(self)
@@ -121,16 +108,13 @@ class GenericDataPlot(QwtPlot):
 
 
 class JointStatesDataPlot(GenericDataPlot):
-    """
-        Creates the QwtPlot of the data
-    """
     def __init__(self, joint_name, topic_name, topic_type):
         super().__init__(joint_name, topic_name, topic_type)
 
     def create_traces(self):
-        self.traces = [Trace("Position", QPen(Qt.red), self.x),  #, -3.14, 3.14
-                       Trace("Effort", QPen(Qt.blue), self.x),  # , -3.14, 3.14
-                       Trace("Velocity", QPen(Qt.green), self.x)]  # , -600, 600
+        self.traces = [Trace("Position", QPen(Qt.red), self.x_data),
+                       Trace("Effort", QPen(Qt.blue), self.x_data),
+                       Trace("Velocity", QPen(Qt.green), self.x_data)]
 
     def _callback(self, data):
         for name, position, velocity, effort in zip(data.name, data.position,
@@ -142,18 +126,15 @@ class JointStatesDataPlot(GenericDataPlot):
 
 
 class ControlLoopsDataPlot(GenericDataPlot):
-    """
-        Creates the QwtPlot of the data
-    """
     def __init__(self, joint_name, topic_name, topic_type):
         super().__init__(joint_name, topic_name, topic_type)
 
     def create_traces(self):
-        self.traces = [Trace("Set Point", QPen(Qt.red), self.x),
-                       Trace("Input", QPen(Qt.blue), self.x),
-                       Trace("dInput/dt", QPen(Qt.green), self.x),
-                       Trace("Error", QPen(Qt.yellow), self.x),
-                       Trace("Output", QPen(Qt.magenta), self.x)]
+        self.traces = [Trace("Set Point", QPen(Qt.red), self.x_data),
+                       Trace("Input", QPen(Qt.blue), self.x_data),
+                       Trace("dInput/dt", QPen(Qt.green), self.x_data),
+                       Trace("Error", QPen(Qt.yellow), self.x_data),
+                       Trace("Output", QPen(Qt.magenta), self.x_data)]
 
     def _callback(self, data):
         self.traces[0].cb_data = data.set_point
@@ -164,19 +145,16 @@ class ControlLoopsDataPlot(GenericDataPlot):
 
 
 class MotorStats1DataPlot(GenericDataPlot):
-    """
-        Creates the QwtPlot of the data
-    """
     def __init__(self, joint_name, topic_name, topic_type):
         super().__init__(joint_name, topic_name, topic_type)
         self.joint_name = joint_name
 
     def create_traces(self):
-        self.traces = [Trace("Strain Gauge Right", QPen(Qt.red), self.x),
-                       Trace("Strain Gauge Left", QPen(Qt.blue), self.x),
-                       Trace("Measured PWM", QPen(Qt.green), self.x),
-                       Trace("Measured Current", QPen(Qt.yellow), self.x),
-                       Trace("Measured Voltage", QPen(Qt.magenta), self.x)]
+        self.traces = [Trace("Strain Gauge Right", QPen(Qt.red), self.x_data),
+                       Trace("Strain Gauge Left", QPen(Qt.blue), self.x_data),
+                       Trace("Measured PWM", QPen(Qt.green), self.x_data),
+                       Trace("Measured Current", QPen(Qt.yellow), self.x_data),
+                       Trace("Measured Voltage", QPen(Qt.magenta), self.x_data)]
 
     def _callback(self, data):
         for message in data.status:
@@ -200,20 +178,17 @@ class MotorStats1DataPlot(GenericDataPlot):
 
 
 class MotorStats2DataPlot(GenericDataPlot):
-    """
-        Creates the QwtPlot of the data
-    """
     def __init__(self, joint_name, topic_name, topic_type):
         super().__init__(joint_name, topic_name, topic_type)
         self.joint_name = joint_name
 
     def create_traces(self):
-        self.traces = [Trace("Measured Effort", QPen(Qt.red), self.x),
-                       Trace("Temperature", QPen(Qt.blue), self.x),
-                       Trace("Unfiltered position", QPen(Qt.green), self.x),
-                       Trace("Unfiltered force", QPen(Qt.yellow), self.x),
-                       Trace("Last Commanded Effort", QPen(Qt.magenta), self.x),
-                       Trace("Encoder Position", QPen(Qt.cyan), self.x)]
+        self.traces = [Trace("Measured Effort", QPen(Qt.red), self.x_data),
+                       Trace("Temperature", QPen(Qt.blue), self.x_data),
+                       Trace("Unfiltered position", QPen(Qt.green), self.x_data),
+                       Trace("Unfiltered force", QPen(Qt.yellow), self.x_data),
+                       Trace("Last Commanded Effort", QPen(Qt.magenta), self.x_data),
+                       Trace("Encoder Position", QPen(Qt.cyan), self.x_data)]
 
     def _callback(self, data):
         for message in data.status:
@@ -239,16 +214,13 @@ class MotorStats2DataPlot(GenericDataPlot):
 
 
 class PalmExtrasAcellDataPlot(GenericDataPlot):
-    """
-        Creates the QwtPlot of the data
-    """
     def __init__(self, joint_name, topic_name, topic_type):
         super().__init__(joint_name, topic_name, topic_type)
 
     def create_traces(self):
-        self.traces = [Trace("Accel X", QPen(Qt.red), self.x),
-                       Trace("Accel Y", QPen(Qt.blue), self.x),
-                       Trace("Accel Z", QPen(Qt.green), self.x)]
+        self.traces = [Trace("Accel X", QPen(Qt.red), self.x_data),
+                       Trace("Accel Y", QPen(Qt.blue), self.x_data),
+                       Trace("Accel Z", QPen(Qt.green), self.x_data)]
 
     def _callback(self, data):
         self.traces[0].cb_data = data.data[0]
@@ -257,16 +229,13 @@ class PalmExtrasAcellDataPlot(GenericDataPlot):
 
 
 class PalmExtrasGyroDataPlot(GenericDataPlot):
-    """
-        Creates the QwtPlot of the data
-    """
     def __init__(self, joint_name, topic_name, topic_type):
         super().__init__(joint_name, topic_name, topic_type)
 
     def create_traces(self):
-        self.traces = [Trace("Gyro X", QPen(Qt.red), self.x),
-                       Trace("Gyro Y", QPen(Qt.blue), self.x),
-                       Trace("Gyro Z", QPen(Qt.green), self.x)]
+        self.traces = [Trace("Gyro X", QPen(Qt.red), self.x_data),
+                       Trace("Gyro Y", QPen(Qt.blue), self.x_data),
+                       Trace("Gyro Z", QPen(Qt.green), self.x_data)]
 
     def _callback(self, data):
         self.traces[0].cb_data = data.data[3]
@@ -275,17 +244,14 @@ class PalmExtrasGyroDataPlot(GenericDataPlot):
 
 
 class PalmExtrasADCDataPlot(GenericDataPlot):
-    """
-        Creates the QwtPlot of the data
-    """
     def __init__(self, joint_name, topic_name, topic_type):
         super().__init__(joint_name, topic_name, topic_type)
 
     def create_traces(self):
-        self.traces = [Trace("ADC0", QPen(Qt.red), self.x),
-                       Trace("ADC1", QPen(Qt.blue), self.x),
-                       Trace("ADC2", QPen(Qt.green), self.x),
-                       Trace("ADC3", QPen(Qt.yellow), self.x)]
+        self.traces = [Trace("ADC0", QPen(Qt.red), self.x_data),
+                       Trace("ADC1", QPen(Qt.blue), self.x_data),
+                       Trace("ADC2", QPen(Qt.green), self.x_data),
+                       Trace("ADC3", QPen(Qt.yellow), self.x_data)]
 
     def _callback(self, data):
         self.traces[0].cb_data = data.data[6]
