@@ -138,6 +138,7 @@ class SrDataVisualizer(QMainWindow):
         msg.setStandardButtons(QMessageBox.Ok)
         msg.exec_()
 
+
 if __name__ == "__main__":
     rospy.init_node('trial_plots', anonymous=True)
 
