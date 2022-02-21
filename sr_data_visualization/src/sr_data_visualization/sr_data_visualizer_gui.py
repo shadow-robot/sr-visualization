@@ -139,9 +139,9 @@ class SrDataVisualizer(Plugin):
                   "The check buttons next to each graph name allows you to show the graphs you select " + \
                   "in larger detail by checking the boxes of the graphs you want to see and clicking " + \
                   "“Show Selected”. To return to the full graph view click “Reset”.\n\n" + \
-                  "NOTE: The more graphs that are on show on the data visualizer will be slower and can be unreadable. " + \
-                  "To be able to see a full scaled view of a specific data type, toggle the correct radio button and " + \
-                  "check the graphs you want to see clearer."
+                  "NOTE: The more graphs that are on show on the data visualizer will be slower and " +  \
+                  "can be unreadable. To be able to see a full scaled view of a specific data type, " + \
+                  "toggle the correct radio button and check the graphs you want to see clearer."
         msg = QMessageBox()
         msg.setWindowTitle("Information")
         msg.setIcon(QMessageBox().Information)
