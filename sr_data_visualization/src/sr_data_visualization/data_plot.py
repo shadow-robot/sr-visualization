@@ -28,6 +28,7 @@ from qwt import (
     QwtScaleDraw
 )
 
+
 class Trace():
     def __init__(self, trace_name, trace_colour, x_data):
         self.name = trace_name

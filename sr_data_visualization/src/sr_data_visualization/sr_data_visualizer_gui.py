@@ -80,8 +80,7 @@ class SrDataVisualizer(Plugin):
     def init_main_widget(self):
         # Create info button on the top right of the gui
         self.information_btn = QPushButton("Info")
-        self.layout.addWidget(self.information_btn,
-                               alignment=Qt.AlignRight)
+        self.layout.addWidget(self.information_btn, alignment=Qt.AlignRight)
 
         # Initialize tabs
         self.tab_container = QTabWidget()
@@ -99,15 +98,20 @@ class SrDataVisualizer(Plugin):
 
     def create_tab(self, tab_name):
         if tab_name == "Joint States":
-            self.tab_created = JointStatesDataTab(tab_name, self.hand_joints, self.joint_prefix, parent=self.tab_container)
+            self.tab_created = JointStatesDataTab(tab_name, self.hand_joints,
+                                                  self.joint_prefix, parent=self.tab_container)
         elif tab_name == "Control Loops":
-            self.tab_created = ControlLoopsDataTab(tab_name, self.hand_joints, self.joint_prefix, parent=self.tab_container)
+            self.tab_created = ControlLoopsDataTab(tab_name, self.hand_joints,
+                                                   self.joint_prefix, parent=self.tab_container)
         elif tab_name == "Motor Stats 1":
-            self.tab_created = MotorStats1DataTab(tab_name, self.hand_joints, self.joint_prefix, parent=self.tab_container)
+            self.tab_created = MotorStats1DataTab(tab_name, self.hand_joints,
+                                                  self.joint_prefix, parent=self.tab_container)
         elif tab_name == "Motor Stats 2":
-            self.tab_created = MotorStats2DataTab(tab_name, self.hand_joints, self.joint_prefix, parent=self.tab_container)
+            self.tab_created = MotorStats2DataTab(tab_name, self.hand_joints,
+                                                  self.joint_prefix, parent=self.tab_container)
         elif tab_name == "Palm Extras":
-            self.tab_created = PalmExtrasDataTab(tab_name, self.hand_joints, self.joint_prefix, parent=self.tab_container)
+            self.tab_created = PalmExtrasDataTab(tab_name, self.hand_joints,
+                                                 self.joint_prefix, parent=self.tab_container)
 
         self.tab_container.addTab(self.tab_created, tab_name)
 
@@ -147,6 +151,7 @@ class SrDataVisualizer(Plugin):
             graphs = self.tab_container.widget(tab).findChildren(GenericDataPlot)
             for graph in graphs:
                 graph.plot_data(False)
+
 
 if __name__ == "__main__":
     rospy.init_node("sr_data_visualizer")
