@@ -75,7 +75,7 @@ class SrDataVisualizer(Plugin):
         self._widget.setLayout(self.layout)
 
         if __name__ != "__main__":
-            context.add_widget(self._widget)
+            self.context.add_widget(self._widget)
 
     def init_main_widget(self):
         # Create info button on the top right of the gui
@@ -138,7 +138,10 @@ class SrDataVisualizer(Plugin):
                   "“All” to see several graphs being displayed at the same time.\n\n" + \
                   "The check buttons next to each graph name allows you to show the graphs you select " + \
                   "in larger detail by checking the boxes of the graphs you want to see and clicking " + \
-                  "“Show Selected”. To return to the full graph view click “Reset”."
+                  "“Show Selected”. To return to the full graph view click “Reset”.\n\n" + \
+                  "NOTE: The more graphs that are on show on the data visualizer will be slower and can be unreadable. " + \
+                  "To be able to see a full scaled view of a specific data type, toggle the correct radio button and " + \
+                  "check the graphs you want to see clearer."
         msg = QMessageBox()
         msg.setWindowTitle("Information")
         msg.setIcon(QMessageBox().Information)
