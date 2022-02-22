@@ -117,11 +117,11 @@ class SrDataVisualizer(Plugin):
             self.tab_created = PalmExtrasAccelDataTab(tab_name, self.hand_joints,
                                                       self.joint_prefix, parent=self.tab_container)
         elif tab_name == "Palm Gyrometer":
-            self.tab_created = PalmGyrometerDataTab(tab_name, self.hand_joints,
-                                                    self.joint_prefix, parent=self.tab_container)
+            self.tab_created = PalmExtrasGyroDataTab(tab_name, self.hand_joints,
+                                                     self.joint_prefix, parent=self.tab_container)
         elif tab_name == "Palm ADC":
-            self.tab_created = PalmADCDataTab(tab_name, self.hand_joints,
-                                              self.joint_prefix, parent=self.tab_container)
+            self.tab_created = PalmExtrasADCDataTab(tab_name, self.hand_joints,
+                                                    self.joint_prefix, parent=self.tab_container)
 
         self.tab_container.addTab(self.tab_created, tab_name)
 
