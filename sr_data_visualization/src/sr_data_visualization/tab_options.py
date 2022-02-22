@@ -186,6 +186,7 @@ class MotorStats2TabOptions(GenericTabOptions):
 class PalmExtrasAcellTabOptions(GenericTabOptions):
     def __init__(self, tab_name, parent=None):
         super().__init__(tab_name, parent)
+        print("here2")
 
     def create_variable_trace_buttons(self):
         self.accel_x_button = QRadioButton("Accel X")

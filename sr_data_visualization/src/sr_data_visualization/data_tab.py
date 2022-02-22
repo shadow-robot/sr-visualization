@@ -349,11 +349,13 @@ class MotorStats2DataTab(GenericDataTab):
 class PalmExtrasAccelDataTab(GenericDataTab):
     def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
         super().__init__(tab_name, hand_joints, joint_prefix, parent)
+        print("here3")
 
     def create_tab_options(self):
+        print("here")
         self.tab_options = PalmExtrasAcellTabOptions(self.tab_name)
 
-    def create_full_tab(self):
+    def create_all_graphs(self):
         topic_name = '/rh/palm_extras'
         topic_type = Float64MultiArray
 
@@ -374,7 +376,7 @@ class PalmExtrasGyroDataTab(GenericDataTab):
     def create_tab_options(self):
         self.tab_options = PalmExtrasGyroTabOptions(self.tab_name)
 
-    def create_full_tab(self):
+    def create_all_graphs(self):
         topic_name = '/rh/palm_extras'
         topic_type = Float64MultiArray
 
@@ -396,7 +398,7 @@ class PalmExtrasADCDataTab(GenericDataTab):
     def create_tab_options(self):
         self.tab_options =  PalmExtrasADCTabOptions(self.tab_name)
 
-    def create_full_tab(self):
+    def create_all_graphs(self):
         topic_name = '/rh/palm_extras'
         topic_type = Float64MultiArray
 
@@ -404,9 +406,8 @@ class PalmExtrasADCDataTab(GenericDataTab):
         adc_graph = JointGraph("ADC", self.adc_data_plot, 1, 0, check_box=False)
         self.layout.addWidget(adc_graph)
 
-
     def optional_button_connections(self):
-        self.tab_options.adc0_button.toggled.connect(lambda: self.radio_button_selected("ADC0", "adc"))
-        self.tab_options.adc1_button.toggled.connect(lambda: self.radio_button_selected("ADC1", "adc"))
-        self.tab_options.adc2_button.toggled.connect(lambda: self.radio_button_selected("ADC2", "adc"))
-        self.tab_options.adc3_button.toggled.connect(lambda: self.radio_button_selected("ADC3", "adc"))
+        self.tab_options.adc0_button.toggled.connect(lambda: self.radio_button_selected("ADC0"))
+        self.tab_options.adc1_button.toggled.connect(lambda: self.radio_button_selected("ADC1"))
+        self.tab_options.adc2_button.toggled.connect(lambda: self.radio_button_selected("ADC2"))
+        self.tab_options.adc3_button.toggled.connect(lambda: self.radio_button_selected("ADC3"))
