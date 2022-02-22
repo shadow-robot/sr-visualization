@@ -47,7 +47,7 @@ class GenericDataPlot(QwtPlot):
         self.topic_type = topic_type
 
         self.setCanvasBackground(Qt.white)
-        self.setMinimumSize(250, 100)
+        self.setMinimumSize(150, 50)
 
         self.axisScaleDraw(QwtPlot.xBottom).enableComponent(QwtScaleDraw.Labels, False)
         self.axisScaleDraw(QwtPlot.yLeft).enableComponent(QwtScaleDraw.Labels, False)
