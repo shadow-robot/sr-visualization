@@ -232,9 +232,9 @@ class PalmExtrasGyroDataPlot(GenericDataPlot):
         super().__init__(joint_name, topic_name, topic_type)
 
     def create_traces(self):
-        self.traces = [Trace("Gyro X", QPen(Qt.red), self.x_data),
-                       Trace("Gyro Y", QPen(Qt.blue), self.x_data),
-                       Trace("Gyro Z", QPen(Qt.green), self.x_data)]
+        self.traces = [Trace("Gyro X", QPen(Qt.yellow), self.x_data),
+                       Trace("Gyro Y", QPen(Qt.magenta), self.x_data),
+                       Trace("Gyro Z", QPen(Qt.cyan), self.x_data)]
 
     def _callback(self, data):
         self.traces[0].cb_data = data.data[3]
