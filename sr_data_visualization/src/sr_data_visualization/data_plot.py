@@ -57,16 +57,12 @@ class GenericDataPlot(QwtPlot):
         self.x_data = np.arange(0.0, 100.1, 0.5)
 
         self.create_traces()
-
-        for trace in self.traces:
-            trace.plot.attach(self)
-
-        self._subscriber = rospy.Subscriber(self._topic_name, self._topic_type, self._callback, queue_size=1)
-
         self.initialize_and_start_timer()
 
-        if not start_plotting:
-            self.plot_data(False)
+        self._subscriber = None
+        if start_plotting:
+            self.plot_data(True)
+
 
     def create_traces(self):
         raise NotImplementedError("The function create_traces must be implemented")
