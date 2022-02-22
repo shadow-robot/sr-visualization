@@ -200,12 +200,6 @@ class PalmExtrasAcellTabOptions(GenericTabOptions):
         self.accel_z_button.setIcon(self.ICONS['GREEN'])
         self.check_layout.addWidget(self.accel_z_button)
 
-    def create_common_buttons(self):
-        self.all_accel_button = QRadioButton("All")
-        self.check_layout.addWidget(self.all_accel_button)
-
-        self.all_accel_button.setChecked(True)
-
 
 class PalmExtrasGyroTabOptions(GenericTabOptions):
     def __init__(self, tab_name, parent=None):
@@ -223,12 +217,6 @@ class PalmExtrasGyroTabOptions(GenericTabOptions):
         self.gyro_z_button = QRadioButton("Gyro Z")
         self.gyro_z_button.setIcon(self.ICONS['CYAN'])
         self.check_layout.addWidget(self.gyro_z_button)
-
-    def create_common_buttons(self):
-        self.all_gyro_button = QRadioButton("All")
-        self.check_layout.addWidget(self.all_gyro_button)
-
-        self.all_gyro_button.setChecked(True)
 
 
 class PalmExtrasADCTabOptions(GenericTabOptions):
@@ -251,9 +239,3 @@ class PalmExtrasADCTabOptions(GenericTabOptions):
         self.adc3_button = QRadioButton("ADC3")
         self.adc3_button.setIcon(self.ICONS['YELLOW'])
         self.check_layout.addWidget(self.adc3_button)
-
-    def create_common_buttons(self):
-        self.all_adc_button = QRadioButton("All")
-        self.check_layout.addWidget(self.all_adc_button)
-
-        self.all_adc_button.setChecked(True)

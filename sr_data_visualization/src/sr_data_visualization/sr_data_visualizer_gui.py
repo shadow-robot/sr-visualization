@@ -38,7 +38,9 @@ from sr_data_visualization.data_tab import (
     ControlLoopsDataTab,
     MotorStats1DataTab,
     MotorStats2DataTab,
-    PalmExtrasDataTab
+    PalmExtrasAccelDataTab,
+    PalmExtrasGyroDataTab,
+    PalmExtrasADCDataTab
 )
 
 from rqt_gui_py.plugin import Plugin
@@ -91,7 +93,9 @@ class SrDataVisualizer(Plugin):
         self.create_tab("Control Loops")
         self.create_tab("Motor Stats 1")
         self.create_tab("Motor Stats 2")
-        self.create_tab("Palm Extras")
+        self.create_tab("Palm Acceleration")
+        self.create_tab("Palm Gyrometer")
+        self.create_tab("Palm ADC")
 
         self.tab_container.currentChanged.connect(self.tab_changed)
         self.information_btn.clicked.connect(self.display_information)
@@ -109,9 +113,15 @@ class SrDataVisualizer(Plugin):
         elif tab_name == "Motor Stats 2":
             self.tab_created = MotorStats2DataTab(tab_name, self.hand_joints,
                                                   self.joint_prefix, parent=self.tab_container)
-        elif tab_name == "Palm Extras":
-            self.tab_created = PalmExtrasDataTab(tab_name, self.hand_joints,
-                                                 self.joint_prefix, parent=self.tab_container)
+        elif tab_name == "Palm Acceleration":
+            self.tab_created = PalmExtrasAccelDataTab(tab_name, self.hand_joints,
+                                                      self.joint_prefix, parent=self.tab_container)
+        elif tab_name == "Palm Gyrometer":
+            self.tab_created = PalmGyrometerDataTab(tab_name, self.hand_joints,
+                                                    self.joint_prefix, parent=self.tab_container)
+        elif tab_name == "Palm ADC":
+            self.tab_created = PalmADCDataTab(tab_name, self.hand_joints,
+                                              self.joint_prefix, parent=self.tab_container)
 
         self.tab_container.addTab(self.tab_created, tab_name)
 

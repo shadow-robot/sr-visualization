@@ -346,63 +346,67 @@ class MotorStats2DataTab(GenericDataTab):
         self.tab_options.encoder_pos_button.toggled.connect(lambda: self.radio_button_selected("Encoder Position"))
 
 
-class PalmExtrasDataTab(GenericDataTab):
+class PalmExtrasAccelDataTab(GenericDataTab):
     def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
         super().__init__(tab_name, hand_joints, joint_prefix, parent)
+
+    def create_tab_options(self):
+        self.tab_options = PalmExtrasAcellTabOptions(self.tab_name)
 
     def create_full_tab(self):
         topic_name = '/rh/palm_extras'
         topic_type = Float64MultiArray
 
-        self.accel_tab_options = PalmExtrasAcellTabOptions(self.tab_name)
-        self.layout.addWidget(self.accel_tab_options)
-
         self.accel_data_plot = PalmExtrasAcellDataPlot("Acceleration", topic_name, topic_type)
         accel_graph = JointGraph("Acceleration", self.accel_data_plot, 0, 0, check_box=False)
         self.layout.addWidget(accel_graph)
 
-        self.layout.addStretch(1)
+    def optional_button_connections(self):
+        self.tab_options.accel_x_button.toggled.connect(lambda: self.radio_button_selected("Accel X"))
+        self.tab_options.accel_y_button.toggled.connect(lambda: self.radio_button_selected("Accel Y"))
+        self.tab_options.accel_z_button.toggled.connect(lambda: self.radio_button_selected("Accel Z"))
 
-        self.gyro_tab_options = PalmExtrasGyroTabOptions(self.tab_name)
-        self.layout.addWidget(self.gyro_tab_options)
+
+class PalmExtrasGyroDataTab(GenericDataTab):
+    def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
+        super().__init__(tab_name, hand_joints, joint_prefix, parent)
+
+    def create_tab_options(self):
+        self.tab_options = PalmExtrasGyroTabOptions(self.tab_name)
+
+    def create_full_tab(self):
+        topic_name = '/rh/palm_extras'
+        topic_type = Float64MultiArray
 
         self.gyro_data_plot = PalmExtrasGyroDataPlot("Gyrometer", topic_name, topic_type)
         gyro_graph = JointGraph("Gyrometer", self.gyro_data_plot, 1, 0, check_box=False)
         self.layout.addWidget(gyro_graph)
 
-        self.adc_tab_options = PalmExtrasADCTabOptions(self.tab_name)
-        self.layout.addWidget(self.adc_tab_options)
+
+    def optional_button_connections(self):
+        self.tab_options.gyro_x_button.toggled.connect(lambda: self.radio_button_selected("Gyro X"))
+        self.tab_options.gyro_y_button.toggled.connect(lambda: self.radio_button_selected("Gyro Y"))
+        self.tab_options.gyro_z_button.toggled.connect(lambda: self.radio_button_selected("Gyro Z"))
+
+
+class PalmExtrasADCDataTab(GenericDataTab):
+    def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
+        super().__init__(tab_name, hand_joints, joint_prefix, parent)
+
+    def create_tab_options(self):
+        self.tab_options =  PalmExtrasADCTabOptions(self.tab_name)
+
+    def create_full_tab(self):
+        topic_name = '/rh/palm_extras'
+        topic_type = Float64MultiArray
 
         self.adc_data_plot = PalmExtrasADCDataPlot("ADC", topic_name, topic_type)
         adc_graph = JointGraph("ADC", self.adc_data_plot, 1, 0, check_box=False)
         self.layout.addWidget(adc_graph)
 
-        self.optional_button_connections()
-        self.generic_button_connections()
 
     def optional_button_connections(self):
-        self.accel_tab_options.accel_x_button.toggled.connect(lambda: self.radio_button_selected("Accel X", "accel"))
-        self.accel_tab_options.accel_y_button.toggled.connect(lambda: self.radio_button_selected("Accel Y", "accel"))
-        self.accel_tab_options.accel_z_button.toggled.connect(lambda: self.radio_button_selected("Accel Z", "accel"))
-
-        self.gyro_tab_options.gyro_x_button.toggled.connect(lambda: self.radio_button_selected("Gyro X", "gyro"))
-        self.gyro_tab_options.gyro_y_button.toggled.connect(lambda: self.radio_button_selected("Gyro Y", "gyro"))
-        self.gyro_tab_options.gyro_z_button.toggled.connect(lambda: self.radio_button_selected("Gyro Z", "gyro"))
-
-        self.adc_tab_options.adc0_button.toggled.connect(lambda: self.radio_button_selected("ADC0", "adc"))
-        self.adc_tab_options.adc1_button.toggled.connect(lambda: self.radio_button_selected("ADC1", "adc"))
-        self.adc_tab_options.adc2_button.toggled.connect(lambda: self.radio_button_selected("ADC2", "adc"))
-        self.adc_tab_options.adc3_button.toggled.connect(lambda: self.radio_button_selected("ADC3", "adc"))
-
-    def generic_button_connections(self):
-        self.accel_tab_options.all_accel_button.toggled.connect(lambda: self.radio_button_selected("All", "accel"))
-        self.gyro_tab_options.all_gyro_button.toggled.connect(lambda: self.radio_button_selected("All", "gyro"))
-        self.adc_tab_options.all_adc_button.toggled.connect(lambda: self.radio_button_selected("All", "adc"))
-
-    def radio_button_selected(self, radio_button, graph):
-        if graph == "accel":
-            self.accel_data_plot.show_trace(radio_button)
-        elif graph == "gyro":
-            self.gyro_data_plot.show_trace(radio_button)
-        elif graph == "adc":
-            self.adc_data_plot.show_trace(radio_button)
+        self.tab_options.adc0_button.toggled.connect(lambda: self.radio_button_selected("ADC0", "adc"))
+        self.tab_options.adc1_button.toggled.connect(lambda: self.radio_button_selected("ADC1", "adc"))
+        self.tab_options.adc2_button.toggled.connect(lambda: self.radio_button_selected("ADC2", "adc"))
+        self.tab_options.adc3_button.toggled.connect(lambda: self.radio_button_selected("ADC3", "adc"))
