@@ -68,14 +68,14 @@ class SrDataVisualizer(Plugin):
         self._widget.setObjectName(self.TITLE)
         self._widget.setWindowTitle(self.TITLE)
 
-        self.create_main_widget()
+        self.fill_layout()
 
         self._widget.setLayout(self.layout)
 
         if __name__ != "__main__":
             self.context.add_widget(self._widget)
 
-    def create_main_widget(self):
+    def fill_layout(self):
         # Create info button on the top right of the gui
         self.information_btn = QPushButton("Info")
         self.layout.addWidget(self.information_btn, alignment=Qt.AlignRight)

@@ -149,7 +149,7 @@ class MotorStatsGenericDataPlot(GenericDataPlot):
 
     def _callback(self, data):
         for message in data.status:
-            # Splits the name into parts e.g. 
+            # Splits the name into parts e.g.
             # name: "/Right Shadow Hand/Wrist/rh SRDMotor WRJ2"
             # parts = ['', 'Right Shadow Hand', 'Wrist', 'rh SRDMotor WRJ2']
             parts = message.name.split('/')

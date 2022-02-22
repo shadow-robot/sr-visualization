@@ -210,6 +210,7 @@ class MotorGroupsDataTab(GenericDataTab):
 
         self.layout.addLayout(self.graphs_layout)
 
+
 class ControlLoopsDataTab(MotorGroupsDataTab):
     def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
         super().__init__(tab_name, hand_joints, joint_prefix, parent)
