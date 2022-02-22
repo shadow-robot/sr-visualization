@@ -39,12 +39,13 @@ class Trace():
 
 
 class GenericDataPlot(QwtPlot):
-    def __init__(self, joint_name, topic_name, topic_type):
+    def __init__(self, joint_name, topic_name, topic_type, start_plotting=False):
         super().__init__()
 
         self.joint_name = joint_name
         self._topic_name = topic_name
         self._topic_type = topic_type
+
 
         self.setCanvasBackground(Qt.white)
         self.setMinimumSize(150, 50)
@@ -56,12 +57,16 @@ class GenericDataPlot(QwtPlot):
         self.x_data = np.arange(0.0, 100.1, 0.5)
 
         self.create_traces()
+
         for trace in self.traces:
             trace.plot.attach(self)
 
         self._subscriber = rospy.Subscriber(self._topic_name, self._topic_type, self._callback, queue_size=1)
 
         self.initialize_and_start_timer()
+
+        if not start_plotting:
+            self.plot_data(False)
 
     def create_traces(self):
         raise NotImplementedError("The function create_traces must be implemented")
@@ -108,7 +113,7 @@ class GenericDataPlot(QwtPlot):
 
 class JointStatesDataPlot(GenericDataPlot):
     def __init__(self, joint_name, topic_name, topic_type):
-        super().__init__(joint_name, topic_name, topic_type)
+        super().__init__(joint_name, topic_name, topic_type, start_plotting=True)
 
     def create_traces(self):
         self.traces = [Trace("Position", Qt.red, self.x_data),
