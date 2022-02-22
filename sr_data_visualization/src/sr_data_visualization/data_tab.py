@@ -384,7 +384,6 @@ class PalmExtrasGyroDataTab(GenericDataTab):
         gyro_graph = JointGraph("Gyrometer", self.gyro_data_plot, 1, 0, check_box=False)
         self.layout.addWidget(gyro_graph)
 
-
     def optional_button_connections(self):
         self.tab_options.gyro_x_button.toggled.connect(lambda: self.radio_button_selected("Gyro X"))
         self.tab_options.gyro_y_button.toggled.connect(lambda: self.radio_button_selected("Gyro Y"))
@@ -396,7 +395,7 @@ class PalmExtrasADCDataTab(GenericDataTab):
         super().__init__(tab_name, hand_joints, joint_prefix, parent)
 
     def create_tab_options(self):
-        self.tab_options =  PalmExtrasADCTabOptions(self.tab_name)
+        self.tab_options = PalmExtrasADCTabOptions(self.tab_name)
 
     def create_all_graphs(self):
         topic_name = '/rh/palm_extras'
