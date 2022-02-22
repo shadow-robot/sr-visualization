@@ -65,7 +65,7 @@ class GenericTabOptions(QWidget):
         self.create_common_buttons()
 
     def create_variable_trace_buttons(self):
-        pass
+        raise NotImplementedError("The function create_variable_trace_buttons must be implemented")
 
     def create_common_buttons(self):
         self.all_button = QRadioButton("All")

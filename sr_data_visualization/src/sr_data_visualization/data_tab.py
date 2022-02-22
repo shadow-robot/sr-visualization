@@ -50,6 +50,8 @@ from std_msgs.msg import Float64MultiArray
 
 
 class GenericDataTab(QWidget):
+    MAX_NO_COLUMNS = 4
+
     def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
         QWidget.__init__(self, parent=parent)
 
@@ -65,24 +67,21 @@ class GenericDataTab(QWidget):
 
     def create_full_tab(self):
         self.create_tab_options()
-        self.layout.addWidget(self.tab_options)
 
         self.graphs_layout = QGridLayout()
         self.create_all_graphs()
-
-        self.layout.addLayout(self.graphs_layout)
 
         self.optional_button_connections()
         self.generic_button_connections()
 
     def create_tab_options(self):
-        pass
+        raise NotImplementedError("The function create_tab_options must be implemented")
 
     def create_all_graphs(self):
-        pass
+        raise NotImplementedError("The function create_all_graphs must be implemented")
 
     def optional_button_connections(self):
-        pass
+        raise NotImplementedError("The function optional_button_connections must be implemented")
 
     def generic_button_connections(self):
         self.tab_options.all_button.toggled.connect(lambda: self.radio_button_selected("All"))
@@ -95,16 +94,14 @@ class GenericDataTab(QWidget):
 
     def check_button_selected(self, selection_type):
         index_to_display = 0
-        max_no_columns = 4
-
         for child in self.findChildren(JointGraph):
             if selection_type == "Selection":
                 if not child.joint_check_box.isChecked():
                     child.hide()
                 else:
                     self.graphs_layout.addWidget(child,
-                                                 index_to_display // max_no_columns,
-                                                 index_to_display % max_no_columns)
+                                                 index_to_display // self.MAX_NO_COLUMNS,
+                                                 index_to_display % self.MAX_NO_COLUMNS)
                     index_to_display += 1
             elif selection_type == "All":
                 if child.joint_check_box.isChecked():
@@ -120,6 +117,7 @@ class JointStatesDataTab(GenericDataTab):
 
     def create_tab_options(self):
         self.tab_options = JointStatesTabOptions(self.tab_name)
+        self.layout.addWidget(self.tab_options)
 
     def create_all_graphs(self):
         joints = {
@@ -131,6 +129,7 @@ class JointStatesDataTab(GenericDataTab):
             5: []
         }
 
+        # Removing _ from self.joint_prefix (e.g. _ from rh_)
         for joint in self.hand_joints[self.joint_prefix[:-1]]:
             if "_THJ" in joint:
                 joints[0].append(joint)
@@ -153,19 +152,15 @@ class JointStatesDataTab(GenericDataTab):
                 self.graphs_layout.addWidget(graph, row, column)
                 row += 1
 
+        self.layout.addLayout(self.graphs_layout)
+
     def optional_button_connections(self):
         self.tab_options.position_button.toggled.connect(lambda: self.radio_button_selected("Position"))
         self.tab_options.velocity_button.toggled.connect(lambda: self.radio_button_selected("Velocity"))
         self.tab_options.effort_button.toggled.connect(lambda: self.radio_button_selected("Effort"))
 
 
-class ControlLoopsDataTab(GenericDataTab):
-    def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
-        super().__init__(tab_name, hand_joints, joint_prefix, parent)
-
-    def create_tab_options(self):
-        self.tab_options = ControlLoopsTabOptions(self.tab_name)
-
+class MotorGroupsDataTab(GenericDataTab):
     def create_all_graphs(self):
         joints = {
             0: [],
@@ -213,6 +208,16 @@ class ControlLoopsDataTab(GenericDataTab):
                     self.graphs_layout.addWidget(graph, row, column)
                     row += 1
 
+        self.layout.addLayout(self.graphs_layout)
+
+class ControlLoopsDataTab(MotorGroupsDataTab):
+    def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
+        super().__init__(tab_name, hand_joints, joint_prefix, parent)
+
+    def create_tab_options(self):
+        self.tab_options = ControlLoopsTabOptions(self.tab_name)
+        self.layout.addWidget(self.tab_options)
+
     def optional_button_connections(self):
         self.tab_options.setpoint_button.toggled.connect(lambda: self.radio_button_selected("Set Point"))
         self.tab_options.input_button.toggled.connect(lambda: self.radio_button_selected("Input"))
@@ -221,59 +226,13 @@ class ControlLoopsDataTab(GenericDataTab):
         self.tab_options.output_button.toggled.connect(lambda: self.radio_button_selected("Output"))
 
 
-class MotorStats1DataTab(GenericDataTab):
+class MotorStats1DataTab(MotorGroupsDataTab):
     def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
         super().__init__(tab_name, hand_joints, joint_prefix, parent)
 
     def create_tab_options(self):
         self.tab_options = MotorStats1TabOptions(self.tab_name)
-
-    def create_all_graphs(self):
-        joints = {
-            0: [],
-            1: [],
-            2: [],
-            3: [],
-            4: [],
-            5: []
-        }
-
-        for joint in self.hand_joints[self.joint_prefix[:-1]]:
-            if "_THJ" in joint:
-                joints[0].append(joint)
-            elif "_FFJ" in joint:
-                if "J1" in joint:
-                    joints[1].append(joint[:-1] + "0")
-                elif "J2" not in joint:
-                    joints[1].append(joint)
-            elif "_MFJ" in joint:
-                if "J1" in joint:
-                    joints[2].append(joint[:-1] + "0")
-                elif "J2" not in joint:
-                    joints[2].append(joint)
-            elif "_RFJ" in joint:
-                if "J1" in joint:
-                    joints[3].append(joint[:-1] + "0")
-                elif "J2" not in joint:
-                    joints[3].append(joint)
-            elif "_LFJ" in joint:
-                if "J1" in joint:
-                    joints[4].append(joint[:-1] + "0")
-                elif "J2" not in joint:
-                    joints[4].append(joint)
-            elif "_WRJ" in joint:
-                joints[5].append(joint)
-
-        for column, joint_names in joints.items():
-            row = 0
-            if joint_names is not None:
-                for joint in joint_names:
-                    topic_name = '/diagnostics_agg'
-                    topic_type = DiagnosticArray
-                    data_plot = MotorStats1DataPlot(joint, topic_name, topic_type)
-                    graph = JointGraph(joint, data_plot, row, column)
-                    self.graphs_layout.addWidget(graph, row, column)
-                    row += 1
+        self.layout.addWidget(self.tab_options)
 
     def optional_button_connections(self):
         self.tab_options.strain_right_button.toggled.connect(lambda: self.radio_button_selected("Strain Gauge Right"))
@@ -283,59 +242,13 @@ class MotorStats1DataTab(GenericDataTab):
         self.tab_options.voltage_button.toggled.connect(lambda: self.radio_button_selected("Measured Voltage"))
 
 
-class MotorStats2DataTab(GenericDataTab):
+class MotorStats2DataTab(MotorGroupsDataTab):
     def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
         super().__init__(tab_name, hand_joints, joint_prefix, parent)
 
     def create_tab_options(self):
         self.tab_options = MotorStats2TabOptions(self.tab_name)
-
-    def create_all_graphs(self):
-        joints = {
-            0: [],
-            1: [],
-            2: [],
-            3: [],
-            4: [],
-            5: []
-        }
-
-        for joint in self.hand_joints[self.joint_prefix[:-1]]:
-            if "_THJ" in joint:
-                joints[0].append(joint)
-            elif "_FFJ" in joint:
-                if "J1" in joint:
-                    joints[1].append(joint[:-1] + "0")
-                elif "J2" not in joint:
-                    joints[1].append(joint)
-            elif "_MFJ" in joint:
-                if "J1" in joint:
-                    joints[2].append(joint[:-1] + "0")
-                elif "J2" not in joint:
-                    joints[2].append(joint)
-            elif "_RFJ" in joint:
-                if "J1" in joint:
-                    joints[3].append(joint[:-1] + "0")
-                elif "J2" not in joint:
-                    joints[3].append(joint)
-            elif "_LFJ" in joint:
-                if "J1" in joint:
-                    joints[4].append(joint[:-1] + "0")
-                elif "J2" not in joint:
-                    joints[4].append(joint)
-            elif "_WRJ" in joint:
-                joints[5].append(joint)
-
-        for column, joint_names in joints.items():
-            row = 0
-            if joint_names is not None:
-                for joint in joint_names:
-                    topic_name = '/diagnostics_agg'
-                    topic_type = DiagnosticArray
-                    data_plot = MotorStats2DataPlot(joint, topic_name, topic_type)
-                    graph = JointGraph(joint, data_plot, row, column)
-                    self.graphs_layout.addWidget(graph, row, column)
-                    row += 1
+        self.layout.addWidget(self.tab_options)
 
     def optional_button_connections(self):
         self.tab_options.effort_button.toggled.connect(lambda: self.radio_button_selected("Measured Effort"))

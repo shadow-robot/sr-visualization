@@ -50,7 +50,7 @@ class SrDataVisualizer(Plugin):
     TITLE = "Data Visualizer"
 
     def __init__(self, context):
-        super(SrDataVisualizer, self).__init__(context)
+        super().__init__(context)
 
         self.context = context
 
@@ -62,22 +62,20 @@ class SrDataVisualizer(Plugin):
         self.init_ui()
 
     def init_ui(self):
-        title = self.TITLE
-
         self._widget = QWidget()
         self.layout = QVBoxLayout()
         self.layout.setContentsMargins(0, 0, 0, 0)
-        self._widget.setObjectName(title)
-        self._widget.setWindowTitle(title)
+        self._widget.setObjectName(self.TITLE)
+        self._widget.setWindowTitle(self.TITLE)
 
-        self.init_main_widget()
+        self.create_main_widget()
 
         self._widget.setLayout(self.layout)
 
         if __name__ != "__main__":
             self.context.add_widget(self._widget)
 
-    def init_main_widget(self):
+    def create_main_widget(self):
         # Create info button on the top right of the gui
         self.information_btn = QPushButton("Info")
         self.layout.addWidget(self.information_btn, alignment=Qt.AlignRight)
@@ -116,7 +114,7 @@ class SrDataVisualizer(Plugin):
         self.tab_container.addTab(self.tab_created, tab_name)
 
     def tab_changed(self, index):
-        for tab in range((self.tab_container.count())):
+        for tab in range(self.tab_container.count()):
             graphs = self.tab_container.widget(tab).findChildren(GenericDataPlot)
             if tab is not index:
                 for graph in graphs:
@@ -150,7 +148,7 @@ class SrDataVisualizer(Plugin):
         msg.exec_()
 
     def shutdown_plugin(self):
-        for tab in range((self.tab_container.count())):
+        for tab in range(self.tab_container.count()):
             graphs = self.tab_container.widget(tab).findChildren(GenericDataPlot)
             for graph in graphs:
                 graph.plot_data(False)

@@ -36,7 +36,7 @@ class JointGraph(QWidget):
                  column,
                  parent=None,
                  check_box=True):
-        QWidget.__init__(self, parent=parent)
+        super().__init__(parent=parent)
 
         self.joint_name = joint_name
         self.initial_row = row
