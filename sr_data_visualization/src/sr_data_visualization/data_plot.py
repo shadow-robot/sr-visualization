@@ -168,7 +168,6 @@ class MotorStatsGenericDataPlot(GenericDataPlot):
                         for item in message.values:
                             for trace in range(len(self.traces)):
                                 if item.key == self.traces[trace].name:
-                                    print(str(item.key) + ": " + str(item.value))
                                     self.traces[trace].latest_value = item.value
 
 
