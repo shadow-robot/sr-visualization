@@ -39,10 +39,9 @@ class Trace():
 
 
 class GenericDataPlot(QwtPlot):
+    GRAPH_MINW = 150
+    GRAPH_MINH = 50
     def __init__(self, joint_name, topic_name, topic_type, start_plotting=False):
-        GRAPH_MINW = 150
-        GRAPH_MINH = 50
-
         super().__init__()
 
         self.joint_name = joint_name
