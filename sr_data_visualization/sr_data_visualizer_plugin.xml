@@ -1,4 +1,4 @@
-<library path="scripts">
+<library path="src">
   <class name="Dexterous Hand Data Visualizer" type="sr_data_visualization.sr_data_visualizer_gui.SrDataVisualizer" base_class_type="rqt_gui_py::Plugin">
     <description>
       A plugin for visualising data from the Dexterous Hand

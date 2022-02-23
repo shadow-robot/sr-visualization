@@ -2,6 +2,17 @@
 
 This is a package to graphically display data coming out of the Dexterous Hand. 
 
+In each tab, you can find information about:
+
+- Joint states (position, effort, velocity)
+- Control loops (setpoint, input, dinput/dt, output, error)
+- Motor stats (Strain Gauge Left, Strain Gauge Right, Measured PWM, Measured Current, Measured Voltage, Measured Effort, Temperature, Unfiltered position, Unfiltered force, Last Commanded Effort, Encoder Position)
+- Palm extras (Accelerometer, Gyro-meter, Analog inputs)
+
+The radio buttons let you choose specific data to show or you can choose “All” to see several graphs being displayed at the same time.
+
+The check buttons next to each graph name allows you to show the graphs you select in larger detail by checking the boxes of the graphs you want to see and clicking “Show Selected”. To return to the full graph view click “Reset”.
+
 ## How to use it
 
 
@@ -18,27 +29,11 @@ rqt
 
 and go to Plugins -> Shadow Robot -> Dexterous Hand Data Visualizer.
 
-## Configuration 
 
-Inside the `config` folder you will find a file called `data_visualiser_parameters.yaml`. From this file you can change parameters such as:
+## Requirement
 
-* Data ranges
-* Units displayed on graph legends
-* Remap topics
-* Font sizes
-* Line colours
+To be able to use this gui you must have installed pyqwt:
 
-## Testing 
-
-This package includes a script to fetch a bag file for testing purposes, allowing the gui to be used without having a physical or simulated hand running or connected. 
-
-To fetch this bag file, run:
-``` 
-rosrun sr_data_visualization download_testing_bag.py 
 ```
-Once this program has finished, launch the gui (and the bag file) with:
+sudo apt install python3-qwt
 ```
-roslaunch sr_data_visualization data_visualizer_testing.launch
-```
-
-
