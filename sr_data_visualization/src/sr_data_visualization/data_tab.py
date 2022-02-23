@@ -161,6 +161,9 @@ class JointStatesDataTab(GenericDataTab):
 
 
 class MotorGroupsDataTab(GenericDataTab):
+    def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
+        super().__init__(tab_name, hand_joints, joint_prefix, parent)
+
     def create_all_graphs(self):
         joints = {
             0: [],
@@ -201,9 +204,17 @@ class MotorGroupsDataTab(GenericDataTab):
             row = 0
             if joint_names is not None:
                 for joint in joint_names:
-                    topic_name = '/sh_' + joint.lower() + '_position_controller/state'
-                    topic_type = JointControllerState
-                    data_plot = ControlLoopsDataPlot(joint, topic_name, topic_type)
+                    control_topic_name = '/sh_' + joint.lower() + '_position_controller/state'
+                    motor_topic_name = '/diagnostics_agg'
+                    if self.tab_name == "Control Loops":
+                        data_plot = ControlLoopsDataPlot(joint, control_topic_name,
+                                                         JointControllerState)
+                    elif self.tab_name == "Motor Stats 1":
+                        data_plot = MotorStats1DataPlot(joint, motor_topic_name,
+                                                        DiagnosticArray)
+                    elif self.tab_name== "Motor Stats 2":
+                        data_plot = MotorStats2DataPlot(joint, motor_topic_name,
+                                                        DiagnosticArray)
                     graph = JointGraph(joint, data_plot, row, column)
                     self.graphs_layout.addWidget(graph, row, column)
                     row += 1

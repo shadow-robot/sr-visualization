@@ -46,7 +46,6 @@ class GenericDataPlot(QwtPlot):
         self._topic_name = topic_name
         self._topic_type = topic_type
 
-
         self.setCanvasBackground(Qt.white)
         self.setMinimumSize(150, 50)
 
@@ -57,18 +56,22 @@ class GenericDataPlot(QwtPlot):
         self.x_data = np.arange(0.0, 100.1, 0.5)
 
         self.create_traces()
+        for trace in self.traces:
+            trace.plot.attach(self)
+
+        self._subscriber = rospy.Subscriber(self._topic_name, self._topic_type,
+                                            self.callback, queue_size=1)
+
         self.initialize_and_start_timer()
 
-        self._subscriber = None
-        if start_plotting:
-            self.plot_data(True)
-
+        if not start_plotting:
+            self.plot_data(False)
 
     def create_traces(self):
         raise NotImplementedError("The function create_traces must be implemented")
 
-    def _callback(self, data):
-        raise NotImplementedError("The function _callback must be implemented")
+    def callback(self, data):
+        raise NotImplementedError("The function callback must be implemented")
 
     def initialize_and_start_timer(self):
         self.timer = QTimer(self)
@@ -88,7 +91,7 @@ class GenericDataPlot(QwtPlot):
     def plot_data(self, plot):
         if plot:
             self._subscriber = rospy.Subscriber(self._topic_name, self._topic_type,
-                                                self._callback, queue_size=1)
+                                                self.callback, queue_size=1)
             self.timer.start()
         else:
             self._subscriber.unregister()
@@ -116,7 +119,7 @@ class JointStatesDataPlot(GenericDataPlot):
                        Trace("Effort", Qt.blue, self.x_data),
                        Trace("Velocity", Qt.green, self.x_data)]
 
-    def _callback(self, data):
+    def callback(self, data):
         for name, position, velocity, effort in zip(data.name, data.position,
                                                     data.velocity, data.effort):
             if name == self.joint_name:
@@ -136,7 +139,7 @@ class ControlLoopsDataPlot(GenericDataPlot):
                        Trace("Error", Qt.yellow, self.x_data),
                        Trace("Output", Qt.magenta, self.x_data)]
 
-    def _callback(self, data):
+    def callback(self, data):
         self.traces[0].latest_value = data.set_point
         self.traces[1].latest_value = data.process_value
         self.traces[2].latest_value = data.process_value_dot
@@ -148,7 +151,7 @@ class MotorStatsGenericDataPlot(GenericDataPlot):
     def __init__(self, joint_name, topic_name, topic_type):
         super().__init__(joint_name, topic_name, topic_type)
 
-    def _callback(self, data):
+    def callback(self, data):
         for message in data.status:
             # Splits the name into parts e.g.
             # name: "/Right Shadow Hand/Wrist/rh SRDMotor WRJ2"
@@ -157,12 +160,15 @@ class MotorStatsGenericDataPlot(GenericDataPlot):
             if len(parts) == 4:
                 # Splits the 4th part into words & decides if it is a Motor
                 parts = parts[3].split(' ')
+                # Find SRDMotor part andthen use this to locate
+                # the values for the specific joint
                 if len(parts) == 3 and parts[1] == 'SRDMotor':
                     joint = parts[0] + '_' + parts[2]
                     if joint in self.joint_name:
                         for item in message.values:
                             for trace in range(len(self.traces)):
                                 if item.key == self.traces[trace].name:
+                                    print(str(item.key) + ": " + str(item.value))
                                     self.traces[trace].latest_value = item.value
 
 
@@ -200,7 +206,7 @@ class PalmExtrasAcellDataPlot(GenericDataPlot):
                        Trace("Accel Y", Qt.blue, self.x_data),
                        Trace("Accel Z", Qt.green, self.x_data)]
 
-    def _callback(self, data):
+    def callback(self, data):
         self.traces[0].latest_value = data.data[0]
         self.traces[1].latest_value = data.data[1]
         self.traces[2].latest_value = data.data[2]
@@ -215,7 +221,7 @@ class PalmExtrasGyroDataPlot(GenericDataPlot):
                        Trace("Gyro Y", Qt.magenta, self.x_data),
                        Trace("Gyro Z", Qt.cyan, self.x_data)]
 
-    def _callback(self, data):
+    def callback(self, data):
         self.traces[0].latest_value = data.data[3]
         self.traces[1].latest_value = data.data[4]
         self.traces[2].latest_value = data.data[5]
@@ -231,7 +237,7 @@ class PalmExtrasADCDataPlot(GenericDataPlot):
                        Trace("ADC2", Qt.green, self.x_data),
                        Trace("ADC3", Qt.yellow, self.x_data)]
 
-    def _callback(self, data):
+    def callback(self, data):
         self.traces[0].latest_value = data.data[6]
         self.traces[1].latest_value = data.data[7]
         self.traces[2].latest_value = data.data[8]
