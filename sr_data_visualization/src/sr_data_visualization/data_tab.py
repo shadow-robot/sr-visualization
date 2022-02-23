@@ -212,7 +212,7 @@ class MotorGroupsDataTab(GenericDataTab):
                     elif self.tab_name == "Motor Stats 1":
                         data_plot = MotorStats1DataPlot(joint, motor_topic_name,
                                                         DiagnosticArray)
-                    elif self.tab_name== "Motor Stats 2":
+                    elif self.tab_name == "Motor Stats 2":
                         data_plot = MotorStats2DataPlot(joint, motor_topic_name,
                                                         DiagnosticArray)
                     graph = JointGraph(joint, data_plot, row, column)
