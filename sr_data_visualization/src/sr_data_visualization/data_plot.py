@@ -40,6 +40,9 @@ class Trace():
 
 class GenericDataPlot(QwtPlot):
     def __init__(self, joint_name, topic_name, topic_type, start_plotting=False):
+        GRAPH_MINW = 150
+        GRAPH_MINH = 50
+
         super().__init__()
 
         self.joint_name = joint_name
@@ -47,7 +50,7 @@ class GenericDataPlot(QwtPlot):
         self._topic_type = topic_type
 
         self.setCanvasBackground(Qt.white)
-        self.setMinimumSize(150, 50)
+        self.setMinimumSize(self.GRAPH_MINW, self.GRAPH_MINH)
 
         self.axisScaleDraw(QwtPlot.xBottom).enableComponent(QwtScaleDraw.Labels, False)
         self.axisScaleDraw(QwtPlot.yLeft).enableComponent(QwtScaleDraw.Labels, False)
@@ -66,9 +69,6 @@ class GenericDataPlot(QwtPlot):
                                                 self.callback, queue_size=1)
 
             self.initialize_and_start_timer()
-
-        # if not start_plotting:
-        #     self.plot_data(False)
 
     def create_traces(self):
         raise NotImplementedError("The function create_traces must be implemented")
@@ -99,10 +99,9 @@ class GenericDataPlot(QwtPlot):
                 self.initialize_and_start_timer()
             else:
                 self.timer.start()
-        else:
-            if self._subscriber is not None:
-                self._subscriber.unregister()
-                self.timer.stop()
+        elif self._subscriber is not None:
+            self._subscriber.unregister()
+            self.timer.stop()
 
     def show_trace(self, trace_name):
         for trace in self.traces:
