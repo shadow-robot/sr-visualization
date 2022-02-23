@@ -59,13 +59,16 @@ class GenericDataPlot(QwtPlot):
         for trace in self.traces:
             trace.plot.attach(self)
 
-        self._subscriber = rospy.Subscriber(self._topic_name, self._topic_type,
+        self._subscriber = None
+        self.timer = None
+        if start_plotting:
+            self._subscriber = rospy.Subscriber(self._topic_name, self._topic_type,
                                             self.callback, queue_size=1)
 
-        self.initialize_and_start_timer()
+            self.initialize_and_start_timer()
 
-        if not start_plotting:
-            self.plot_data(False)
+        # if not start_plotting:
+        #     self.plot_data(False)
 
     def create_traces(self):
         raise NotImplementedError("The function create_traces must be implemented")
@@ -92,10 +95,14 @@ class GenericDataPlot(QwtPlot):
         if plot:
             self._subscriber = rospy.Subscriber(self._topic_name, self._topic_type,
                                                 self.callback, queue_size=1)
-            self.timer.start()
+            if self.timer is None:
+                self.initialize_and_start_timer()
+            else:
+                self.timer.start()
         else:
-            self._subscriber.unregister()
-            self.timer.stop()
+            if self._subscriber is not None:
+                self._subscriber.unregister()
+                self.timer.stop()
 
     def show_trace(self, trace_name):
         for trace in self.traces:
@@ -136,7 +143,7 @@ class ControlLoopsDataPlot(GenericDataPlot):
         self.traces = [Trace("Set Point", Qt.red, self.x_data),
                        Trace("Input", Qt.blue, self.x_data),
                        Trace("dInput/dt", Qt.green, self.x_data),
-                       Trace("Error", Qt.yellow, self.x_data),
+                       Trace("Error", Qt.cyan, self.x_data),
                        Trace("Output", Qt.magenta, self.x_data)]
 
     def callback(self, data):
@@ -179,7 +186,7 @@ class MotorStats1DataPlot(MotorStatsGenericDataPlot):
         self.traces = [Trace("Strain Gauge Right", Qt.red, self.x_data),
                        Trace("Strain Gauge Left", Qt.blue, self.x_data),
                        Trace("Measured PWM", Qt.green, self.x_data),
-                       Trace("Measured Current", Qt.yellow, self.x_data),
+                       Trace("Measured Current", Qt.cyan, self.x_data),
                        Trace("Measured Voltage", Qt.magenta, self.x_data)]
 
 
@@ -191,9 +198,9 @@ class MotorStats2DataPlot(MotorStatsGenericDataPlot):
         self.traces = [Trace("Measured Effort", Qt.red, self.x_data),
                        Trace("Temperature", Qt.blue, self.x_data),
                        Trace("Unfiltered position", Qt.green, self.x_data),
-                       Trace("Unfiltered force", Qt.yellow, self.x_data),
+                       Trace("Unfiltered force", Qt.cyan, self.x_data),
                        Trace("Last Commanded Effort", Qt.magenta, self.x_data),
-                       Trace("Encoder Position", Qt.cyan, self.x_data)]
+                       Trace("Encoder Position", Qt.gray, self.x_data)]
 
 
 class PalmExtrasAcellDataPlot(GenericDataPlot):
@@ -216,9 +223,9 @@ class PalmExtrasGyroDataPlot(GenericDataPlot):
         super().__init__(joint_name, topic_name, topic_type)
 
     def create_traces(self):
-        self.traces = [Trace("Gyro X", Qt.yellow, self.x_data),
+        self.traces = [Trace("Gyro X", Qt.cyan, self.x_data),
                        Trace("Gyro Y", Qt.magenta, self.x_data),
-                       Trace("Gyro Z", Qt.cyan, self.x_data)]
+                       Trace("Gyro Z", Qt.gray, self.x_data)]
 
     def callback(self, data):
         self.traces[0].latest_value = data.data[3]
@@ -234,7 +241,7 @@ class PalmExtrasADCDataPlot(GenericDataPlot):
         self.traces = [Trace("ADC0", Qt.red, self.x_data),
                        Trace("ADC1", Qt.blue, self.x_data),
                        Trace("ADC2", Qt.green, self.x_data),
-                       Trace("ADC3", Qt.yellow, self.x_data)]
+                       Trace("ADC3", Qt.cyan, self.x_data)]
 
     def callback(self, data):
         self.traces[0].latest_value = data.data[6]

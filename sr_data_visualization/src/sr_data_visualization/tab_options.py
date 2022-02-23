@@ -42,7 +42,7 @@ class GenericTabOptions(QWidget):
             'RED': QIcon(os.path.join(ICON_DIR, 'red.png')),
             'BLUE': QIcon(os.path.join(ICON_DIR, 'blue.png')),
             'MAGENTA': QIcon(os.path.join(ICON_DIR, 'magenta.png')),
-            'YELLOW': QIcon(os.path.join(ICON_DIR, 'yellow.png')),
+            'GRAY': QIcon(os.path.join(ICON_DIR, 'gray.png')),
             'CYAN': QIcon(os.path.join(ICON_DIR, 'cyan.png'))
         }
 
@@ -119,7 +119,7 @@ class ControlLoopsTabOptions(GenericTabOptions):
         self.check_layout.addWidget(self.dinputdt_button)
 
         self.error_button = QRadioButton("Error")
-        self.error_button.setIcon(self.ICONS['YELLOW'])
+        self.error_button.setIcon(self.ICONS['CYAN'])
         self.check_layout.addWidget(self.error_button)
 
         self.output_button = QRadioButton("Output")
@@ -145,7 +145,7 @@ class MotorStats1TabOptions(GenericTabOptions):
         self.check_layout.addWidget(self.pwm_button)
 
         self.current_button = QRadioButton("Measured Current (A)")
-        self.current_button.setIcon(self.ICONS['YELLOW'])
+        self.current_button.setIcon(self.ICONS['CYAN'])
         self.check_layout.addWidget(self.current_button)
 
         self.voltage_button = QRadioButton("Measured Voltage (V)")
@@ -171,7 +171,7 @@ class MotorStats2TabOptions(GenericTabOptions):
         self.check_layout.addWidget(self.unf_position_button)
 
         self.unf_force_button = QRadioButton("Unfiltered Force")
-        self.unf_force_button.setIcon(self.ICONS['YELLOW'])
+        self.unf_force_button.setIcon(self.ICONS['CYAN'])
         self.check_layout.addWidget(self.unf_force_button)
 
         self.last_effort_button = QRadioButton("Last Commanded Effort")
@@ -179,7 +179,7 @@ class MotorStats2TabOptions(GenericTabOptions):
         self.check_layout.addWidget(self.last_effort_button)
 
         self.encoder_pos_button = QRadioButton("Encoder Position (rad)")
-        self.encoder_pos_button.setIcon(self.ICONS['CYAN'])
+        self.encoder_pos_button.setIcon(self.ICONS['GRAY'])
         self.check_layout.addWidget(self.encoder_pos_button)
 
 
@@ -213,7 +213,7 @@ class PalmExtrasGyroTabOptions(GenericTabOptions):
 
     def create_variable_trace_buttons(self):
         self.gyro_x_button = QRadioButton("Gyro X")
-        self.gyro_x_button.setIcon(self.ICONS['YELLOW'])
+        self.gyro_x_button.setIcon(self.ICONS['CYAN'])
         self.check_layout.addWidget(self.gyro_x_button)
 
         self.gyro_y_button = QRadioButton("Gyro Y")
@@ -221,7 +221,7 @@ class PalmExtrasGyroTabOptions(GenericTabOptions):
         self.check_layout.addWidget(self.gyro_y_button)
 
         self.gyro_z_button = QRadioButton("Gyro Z")
-        self.gyro_z_button.setIcon(self.ICONS['CYAN'])
+        self.gyro_z_button.setIcon(self.ICONS['GRAY'])
         self.check_layout.addWidget(self.gyro_z_button)
 
     def create_common_buttons(self):
@@ -249,7 +249,7 @@ class PalmExtrasADCTabOptions(GenericTabOptions):
         self.check_layout.addWidget(self.adc2_button)
 
         self.adc3_button = QRadioButton("ADC3")
-        self.adc3_button.setIcon(self.ICONS['YELLOW'])
+        self.adc3_button.setIcon(self.ICONS['CYAN'])
         self.check_layout.addWidget(self.adc3_button)
 
     def create_common_buttons(self):
