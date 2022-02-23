@@ -90,8 +90,8 @@ class GenericDataPlot(QwtPlot):
                                                 self._callback, queue_size=1)
             self.timer.start()
         else:
-            self.timer.stop()
             self._subscriber.unregister()
+            self.timer.stop()
 
     def show_trace(self, trace_name):
         for trace in self.traces:

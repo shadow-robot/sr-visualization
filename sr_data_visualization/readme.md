@@ -29,3 +29,11 @@ rqt
 
 and go to Plugins -> Shadow Robot -> Dexterous Hand Data Visualizer.
 
+
+## Requirement
+
+To be able to use this gui you must have installed pyqwt:
+
+```
+sudo apt install python3-qwt
+```
