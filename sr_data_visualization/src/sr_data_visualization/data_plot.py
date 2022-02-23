@@ -63,7 +63,7 @@ class GenericDataPlot(QwtPlot):
         self.timer = None
         if start_plotting:
             self._subscriber = rospy.Subscriber(self._topic_name, self._topic_type,
-                                            self.callback, queue_size=1)
+                                                self.callback, queue_size=1)
 
             self.initialize_and_start_timer()
 
