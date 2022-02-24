@@ -1,0 +1,15 @@
+<library path="src">
+  <class name="SrFingertipVisualizer" type="sr_gui_fingertip_visualization.sr_gui_fingertip_visualization.SrFingertipVisualizer" base_class_type="rqt_gui_py::Plugin">
+    <description>
+      A plugin for visualising data from Syntouch Biotac finger tip sensors
+    </description>
+    <qtgui>
+      <group>
+        <label>Shadow Robot</label>
+      </group>
+      <label>Fingertip visualization</label>
+      <icon type="file">resource/hand.png</icon>
+      <statustip>A plugin for visualising data from Syntouch Biotac finger tip sensors</statustip>
+    </qtgui>
+  </class>
+</library>
