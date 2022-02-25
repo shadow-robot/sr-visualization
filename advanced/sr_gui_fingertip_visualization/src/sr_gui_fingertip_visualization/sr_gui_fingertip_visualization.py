@@ -33,12 +33,8 @@ from python_qt_binding.QtWidgets import (
     QMessageBox
 )
 
-from sr_utilities.hand_finder import HandFinder
-from sr_hand.tactile_receiver import TactileReceiver
-
-from sr_gui_fingertip_visualization.visualizer import (
-    PSTVisualizationTab,
-    BiotacVisualizationTab,
+from sr_gui_fingertip_visualization.tab_layouts import (
+    PSTVisualizationTab
 )
 
 from rqt_gui_py.plugin import Plugin
@@ -51,13 +47,6 @@ class SrFingertipVisualizer(Plugin):
         super().__init__(context)
 
         self.context = context
-
-        self._hand_ids = list(id.strip('_') for id in HandFinder().get_hand_parameters().joint_prefix.values())
-        self._tactile_type = dict()
-
-        for id in self._hand_ids:
-            self._tactile_type[id] = TactileReceiver(id).find_tactile_type()
-        
         self.init_ui()
 
     def init_ui(self):
@@ -76,27 +65,17 @@ class SrFingertipVisualizer(Plugin):
 
     def fill_layout(self):
 
-        # Create information layout
-        self.info_layout = QBoxLayout(0)
-        self.info_layout.setContentsMargins(0, 0, 0, 0)
-
-        # Create hand id drop down list
-        self.hand_id_cbox = QComboBox()
-        self.hand_id_cbox.addItems(self._hand_ids)
-        self.info_layout.addWidget(self.hand_id_cbox, alignment=Qt.AlignRight)
-
         # Create info button on the top right of the gui
         self.information_btn = QPushButton("Info")
-        self.info_layout.addWidget(self.information_btn, alignment=Qt.AlignRight)       
+        self.main_layout.addWidget(self.information_btn, alignment=Qt.AlignRight)       
 
         # Initialize tabs
         self.tab_container = QTabWidget()
-        self.main_layout.addLayout(self.info_layout)
         self.main_layout.addWidget(self.tab_container)        
 
         # Create tabs
         self.create_tab("Visualizer")
-        self.create_tab("Graphs")
+        #self.create_tab("Graphs")
 
         self.tab_container.currentChanged.connect(self.tab_changed)
         self.information_btn.clicked.connect(self.display_information)

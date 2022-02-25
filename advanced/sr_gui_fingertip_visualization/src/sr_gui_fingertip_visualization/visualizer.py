@@ -23,8 +23,7 @@ from python_qt_binding.QtWidgets import (
 )
 
 from sr_gui_fingertip_visualization.tab_options import (
-    PSTVisualizationTabOptions,
-    BiotacVisualizationTabOptions,
+    PSTVisualizationTabOptions
 )
 
 from sensor_msgs.msg import JointState
@@ -61,13 +60,4 @@ class PSTVisualizationTab(GenericVisualizationTab):
 
     def create_tab_options(self):
         self.tab_options = PSTVisualizationTabOptions(self.tab_name)
-        self.layout.addWidget(self.tab_options)
-
-
-class BiotacVisualizationTab(GenericVisualizationTab):
-    def __init__(self, tab_name, parent=None):
-        super().__init__(tab_name,  parent)
-
-    def create_tab_options(self):
-        self.tab_options = BiotacVisualizationTabOptions(self.tab_name)
         self.layout.addWidget(self.tab_options)

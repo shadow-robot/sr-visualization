@@ -42,52 +42,35 @@ class GenericTabOptions(QWidget):
         # autodetection
         self._fingers = ["th", "ff","mf","rf","lf"]
 
-        ICON_DIR = os.path.join(
-            rospkg.RosPack().get_path('sr_visualization_icons'), 'icons')
-        self.ICONS = {
-            'GREEN': QIcon(os.path.join(ICON_DIR, 'green.png')),
-            'RED': QIcon(os.path.join(ICON_DIR, 'red.png')),
-            'BLUE': QIcon(os.path.join(ICON_DIR, 'blue.png')),
-            'MAGENTA': QIcon(os.path.join(ICON_DIR, 'magenta.png')),
-            'GRAY': QIcon(os.path.join(ICON_DIR, 'gray.png')),
-            'CYAN': QIcon(os.path.join(ICON_DIR, 'cyan.png'))
-        }
-
         self.finger_widgets = dict()
         widget_content = ["vis_pressure","vis_temp","text_pressue","text_temp",]
         for finger in self._fingers:
             self.finger_widgets[finger] = dict()
             for c in widget_content:
                 self.finger_widgets[finger][c] = QWidget()
-
-        self.init_ui()
-        self.create_tab_view()
+    
+        self.init_generic_layout()
+        self.init_tactile_layout()   
         self.setLayout(self.main_tab_layout)
 
-    def init_ui(self):
+    def init_generic_layout(self):
         self.main_tab_layout = QHBoxLayout()
         self.main_tab_layout.setContentsMargins(0, 0, 0, 0)
     
-    def create_tab_view(self):
+    def init_tactile_layout(self):
         raise NotImplementedError("The function create_tab_options must be implemented")
-        
-    def create_finger_widget(self, finger):
-        raise NotImplementedError("The function create_tab_options must be implemented")
-
-    def update_finger_widget(self, finger):
-        raise NotImplementedError("The function create_tab_options must be implemented")
-          
 
 class PSTVisualizationTabOptions(GenericTabOptions):
     def __init__(self, tab_name, parent=None):
         super().__init__(tab_name, parent)
         self.pst_data = dict()
 
-    def create_tab_view(self):
+    def init_tactile_layout(self):
         fingers_frame = QHBoxLayout()
         for finger in self._fingers:
             fingers_frame.addWidget(self.create_finger_widget(finger))    
         self.main_tab_layout.addLayout(fingers_frame)
+
 
     def create_finger_widget(self, finger):        
        
@@ -109,15 +92,3 @@ class PSTVisualizationTabOptions(GenericTabOptions):
 
         return finger_frame
     
-    def update_finger_widget(self, finger):
-        pass
-
-class BiotacVisualizationTabOptions(GenericTabOptions):
-    def __init__(self, tab_name, parent=None):
-        super().__init__(tab_name, parent)
-    
-    def create_tab_view(self):
-        groupbox = QGroupBox()
-        self.main_tab_layout.addWidget(groupbox)
-        self.check_layout = QHBoxLayout()
-        groupbox.setLayout(self.check_layout)
