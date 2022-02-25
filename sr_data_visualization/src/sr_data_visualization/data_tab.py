@@ -276,7 +276,7 @@ class PalmExtrasDataTab(GenericDataTab):
         super().__init__(tab_name, hand_joints, joint_prefix, parent)
 
     def create_full_tab(self):
-        topic_name = '/rh/palm_extras'
+        topic_name = '/' + self.joint_prefix[:-1] + '/palm_extras'
         topic_type = Float64MultiArray
 
         self.accel_tab_options = PalmExtrasAcellTabOptions(self.tab_name)
