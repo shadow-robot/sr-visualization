@@ -34,10 +34,14 @@ from python_qt_binding.QtWidgets import (
 )
 
 from sr_gui_fingertip_visualization.tab_layouts import (
-    PSTVisualizationTab
+    PSTVisualizationTab,
+    BiotacVisualizationTab
 )
 
 from rqt_gui_py.plugin import Plugin
+
+from sr_utilities.hand_finder import HandFinder
+from sr_hand.tactile_receiver import TactileReceiver
 
 
 class SrFingertipVisualizer(Plugin):
@@ -46,8 +50,15 @@ class SrFingertipVisualizer(Plugin):
     def __init__(self, context):
         super().__init__(context)
 
+        self.detect_hand_and_tactile_type()
         self.context = context
         self.init_ui()
+
+    def detect_hand_and_tactile_type(self):
+        self._hand_ids = list(id.strip('_') for id in HandFinder().get_hand_parameters().joint_prefix.values())
+        self._tactile_types = dict()
+        for id in self._hand_ids:
+            self._tactile_types[id] = TactileReceiver(id).find_tactile_type()
 
     def init_ui(self):
         self._widget = QWidget()
@@ -81,8 +92,19 @@ class SrFingertipVisualizer(Plugin):
         self.information_btn.clicked.connect(self.display_information)
 
     def create_tab(self, tab_name):
+        
+        hand_id = self._hand_ids[0]
+        tactile_type = self._tactile_types[hand_id]
+
+        rospy.logwarn(hand_id)
+        rospy.logwarn(tactile_type)
+
         if tab_name == "Visualizer":
-            self.tab_created = PSTVisualizationTab(tab_name, parent=self.tab_container)
+            if tactile_type == "PST":
+                self.tab_created = PSTVisualizationTab(tab_name, parent=self.tab_container)
+            elif tactile_type == "biotac":
+                self.tab_created = BiotacVisualizationTab(tab_name, parent=self.tab_container)
+
         elif tab_name == "Graphs":
             self.tab_created = BiotacVisualizationTab(tab_name, parent=self.tab_container)
 
