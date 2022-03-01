@@ -217,44 +217,16 @@ class BiotacVisualizationTab(GenericTabLayout):
     def create_finger_widget(self, finger):                              
         finger_frame = QGroupBox(finger)
         finger_frame.setAlignment(Qt.AlignHCenter)
-        finger_frame_layout = QGridLayout()
-        self.finger_widgets[finger] = dict()
-
-        '''
-        # pac values
-        pac_values_layout = QFormLayout()   
-        self.finger_widgets[finger]['pac'] = list(len(self._data[finger]['pac'])*[0])        
-        for i in range(len(self._data[finger]['pac'])):
-            self.finger_widgets[finger]['pac'][i] = QLineEdit()
-            pac_values_layout.addRow(QLabel("Electrode: {}".format(i)), self.finger_widgets[finger]['pac'][i])
+        finger_frame_layout = QHBoxLayout()
         
-        # temperatures
-        t_values_layout = QFormLayout()
-        self.finger_widgets[finger]['tac'] = QLineEdit()
-        self.finger_widgets[finger]['tdc'] = QLineEdit()
-        t_values_layout.addRow(QLabel("tac"), self.finger_widgets[finger]['tac'])
-        t_values_layout.addRow(QLabel("tdc"), self.finger_widgets[finger]['tdc'])
+        self.dot_widget = DotUnit("test",0,0)
 
-        # pac values
-        p_values_layout = QFormLayout()
-        self.finger_widgets[finger]['pac0'] = QLineEdit()
-        self.finger_widgets[finger]['pac1'] = QLineEdit()
-        p_values_layout.addRow(QLabel("pac0"), self.finger_widgets[finger]['pac0'])
-        p_values_layout.addRow(QLabel("pac1"), self.finger_widgets[finger]['pac1'])
-        
-        # visual tactile rep
-        tactile_graph_layout = QVBoxLayout()
-        tactile_graph_layout.addWidget(QPushButton("tactile stuff"))
-
-
-        finger_frame_layout.addLayout(tactile_graph_layout, 0, 0, Qt.AlignCenter)
-        finger_frame_layout.addLayout(pac_values_layout, 0, 1, Qt.AlignCenter)
-        finger_frame_layout.addLayout(t_values_layout, 1, 0, Qt.AlignCenter)
-        finger_frame_layout.addLayout(p_values_layout, 1, 1, Qt.AlignCenter)
-
+        finger_frame_layout.addLayout(self.dot_widget.get_layout())
         finger_frame.setLayout(finger_frame_layout)
-        '''
         return finger_frame
+
+    def timerEvent(self):     
+        self.dot_widget.update()
 
     def color_string(self, r, g, b):
         return "QLineEdit"+"{background : "+"rgb({}, {}, {});".format(r,g,b)+";}"
@@ -262,7 +234,8 @@ class BiotacVisualizationTab(GenericTabLayout):
     def ranged_value_to_rgb(in_min, in_max, out_min, out_max, value):
         new_value = (value-in_min)*(out_max-out_min)/(in_max-in_min)+out_min
 
-    def timerEvent(self):     
+
+        '''
         for finger in self._fingers:
             for i in range(len(self._data[finger]['pac'])):
                 try:
@@ -274,7 +247,7 @@ class BiotacVisualizationTab(GenericTabLayout):
             self.finger_widgets[finger]['tdc'].setText(str(self._data[finger]['tdc']))
             self.finger_widgets[finger]['pac0'].setText(str(self._data[finger]['pac0']))
             self.finger_widgets[finger]['pac1'].setText(str(self._data[finger]['pac1']))
-
+        '''
 
 class VisualBiotac():
     def __init__(self, index, color, r = 0.1, version="v1"):

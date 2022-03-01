@@ -30,5 +30,3 @@ catkin_package(
   CATKIN_DEPENDS sr_robot_msgs std_msgs rospy rqt_gui rqt_gui_py
 
 )
-install( DIRECTORY uis resource DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION} )
-install( FILES sr_gui_biotac_plugin.xml DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION} )
