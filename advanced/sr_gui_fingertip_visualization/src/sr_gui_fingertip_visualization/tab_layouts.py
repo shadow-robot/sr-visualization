@@ -39,7 +39,7 @@ from python_qt_binding.QtWidgets import (
 )
 
 from sr_gui_fingertip_visualization.tab_data import GenericTabData
-from sr_gui_fingertip_visualization.dot_unit import DotUnit
+from sr_gui_fingertip_visualization.dot_unit import DotUnitPST
 from sr_robot_msgs.msg import ShadowPST, BiotacAll
 
 from sr_utilities.hand_finder import HandFinder
@@ -47,25 +47,24 @@ from sr_hand.tactile_receiver import TactileReceiver
 
 
 class GenericTabLayout(QWidget, GenericTabData):
-    def __init__(self, tab_name, parent=None):
-        super().__init__(parent=parent)
-        
+    def __init__(self, tab_name, painter):
+        super().__init__()
+        self.painter = painter
         self._hand_ids = list(id.strip('_') for id in HandFinder().get_hand_parameters().joint_prefix.values())
         self._tactile_type = dict()
         for id in self._hand_ids:
-            self._tactile_type[id] = TactileReceiver(id).find_tactile_type()
-        
+            self._tactile_type[id] = TactileReceiver(id).find_tactile_type()        
 
-        # autodetection to be done later
-        self._fingers = ["ff","mf","rf","lf","th"]
+        self._fingers = ["ff",'mf','rf','lf','th']
         self.finger_widgets = dict()
 
         self.initialize_data_structure()
-        self.initialize_subscriber('rh')
-        self._tactile_data_callback(rospy.wait_for_message('/rh/tactile', BiotacAll))
         self.init_generic_layout()
         self.init_tactile_layout()
-        self.setLayout(self.main_tab_layout)
+        self.setLayout(self.main_tab_layout)        
+
+        self.initialize_subscriber('rh')
+        self._tactile_data_callback(rospy.wait_for_message('/rh/tactile', BiotacAll))
         self.initialize_and_start_timer()
         
     def init_generic_layout(self):
@@ -83,12 +82,9 @@ class GenericTabLayout(QWidget, GenericTabData):
     def initialize_and_start_timer(self):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.timerEvent)
-        self.timer.start()
+        self.timer.start(10)
 
     def init_tactile_layout(self):
-        raise NotImplementedError("The function create_tab_options must be implemented")
-
-    def timerEvent(self):
         raise NotImplementedError("The function create_tab_options must be implemented")
 
     def initialize_subscribers(self):
@@ -100,9 +96,11 @@ class GenericTabLayout(QWidget, GenericTabData):
     def initialize_data_structure(self):
         raise NotImplementedError("The function get_data must be implemented, with a dictionary in return")
 
+
 class PSTVisualizationTab(GenericTabLayout):
-    def __init__(self, tab_name, parent=None):
+    def __init__(self, tab_name, parent):
         super().__init__(tab_name, parent)
+        rospy.logwarn("PST tab")
 
     def initialize_data_structure(self):
         self._data_fields = ['pressure', 'temperature']
@@ -114,9 +112,12 @@ class PSTVisualizationTab(GenericTabLayout):
        
     def init_tactile_layout(self):
         fingers_frame = QHBoxLayout()
+        self.finger_widget = dict()
         for finger in self._fingers:
-            fingers_frame.addWidget(self.create_finger_widget(finger))    
+            self.finger_widget[finger] = DotUnitPST(finger)
+            fingers_frame.addWidget(self.finger_widget[finger])    
         self.main_tab_layout.addLayout(fingers_frame)
+        rospy.logwarn("inited tactile layout")
 
     def initialize_subscriber(self, side):
         self.sub = rospy.Subscriber('/{}/tactile'.format(side), ShadowPST, self._tactile_data_callback)
@@ -125,55 +126,22 @@ class PSTVisualizationTab(GenericTabLayout):
         self.sub.unregister()
 
     def _tactile_data_callback(self, data):
-        for data_field in self._data_fields:
-            for i, finger in enumerate(self._fingers):         
+        for i, finger in enumerate(self._fingers):        
+            for data_field in self._data_fields:
                 if data_field == "pressure":
                     self._data[finger][data_field] = data.pressure[i]
                 elif data_field == "temperature":
                     self._data[finger][data_field] = data.temperature[i]
+                self.finger_widget[finger].update_data(self._data[finger])
 
-    def create_finger_widget(self, finger):               
-        finger_layout = QFormLayout()
-        self.finger_widgets[finger] = dict()
-
-        for data_field in self._data_fields:
-            for representation_type in self._data_representation_types:       
-                self.finger_widgets[finger][data_field+representation_type] = None
-                if representation_type == "_text":
-                    self.finger_widgets[finger][data_field+representation_type] = QLineEdit()             
-                elif representation_type == "_visual" and data_field != "temperature":
-                    self.finger_widgets[finger][data_field+representation_type] = QProgressBar()    
-                    self.finger_widgets[finger][data_field+representation_type].setRange(300,1000)
-                    self.finger_widgets[finger][data_field+representation_type].setOrientation(Qt.Vertical)
-                    self.finger_widgets[finger][data_field+representation_type].setAlignment(Qt.AlignCenter)
-
-                if self.finger_widgets[finger][data_field+representation_type]:
-                    finger_layout.addRow(QLabel(data_field+representation_type), self.finger_widgets[finger].get(data_field+representation_type)) 
-
-        finger_frame = QGroupBox(finger)
-        finger_frame.setAlignment(Qt.AlignHCenter)
-        finger_frame.setLayout(finger_layout)
-
-        return finger_frame
-
-    def color_string(self, r, g, b):
-        return "QLineEdit"+"{background : "+"rgb({}, {}, {});".format(r,g,b)+";}"
-    
-    def ranged_value_to_rgb(in_min, in_max, out_min, out_max, value):
-        new_value = (value-in_min)*(out_max-out_min)/(in_max-in_min)+out_min
-
-    def timerEvent(self):     
-
-        for finger in self._fingers:
-            self.finger_widgets[finger]['pressure_visual'].setValue(int(self._data[finger]["pressure"]))
-            self.finger_widgets[finger]['pressure_text'].setText(str(self._data[finger]["pressure"]))
-            #self.finger_widgets[finger]['temperature_visual'].setStyleSheet(self.color_string(0,100,0))
-            self.finger_widgets[finger]['temperature_text'].setText(str(self._data[finger]["temperature"]))
+    def timerEvent(self):
+        for finger in self._fingers:        
+            self.finger_widget[finger].update_widget()
 
 
 class BiotacVisualizationTab(GenericTabLayout):
-    def __init__(self, tab_name, parent=None):
-        super().__init__(tab_name, parent)
+    def __init__(self, tab_name, painter):
+        super().__init__(tab_name, painter)
 
     def initialize_data_structure(self):
         self._data_fields = ['pac0', 'pac1', 'pac', 'pdc', 'tac', 'tdc', 'electrodes']
@@ -185,6 +153,7 @@ class BiotacVisualizationTab(GenericTabLayout):
        
     def init_tactile_layout(self):
         fingers_frame = QHBoxLayout()
+        self.dot_widget = dict()
         for finger in self._fingers:
             fingers_frame.addWidget(self.create_finger_widget(finger))    
         self.main_tab_layout.addLayout(fingers_frame)
@@ -212,42 +181,25 @@ class BiotacVisualizationTab(GenericTabLayout):
                     self._data[finger][data_field] = data.tactiles[i].tdc
                 elif data_field == "electrodes":
                     self._data[finger][data_field] = list(data.tactiles[i].electrodes)
-                    #rospy.logwarn(self._data[finger][data_field])
+        #self.update()
+        #self.dot_widget['ff'].set_new_values()
 
+    def paintEvent(self, e):
+        self.dot_widget['ff'].paintEvent(e)
+        
     def create_finger_widget(self, finger):                              
         finger_frame = QGroupBox(finger)
         finger_frame.setAlignment(Qt.AlignHCenter)
         finger_frame_layout = QHBoxLayout()
         
-        self.dot_widget = DotUnit("test",0,0)
+        self.dot_widget[finger] = DotUnit(self.painter, "test{}".format(finger),0,0)
 
-        finger_frame_layout.addLayout(self.dot_widget.get_layout())
+        finger_frame_layout.addWidget(self.dot_widget[finger].get_unit())
         finger_frame.setLayout(finger_frame_layout)
         return finger_frame
 
-    def timerEvent(self):     
-        self.dot_widget.update()
-
-    def color_string(self, r, g, b):
-        return "QLineEdit"+"{background : "+"rgb({}, {}, {});".format(r,g,b)+";}"
-    
-    def ranged_value_to_rgb(in_min, in_max, out_min, out_max, value):
-        new_value = (value-in_min)*(out_max-out_min)/(in_max-in_min)+out_min
 
 
-        '''
-        for finger in self._fingers:
-            for i in range(len(self._data[finger]['pac'])):
-                try:
-                    self.finger_widgets[finger]['pac'][i].setText(str(self._data[finger]['pac'][i]))
-                except IndexError:
-                    rospy.logwarn("tried index {}".format(i))
-
-            self.finger_widgets[finger]['tac'].setText(str(self._data[finger]['tac']))
-            self.finger_widgets[finger]['tdc'].setText(str(self._data[finger]['tdc']))
-            self.finger_widgets[finger]['pac0'].setText(str(self._data[finger]['pac0']))
-            self.finger_widgets[finger]['pac1'].setText(str(self._data[finger]['pac1']))
-        '''
 
 class VisualBiotac():
     def __init__(self, index, color, r = 0.1, version="v1"):

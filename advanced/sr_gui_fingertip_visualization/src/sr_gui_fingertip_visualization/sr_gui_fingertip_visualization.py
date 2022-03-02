@@ -19,7 +19,9 @@ from __future__ import absolute_import
 import rospy
 import sys
 
-from python_qt_binding.QtCore import Qt
+from python_qt_binding.QtCore import Qt, QTimer, QRectF
+from python_qt_binding.QtGui import QPainter, QColor
+from sr_gui_fingertip_visualization.dot_unit import DotUnitPST
 
 from python_qt_binding.QtWidgets import (
     QWidget,
@@ -38,7 +40,7 @@ from sr_gui_fingertip_visualization.tab_layouts import (
     BiotacVisualizationTab
 )
 
-from rqt_gui_py.plugin import Plugin
+from qt_gui.plugin import Plugin
 
 from sr_utilities.hand_finder import HandFinder
 from sr_hand.tactile_receiver import TactileReceiver
@@ -65,17 +67,15 @@ class SrFingertipVisualizer(Plugin):
         self.main_layout = QVBoxLayout()
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self._widget.setObjectName(self.TITLE)
-        self._widget.setWindowTitle(self.TITLE)
-
-        self.fill_layout()
+        self._widget.setWindowTitle(self.TITLE)        
 
         self._widget.setLayout(self.main_layout)
+        self.fill_layout()
 
         if __name__ != "__main__":
             self.context.add_widget(self._widget)
 
     def fill_layout(self):
-
         # Create info button on the top right of the gui
         self.information_btn = QPushButton("Info")
         self.main_layout.addWidget(self.information_btn, alignment=Qt.AlignRight)       
@@ -89,26 +89,24 @@ class SrFingertipVisualizer(Plugin):
         #self.create_tab("Graphs")
 
         self.tab_container.currentChanged.connect(self.tab_changed)
-        self.information_btn.clicked.connect(self.display_information)
+        self.information_btn.clicked.connect(self.display_information)    
 
     def create_tab(self, tab_name):
-        
         hand_id = self._hand_ids[0]
         tactile_type = self._tactile_types[hand_id]
 
-        rospy.logwarn(hand_id)
-        rospy.logwarn(tactile_type)
-
         if tab_name == "Visualizer":
             if tactile_type == "PST":
-                self.tab_created = PSTVisualizationTab(tab_name, parent=self.tab_container)
+                self.tab_created = PSTVisualizationTab(tab_name, self._widget)
+                self.tab_container.addTab(self.tab_created, tab_name)
             elif tactile_type == "biotac":
-                self.tab_created = BiotacVisualizationTab(tab_name, parent=self.tab_container)
+                #self.tab_created = BiotacVisualizationTab(tab_name, painter=self.get_painter())
+                #self.tab_container.addTab(self.tab_created, tab_name)
+                #self.tab_container.addTab(DotUnit('test',0,0), "biotac tab")
+                pass
 
         elif tab_name == "Graphs":
-            self.tab_created = BiotacVisualizationTab(tab_name, parent=self.tab_container)
-
-        self.tab_container.addTab(self.tab_created, tab_name)
+            self.tab_created = BiotacVisualizationTab(tab_name)
 
     def tab_changed(self, index):
         pass
@@ -128,7 +126,7 @@ class SrFingertipVisualizer(Plugin):
 
 if __name__ == "__main__":
     rospy.init_node("sr_data_visualizer")
-    app = QApplication(sys.argv)
+    app = QGuiApplication(sys.argv)
     data_visualiser_gui = SrDataVisualizer(None)
     data_visualiser_gui._widget.show()
     sys.exit(app.exec_())

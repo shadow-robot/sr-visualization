@@ -195,6 +195,7 @@ class SrGuiBiotac(Plugin):
 
     def paintEvent(self, paintEvent):
         painter = QPainter(self._widget.scrollAreaWidgetContents)
+        rospy.logwarn(painter.paintEngine())
         which_tactile = self.biotac_id_from_dropdown()
 
         painter.setFont(QFont("Arial", self.label_font_size[0]))
