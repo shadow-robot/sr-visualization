@@ -20,7 +20,7 @@ import os
 import rospkg
 import rospy
 
-from python_qt_binding.QtGui import  QColor, QPainter, QPaintDevice
+from python_qt_binding.QtGui import  QColor, QPainter, QPaintDevice, QFont
 from python_qt_binding.QtCore import Qt, QTimer, QRectF, QPoint, QSize
 import numpy as np
 
@@ -39,28 +39,48 @@ class CircleDot(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.data = 0
-        self.color = QColor(0,0,0)
+        self.color = QColor(0,0,0)        
+        self.painter = QPainter(self)
+        self.painter.setViewport(0,0,50,50)
         self.setMinimumSize(50,50)
 
-    def _value_to_color(self, value):
-        raise NotImplementedError("The function get_data must be implemented, with a dictionary in return")
-
-    def set_thresholds(self, thresholds):
-        self.thresholds = thresholds
-
     def update_color_dot(self, value):
-        self.color = self._value_to_color(value)
+        r = 0.0
+        g = 0.0
+        b = 255.0
+        value = float(value)
+        threshold = (0.0, 1000.0, 2000.0, 3000.0, 4095.0)
+        if value <= threshold[0]:
+            pass
+        elif value < threshold[1]:
+            r = 255
+            g = 255 * ((value - threshold[0]) / (threshold[1] - threshold[0]))            
+            b = 0
+        elif value < threshold[2]:
+            r = 255 * ((threshold[2] - value) / (threshold[2] - threshold[1]))
+            g = 255
+            b = 0
+        elif value < threshold[3]:
+            r = 0
+            g = 255
+            b = 255 * ((value - threshold[2]) / (threshold[3] - threshold[2]))
+        elif value < threshold[4]:
+            r = 0
+            g = 255 * ((threshold[4] - value) / (threshold[4] - threshold[3]))
+            b = 255
+        self.color = QColor(r, g, b)
 
     def paintEvent(self,event):
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
-        painter.setPen(self.color)
-        painter.setBrush(self.color)
+        self.painter.begin(self)        
+        self.painter.setRenderHint(QPainter.Antialiasing)
+        self.painter.setPen(self.color)
+        self.painter.setBrush(self.color)
         h = self.frameSize().height()
         w = self.frameSize().width()
-        center = QPoint(w/2, h/2)        
-        r = min(np.sqrt(h*h+w*w)/8,min(h,min(w,np.sqrt(h*h+w*w)/4)))
-        painter.drawEllipse(center, r, r)
+        r = min(h,w)/2
+        center = QPoint(w/2, h/2)   
+        self.painter.drawEllipse(center, r, r)
+        self.painter.end()
 
 
 class DotUnitPST(QWidget):
@@ -76,40 +96,6 @@ class DotUnitPST(QWidget):
         self.initialize_data_structure()
         self.init_ui()        
     
-    def value_to_color(self, value):
-        pst_min = self.pst_range[0]
-        pst_max = self.pst_range[1]
-
-        threshold = list(range(pst_min, pst_max+1, int((pst_max-pst_min)/4)))
-
-        r,g,b = 255,0,0
-
-        if value < 100:  #indicate its broken
-            r,g,b = 128,128,128
-
-        if value <= threshold[0]:
-            r = 0
-            g = 0
-            b = 255
-        elif value < threshold[1]:
-            r = 0
-            g = 255 * ((value - threshold[0]) / (threshold[1] - threshold[0]))
-            b = 255
-        elif value < threshold[2]:
-            r = 0
-            g = 255
-            b = 255 * ((threshold[2] - value) / (threshold[2] - threshold[1]))
-        elif value < threshold[3]:
-            r = 255 * ((value - threshold[2]) / (threshold[3] - threshold[2]))
-            g = 255
-            b = 0
-        elif value < threshold[4]:
-            r = 255
-            g = 255 * ((threshold[4] - value) / (threshold[4] - threshold[3]))
-            b = 255
-
-        return QColor(r,g,b)
-
     def initialize_data_structure(self):          
         for data_field in self.data_fields:
             self.data[data_field] = 0
@@ -136,10 +122,92 @@ class DotUnitPST(QWidget):
 
     def update_data(self, data):
         self.data = data
+        self.dot.update_color_dot(data)
 
-    def update_widget(self):
-        for data_field in self.data_fields:
-            self.label[data_field].setText(str(self.data[data_field]))
-        self.dot.update_color_dot(self.data['pressure'])
+class DotUnitBiotacSPMinus(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)  
+
+        self.data = dict()  
+        self.dot = CircleDot(self)
+        self.dot.update_color_dot = self.update_color_dot
+        self.initialize_data_structure()
+        self.init_ui()        
+
+    def update_color_dot(self, value):
+        # to change value as its taken from the topic
+        r = min(255,max(0, 255*(value-1000)/200))
+        g = 0
+        b = 255 - r
+        self.dot.color = QColor(r,g,b)
+
+    def initialize_data_structure(self):  
+        self._data_fields = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']    
+        for data_field in self._data_fields:
+            self.data[data_field] = 0
+
+    def init_ui(self):
+        main_layout = QVBoxLayout()
+        main_layout.setAlignment(Qt.AlignCenter)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        
+        data_layout = QFormLayout()        
+        data_layout.addRow(self.dot)
+        self.data_labels = dict()
+        for data_field in self._data_fields:
+            self.data_labels[data_field] = QLabel("-")
+            self.data_labels[data_field].setMinimumSize(40,10)
+            data_layout.addRow(QLabel(data_field+":"), self.data_labels[data_field])
+                    
+        dot_frame = QGroupBox("") 
+        dot_frame.setAlignment(Qt.AlignCenter)
+        dot_frame.setLayout(data_layout)
+
+        main_layout.addWidget(dot_frame)
+        self.setLayout(main_layout)
+
+    def update_data(self, data):
+        
+        for data_field in self._data_fields:
+            self.data_labels[data_field].setText(str(data[data_field]))
+        self.dot.update_color_dot(data['pdc'])
+        self.dot.update()
+
+
+class DotUnitBiotac(QWidget):
+    def __init__(self, electrode_index, parent=None):
+        super().__init__(parent=parent)  
+
+        self.dot = CircleDot(self)    
+        self.dot.setMinimumSize(20,20)
+        self.electrode_index = electrode_index
+        
+        self.initialize_data_structure()
+        self.init_ui()        
+
+    def initialize_data_structure(self): 
+        self.data = 0
+
+    def init_ui(self):
+        main_layout = QVBoxLayout()
+        main_layout.setAlignment(Qt.AlignCenter)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        
+        self.electrode_label = QLabel("E{}:{}".format(self.electrode_index, self.data))
+        self.electrode_label.setFont(QFont('Arial',6))
+        self.electrode_label.setMinimumSize(40,10)
+
+        data_layout = QFormLayout()        
+        data_layout.addRow(self.dot)          
+        data_layout.addRow(self.electrode_label)               
+
+        self.setLayout(data_layout)
+
+    def update_data(self, data):
+        self.data = data        
+        self.dot.update_color_dot(data)
+        self.electrode_label.setText("E{}:{}".format(self.electrode_index, self.data))
+        self.dot.update()
+
 
 

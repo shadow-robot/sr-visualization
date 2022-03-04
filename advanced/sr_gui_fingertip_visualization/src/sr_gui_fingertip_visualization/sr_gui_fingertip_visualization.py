@@ -17,6 +17,7 @@
 from __future__ import absolute_import
 
 import rospy
+import rostopic
 import sys
 
 from python_qt_binding.QtCore import Qt, QTimer, QRectF
@@ -37,13 +38,15 @@ from python_qt_binding.QtWidgets import (
 
 from sr_gui_fingertip_visualization.tab_layouts import (
     PSTVisualizationTab,
-    BiotacVisualizationTab
+    BiotacVisualizationTab,
+    GenericTabLayout
 )
 
 from qt_gui.plugin import Plugin
 
 from sr_utilities.hand_finder import HandFinder
 from sr_hand.tactile_receiver import TactileReceiver
+from sr_robot_msgs.msg import BiotacAll, ShadowPST
 
 
 class SrFingertipVisualizer(Plugin):
@@ -57,10 +60,16 @@ class SrFingertipVisualizer(Plugin):
         self.init_ui()
 
     def detect_hand_and_tactile_type(self):
-        self._hand_ids = list(id.strip('_') for id in HandFinder().get_hand_parameters().joint_prefix.values())
-        self._tactile_types = dict()
-        for id in self._hand_ids:
-            self._tactile_types[id] = TactileReceiver(id).find_tactile_type()
+        type_right = rostopic.get_topic_type("/rh/tactile")
+        type_left = rostopic.get_topic_type("/lh/tactile")
+
+        self._tactile_topics = dict()
+
+        self._hand_ids = [i[1].split('/')[1] for i in [type_right, type_left] if i[1]]
+        self._t = [i[0].split('/')[1] for i in [type_right, type_left] if i[1]]
+        
+        for i, id in enumerate(self._hand_ids):
+            self._tactile_topics[id] = self._t[i]
 
     def init_ui(self):
         self._widget = QWidget()
@@ -93,17 +102,15 @@ class SrFingertipVisualizer(Plugin):
 
     def create_tab(self, tab_name):
         hand_id = self._hand_ids[0]
-        tactile_type = self._tactile_types[hand_id]
+        tactile_topic = self._tactile_topics[hand_id]
 
         if tab_name == "Visualizer":
-            if tactile_type == "PST":
+            if tactile_topic == "ShadowPST":
                 self.tab_created = PSTVisualizationTab(tab_name, self._widget)
                 self.tab_container.addTab(self.tab_created, tab_name)
-            elif tactile_type == "biotac":
-                #self.tab_created = BiotacVisualizationTab(tab_name, painter=self.get_painter())
-                #self.tab_container.addTab(self.tab_created, tab_name)
-                #self.tab_container.addTab(DotUnit('test',0,0), "biotac tab")
-                pass
+            elif tactile_topic == "BiotacAll":
+                self.tab_created = BiotacVisualizationTab(tab_name, self._widget)
+                self.tab_container.addTab(self.tab_created, tab_name)
 
         elif tab_name == "Graphs":
             self.tab_created = BiotacVisualizationTab(tab_name)

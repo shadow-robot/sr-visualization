@@ -19,6 +19,8 @@ from __future__ import absolute_import
 import os
 import rospkg
 import rospy
+import rostopic
+from enum import Enum
 
 from python_qt_binding.QtGui import QIcon, QColor,QPalette, QFontMetrics
 from python_qt_binding.QtCore import Qt, QTimer
@@ -35,11 +37,13 @@ from python_qt_binding.QtWidgets import (
     QProgressBar,
     QFormLayout,
     QLabel,
-    QComboBox
+    QComboBox,
+    QCheckBox,
+    QSizePolicy
 )
 
 from sr_gui_fingertip_visualization.tab_data import GenericTabData
-from sr_gui_fingertip_visualization.dot_unit import DotUnitPST
+from sr_gui_fingertip_visualization.dot_unit import DotUnitPST, DotUnitBiotac, DotUnitBiotacSPMinus
 from sr_robot_msgs.msg import ShadowPST, BiotacAll
 
 from sr_utilities.hand_finder import HandFinder
@@ -47,37 +51,34 @@ from sr_hand.tactile_receiver import TactileReceiver
 
 
 class GenericTabLayout(QWidget, GenericTabData):
-    def __init__(self, tab_name, painter):
+    def __init__(self, tab_name, parent):
         super().__init__()
-        self.painter = painter
-        self._hand_ids = list(id.strip('_') for id in HandFinder().get_hand_parameters().joint_prefix.values())
-        self._tactile_type = dict()
-        for id in self._hand_ids:
-            self._tactile_type[id] = TactileReceiver(id).find_tactile_type()        
+        self.parent = parent
+
+        type_right = rostopic.get_topic_type("/rh/tactile")
+        type_left = rostopic.get_topic_type("/lh/tactile")
+        self._hand_ids = [i[1].split('/')[1] for i in [type_right, type_left] if i[1]]
 
         self._fingers = ["ff",'mf','rf','lf','th']
         self.finger_widgets = dict()
-
-        self.initialize_data_structure()
         self.init_generic_layout()
-        self.init_tactile_layout()
-        self.setLayout(self.main_tab_layout)        
-
-        self.initialize_subscriber('rh')
-        self._tactile_data_callback(rospy.wait_for_message('/rh/tactile', BiotacAll))
-        self.initialize_and_start_timer()
         
     def init_generic_layout(self):
         self.main_tab_layout = QVBoxLayout()
         self.main_tab_layout.setContentsMargins(0, 0, 0, 0)
         
         # hand_id selection box
+
+        self.options_layout = QHBoxLayout()
+
         self.hand_id_selection_layout = QFormLayout()
-        self.hand_id_selection = QComboBox()                
+        self.hand_id_selection = QComboBox()              
+        #self.hand_id_selection.setSizePolicy(2,2)  
         self.hand_id_selection.addItems(self._hand_ids)
         self.hand_id_selection_layout.addRow(QLabel("Hand ID:"), self.hand_id_selection)
-
-        self.main_tab_layout.addLayout(self.hand_id_selection_layout)
+        self.options_layout.addLayout(self.hand_id_selection_layout)      
+        
+        rospy.logwarn("initied generic layout")
     
     def initialize_and_start_timer(self):
         self.timer = QTimer(self)
@@ -95,6 +96,9 @@ class GenericTabLayout(QWidget, GenericTabData):
 
     def initialize_data_structure(self):
         raise NotImplementedError("The function get_data must be implemented, with a dictionary in return")
+
+    def create_connections(self):
+        raise NotImplementedError("The function create_connections must be implemented")
 
 
 class PSTVisualizationTab(GenericTabLayout):
@@ -139,30 +143,84 @@ class PSTVisualizationTab(GenericTabLayout):
             self.finger_widget[finger].update_widget()
 
 
+class BiotacType(Enum):
+    SP_PLUS = 0
+    SP_MINUS = 1
+    BLANK = 3
+
 class BiotacVisualizationTab(GenericTabLayout):
     def __init__(self, tab_name, painter):
         super().__init__(tab_name, painter)
 
-    def initialize_data_structure(self):
+        self._fingers = ['ff','mf','rf','lf','th']
+        self._version = "v2"
+        self._electrode_count = 0
+        self._selected_fingers = []
+
+        self.initialize_data_structure()
+        self.initialize_subscriber('rh')
+
+        self.init_tactile_layout() 
+        self.create_connections()
+
+        self.initialize_and_start_timer()
+
+    #  to detect if biotac is type sp+, sp-, or blank 
+    def _detect_biotac_type(self, finger): 
+        sum_of_electrode_values = sum(self._data[finger]['electrodes'])        
+        biotac_type = None
+        if sum_of_electrode_values == 0:
+            biotac_type = BiotacType.BLANK
+        elif sum_of_electrode_values == self._electrode_count:
+            biotac_type = BiotacType.SP_MINUS
+        else:
+            biotac_type = BiotacType.SP_PLUS     
+        return biotac_type
+
+    def create_connections(self):
+        self.finger_selection_show_selected_button.clicked.connect(self._button_action_selected_fingers)
+
+    def _button_action_selected_fingers(self):
+        self._selected_fingers = [finger for finger in self._fingers if self.finger_checkboxes[finger].isChecked()]
+        rospy.logwarn(self._selected_fingers)
+        for finger in self._fingers:
+            if finger in self._selected_fingers:
+                self.finger_frame[finger].show()
+                anything_to_display = True
+            else:
+                self.finger_frame[finger].hide()
+
+    def initialize_data_structure(self):        
         self._data_fields = ['pac0', 'pac1', 'pac', 'pdc', 'tac', 'tdc', 'electrodes']
-        self._data_representation_types = ["_visual", "_text"]
         for finger in self._fingers:
             self._data[finger] = dict()
-            for data_field in self._data_fields:
-                self._data[finger][data_field] = 0
-       
-    def init_tactile_layout(self):
-        fingers_frame = QHBoxLayout()
-        self.dot_widget = dict()
-        for finger in self._fingers:
-            fingers_frame.addWidget(self.create_finger_widget(finger))    
-        self.main_tab_layout.addLayout(fingers_frame)
+        self._tactile_data_callback(rospy.wait_for_message('/rh/tactile', BiotacAll))
 
-    def initialize_subscriber(self, side):
-        self.sub = rospy.Subscriber('/{}/tactile'.format(side), BiotacAll, self._tactile_data_callback)
+        self.coordinates = dict()
+        self.coordinates['v1'] = dict()
+        self.coordinates['v1']['sensing'] = dict()
+        self.coordinates['v1']['sensing']['x'] = [6.45, 3.65, 3.65, 6.45, 3.65, 6.45, 0.00, 1.95, -1.95, 0.00, 
+                                                  -6.45, - 3.65, -3.65, -6.45, -3.65, -6.45, 0.00, 0.00, 0.00]
+        self.coordinates['v1']['sensing']['y'] = [7.58, 11.28, 14.78, 16.58, 19.08, 21.98, 4.38, 6.38, 6.38, 8.38, 
+                                                  7.58, 11.28, 14.78, 16.58, 19.08, 21.98, 11.38, 18.38, 22.18]
+        self.coordinates['v1']['excitation'] = dict()
+        self.coordinates['v1']['excitation']['x'] = [6.45, 3.75, -3.75, -6.45]
+        self.coordinates['v1']['excitation']['y'] = [12.48, 24.48, 24.48, 12.48]
 
-    def stop_subscribers(self, side):
-        self.sub.unregister()
+        self.coordinates['v2'] = dict()
+        self.coordinates['v2']['sensing'] = dict()
+        self.coordinates['v2']['sensing']['x'] = [5.00, 3.65, 6.45, 4.40, 2.70, 6.45, 4.40, 1.50, 4.00, 4.50, -5.00,
+                                                 -3.65, -6.45, -4.40, -2.70, -6.45, -4.40, -1.50, -4.00, -4.50, 0.00,
+                                                  1.95, -1.95, 0.00]
+        self.coordinates['v2']['sensing']['y'] = [4.38, 6.38, 10.78, 11.50, 14.50, 15.08, 16.00, 17.00, 19.00, 21.00,
+                                                  4.38, 6.38, 10.78, 11.50, 14.50, 15.08, 16.00, 17.00, 19.00, 21.00,
+                                                  7.38, 9.50, 9.50, 11.20]
+        self.coordinates['v2']['excitation'] = dict()                                     
+        self.coordinates['v2']['excitation']['x'] = [5.30, 6.00, -5.30, -6.00]
+        self.coordinates['v2']['excitation']['y'] = [9.00, 22.00, 9.00, 22.00]
+        self._electrode_count = len(self.coordinates[self._version]['sensing']['x'])
+        self.finger_widgets = dict()
+        self.finger_frame = dict()
 
     def _tactile_data_callback(self, data):
         for data_field in self._data_fields:
@@ -181,82 +239,70 @@ class BiotacVisualizationTab(GenericTabLayout):
                     self._data[finger][data_field] = data.tactiles[i].tdc
                 elif data_field == "electrodes":
                     self._data[finger][data_field] = list(data.tactiles[i].electrodes)
-        #self.update()
-        #self.dot_widget['ff'].set_new_values()
+       
+    def init_finger_widget(self, finger):
+        self.finger_frame[finger] = QGroupBox(finger)
 
-    def paintEvent(self, e):
-        self.dot_widget['ff'].paintEvent(e)
+        self.finger_widgets[finger] = [0]  * len(self.coordinates[self._version]['sensing']['x'])
+        x_cords = self.coordinates[self._version]['sensing']['x']
+        y_cords = self.coordinates[self._version]['sensing']['y']
+        min_x, min_y = abs(min(self.coordinates[self._version]['sensing']['x'])), abs(min(self.coordinates[self._version]['sensing']['y']))
         
-    def create_finger_widget(self, finger):                              
-        finger_frame = QGroupBox(finger)
-        finger_frame.setAlignment(Qt.AlignHCenter)
-        finger_frame_layout = QHBoxLayout()
+        if self._detect_biotac_type(finger) == BiotacType.SP_PLUS:
+            for i, (x,y) in enumerate(zip(x_cords, y_cords)):
+                rospy.logwarn("{} {}".format(finger,self._detect_biotac_type(finger)))
+                self.finger_widgets[finger][i] = DotUnitBiotac(i, self.finger_frame[finger])
+                self.finger_widgets[finger][i].move((x+min_x)*20,((y-min_y/2)*20))
+        elif self._detect_biotac_type(finger) == BiotacType.SP_MINUS:
+            self.finger_widgets[finger] = DotUnitBiotacSPMinus(self.finger_frame[finger])
+        elif self._detect_biotac_type(finger) == BiotacType.BLANK:
+            rospy.logwarn("Blank biotac on finger:{}".format(finger))
         
-        self.dot_widget[finger] = DotUnit(self.painter, "test{}".format(finger),0,0)
 
-        finger_frame_layout.addWidget(self.dot_widget[finger].get_unit())
-        finger_frame.setLayout(finger_frame_layout)
-        return finger_frame
+    def init_tactile_layout(self):        
+        
+        self.finger_selection_layout = QHBoxLayout()
+        self.finger_selection_label = QLabel("Finger selection:")   
+        self.finger_selection_label.setSizePolicy(2,2)
+        self.finger_selection_show_selected_button = QPushButton("Show selected")
+        self.finger_selection_show_selected_button.setSizePolicy(2,2)
+        self.finger_selection_checkboxes = QHBoxLayout()
 
+        self.finger_checkboxes = dict()
+        for finger in self._fingers:
+            self.finger_checkboxes[finger] = QCheckBox(finger)
+            self.finger_checkboxes[finger].setSizePolicy(2,2)
+            self.finger_selection_checkboxes.addWidget(self.finger_checkboxes[finger])        
 
+        self.finger_selection_layout.addWidget(self.finger_selection_label)
+        self.finger_selection_layout.addLayout(self.finger_selection_checkboxes)
+        self.finger_selection_layout.addWidget(self.finger_selection_show_selected_button)
+        self.options_layout.addLayout(self.finger_selection_layout)
 
+        self.finger_complete_layout = QHBoxLayout()   
+        self.finger_complete_layout.setAlignment(Qt.AlignCenter)
+        for finger in self._fingers:
+            self.init_finger_widget(finger)
+            self.finger_frame[finger].setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+            self.finger_complete_layout.addWidget(self.finger_frame[finger])
 
-class VisualBiotac():
-    def __init__(self, index, color, r = 0.1, version="v1"):
-        self.index = index
-        self.color = color
-        self.x = position_x
-        self.y = position_y
-        self.r = r
-        self.version = version
+        self.main_tab_layout.addLayout(self.options_layout)
+        self.main_tab_layout.addLayout(self.finger_complete_layout)      
 
-        self.coordinates = dict()
-        self.coordinates['v1'] = dict()
-        self.coordinates['v1']['factor'] = 17.5
-        self.coordinates['v1']['sensing'] = dict()        
-        self.coordinates['v1']['sensing']['x'] = [6.45, 3.65, 3.65, 6.45, 3.65, 6.45, 0.00, 1.95, -1.95, 0.00, 
-                                                  -6.45, - 3.65, -3.65, -6.45, -3.65, -6.45, 0.00, 0.00, 0.00]
-        self.coordinates['v1']['sensing']['y'] = [7.58, 11.28, 14.78, 16.58, 19.08, 21.98, 4.38, 6.38, 6.38, 8.38, 
-                                                  7.58, 11.28, 14.78, 16.58, 19.08, 21.98, 11.38, 18.38, 22.18]
-        self.coordinates['v1']['excitation'] = dict()
-        self.coordinates['v1']['excitation']['x'] = [6.45, 3.75, -3.75, -6.45]
-        self.coordinates['v1']['excitation']['y'] = [12.48, 24.48, 24.48, 12.48]
+        self.setLayout(self.main_tab_layout)
+        rospy.logwarn("inited biotac tactile layout")
 
+    def initialize_subscriber(self, side):
+        self.sub = rospy.Subscriber('/{}/tactile'.format(side), BiotacAll, self._tactile_data_callback)
 
-        self.coordinates['v2'] = dict()
-        self.coordinates['v2']['factor'] = 25
-        self.coordinates['v2']['sensing'] = dict()
-        self.coordinates['v2']['sensing']['x'] = [5.00, 3.65, 6.45, 4.40, 2.70, 6.45, 4.40, 1.50, 4.00, 4.50, -5.00,
-                                                 -3.65, -6.45, -4.40, -2.70, -6.45, -4.40, -1.50, -4.00, -4.50, 0.00,
-                                                  1.95, -1.95, 0.00]
-        self.coordinates['v2']['sensing']['y'] = [4.38, 6.38, 14.78, 15.50, 18.50, 19.08, 20.00, 21.00, 23.00, 25.00,
-                                                  4.38, 6.38, 14.78, 15.50, 18.50, 19.08, 20.00, 21.00, 23.00, 25.00,
-                                                  7.38, 11.50, 11.50, 15.20]
-        self.coordinates['v2']['excitation']['x'] = [5.30, 6.00, -5.30, -6.00]
-        self.coordinates['v2']['excitation']['y'] = [9.00, 22.00, 9.00, 22.00]
+    def stop_subscribers(self, side):
+        self.sub.unregister()
 
-
-        self.sensing_electrodes_v2_x = \
-            rospy.get_param(
-                "sr_gui_biotac/sensing_electrodes_x_locations",
-                [5.00, 3.65, 6.45, 4.40, 2.70, 6.45, 4.40, 1.50, 4.00, 4.50,
-                 -5.00, - 3.65, -6.45, -4.40, -2.70, -6.45, -4.40, -1.50, -4.00, -4.50,
-                 0.00, 1.95, -1.95, 0.00])  # Physical electrode locations on the sensor
-        self.sensing_electrodes_v2_y = \
-            rospy.get_param(
-                "sr_gui_biotac/sensing_electrodes_y_locations",
-                [4.38, 6.38, 14.78, 15.50, 18.50, 19.08, 20.00, 21.00, 23.00, 25.00,
-                 4.38, 6.38, 14.78, 15.50, 18.50, 19.08, 20.00, 21.00, 23.00, 25.00,
-                 7.38, 11.50, 11.50, 15.20])
-
-        self.excitation_electrodes_v2_x = \
-            rospy.get_param(
-                "sr_gui_biotac/excitation_electrodes_x_locations",
-                [5.30, 6.00, -5.30, -6.00])
-        self.excitation_electrodes_v2_y = \
-            rospy.get_param(
-                "sr_gui_biotac/excitation_electrodes_y_locations",
-                [9.00, 22.00, 9.00, 22.00])
-    
-    def draw_electrodes(self, painter):
-        pass
+    def timerEvent(self):
+        for finger in self._selected_fingers:        
+            if type(self.finger_widgets[finger]) == list:
+                for electrode in range(self._electrode_count):
+                    if type(self.finger_widgets[finger][electrode]) == DotUnitBiotac:
+                        self.finger_widgets[finger][electrode].update_data(self._data[finger]['electrodes'][electrode])
+            elif type(self.finger_widgets[finger]) == DotUnitBiotacSPMinus:
+                self.finger_widgets[finger].update_data(self._data[finger])
