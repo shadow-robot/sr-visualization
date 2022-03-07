@@ -39,11 +39,13 @@ from python_qt_binding.QtWidgets import (
     QLabel,
     QComboBox,
     QCheckBox,
-    QSizePolicy
+    QSizePolicy,
+    QSpacerItem,
+    QLayout
 )
 
 from sr_gui_fingertip_visualization.tab_data import GenericTabData
-from sr_gui_fingertip_visualization.dot_unit import DotUnitPST, DotUnitBiotac, DotUnitBiotacSPMinus
+from sr_gui_fingertip_visualization.dot_unit import DotUnitPST, DotUnitBiotacSPPlus, DotUnitBiotacSPMinus
 from sr_robot_msgs.msg import ShadowPST, BiotacAll
 
 from sr_utilities.hand_finder import HandFinder
@@ -65,6 +67,7 @@ class GenericTabLayout(QWidget, GenericTabData):
         
     def init_generic_layout(self):
         self.main_tab_layout = QVBoxLayout()
+        self.main_tab_layout.setAlignment(Qt.AlignTop)
         self.main_tab_layout.setContentsMargins(0, 0, 0, 0)
         
         # hand_id selection box
@@ -73,7 +76,6 @@ class GenericTabLayout(QWidget, GenericTabData):
 
         self.hand_id_selection_layout = QFormLayout()
         self.hand_id_selection = QComboBox()              
-        #self.hand_id_selection.setSizePolicy(2,2)  
         self.hand_id_selection.addItems(self._hand_ids)
         self.hand_id_selection_layout.addRow(QLabel("Hand ID:"), self.hand_id_selection)
         self.options_layout.addLayout(self.hand_id_selection_layout)      
@@ -178,17 +180,23 @@ class BiotacVisualizationTab(GenericTabLayout):
         return biotac_type
 
     def create_connections(self):
-        self.finger_selection_show_selected_button.clicked.connect(self._button_action_selected_fingers)
+        self.finger_selection_show_selected_button.clicked.connect(self._button_action_show_selected_fingers)
+        self.finger_selection_show_all_button.clicked.connect(self._button_action_show_all)
 
-    def _button_action_selected_fingers(self):
-        self._selected_fingers = [finger for finger in self._fingers if self.finger_checkboxes[finger].isChecked()]
+    def _button_action_show_selected_fingers(self):
+        self._selected_fingers = [finger for finger in self._fingers if self.finger_frame[finger].isChecked()]
         rospy.logwarn(self._selected_fingers)
         for finger in self._fingers:
             if finger in self._selected_fingers:
                 self.finger_frame[finger].show()
-                anything_to_display = True
             else:
-                self.finger_frame[finger].hide()
+                self.finger_frame[finger].hide()        
+    
+    def _button_action_show_all(self):
+        for finger in self._fingers:
+            self.finger_frame[finger].show()
+            self.finger_frame[finger].setChecked(True)
+        
 
     def initialize_data_structure(self):        
         self._data_fields = ['pac0', 'pac1', 'pac', 'pdc', 'tac', 'tdc', 'electrodes']
@@ -241,50 +249,60 @@ class BiotacVisualizationTab(GenericTabLayout):
                     self._data[finger][data_field] = list(data.tactiles[i].electrodes)
        
     def init_finger_widget(self, finger):
-        self.finger_frame[finger] = QGroupBox(finger)
 
-        self.finger_widgets[finger] = [0]  * len(self.coordinates[self._version]['sensing']['x'])
+        self.finger_frame[finger] = QGroupBox(finger)
+        self.finger_frame[finger].setCheckable(True)
+        self.finger_frame[finger].setSizePolicy(2,2)      
+        layout = QHBoxLayout()  
+
         x_cords = self.coordinates[self._version]['sensing']['x']
         y_cords = self.coordinates[self._version]['sensing']['y']
         min_x, min_y = abs(min(self.coordinates[self._version]['sensing']['x'])), abs(min(self.coordinates[self._version]['sensing']['y']))
-        
+        max_x, max_y = abs(max(self.coordinates[self._version]['sensing']['x'])), abs(max(self.coordinates[self._version]['sensing']['y']))
+        y_offset = 2
         if self._detect_biotac_type(finger) == BiotacType.SP_PLUS:
-            for i, (x,y) in enumerate(zip(x_cords, y_cords)):
-                rospy.logwarn("{} {}".format(finger,self._detect_biotac_type(finger)))
-                self.finger_widgets[finger][i] = DotUnitBiotac(i, self.finger_frame[finger])
-                self.finger_widgets[finger][i].move((x+min_x)*20,((y-min_y/2)*20))
+            self.finger_widgets[finger] = [QWidget()]  * len(self.coordinates[self._version]['sensing']['x'])
+            test = QWidget()
+            test.setMinimumSize((max_x)*50,((max_y)*22))
+            for i, (x,y) in enumerate(zip(x_cords, y_cords)):                
+                self.finger_widgets[finger][i] = DotUnitBiotacSPPlus(i, test)
+                self.finger_widgets[finger][i].move((x+min_x)*20,((y-y_offset-min_y/2)*20))
+            layout.addWidget(test)
+
         elif self._detect_biotac_type(finger) == BiotacType.SP_MINUS:
             self.finger_widgets[finger] = DotUnitBiotacSPMinus(self.finger_frame[finger])
+            layout.addWidget(self.finger_widgets[finger])
+
         elif self._detect_biotac_type(finger) == BiotacType.BLANK:
+            self.finger_widgets[finger] = QLabel("Blank tactile")
+            layout.addWidget(self.finger_widgets[finger])
             rospy.logwarn("Blank biotac on finger:{}".format(finger))
-        
+
+        self.finger_frame[finger].setLayout(layout)
+        return self.finger_frame[finger]
 
     def init_tactile_layout(self):        
         
         self.finger_selection_layout = QHBoxLayout()
+        self.finger_selection_layout.addStretch(100)
         self.finger_selection_label = QLabel("Finger selection:")   
-        self.finger_selection_label.setSizePolicy(2,2)
         self.finger_selection_show_selected_button = QPushButton("Show selected")
         self.finger_selection_show_selected_button.setSizePolicy(2,2)
-        self.finger_selection_checkboxes = QHBoxLayout()
-
-        self.finger_checkboxes = dict()
-        for finger in self._fingers:
-            self.finger_checkboxes[finger] = QCheckBox(finger)
-            self.finger_checkboxes[finger].setSizePolicy(2,2)
-            self.finger_selection_checkboxes.addWidget(self.finger_checkboxes[finger])        
+        self.finger_selection_show_all_button = QPushButton("Show all")
+        self.finger_selection_show_all_button.setSizePolicy(2,2)
 
         self.finger_selection_layout.addWidget(self.finger_selection_label)
-        self.finger_selection_layout.addLayout(self.finger_selection_checkboxes)
         self.finger_selection_layout.addWidget(self.finger_selection_show_selected_button)
+        self.finger_selection_layout.addWidget(self.finger_selection_show_all_button)
+        
         self.options_layout.addLayout(self.finger_selection_layout)
 
-        self.finger_complete_layout = QHBoxLayout()   
-        self.finger_complete_layout.setAlignment(Qt.AlignCenter)
+        self.finger_complete_layout = QHBoxLayout()
+
         for finger in self._fingers:
-            self.init_finger_widget(finger)
-            self.finger_frame[finger].setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-            self.finger_complete_layout.addWidget(self.finger_frame[finger])
+            w = self.init_finger_widget(finger)
+            #w.setMinimumSize(300,500)
+            self.finger_complete_layout.addWidget(w)
 
         self.main_tab_layout.addLayout(self.options_layout)
         self.main_tab_layout.addLayout(self.finger_complete_layout)      
@@ -300,9 +318,10 @@ class BiotacVisualizationTab(GenericTabLayout):
 
     def timerEvent(self):
         for finger in self._selected_fingers:        
-            if type(self.finger_widgets[finger]) == list:
-                for electrode in range(self._electrode_count):
-                    if type(self.finger_widgets[finger][electrode]) == DotUnitBiotac:
-                        self.finger_widgets[finger][electrode].update_data(self._data[finger]['electrodes'][electrode])
-            elif type(self.finger_widgets[finger]) == DotUnitBiotacSPMinus:
-                self.finger_widgets[finger].update_data(self._data[finger])
+            if self.finger_frame[finger].isChecked():
+                if type(self.finger_widgets[finger]) == list:
+                    for electrode in range(self._electrode_count):
+                        if type(self.finger_widgets[finger][electrode]) == DotUnitBiotacSPPlus:
+                            self.finger_widgets[finger][electrode].update_data(self._data[finger]['electrodes'][electrode])
+                elif type(self.finger_widgets[finger]) == DotUnitBiotacSPMinus:
+                    self.finger_widgets[finger].update_data(self._data[finger])

@@ -36,15 +36,151 @@ from python_qt_binding.QtWidgets import (
 )
 
 class CircleDot(QWidget):
-    def __init__(self, parent=None):
+
+    MIN_SIZE_X, MIN_SIZE_Y = 50, 50
+
+    def __init__(self, index = None, parent=None):      
         super().__init__(parent=parent)
-        self.data = 0
-        self.color = QColor(0,0,0)        
-        self.painter = QPainter(self)
-        self.painter.setViewport(0,0,50,50)
-        self.setMinimumSize(50,50)
+        self._color = QColor(0,0,0)        
+        self._painter = QPainter(self)
+        self._radius = 15
+        self._title_height = 20       
+        self._index = str(index)
+        self.setMinimumSize(self.MIN_SIZE_X, self.MIN_SIZE_Y)
 
     def update_color_dot(self, value):
+        self._color = QColor(0, 0, 0)
+
+    def paintEvent(self,event):
+        self._painter.begin(self)        
+        self._painter.setRenderHint(QPainter.Antialiasing)
+        self._painter.setPen(self._color)
+        self._painter.setBrush(self._color)
+        center = QPoint(self.frameSize().width()/2, self._radius + self._title_height)
+        self._painter.drawEllipse(center, self._radius - 1, self._radius - 1)
+        if self._index.isnumeric():
+            self._painter.setPen(QColor(0, 0, 0))
+            self._painter.drawText(self.frameSize().width()/2-5, self._radius + self._title_height+5, self._index)
+        self._painter.end()
+
+
+class DotUnitGeneric(QWidget):
+    def __init__(self, parent, index = None):
+        super().__init__(parent=parent)
+        self._dot = CircleDot(index=index, parent=self)
+        self._dot.update_color_dot = self._value_to_color
+
+    def _initialize_data_structure(self, **optional_parameters):
+        raise NotImplementedError
+
+    def _init_widget(self):
+        raise NotImplementedError
+
+    def _value_to_color(self, value):
+        # Overwrite self._dot._color = QColor(r,g,b)
+        raise NotImplementedError
+
+    def get_dot(self):
+        return self._dot
+
+    def update_data(self, value):
+        raise NotImplementedError
+
+
+
+class DotUnitPST(QWidget):
+    def __init__(self, finger, parent=None):
+        super().__init__(parent=parent)  
+
+        self.finger = finger
+        self.data_fields = ['pressure', 'temperature']   
+        self.data = dict()  
+        self.dot = CircleDot(self)
+        self.dot._value_to_color = self.value_to_color
+        self.pst_range = [250, 850]
+        self.initialize_data_structure()
+        self.init_ui()        
+    
+    def initialize_data_structure(self):          
+        for data_field in self.data_fields:
+            self.data[data_field] = 0
+
+    def init_ui(self):
+        main_layout = QVBoxLayout()
+        #main_layout.setAlignment(Qt.AlignCenter)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        
+        data_layout = QFormLayout()        
+        data_layout.addRow(self.dot)
+        self.label = dict()
+        
+        for data_field in self.data_fields:
+            self.label[data_field] = QLabel("-")
+            data_layout.addRow(QLabel(str(data_field[0])+":"), self.label[data_field])    
+            
+        dot_frame = QGroupBox(self.finger) 
+        dot_frame.setLayout(data_layout)
+
+        main_layout.addWidget(dot_frame)
+        self.setLayout(main_layout)
+
+    def update_data(self, data):
+        self.data = data
+        self.dot.update_color_dot(data)
+
+
+
+class DotUnitBiotacSPMinus(DotUnitGeneric):
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)    
+        self._initialize_data_structure()
+        self._init_widget() 
+                
+    def _initialize_data_structure(self):
+        self._data_fields = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
+
+    def _value_to_color(self, value):
+        # to change value as its taken from the topic
+        r = min(255,max(0, 255*(value-1000)/200))
+        g = 0
+        b = 255 - r
+        self._dot._color = QColor(r,g,b)
+
+    def _init_widget(self):
+            
+        widget_layout = QFormLayout()  
+        widget_layout.setFormAlignment(Qt.AlignRight)    
+        widget_layout.setLabelAlignment(Qt.AlignRight)    
+
+        widget_layout.addRow(self.get_dot())
+
+        self.data_labels = dict()
+        for data_field in self._data_fields:
+            self.data_labels[data_field] = QLabel("-")
+            self.data_labels[data_field].setMinimumSize(40,10)
+            self.data_labels[data_field].setSizePolicy(2,2)
+            widget_layout.addRow(QLabel(data_field+":"), self.data_labels[data_field])
+                    
+        self.setMinimumSize(100,200)
+        self.setLayout(widget_layout)
+
+    def update_data(self, data):        
+        for data_field in self._data_fields:
+            self.data_labels[data_field].setText(str(data[data_field]))
+        self.get_dot().update_color_dot(data['pdc'])
+        self.get_dot().update()
+
+
+class DotUnitBiotacSPPlus(DotUnitGeneric):
+    def __init__(self, electrode_index, parent=None):
+        super().__init__(index=electrode_index, parent=parent)  
+        self._initialize_data_structure(electrode_index)
+        self._init_widget()
+
+    def _initialize_data_structure(self, electrode_index): 
+        self.electrode_index = electrode_index
+
+    def _value_to_color(self, value):
         r = 0.0
         g = 0.0
         b = 255.0
@@ -68,146 +204,26 @@ class CircleDot(QWidget):
             r = 0
             g = 255 * ((threshold[4] - value) / (threshold[4] - threshold[3]))
             b = 255
-        self.color = QColor(r, g, b)
+        self._dot._color = QColor(r, g, b)
 
-    def paintEvent(self,event):
-        self.painter.begin(self)        
-        self.painter.setRenderHint(QPainter.Antialiasing)
-        self.painter.setPen(self.color)
-        self.painter.setBrush(self.color)
-        h = self.frameSize().height()
-        w = self.frameSize().width()
-        r = min(h,w)/2
-        center = QPoint(w/2, h/2)   
-        self.painter.drawEllipse(center, r, r)
-        self.painter.end()
+    def _init_widget(self):
 
-
-class DotUnitPST(QWidget):
-    def __init__(self, finger, parent=None):
-        super().__init__(parent=parent)  
-
-        self.finger = finger
-        self.data_fields = ['pressure', 'temperature']   
-        self.data = dict()  
-        self.dot = CircleDot(self)
-        self.dot._value_to_color = self.value_to_color
-        self.pst_range = [250, 850]
-        self.initialize_data_structure()
-        self.init_ui()        
-    
-    def initialize_data_structure(self):          
-        for data_field in self.data_fields:
-            self.data[data_field] = 0
-
-    def init_ui(self):
-        main_layout = QVBoxLayout()
-        main_layout.setAlignment(Qt.AlignCenter)
-        main_layout.setContentsMargins(0, 0, 0, 0)
+        widget_layout = QFormLayout()  
         
-        data_layout = QFormLayout()        
-        data_layout.addRow(self.dot)
-        self.label = dict()
-        
-        for data_field in self.data_fields:
-            self.label[data_field] = QLabel("-")
-            data_layout.addRow(QLabel(str(data_field[0])+":"), self.label[data_field])    
-            
-        dot_frame = QGroupBox(self.finger) 
-        dot_frame.setAlignment(Qt.AlignCenter)
-        dot_frame.setLayout(data_layout)
-
-        main_layout.addWidget(dot_frame)
-        self.setLayout(main_layout)
-
-    def update_data(self, data):
-        self.data = data
-        self.dot.update_color_dot(data)
-
-class DotUnitBiotacSPMinus(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent=parent)  
-
-        self.data = dict()  
-        self.dot = CircleDot(self)
-        self.dot.update_color_dot = self.update_color_dot
-        self.initialize_data_structure()
-        self.init_ui()        
-
-    def update_color_dot(self, value):
-        # to change value as its taken from the topic
-        r = min(255,max(0, 255*(value-1000)/200))
-        g = 0
-        b = 255 - r
-        self.dot.color = QColor(r,g,b)
-
-    def initialize_data_structure(self):  
-        self._data_fields = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']    
-        for data_field in self._data_fields:
-            self.data[data_field] = 0
-
-    def init_ui(self):
-        main_layout = QVBoxLayout()
-        main_layout.setAlignment(Qt.AlignCenter)
-        main_layout.setContentsMargins(0, 0, 0, 0)
-        
-        data_layout = QFormLayout()        
-        data_layout.addRow(self.dot)
-        self.data_labels = dict()
-        for data_field in self._data_fields:
-            self.data_labels[data_field] = QLabel("-")
-            self.data_labels[data_field].setMinimumSize(40,10)
-            data_layout.addRow(QLabel(data_field+":"), self.data_labels[data_field])
-                    
-        dot_frame = QGroupBox("") 
-        dot_frame.setAlignment(Qt.AlignCenter)
-        dot_frame.setLayout(data_layout)
-
-        main_layout.addWidget(dot_frame)
-        self.setLayout(main_layout)
-
-    def update_data(self, data):
-        
-        for data_field in self._data_fields:
-            self.data_labels[data_field].setText(str(data[data_field]))
-        self.dot.update_color_dot(data['pdc'])
-        self.dot.update()
-
-
-class DotUnitBiotac(QWidget):
-    def __init__(self, electrode_index, parent=None):
-        super().__init__(parent=parent)  
-
-        self.dot = CircleDot(self)    
-        self.dot.setMinimumSize(20,20)
-        self.electrode_index = electrode_index
-        
-        self.initialize_data_structure()
-        self.init_ui()        
-
-    def initialize_data_structure(self): 
-        self.data = 0
-
-    def init_ui(self):
-        main_layout = QVBoxLayout()
-        main_layout.setAlignment(Qt.AlignCenter)
-        main_layout.setContentsMargins(0, 0, 0, 0)
-        
-        self.electrode_label = QLabel("E{}:{}".format(self.electrode_index, self.data))
-        self.electrode_label.setFont(QFont('Arial',6))
+        self.electrode_label = QLabel("-")
+        self.electrode_label.setFont(QFont('Arial',7))
         self.electrode_label.setMinimumSize(40,10)
+        self.electrode_label.setSizePolicy(2,2)
 
-        data_layout = QFormLayout()        
-        data_layout.addRow(self.dot)          
-        data_layout.addRow(self.electrode_label)               
+        widget_layout.addRow(self.get_dot())          
+        widget_layout.addRow(self.electrode_label)       
 
-        self.setLayout(data_layout)
+        self.setLayout(widget_layout)
 
-    def update_data(self, data):
-        self.data = data        
-        self.dot.update_color_dot(data)
-        self.electrode_label.setText("E{}:{}".format(self.electrode_index, self.data))
-        self.dot.update()
+    def update_data(self, data):             
+        self.electrode_label.setText(str(data))
+        self.get_dot().update_color_dot(data)
+        self.get_dot().update()
 
 
 
