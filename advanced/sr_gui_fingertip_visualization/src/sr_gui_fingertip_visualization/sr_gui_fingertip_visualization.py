@@ -22,7 +22,6 @@ import sys
 
 from python_qt_binding.QtCore import Qt, QTimer, QRectF
 from python_qt_binding.QtGui import QPainter, QColor
-from sr_gui_fingertip_visualization.dot_unit import DotUnitPST
 
 from python_qt_binding.QtWidgets import (
     QWidget,
@@ -44,10 +43,6 @@ from sr_gui_fingertip_visualization.tab_layouts import (
 
 from qt_gui.plugin import Plugin
 
-from sr_utilities.hand_finder import HandFinder
-from sr_hand.tactile_receiver import TactileReceiver
-from sr_robot_msgs.msg import BiotacAll, ShadowPST
-
 
 class SrFingertipVisualizer(Plugin):
     TITLE = "Fingertip Visualizer"
@@ -67,7 +62,7 @@ class SrFingertipVisualizer(Plugin):
 
         self._hand_ids = [i[1].split('/')[1] for i in [type_right, type_left] if i[1]]
         self._t = [i[0].split('/')[1] for i in [type_right, type_left] if i[1]]
-        
+
         for i, id in enumerate(self._hand_ids):
             self._tactile_topics[id] = self._t[i]
 
@@ -76,7 +71,7 @@ class SrFingertipVisualizer(Plugin):
         self.main_layout = QVBoxLayout()
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self._widget.setObjectName(self.TITLE)
-        self._widget.setWindowTitle(self.TITLE)        
+        self._widget.setWindowTitle(self.TITLE)
 
         self._widget.setLayout(self.main_layout)
         self.fill_layout()
@@ -87,18 +82,18 @@ class SrFingertipVisualizer(Plugin):
     def fill_layout(self):
         # Create info button on the top right of the gui
         self.information_btn = QPushButton("Info")
-        self.main_layout.addWidget(self.information_btn, alignment=Qt.AlignRight)       
+        self.main_layout.addWidget(self.information_btn, alignment=Qt.AlignRight)
 
         # Initialize tabs
         self.tab_container = QTabWidget()
-        self.main_layout.addWidget(self.tab_container)        
+        self.main_layout.addWidget(self.tab_container)
 
         # Create tabs
         self.create_tab("Visualizer")
-        #self.create_tab("Graphs")
+        self.create_tab("Graphs")
 
         self.tab_container.currentChanged.connect(self.tab_changed)
-        self.information_btn.clicked.connect(self.display_information)    
+        self.information_btn.clicked.connect(self.display_information)
 
     def create_tab(self, tab_name):
         hand_id = self._hand_ids[0]
@@ -113,7 +108,7 @@ class SrFingertipVisualizer(Plugin):
                 self.tab_container.addTab(self.tab_created, tab_name)
 
         elif tab_name == "Graphs":
-            self.tab_created = BiotacVisualizationTab(tab_name)
+            pass  # For now
 
     def tab_changed(self, index):
         pass

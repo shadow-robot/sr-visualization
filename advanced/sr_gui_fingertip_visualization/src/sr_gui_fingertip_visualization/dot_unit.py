@@ -20,7 +20,7 @@ import os
 import rospkg
 import rospy
 
-from python_qt_binding.QtGui import  QColor, QPainter, QPaintDevice, QFont, QTextOption
+from python_qt_binding.QtGui import QColor, QPainter, QPaintDevice, QFont, QTextOption
 from python_qt_binding.QtCore import Qt, QTimer, QRectF, QPoint, QSize
 import numpy as np
 
@@ -35,13 +35,14 @@ from python_qt_binding.QtWidgets import (
     QPushButton
 )
 
+
 class CircleDot(QWidget):
 
     MIN_SIZE_X = 50
 
-    def __init__(self, index = None, parent=None):
+    def __init__(self, index=None, parent=None):
         super().__init__(parent=parent)
-        self._color = QColor(0,0,0)
+        self._color = QColor(0, 0, 0)
         self._painter = QPainter(self)
         self._index = str(index)
 
@@ -53,7 +54,7 @@ class CircleDot(QWidget):
     def update_color_dot(self, value):
         self._color = QColor(0, 0, 0)
 
-    def paintEvent(self,event):
+    def paintEvent(self, event):
         self._painter.begin(self)
         self._painter.setRenderHint(QPainter.Antialiasing)
         self._painter.setPen(self._color)
@@ -70,7 +71,7 @@ class CircleDot(QWidget):
 
 
 class DotUnitGeneric(QWidget):
-    def __init__(self, parent, index = None):
+    def __init__(self, parent, index=None):
         super().__init__(parent=parent)
         self._dot = CircleDot(index=index, parent=self)
         self._dot.update_color_dot = self._value_to_color
@@ -97,84 +98,80 @@ class DotUnitGeneric(QWidget):
         raise NotImplementedError
 
 
-class DotUnitPST(QWidget):
-    def __init__(self, finger, parent=None):
-        super().__init__(parent=parent)  
+class DotUnitPST(DotUnitGeneric):
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self._initialize_data_structure()
+        self.resize_dot(25)
+        self._init_widget()
 
-        self.finger = finger
-        self.data_fields = ['pressure', 'temperature']   
-        self.data = dict()  
-        self.dot = CircleDot(self)
-        self.dot._value_to_color = self.value_to_color
-        self.pst_range = [250, 850]
-        self.initialize_data_structure()
-        self.init_ui()        
-    
-    def initialize_data_structure(self):          
-        for data_field in self.data_fields:
-            self.data[data_field] = 0
+    def _value_to_color(self, value):
+        max_color, min_color = 255, 0
+        value = max(min_color, min(max_color, (value - self._pst_min)*(max_color-min_color) /
+                                   (self._pst_max - self._pst_min) + min_color))
+        self._dot._color = QColor(255-value, 0, value)
 
-    def init_ui(self):
+    def _initialize_data_structure(self):
+        self._data = dict()
+        self._data_fields = ['pressure', 'temperature']
+        self._pst_max, self._pst_min = 300, 800
+        for data_field in self._data_fields:
+            self._data[data_field] = 0
+
+    def _init_widget(self):
         main_layout = QVBoxLayout()
-        #main_layout.setAlignment(Qt.AlignCenter)
         main_layout.setContentsMargins(0, 0, 0, 0)
-        
-        data_layout = QFormLayout()        
-        data_layout.addRow(self.dot)
+        data_layout = QFormLayout()
+        data_layout.addRow(self.get_dot())
         self.label = dict()
-        
-        for data_field in self.data_fields:
-            self.label[data_field] = QLabel("-")
-            data_layout.addRow(QLabel(str(data_field[0])+":"), self.label[data_field])    
-            
-        dot_frame = QGroupBox(self.finger) 
-        dot_frame.setLayout(data_layout)
 
-        main_layout.addWidget(dot_frame)
-        self.setLayout(main_layout)
+        for data_field in self._data_fields:
+            self.label[data_field] = QLabel("-")
+            data_layout.addRow(QLabel(str(data_field[0])+":"), self.label[data_field])
+        self.setLayout(data_layout)
 
     def update_data(self, data):
-        self.data = data
-        self.dot.update_color_dot(data)
+        for data_field in self._data_fields:
+            self.label[data_field].setText(str(data[data_field]))
+        self._dot.update_color_dot(data['pressure'])
+        self.get_dot().update()
 
 
 class DotUnitBiotacSPMinus(DotUnitGeneric):
     def __init__(self, parent=None):
-        super().__init__(parent=parent)    
+        super().__init__(parent=parent)
         self._initialize_data_structure()
         self.resize_dot(20)
-        self._init_widget() 
+        self._init_widget()
 
-                
     def _initialize_data_structure(self):
         self._data_fields = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
 
     def _value_to_color(self, value):
         # to change value (1000 and 200) as its taken from the topic
-        r = min(255,max(0, 255*(value-1000)/200))
+        r = min(255, max(0, 255 * (value - 1000) / 200))
         g = 0
         b = 255 - r
-        self._dot._color = QColor(r,g,b)
+        self._dot._color = QColor(r, g, b)
 
     def _init_widget(self):
-            
-        widget_layout = QFormLayout()  
-        widget_layout.setFormAlignment(Qt.AlignRight)    
-        widget_layout.setLabelAlignment(Qt.AlignRight)    
+        widget_layout = QFormLayout()
+        widget_layout.setFormAlignment(Qt.AlignRight)
+        widget_layout.setLabelAlignment(Qt.AlignRight)
 
         widget_layout.addRow(self.get_dot())
 
         self.data_labels = dict()
         for data_field in self._data_fields:
             self.data_labels[data_field] = QLabel("-")
-            self.data_labels[data_field].setMinimumSize(40,10)
-            self.data_labels[data_field].setSizePolicy(2,2)
+            self.data_labels[data_field].setMinimumSize(40, 10)
+            self.data_labels[data_field].setSizePolicy(2, 2)
             widget_layout.addRow(QLabel(data_field+":"), self.data_labels[data_field])
-                    
-        self.setMinimumSize(100,200)
+
+        self.setMinimumSize(100, 200)
         self.setLayout(widget_layout)
 
-    def update_data(self, data):        
+    def update_data(self, data):
         for data_field in self._data_fields:
             self.data_labels[data_field].setText(str(data[data_field]))
         self.get_dot().update_color_dot(data['pdc'])
@@ -183,11 +180,11 @@ class DotUnitBiotacSPMinus(DotUnitGeneric):
 
 class DotUnitBiotacSPPlus(DotUnitGeneric):
     def __init__(self, electrode_index, parent=None):
-        super().__init__(index=electrode_index, parent=parent)  
+        super().__init__(index=electrode_index, parent=parent)
         self._initialize_data_structure(electrode_index)
         self._init_widget()
 
-    def _initialize_data_structure(self, electrode_index): 
+    def _initialize_data_structure(self, electrode_index):
         self.electrode_index = electrode_index
 
     def _value_to_color(self, value):
@@ -200,7 +197,7 @@ class DotUnitBiotacSPPlus(DotUnitGeneric):
             pass
         elif value < threshold[1]:
             r = 255
-            g = 255 * ((value - threshold[0]) / (threshold[1] - threshold[0]))            
+            g = 255 * (value - threshold[0]) / (threshold[1] - threshold[0])
             b = 0
         elif value < threshold[2]:
             r = 255 * ((threshold[2] - value) / (threshold[2] - threshold[1]))
@@ -218,23 +215,19 @@ class DotUnitBiotacSPPlus(DotUnitGeneric):
 
     def _init_widget(self):
         main_layout = QVBoxLayout()
-        
-        widget_layout = QFormLayout()  
+        widget_layout = QFormLayout()
         widget_layout.setLabelAlignment(Qt.AlignCenter)
         widget_layout.setFormAlignment(Qt.AlignCenter)
-        
+
         self.electrode_label = QLabel("-", alignment=Qt.AlignCenter)
         self.electrode_label.setFont(QFont('Arial', 8))
 
-        widget_layout.addRow(self.get_dot())          
-        widget_layout.addRow(self.electrode_label)       
+        widget_layout.addRow(self.get_dot())
+        widget_layout.addRow(self.electrode_label)
 
         self.setLayout(widget_layout)
 
-    def update_data(self, data):             
+    def update_data(self, data):
         self.electrode_label.setText(str(data))
         self.get_dot().update_color_dot(data)
         self.get_dot().update()
-
-
-
