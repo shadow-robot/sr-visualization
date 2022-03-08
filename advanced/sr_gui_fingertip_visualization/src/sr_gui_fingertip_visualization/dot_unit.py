@@ -20,7 +20,7 @@ import os
 import rospkg
 import rospy
 
-from python_qt_binding.QtGui import  QColor, QPainter, QPaintDevice, QFont
+from python_qt_binding.QtGui import  QColor, QPainter, QPaintDevice, QFont, QTextOption
 from python_qt_binding.QtCore import Qt, QTimer, QRectF, QPoint, QSize
 import numpy as np
 
@@ -37,30 +37,35 @@ from python_qt_binding.QtWidgets import (
 
 class CircleDot(QWidget):
 
-    MIN_SIZE_X, MIN_SIZE_Y = 50, 50
+    MIN_SIZE_X = 50
 
-    def __init__(self, index = None, parent=None):      
+    def __init__(self, index = None, parent=None):
         super().__init__(parent=parent)
-        self._color = QColor(0,0,0)        
+        self._color = QColor(0,0,0)
         self._painter = QPainter(self)
-        self._radius = 15
-        self._title_height = 20       
         self._index = str(index)
-        self.setMinimumSize(self.MIN_SIZE_X, self.MIN_SIZE_Y)
+
+        self._radius = 11
+        self._title_height = 0
+        self._center = QPoint(self.frameSize().width()/2, self._radius + self._title_height)
+        self.setMinimumSize(self.MIN_SIZE_X, 2*self._radius)
 
     def update_color_dot(self, value):
         self._color = QColor(0, 0, 0)
 
     def paintEvent(self,event):
-        self._painter.begin(self)        
+        self._painter.begin(self)
         self._painter.setRenderHint(QPainter.Antialiasing)
         self._painter.setPen(self._color)
         self._painter.setBrush(self._color)
-        center = QPoint(self.frameSize().width()/2, self._radius + self._title_height)
-        self._painter.drawEllipse(center, self._radius - 1, self._radius - 1)
+
+        self._center.setX(self.frameSize().width()/2)
+        self._center.setY(self._radius + self._title_height)
+
+        self._painter.drawEllipse(self._center, self._radius - 1, self._radius - 1)
         if self._index.isnumeric():
             self._painter.setPen(QColor(0, 0, 0))
-            self._painter.drawText(self.frameSize().width()/2-5, self._radius + self._title_height+5, self._index)
+            self._painter.drawText(self._center.x() - 5, self._center.y() + 5, self._index)
         self._painter.end()
 
 
@@ -69,6 +74,11 @@ class DotUnitGeneric(QWidget):
         super().__init__(parent=parent)
         self._dot = CircleDot(index=index, parent=self)
         self._dot.update_color_dot = self._value_to_color
+
+    def resize_dot(self, radius):
+        self._dot._radius = radius
+        self._dot._center = QPoint(self._dot.frameSize().width()/2, self._dot._radius + self._dot._title_height)
+        self._dot.setMinimumSize(self._dot.MIN_SIZE_X, 2*radius)
 
     def _initialize_data_structure(self, **optional_parameters):
         raise NotImplementedError
@@ -85,7 +95,6 @@ class DotUnitGeneric(QWidget):
 
     def update_data(self, value):
         raise NotImplementedError
-
 
 
 class DotUnitPST(QWidget):
@@ -129,18 +138,19 @@ class DotUnitPST(QWidget):
         self.dot.update_color_dot(data)
 
 
-
 class DotUnitBiotacSPMinus(DotUnitGeneric):
     def __init__(self, parent=None):
         super().__init__(parent=parent)    
         self._initialize_data_structure()
+        self.resize_dot(20)
         self._init_widget() 
+
                 
     def _initialize_data_structure(self):
         self._data_fields = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
 
     def _value_to_color(self, value):
-        # to change value as its taken from the topic
+        # to change value (1000 and 200) as its taken from the topic
         r = min(255,max(0, 255*(value-1000)/200))
         g = 0
         b = 255 - r
@@ -207,13 +217,14 @@ class DotUnitBiotacSPPlus(DotUnitGeneric):
         self._dot._color = QColor(r, g, b)
 
     def _init_widget(self):
-
-        widget_layout = QFormLayout()  
+        main_layout = QVBoxLayout()
         
-        self.electrode_label = QLabel("-")
-        self.electrode_label.setFont(QFont('Arial',7))
-        self.electrode_label.setMinimumSize(40,10)
-        self.electrode_label.setSizePolicy(2,2)
+        widget_layout = QFormLayout()  
+        widget_layout.setLabelAlignment(Qt.AlignCenter)
+        widget_layout.setFormAlignment(Qt.AlignCenter)
+        
+        self.electrode_label = QLabel("-", alignment=Qt.AlignCenter)
+        self.electrode_label.setFont(QFont('Arial', 8))
 
         widget_layout.addRow(self.get_dot())          
         widget_layout.addRow(self.electrode_label)       

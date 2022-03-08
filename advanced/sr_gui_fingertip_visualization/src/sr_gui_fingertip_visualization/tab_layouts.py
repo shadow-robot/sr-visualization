@@ -69,8 +69,6 @@ class GenericTabLayout(QWidget, GenericTabData):
         self.main_tab_layout = QVBoxLayout()
         self.main_tab_layout.setAlignment(Qt.AlignTop)
         self.main_tab_layout.setContentsMargins(0, 0, 0, 0)
-        
-        # hand_id selection box
 
         self.options_layout = QHBoxLayout()
 
@@ -78,9 +76,8 @@ class GenericTabLayout(QWidget, GenericTabData):
         self.hand_id_selection = QComboBox()              
         self.hand_id_selection.addItems(self._hand_ids)
         self.hand_id_selection_layout.addRow(QLabel("Hand ID:"), self.hand_id_selection)
-        self.options_layout.addLayout(self.hand_id_selection_layout)      
         
-        rospy.logwarn("initied generic layout")
+        rospy.logwarn("initied generic layout elements")
     
     def initialize_and_start_timer(self):
         self.timer = QTimer(self)
@@ -160,6 +157,7 @@ class BiotacVisualizationTab(GenericTabLayout):
         self._selected_fingers = []
 
         self.initialize_data_structure()
+        #  Autodetect side
         self.initialize_subscriber('rh')
 
         self.init_tactile_layout() 
@@ -202,6 +200,7 @@ class BiotacVisualizationTab(GenericTabLayout):
         self._data_fields = ['pac0', 'pac1', 'pac', 'pdc', 'tac', 'tdc', 'electrodes']
         for finger in self._fingers:
             self._data[finger] = dict()
+        #  Change to autodetect hand
         self._tactile_data_callback(rospy.wait_for_message('/rh/tactile', BiotacAll))
 
         self.coordinates = dict()
@@ -252,7 +251,7 @@ class BiotacVisualizationTab(GenericTabLayout):
 
         self.finger_frame[finger] = QGroupBox(finger)
         self.finger_frame[finger].setCheckable(True)
-        self.finger_frame[finger].setSizePolicy(2,2)      
+        self.finger_frame[finger].setSizePolicy(1, 1)      
         layout = QHBoxLayout()  
 
         x_cords = self.coordinates[self._version]['sensing']['x']
@@ -260,49 +259,51 @@ class BiotacVisualizationTab(GenericTabLayout):
         min_x, min_y = abs(min(self.coordinates[self._version]['sensing']['x'])), abs(min(self.coordinates[self._version]['sensing']['y']))
         max_x, max_y = abs(max(self.coordinates[self._version]['sensing']['x'])), abs(max(self.coordinates[self._version]['sensing']['y']))
         y_offset = 2
+
         if self._detect_biotac_type(finger) == BiotacType.SP_PLUS:
             self.finger_widgets[finger] = [QWidget()]  * len(self.coordinates[self._version]['sensing']['x'])
-            test = QWidget()
-            test.setMinimumSize((max_x)*50,((max_y)*22))
+            container_widget = QWidget()
+            container_widget.setMinimumSize((max_x)*50,((max_y)*19))
             for i, (x,y) in enumerate(zip(x_cords, y_cords)):                
-                self.finger_widgets[finger][i] = DotUnitBiotacSPPlus(i, test)
+                self.finger_widgets[finger][i] = DotUnitBiotacSPPlus(i, container_widget)
                 self.finger_widgets[finger][i].move((x+min_x)*20,((y-y_offset-min_y/2)*20))
-            layout.addWidget(test)
+            layout.addWidget(container_widget, alignment=Qt.AlignCenter)
 
         elif self._detect_biotac_type(finger) == BiotacType.SP_MINUS:
             self.finger_widgets[finger] = DotUnitBiotacSPMinus(self.finger_frame[finger])
-            layout.addWidget(self.finger_widgets[finger])
+            layout.addWidget(self.finger_widgets[finger], alignment=Qt.AlignCenter)
 
         elif self._detect_biotac_type(finger) == BiotacType.BLANK:
-            self.finger_widgets[finger] = QLabel("Blank tactile")
-            layout.addWidget(self.finger_widgets[finger])
-            rospy.logwarn("Blank biotac on finger:{}".format(finger))
+            self.finger_widgets[finger] = QLabel("No tactile sensor")
+            layout.addWidget(self.finger_widgets[finger], alignment=Qt.AlignCenter)
+            #rospy.logwarn("Blank biotac on finger:{}".format(finger))
 
         self.finger_frame[finger].setLayout(layout)
         return self.finger_frame[finger]
 
     def init_tactile_layout(self):        
         
+        self.finger_selection = QGroupBox("Options")
         self.finger_selection_layout = QHBoxLayout()
-        self.finger_selection_layout.addStretch(100)
+
         self.finger_selection_label = QLabel("Finger selection:")   
         self.finger_selection_show_selected_button = QPushButton("Show selected")
         self.finger_selection_show_selected_button.setSizePolicy(2,2)
         self.finger_selection_show_all_button = QPushButton("Show all")
         self.finger_selection_show_all_button.setSizePolicy(2,2)
 
+        self.finger_selection_layout.addLayout(self.hand_id_selection_layout)
+        self.finger_selection_layout.addStretch(1)
         self.finger_selection_layout.addWidget(self.finger_selection_label)
         self.finger_selection_layout.addWidget(self.finger_selection_show_selected_button)
         self.finger_selection_layout.addWidget(self.finger_selection_show_all_button)
-        
-        self.options_layout.addLayout(self.finger_selection_layout)
+        self.finger_selection.setLayout(self.finger_selection_layout)
+
+        self.options_layout.addWidget(self.finger_selection)
 
         self.finger_complete_layout = QHBoxLayout()
-
         for finger in self._fingers:
-            w = self.init_finger_widget(finger)
-            #w.setMinimumSize(300,500)
-            self.finger_complete_layout.addWidget(w)
+            self.finger_complete_layout.addWidget(self.init_finger_widget(finger))
 
         self.main_tab_layout.addLayout(self.options_layout)
         self.main_tab_layout.addLayout(self.finger_complete_layout)      
