@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(ssr_gui_fingertip_visualization)
+project(sr_gui_fingertip_visualization)
 
 
 ## Find catkin macros and libraries
