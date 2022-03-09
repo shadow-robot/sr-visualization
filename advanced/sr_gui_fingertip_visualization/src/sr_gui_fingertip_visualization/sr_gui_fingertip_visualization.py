@@ -49,23 +49,9 @@ class SrFingertipVisualizer(Plugin):
 
     def __init__(self, context):
         super().__init__(context)
-
-        self.detect_hand_and_tactile_type()
         self.context = context
         self.init_ui()
 
-    def detect_hand_and_tactile_type(self):
-        type_right = rostopic.get_topic_type("/rh/tactile")
-        type_left = rostopic.get_topic_type("/lh/tactile")
-
-        self._tactile_topics = dict()
-
-        self._hand_ids = [i[1].split('/')[1] for i in [type_right, type_left] if i[1]]
-        self._t = [i[0].split('/')[1] for i in [type_right, type_left] if i[1]]
-
-        for i, id in enumerate(self._hand_ids):
-            self._tactile_topics[id] = self._t[i]
-            
     def init_ui(self):
         self._widget = QWidget()
         self.main_layout = QVBoxLayout()
@@ -96,12 +82,10 @@ class SrFingertipVisualizer(Plugin):
         self.information_btn.clicked.connect(self.display_information)
 
     def create_tab(self, tab_name):
-        #hand_id = self._hand_ids[0]
-        #tactile_topic = self._tactile_topics[hand_id]
 
         if tab_name == "Visualizer":
             self.tab_created = VisualizationTab(self._widget)
-            self.tab_container.addTab(self.tab_created, "Test")
+            self.tab_container.addTab(self.tab_created, tab_name)
 
         elif tab_name == "Graphs":
             pass  # For now
