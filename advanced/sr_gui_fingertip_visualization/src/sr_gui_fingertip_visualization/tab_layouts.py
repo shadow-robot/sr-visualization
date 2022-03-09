@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division
 
 import os
 import rospkg
@@ -41,6 +41,7 @@ from python_qt_binding.QtWidgets import (
     QCheckBox,
     QSizePolicy,
     QSpacerItem,
+    QStackedLayout,
     QLayout
 )
 
@@ -52,24 +53,27 @@ from sr_hand.tactile_receiver import TactileReceiver
 
 
 class GenericTabLayout(QWidget):
-    def __init__(self, tab_name, parent):
+    def __init__(self, parent):
         super().__init__()
         self.parent = parent
 
         type_right = rostopic.get_topic_type("/rh/tactile")
         type_left = rostopic.get_topic_type("/lh/tactile")
+
         self._hand_ids = [i[1].split('/')[1] for i in [type_right, type_left] if i[1]]
+        self._hand_ids.append('lh')
 
         self._fingers = ["ff", 'mf', 'rf', 'lf', 'th']
-        self._finger_widgets = dict()
         self._finger_frame = dict()
+        self._finger_widgets = dict()
+        self._timer = QTimer(self)
         self._init_generic_layout()
 
     def _init_generic_layout(self):
         self.main_tab_layout = QVBoxLayout()
         self.main_tab_layout.setAlignment(Qt.AlignTop)
         self.main_tab_layout.setContentsMargins(0, 0, 0, 0)
-
+        '''
         self.options_layout_groupbbox = QGroupBox("Options")
         self.options_layout = QHBoxLayout()
 
@@ -92,33 +96,18 @@ class GenericTabLayout(QWidget):
 
         self.options_layout_groupbbox.setLayout(self.options_layout)
         self.main_tab_layout.addWidget(self.options_layout_groupbbox)
-
+        '''
         rospy.logwarn("Inited generic layout elements")
 
-    def _button_action_show_selected_fingers(self):
-        self._selected_fingers = [finger for finger in self._fingers if self._finger_frame[finger].isChecked()]
-        rospy.logwarn(self._selected_fingers)
-        for finger in self._fingers:
-            if finger in self._selected_fingers:
-                self._finger_frame[finger].show()
-            else:
-                self._finger_frame[finger].hide()
-
-    def _button_action_show_all(self):
-        for finger in self._fingers:
-            self._finger_frame[finger].show()
-            self._finger_frame[finger].setChecked(True)
-
-    def _initialize_and_start_timer(self):
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.timerEvent)
-        self.timer.start(10)
+    def initialize_and_start_timer(self):
+        self._timer.timeout.connect(self.timerEvent)
+        self._timer.start(10)
 
     def _init_tactile_layout(self):
         raise NotImplementedError("The function _init_tactile_layout must be implemented")
 
-    def initialize_subscribers(self):
-        raise NotImplementedError("The function initialize_subscribers must be implemented")
+    def initialize_subscriber(self):
+        raise NotImplementedError("The function initialize_subscriber must be implemented")
 
     def _tactile_data_callback(self):
         raise NotImplementedError("The function _tactile_data_callback must be implemented")
@@ -129,32 +118,30 @@ class GenericTabLayout(QWidget):
     def _create_connections(self):
         raise NotImplementedError("The function _create_connections must be implemented")
 
+    def get_finger_frames(self):
+        return self._finger_frame
+
 
 class PSTVisualizationTab(GenericTabLayout):
-    def __init__(self, tab_name, parent):
-        super().__init__(tab_name, parent)
+    def __init__(self, side, parent):
+        super().__init__(parent)
+        self._side = side
         self._initialize_data_structure()
-        self.initialize_subscribers("rh")
-
         self._init_tactile_layout()
-        self._create_connections()
-
-        self._initialize_and_start_timer()
 
     def _initialize_data_structure(self):
         self._data_fields = ['pressure', 'temperature']
         self._data = dict()
-        self.finger_widget = dict()
-        self._finger_frame = dict()
         for finger in self._fingers:
             self._data[finger] = dict()
             for data_field in self._data_fields:
                 self._data[finger][data_field] = 0
 
-    def initialize_subscribers(self, side):
-        self.sub = rospy.Subscriber('/{}/tactile'.format(side), ShadowPST, self._tactile_data_callback)
+    def initialize_subscriber(self):
+        self.sub = rospy.Subscriber('/{}/tactile'.format(self._side), ShadowPST, self._tactile_data_callback)
 
-    def stop_subscribers(self, side):
+    def stop_timer_and_subscriber(self):
+        self._timer.stop()
         self.sub.unregister()
 
     def _tactile_data_callback(self, data):
@@ -179,10 +166,10 @@ class PSTVisualizationTab(GenericTabLayout):
         self._finger_frame[finger].setCheckable(True)
         self._finger_frame[finger].setSizePolicy(1, 1)
 
-        self.finger_widget[finger] = DotUnitPST(self._finger_frame[finger])
+        self._finger_widgets[finger] = DotUnitPST(self._finger_frame[finger])
 
         layout = QHBoxLayout()
-        layout.addWidget(self.finger_widget[finger])
+        layout.addWidget(self._finger_widgets[finger])
         self._finger_frame[finger].setLayout(layout)
 
         return self._finger_frame[finger]
@@ -190,11 +177,11 @@ class PSTVisualizationTab(GenericTabLayout):
     def _create_connections(self):
         self.finger_selection_show_selected_button.clicked.connect(self._button_action_show_selected_fingers)
         self.finger_selection_show_all_button.clicked.connect(self._button_action_show_all)
+        self.hand_id_selection.currentIndexChanged.connect(self._combobox_action_hand_id_selection)        
 
     def timerEvent(self):
         for finger in self._fingers:
-            if self._finger_frame[finger].isChecked():
-                self.finger_widget[finger].update_data(self._data[finger])
+            self._finger_widgets[finger].update_data(self._data[finger])
 
 
 class BiotacType(Enum):
@@ -204,22 +191,18 @@ class BiotacType(Enum):
 
 
 class BiotacVisualizationTab(GenericTabLayout):
-    def __init__(self, tab_name, painter):
-        super().__init__(tab_name, painter)
-
+    def __init__(self, side, parent):
+        super().__init__(parent)
+        self._side = side
         self._version = "v2"  # Autodetect
         self._electrode_count = 0
         self._selected_fingers = []
-
         self._initialize_data_structure()
-        self.initialize_subscriber('rh')
-
         self._init_tactile_layout()
-        self._create_connections()
 
-        self._initialize_and_start_timer()
+    def initialize_subscriber(self):
+        self.sub = rospy.Subscriber('/{}/tactile'.format(self._side), BiotacAll, self._tactile_data_callback)
 
-    #  to detect if biotac is type sp+, sp-, or blank
     def _detect_biotac_type(self, finger):
         sum_of_electrode_values = sum(self._data[finger]['electrodes'])
         biotac_type = None
@@ -234,6 +217,7 @@ class BiotacVisualizationTab(GenericTabLayout):
     def _create_connections(self):
         self.finger_selection_show_selected_button.clicked.connect(self._button_action_show_selected_fingers)
         self.finger_selection_show_all_button.clicked.connect(self._button_action_show_all)
+        self.hand_id_selection.currentIndexChanged.connect(self._combobox_action_hand_id_selection)  
 
     def _initialize_data_structure(self):
         self._data_fields = ['pac0', 'pac1', 'pac', 'pdc', 'tac', 'tdc', 'electrodes']
@@ -241,7 +225,7 @@ class BiotacVisualizationTab(GenericTabLayout):
         for finger in self._fingers:
             self._data[finger] = dict()
         #  Change to autodetect hand
-        self._tactile_data_callback(rospy.wait_for_message('/rh/tactile', BiotacAll))
+        self._tactile_data_callback(rospy.wait_for_message('/{}/tactile'.format(self._side), BiotacAll))
 
         self.coordinates = dict()
         self.coordinates['v1'] = dict()
@@ -299,7 +283,9 @@ class BiotacVisualizationTab(GenericTabLayout):
         max_y = abs(max(self.coordinates[self._version]['sensing']['y']))
         y_offset = 2
 
-        if self._detect_biotac_type(finger) == BiotacType.SP_PLUS:
+        detected_fingertip_type = self._detect_biotac_type(finger)
+
+        if detected_fingertip_type == BiotacType.SP_PLUS:
             self._finger_widgets[finger] = [QWidget()] * len(self.coordinates[self._version]['sensing']['x'])
             container_widget = QWidget()
             container_widget.setMinimumSize((max_x) * 50, ((max_y) * 19))
@@ -308,14 +294,15 @@ class BiotacVisualizationTab(GenericTabLayout):
                 self._finger_widgets[finger][i].move((x + min_x) * 20, ((y - y_offset - min_y / 2) * 20))
             layout.addWidget(container_widget, alignment=Qt.AlignCenter)
 
-        elif self._detect_biotac_type(finger) == BiotacType.SP_MINUS:
+        elif detected_fingertip_type == BiotacType.SP_MINUS:
             self._finger_widgets[finger] = DotUnitBiotacSPMinus(self._finger_frame[finger])
             layout.addWidget(self._finger_widgets[finger], alignment=Qt.AlignCenter)
 
-        elif self._detect_biotac_type(finger) == BiotacType.BLANK:
+        elif detected_fingertip_type == BiotacType.BLANK:
             self._finger_widgets[finger] = QLabel("No tactile sensor")
             layout.addWidget(self._finger_widgets[finger], alignment=Qt.AlignCenter)
 
+        rospy.logwarn("Adding widget type: {} for finger {}".format(self._detect_biotac_type(finger), finger))
         self._finger_frame[finger].setLayout(layout)
         return self._finger_frame[finger]
 
@@ -326,19 +313,134 @@ class BiotacVisualizationTab(GenericTabLayout):
         self.main_tab_layout.addLayout(self.finger_complete_layout)
         self.setLayout(self.main_tab_layout)
 
-    def initialize_subscriber(self, side):
-        self.sub = rospy.Subscriber('/{}/tactile'.format(side), BiotacAll, self._tactile_data_callback)
+    def initialize_subscriber(self):
+        self.sub = rospy.Subscriber('/{}/tactile'.format(self._side), BiotacAll, self._tactile_data_callback)
 
-    def stop_subscribers(self, side):
+    def stop_timer_and_subscriber(self):
+        self._timer.stop()
         self.sub.unregister()
 
     def timerEvent(self):
-        for finger in self._selected_fingers:
-            if self._finger_frame[finger].isChecked():
-                if type(self._finger_widgets[finger]) == list:
-                    for electrode in range(self._electrode_count):
-                        if type(self._finger_widgets[finger][electrode]) == DotUnitBiotacSPPlus:
-                            value = self._data[finger]['electrodes'][electrode]
-                            self._finger_widgets[finger][electrode].update_data(value)
-                elif type(self._finger_widgets[finger]) == DotUnitBiotacSPMinus:
-                    self._finger_widgets[finger].update_data(self._data[finger])
+        rospy.logwarn("biotac timer event")
+        for finger in self._fingers:
+            if type(self._finger_widgets[finger]) == list:
+                rospy.logwarn("Updating sp plus")
+                for electrode in range(self._electrode_count):
+                    if type(self._finger_widgets[finger][electrode]) == DotUnitBiotacSPPlus:
+                        value = self._data[finger]['electrodes'][electrode]
+                        self._finger_widgets[finger][electrode].update_data(value)
+            elif type(self._finger_widgets[finger]) == DotUnitBiotacSPMinus:
+                rospy.logwarn("Updating sp minus")
+                self._finger_widgets[finger].update_data(self._data[finger])
+
+
+class VisualizationTab(GenericTabLayout):
+    def __init__(self, parent):
+        super().__init__(parent=parent)
+        self._detect_hand_and_tactile_type()
+        self._init_generic_layout()
+        self._init_layout()
+        self._create_connections()
+        
+    def _detect_hand_and_tactile_type(self):
+        type_right = rostopic.get_topic_type("/rh/tactile")
+        type_left = rostopic.get_topic_type("/lh/tactile")
+
+        self._hand_ids = [i[1].split('/')[1] for i in [type_right, type_left] if i[1]]        
+        self._types = [i[0].split('/')[1] for i in [type_right, type_left] if i[1]]     
+        self._tactile_topics = dict(zip(self._hand_ids, self._types))
+
+    def _init_layout(self):        
+
+        self.main_l = QVBoxLayout(self)
+
+        self.options_layout_groupbbox = QGroupBox("Options")
+        self.options_layout = QHBoxLayout()
+
+        self.hand_id_selection_layout = QFormLayout()
+        self.hand_id_selection = QComboBox()
+        self.hand_id_selection.addItems(self._hand_ids)
+        self.hand_id_selection_layout.addRow(QLabel("Hand ID:"), self.hand_id_selection)
+
+        self.finger_selection_label = QLabel("Finger selection:")
+        self.finger_selection_show_selected_button = QPushButton("Show selected")
+        self.finger_selection_show_selected_button.setSizePolicy(2, 2)
+        self.finger_selection_show_all_button = QPushButton("Show all")
+        self.finger_selection_show_all_button.setSizePolicy(2, 2)
+
+        self.options_layout.addLayout(self.hand_id_selection_layout)
+        self.options_layout.addStretch(1)
+        self.options_layout.addWidget(self.finger_selection_label)
+        self.options_layout.addWidget(self.finger_selection_show_selected_button)
+        self.options_layout.addWidget(self.finger_selection_show_all_button)
+
+        self.options_layout_groupbbox.setLayout(self.options_layout)
+    
+        self.stacked_layout = QStackedLayout(self)
+
+        self.fingertip_widget = dict()
+
+        self._current_side = [self._tactile_topics.keys()][0]
+        for side, tactile_topic in self._tactile_topics.items():            
+            if tactile_topic == "ShadowPST":
+                self.fingertip_widget[side] = PSTVisualizationTab(side, self)
+            elif tactile_topic == "BiotacAll":
+                self.fingertip_widget[side] = BiotacVisualizationTab(side, self)
+            self.stacked_layout.addWidget(self.fingertip_widget[side])
+
+        self.main_l.addWidget(self.options_layout_groupbbox)
+        self.main_l.addLayout(self.stacked_layout)
+        
+        self.setLayout(self.main_l)
+
+    def _create_connections(self):
+        self.hand_id_selection.currentIndexChanged.connect(self._combobox_action_hand_id_selection)    
+        self.finger_selection_show_selected_button.clicked.connect(self._button_action_show_selected_fingers)
+
+    def _button_action_show_selected_fingers(self):
+        fingertip_widgets = self.fingertip_widget[self._current_side].get_finger_frames()
+        self._selected_fingers = [finger for finger in self._fingers if fingertip_widgets[finger].isChecked()]
+        rospy.logwarn(self._selected_fingers)
+        for finger in self._fingers:
+            if finger in self._selected_fingers:
+                fingertip_widgets[finger].show()
+            else:
+                fingertip_widgets[finger].hide()
+    
+    def _combobox_action_hand_id_selection(self):        
+        self._current_side = self.hand_id_selection.currentText()
+        self.stacked_layout.setCurrentWidget(self.fingertip_widget[self._current_side])
+        self._start_selected_widget(self.fingertip_widget[self._current_side])
+        rospy.logwarn(self._current_side)
+
+    def _start_selected_widget(self, selected_widget):
+        for widget in self.fingertip_widget.values():
+            if widget == selected_widget:
+                widget.initialize_and_start_timer()
+                widget.initialize_subscriber()
+            else:
+                try:
+                    widget.stop_timer_and_subscriber()
+                except AttributeError:
+                    rospy.logwarn("No subscriber created!")
+
+        '''
+        id = self.hand_id_selection.currentText()
+        rospy.logwarn(self._tactile_topics[id])
+        if self._tactile_topics[id] == "BiotacAll":
+            self.widget_biotac.initialize_subscriber(id)
+            self.widget_biotac.initialize_and_start_timer()
+            self.widget_pst.stop_subscriber()
+            self.stacked_layout.setCurrentWidget(self.widget_biotac)
+        elif self._tactile_topics[id] == "ShadowPST":
+            self.widget_pst.initialize_subscriber(id)
+            self.widget_pst.initialize_and_start_timer()
+            self.widget_biotac.stop_subscriber()
+            self.stacked_layout.setCurrentWidget(self.widget_pst)
+        '''
+
+    def changestack(self):
+        self.stacked_layout.setCurrentIndex(self.i%2)
+        #rospy.logwarn(self.)
+        self.i += 1
+

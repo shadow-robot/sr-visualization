@@ -22,6 +22,7 @@ import sys
 
 from python_qt_binding.QtCore import Qt, QTimer, QRectF
 from python_qt_binding.QtGui import QPainter, QColor
+from qt_gui.plugin import Plugin
 
 from python_qt_binding.QtWidgets import (
     QWidget,
@@ -38,10 +39,9 @@ from python_qt_binding.QtWidgets import (
 from sr_gui_fingertip_visualization.tab_layouts import (
     PSTVisualizationTab,
     BiotacVisualizationTab,
-    GenericTabLayout
+    GenericTabLayout,
+    VisualizationTab
 )
-
-from qt_gui.plugin import Plugin
 
 
 class SrFingertipVisualizer(Plugin):
@@ -65,7 +65,7 @@ class SrFingertipVisualizer(Plugin):
 
         for i, id in enumerate(self._hand_ids):
             self._tactile_topics[id] = self._t[i]
-
+            
     def init_ui(self):
         self._widget = QWidget()
         self.main_layout = QVBoxLayout()
@@ -96,16 +96,12 @@ class SrFingertipVisualizer(Plugin):
         self.information_btn.clicked.connect(self.display_information)
 
     def create_tab(self, tab_name):
-        hand_id = self._hand_ids[0]
-        tactile_topic = self._tactile_topics[hand_id]
+        #hand_id = self._hand_ids[0]
+        #tactile_topic = self._tactile_topics[hand_id]
 
         if tab_name == "Visualizer":
-            if tactile_topic == "ShadowPST":
-                self.tab_created = PSTVisualizationTab(tab_name, self._widget)
-                self.tab_container.addTab(self.tab_created, tab_name)
-            elif tactile_topic == "BiotacAll":
-                self.tab_created = BiotacVisualizationTab(tab_name, self._widget)
-                self.tab_container.addTab(self.tab_created, tab_name)
+            self.tab_created = VisualizationTab(self._widget)
+            self.tab_container.addTab(self.tab_created, "Test")
 
         elif tab_name == "Graphs":
             pass  # For now

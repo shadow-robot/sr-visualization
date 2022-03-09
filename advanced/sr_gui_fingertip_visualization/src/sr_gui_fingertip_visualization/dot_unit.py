@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division
 
 import os
 import rospkg
@@ -174,7 +174,7 @@ class DotUnitBiotacSPMinus(DotUnitGeneric):
     def update_data(self, data):
         for data_field in self._data_fields:
             self.data_labels[data_field].setText(str(data[data_field]))
-        self.get_dot().update_color_dot(data['pdc'])
+        self.get_dot().update_color_dot(data['pdc'])  # to be changed from 'pdc' to the correct value
         self.get_dot().update()
 
 
