@@ -51,9 +51,6 @@ class CircleDot(QWidget):
         self._center = QPoint(self.frameSize().width()/2, self._radius + self._title_height)
         self.setMinimumSize(self.MIN_SIZE_X, 2*self._radius)
 
-    def update_color_dot(self, value):
-        self._color = QColor(0, 0, 0)
-
     def paintEvent(self, event):
         self._painter.begin(self)
         self._painter.setRenderHint(QPainter.Antialiasing)
@@ -168,7 +165,7 @@ class DotUnitBiotacSPMinus(DotUnitGeneric):
             self.data_labels[data_field].setSizePolicy(2, 2)
             widget_layout.addRow(QLabel(data_field+":"), self.data_labels[data_field])
 
-        self.setMinimumSize(100, 200)
+        #self.setMinimumSize(100, 200)
         self.setLayout(widget_layout)
 
     def update_data(self, data):
