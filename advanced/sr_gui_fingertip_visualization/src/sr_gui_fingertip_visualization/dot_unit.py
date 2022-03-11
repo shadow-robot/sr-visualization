@@ -16,83 +16,19 @@
 
 from __future__ import absolute_import, division
 
-import os
-import rospkg
-import rospy
 
-from python_qt_binding.QtGui import QColor, QPainter, QFont
-from python_qt_binding.QtCore import Qt,QPoint
-import numpy as np
-
+from python_qt_binding.QtGui import QColor, QFont
+from python_qt_binding.QtCore import Qt
 from python_qt_binding.QtWidgets import (
     QFormLayout,
-    QWidget,
     QVBoxLayout,
     QLabel
 )
 
-
-class CircleDot(QWidget):
-
-    MIN_SIZE_X = 50
-
-    def __init__(self, index=None, parent=None):
-        super().__init__(parent=parent)
-        self._color = QColor(0, 0, 0)
-        self._painter = QPainter(self)
-        self._index = str(index)
-
-        self._radius = 11
-        self._title_height = 0
-        self._center = QPoint(self.frameSize().width()/2, self._radius + self._title_height)
-        self.setMinimumSize(self.MIN_SIZE_X, 2*self._radius)
-
-    def paintEvent(self, event):
-        self._painter.begin(self)
-        self._painter.setRenderHint(QPainter.Antialiasing)
-        self._painter.setPen(self._color)
-        self._painter.setBrush(self._color)
-
-        self._center.setX(self.frameSize().width()/2)
-        self._center.setY(self._radius + self._title_height)
-
-        self._painter.drawEllipse(self._center, self._radius - 1, self._radius - 1)
-        if self._index.isnumeric():
-            self._painter.setPen(QColor(0, 0, 0))
-            self._painter.drawText(self._center.x() - 5, self._center.y() + 5, self._index)
-        self._painter.end()
-
-    def setColor(self, color):
-        self._color = color
+from sr_gui_fingertip_visualization.tactile_point import TactilePointGeneric
 
 
-class DotUnitGeneric(QWidget):
-    def __init__(self, parent, index=None):
-        super().__init__(parent=parent)
-        self._dot = CircleDot(index=index, parent=self)
-
-    def resize_dot(self, radius):
-        self._dot._radius = radius
-        self._dot._center = QPoint(self._dot.frameSize().width()/2, self._dot._radius + self._dot._title_height)
-        self._dot.setMinimumSize(self._dot.MIN_SIZE_X, 2*radius)
-
-    def _initialize_data_structure(self, **optional_parameters):
-        raise NotImplementedError
-
-    def _init_widget(self):
-        raise NotImplementedError
-
-    def _value_to_color(self, value):
-        raise NotImplementedError
-
-    def get_dot(self):
-        return self._dot
-
-    def update_data(self, value):
-        raise NotImplementedError
-
-
-class DotUnitPST(DotUnitGeneric):
+class DotUnitPST(TactilePointGeneric):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self._initialize_data_structure()
@@ -127,11 +63,11 @@ class DotUnitPST(DotUnitGeneric):
     def update_data(self, data):
         for data_field in self._data_fields:
             self.label[data_field].setText(str(data[data_field]))
-        self._dot.setColor(self._value_to_color(data['pressure']))
+        self.get_dot().set_color(self._value_to_color(data['pressure']))
         self.get_dot().update()
 
 
-class DotUnitBiotacSPMinus(DotUnitGeneric):
+class DotUnitBiotacSPMinus(TactilePointGeneric):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self._initialize_data_structure()
@@ -146,7 +82,7 @@ class DotUnitBiotacSPMinus(DotUnitGeneric):
         r = min(255, max(0, 255 * (value - 1000) / 200))
         g = 0
         b = 255 - r
-        self._dot.setColor(QColor(r, g, b))
+        return QColor(r, g, b)
 
     def _init_widget(self):
         widget_layout = QFormLayout()
@@ -168,11 +104,11 @@ class DotUnitBiotacSPMinus(DotUnitGeneric):
     def update_data(self, data):
         for data_field in self._data_fields:
             self.data_labels[data_field].setText(str(data[data_field]))
-        self.get_dot().update_color_dot(data['pdc'])  # to be changed from 'pdc' to the correct value
+        self.get_dot().set_color(self._value_to_color(data['pdc']))
         self.get_dot().update()
 
 
-class DotUnitBiotacSPPlus(DotUnitGeneric):
+class DotUnitBiotacSPPlus(TactilePointGeneric):
     def __init__(self, electrode_index, parent=None):
         super().__init__(index=electrode_index, parent=parent)
         self._initialize_data_structure(electrode_index)
@@ -208,7 +144,6 @@ class DotUnitBiotacSPPlus(DotUnitGeneric):
         return QColor(r, g, b)
 
     def _init_widget(self):
-        main_layout = QVBoxLayout()
         widget_layout = QFormLayout()
         widget_layout.setLabelAlignment(Qt.AlignCenter)
         widget_layout.setFormAlignment(Qt.AlignCenter)
@@ -223,5 +158,5 @@ class DotUnitBiotacSPPlus(DotUnitGeneric):
 
     def update_data(self, data):
         self.electrode_label.setText(str(data))
-        self.get_dot().update_color_dot(data)
+        self.get_dot().set_color(self._value_to_color(data))
         self.get_dot().update()

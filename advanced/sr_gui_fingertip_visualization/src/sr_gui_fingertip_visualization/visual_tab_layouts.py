@@ -113,7 +113,6 @@ class PSTVisualizationTab(GenericTabLayout):
         fingers_frame = QHBoxLayout()
         for finger in ['th', 'ff', 'mf', 'rf', 'lf']:
             fingers_frame.addWidget(self._init_finger_widget(finger))
-        rospy.logwarn("inited pst tactile layout")
         self.setLayout(fingers_frame)
 
     def _init_finger_widget(self, finger):
@@ -240,23 +239,6 @@ class BiotacVisualizationTab(GenericTabLayout):
                 self._finger_widgets[finger][i].move((x + min_x) * 20, ((y - y_offset - min_y / 2) * 20))
             layout.addWidget(container_widget, alignment=Qt.AlignCenter)
 
-            remaining_data = QGroupBox("Data")
-            '''
-            remaining_data_layout = QVBoxLayout()
-            remaining_data_layout_pac = QGridLayout()
-            self._data_labels[finger]['pac'] = len(self._data[finger]['pac']) * [QLabel("P{}:{}".format(i, finger))]
-            columns = 4
-            current_row = 0
-            current_column = 0
-            for i in range(len(self._data[finger]['pac'])):
-                self._data_labels[finger]['pac'][i] = QLabel("P{}:-".format(i))
-                remaining_data_layout_pac.addWidget(self._data_labels[finger]['pac'][i], current_row, current_column,
-                                                    alignment=Qt.AlignCenter)
-                current_column +=1
-                if current_column == columns:
-                    current_column = 0
-                    current_row += 1
-            '''
             text_data_layout = QGridLayout()
             self._data_labels[finger]['pac0'] = QLabel("pac0:-")
             self._data_labels[finger]['pac1'] = QLabel("pac1:-")
@@ -426,7 +408,6 @@ class VisualizationTab(QWidget):
     def _button_action_show_all(self):
         fingertip_widgets = self.fingertip_widget[self._current_side].get_finger_frames()
         self._selected_fingers = [finger for finger in self._fingers if fingertip_widgets[finger].isChecked()]
-        rospy.logwarn(self._selected_fingers)
         for finger in self._fingers:
             fingertip_widgets[finger].setChecked(True)
             fingertip_widgets[finger].show()

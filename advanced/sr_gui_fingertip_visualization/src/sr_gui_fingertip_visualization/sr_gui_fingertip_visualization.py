@@ -23,6 +23,7 @@ from qt_gui.plugin import Plugin
 
 from python_qt_binding.QtCore import Qt
 from python_qt_binding.QtWidgets import (
+    QApplication,
     QWidget,
     QTabWidget,
     QVBoxLayout,
@@ -79,7 +80,7 @@ class SrFingertipVisualizer(Plugin):
             self.main_layout.addWidget(label, alignment=Qt.AlignCenter)
         else:
             self.create_tab("Visualizer")
-            self.create_tab("Graphs")
+            #self.create_tab("Graphs")
             self.main_layout.addWidget(self.tab_container)
 
     def create_tab(self, tab_name):
@@ -109,8 +110,8 @@ class SrFingertipVisualizer(Plugin):
 
 
 if __name__ == "__main__":
-    rospy.init_node("sr_data_visualizer")
-    app = QGuiApplication(sys.argv)
-    data_visualiser_gui = SrFingertipVisualizer(None)
-    data_visualiser_gui._widget.show()
+    rospy.init_node("sr_fingertip_visualizer")
+    app = QApplication(sys.argv)
+    sr_fingertip_visualizer_gui = SrFingertipVisualizer(None)
+    sr_fingertip_visualizer_gui._widget.show()
     sys.exit(app.exec_())

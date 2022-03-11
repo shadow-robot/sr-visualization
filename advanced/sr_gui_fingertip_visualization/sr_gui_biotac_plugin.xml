@@ -1,15 +1,15 @@
 <library path="src">
   <class name="SrFingertipVisualizer" type="sr_gui_fingertip_visualization.sr_gui_fingertip_visualization.SrFingertipVisualizer" base_class_type="rqt_gui_py::Plugin">
     <description>
-      A plugin for visualising data from tactile fingertips
+      A plugin for visualising data from finger tip sensors on the Shadow Robot Hands
     </description>
     <qtgui>
       <group>
         <label>Shadow Robot</label>
       </group>
-      <label>Fingertip visualization</label>
+      <label>Fingertip Visualization</label>
       <icon type="file">resource/hand.png</icon>
-      <statustip>A plugin for visualising data from tactile fingertips</statustip>
+      <statustip>A plugin for visualising data from finger tip sensors on the Shadow Robot Hands</statustip>
     </qtgui>
   </class>
 </library>
