@@ -59,7 +59,7 @@ class SrDataVisualizer(Plugin):
 
         try:
             joint_states_msg = rospy.wait_for_message("/joint_states", JointState, timeout=1)
-            self.joint_prefix = ([prefix for prefix in joint_states_msg.name if 'h' in prefix][0]).split("_")[0] + "_"
+            self.joint_prefix = ([prefix for prefix in joint_states_msg.name if 'h_' in prefix][0]).split("_")[0] + "_"
             joints = [joint for joint in joint_states_msg.name if self.joint_prefix in joint]
             self.hand_joints = {self.joint_prefix[:-1]: joints}
         except (rospy.exceptions.ROSException, IndexError):
