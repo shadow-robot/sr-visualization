@@ -80,11 +80,10 @@ class SrFingertipVisualizer(Plugin):
             self.main_layout.addWidget(label, alignment=Qt.AlignCenter)
         else:
             self.create_tab("Visualizer")
-            #self.create_tab("Graphs")
+            self.create_tab("Graphs")
             self.main_layout.addWidget(self.tab_container)
 
     def create_tab(self, tab_name):
-
         if tab_name == "Visualizer":
             self.tab_created = VisualizationTab(self._widget, self._tactile_topics)
             self.tab_container.addTab(self.tab_created, tab_name)

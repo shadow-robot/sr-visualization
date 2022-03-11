@@ -16,11 +16,14 @@
 
 from __future__ import absolute_import, division
 
+import os
 import rospy
+import rospkg
 from sr_robot_msgs.msg import ShadowPST, BiotacAll
-from sr_gui_fingertip_visualization.plot_units import DataPlotBiotac, DataPlotPST
+from sr_gui_fingertip_visualization.generic_plots import GenericDataPlot
 
 from python_qt_binding.QtCore import Qt, QTimer
+from python_qt_binding.QtGui import QIcon, QColor
 from python_qt_binding.QtWidgets import (
     QPushButton,
     QWidget,
@@ -34,35 +37,65 @@ from python_qt_binding.QtWidgets import (
     QStackedLayout
 )
 
-class PSTGraphTab(QWidget):
+
+class GenericGraphTab(QWidget):
     def __init__(self, side, parent):
         super().__init__(parent)
+
         self._side = side
         self._buffer_size = 100
-        self._initialize_data_structure()
-        self._init_graph_layout()
-        self.start_timer_and_subscriber()
-
-    def _initialize_data_structure(self):
-        self._fingers = ['ff', 'mf', 'rf', 'lf', 'th']
-        self._data_fields = ['pressure', 'temperature']
+        self._fingers = ['ff', 'mf', 'rf', 'lf', 'th']        
         self._data = dict()
         self._timer = QTimer()
-        for finger in self._fingers:
-            self._data[finger] = dict()
-            for data_field in self._data_fields:
-                self._data[finger][data_field] = list()
-
         self._finger_frame = dict()
         self._data_selection = dict()
         self._data_selection_checkboxes = dict()
         self._plot = dict()
 
+        self._initialize_data_structure()
+
+        ICON_DIR = os.path.join(rospkg.RosPack().get_path('sr_visualization_icons'), 'icons')
+        self.ICONS = {
+            'blue': QIcon(os.path.join(ICON_DIR, 'blue.png')),
+            'red': QIcon(os.path.join(ICON_DIR, 'red.png')),
+            'green': QIcon(os.path.join(ICON_DIR, 'green.png')),
+            'magenta': QIcon(os.path.join(ICON_DIR, 'magenta.png')),
+            'gray': QIcon(os.path.join(ICON_DIR, 'gray.png')),
+            'cyan': QIcon(os.path.join(ICON_DIR, 'cyan.png'))
+        }
+
+        available_colors = list(self.ICONS.keys())
+        self._legend_colors = dict()
+        for i, data_field in enumerate(self._data_fields):
+            self._legend_colors[data_field] = dict()
+            self._legend_colors[data_field]['icon'] = self.ICONS[available_colors[i]]
+            self._legend_colors[data_field]['plot_color'] = QColor(available_colors[i])
+
+        self._init_graph_layout()
+        self.start_timer_and_subscriber()     
+
     def _init_graph_layout(self):
         self.finger_complete_layout = QHBoxLayout()
         for finger in ['th', 'ff', 'mf', 'rf', 'lf']:
             self.finger_complete_layout.addWidget(self._init_finger_widget(finger))
-        self.setLayout(self.finger_complete_layout)
+        self.setLayout(self.finger_complete_layout)       
+
+    def _initialize_data_structure(self):
+        raise NotImplementedError("The function _initialize_data_structure must be implemented")
+    def start_timer_and_subscriber(self):
+        raise NotImplementedError("The function start_timer_and_subscriber must be implemented")
+
+
+class PSTGraphTab(GenericGraphTab):
+    def __init__(self, side, parent):
+        super().__init__(side, parent)
+
+    def _initialize_data_structure(self):
+        self._data_fields = ['pressure', 'temperature']
+        for finger in self._fingers:
+            self._data[finger] = dict()
+            for data_field in self._data_fields:
+                self._data[finger][data_field] = list()
 
     def _init_finger_widget(self, finger):
 
@@ -72,18 +105,20 @@ class PSTGraphTab(QWidget):
         #self._finger_frame[finger].setMinimumSize(50,50)
 
         finger_layout = QVBoxLayout()
-        finger_layout.setAlignment(Qt.AlignTop)
+        #finger_layout.setAlignment(Qt.AlignTop)
 
         self._data_selection[finger] = QHBoxLayout()
         self._data_selection_checkboxes[finger] = dict()
 
         for data_field in self._data_fields:
             self._data_selection_checkboxes[finger][data_field] = QCheckBox(data_field)
+            self._data_selection_checkboxes[finger][data_field].setIcon(self._legend_colors[data_field]['icon'])
             self._data_selection[finger].addWidget(self._data_selection_checkboxes[finger][data_field])
         
         finger_layout.addLayout(self._data_selection[finger])
 
-        self._plot[finger] = DataPlotPST(self._data[finger])
+        self._plot[finger] = GenericDataPlot(self._data[finger], self._legend_colors)
+        self._plot[finger].setMinimumSize(50, 50)
         finger_layout.addWidget(self._plot[finger])
         
         self._finger_frame[finger].setLayout(finger_layout)
@@ -112,39 +147,25 @@ class PSTGraphTab(QWidget):
 
     def timerEvent(self):
         for finger in self._fingers:
-            for data_field in self._data_fields:
-                rospy.logwarn("")
-                #self._plot[finger].update(self._data[finger])
+            traces_to_show = list()
+            for data_field in self._data_fields:                
+                if self._data_selection_checkboxes[finger][data_field].isChecked():
+                    self._plot[finger].update_plot(self._data[finger])
+                    traces_to_show.append(data_field)
+            self._plot[finger].show_traces(traces_to_show)
 
 
-class BiotacGraphTab(QWidget):
+class BiotacGraphTab(GenericGraphTab):
     def __init__(self, side, parent):
-        super().__init__(parent)
-        self._side = side
-        self._buffer_size = 100
-        self._initialize_data_structure()
-        self._init_graph_layout()
-        self.start_timer_and_subscriber()
-
+        super().__init__(side, parent)
+       
     def _initialize_data_structure(self):
-        self._fingers = ['ff', 'mf', 'rf', 'lf', 'th']
         self._data_fields = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
-        self._data = dict()
-        self._timer = QTimer()
         for finger in self._fingers:
             self._data[finger] = dict()
             for data_field in self._data_fields:
                 self._data[finger][data_field] = list()
 
-        self._finger_frame = dict()
-        self._data_selection = dict()
-        self._data_selection_checkboxes = dict()
-
-    def _init_graph_layout(self):
-        self.finger_complete_layout = QHBoxLayout()
-        for finger in ['th', 'ff', 'mf', 'rf', 'lf']:
-            self.finger_complete_layout.addWidget(self._init_finger_widget(finger))
-        self.setLayout(self.finger_complete_layout)
 
     def _init_finger_widget(self, finger):
 
@@ -153,7 +174,7 @@ class BiotacGraphTab(QWidget):
         self._finger_frame[finger].setSizePolicy(1, 1)
 
         finger_layout = QVBoxLayout()
-        finger_layout.setAlignment(Qt.AlignTop)
+        #finger_layout.setAlignment(Qt.AlignTop)
 
         self._data_selection_checkboxes[finger] = dict()
 
@@ -162,10 +183,10 @@ class BiotacGraphTab(QWidget):
         group_box_temperature = QGroupBox("Temperature", self)        
         layout_temperature = QHBoxLayout()
 
-
         data_selection_layout = QVBoxLayout()
         for data_field in self._data_fields:
             self._data_selection_checkboxes[finger][data_field] = QCheckBox(data_field)
+            self._data_selection_checkboxes[finger][data_field].setIcon(self._legend_colors[data_field]['icon'])
             if data_field in ['pac0', 'pac1', 'pdc']:
                 layout_pressure.addWidget(self._data_selection_checkboxes[finger][data_field])
             elif data_field in ['tac', 'tdc']:  
@@ -178,15 +199,18 @@ class BiotacGraphTab(QWidget):
         data_selection_layout.addWidget(group_box_temperature)
 
         finger_layout.addLayout(data_selection_layout)
-        finger_layout.addWidget(QPushButton("placeholder"))
+
+        self._plot[finger] = GenericDataPlot(self._data[finger], self._legend_colors)
+        self._plot[finger].setMinimumSize(50, 50)
+        finger_layout.addWidget(self._plot[finger])
         
         self._finger_frame[finger].setLayout(finger_layout)
         return self._finger_frame[finger]
 
     def start_timer_and_subscriber(self):
-        self._subscriber = rospy.Subscriber('/{}/tactile'.format(self._side), ShadowPST, self._tactile_data_callback)
-        #self._timer.timeout.connect(self.timerEvent)
-        #self._timer.start(10)
+        self._subscriber = rospy.Subscriber('/{}/tactile'.format(self._side), BiotacAll, self._tactile_data_callback)
+        self._timer.timeout.connect(self.timerEvent)
+        self._timer.start(10)
 
     def stop_timer_and_subscriber(self):
         self._timer.stop()
@@ -210,7 +234,14 @@ class BiotacGraphTab(QWidget):
                 elif data_field == "tdc":
                     self._data[finger][data_field].append(data.tactiles[i].tdc)
 
-    
+    def timerEvent(self):
+        for finger in self._fingers:
+            traces_to_show = list()
+            for data_field in self._data_fields:                
+                if self._data_selection_checkboxes[finger][data_field].isChecked():
+                    self._plot[finger].update_plot(self._data[finger])
+                    traces_to_show.append(data_field)
+            self._plot[finger].show_traces(traces_to_show)    
 
 class GraphTab(QWidget):
     def __init__(self, parent, tactile_topics):

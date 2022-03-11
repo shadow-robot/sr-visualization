@@ -15,41 +15,25 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import absolute_import, division
-
-import os
-import rospkg
 import rospy
-import rostopic
 from enum import Enum
 
-from python_qt_binding.QtGui import QIcon, QColor, QPalette, QFontMetrics
 from python_qt_binding.QtCore import Qt, QTimer
-
 from python_qt_binding.QtWidgets import (
     QPushButton,
     QWidget,
     QGridLayout,
-    QRadioButton,
     QHBoxLayout,
     QVBoxLayout,
-    QLineEdit,
     QGroupBox,
-    QProgressBar,
     QFormLayout,
     QLabel,
     QComboBox,
-    QCheckBox,
-    QSizePolicy,
-    QSpacerItem,
-    QStackedLayout,
-    QLayout
+    QStackedLayout
 )
 
-from sr_gui_fingertip_visualization.dot_unit import DotUnitPST, DotUnitBiotacSPPlus, DotUnitBiotacSPMinus
+from sr_gui_fingertip_visualization.tactile_points import TactilePointPST, TactilePointBiotacSPPlus, TactilePointBiotacSPMinus
 from sr_robot_msgs.msg import ShadowPST, BiotacAll
-
-from sr_utilities.hand_finder import HandFinder
-from sr_hand.tactile_receiver import TactileReceiver
 
 
 class GenericTabLayout(QWidget):
@@ -120,7 +104,7 @@ class PSTVisualizationTab(GenericTabLayout):
         self._finger_frame[finger].setCheckable(True)
         self._finger_frame[finger].setSizePolicy(1, 1)
 
-        self._finger_widgets[finger] = DotUnitPST(self._finger_frame[finger])
+        self._finger_widgets[finger] = TactilePointPST(self._finger_frame[finger])
 
         layout = QHBoxLayout()
         layout.setAlignment(Qt.AlignHCenter)
@@ -235,7 +219,7 @@ class BiotacVisualizationTab(GenericTabLayout):
             container_widget = QWidget()
             container_widget.setMinimumSize((max_x) * 50, ((max_y) * 19))
             for i, (x, y) in enumerate(zip(x_cords, y_cords)):
-                self._finger_widgets[finger][i] = DotUnitBiotacSPPlus(i, container_widget)
+                self._finger_widgets[finger][i] = TactilePointBiotacSPPlus(i, container_widget)
                 self._finger_widgets[finger][i].move((x + min_x) * 20, ((y - y_offset - min_y / 2) * 20))
             layout.addWidget(container_widget, alignment=Qt.AlignCenter)
 
@@ -255,7 +239,7 @@ class BiotacVisualizationTab(GenericTabLayout):
             layout.addLayout(text_data_layout)
 
         elif detected_fingertip_type == BiotacType.SP_MINUS:
-            self._finger_widgets[finger] = DotUnitBiotacSPMinus(self._finger_frame[finger])
+            self._finger_widgets[finger] = TactilePointBiotacSPMinus(self._finger_frame[finger])
             layout.addWidget(self._finger_widgets[finger], alignment=Qt.AlignCenter)
 
         elif detected_fingertip_type == BiotacType.BLANK:
@@ -291,10 +275,10 @@ class BiotacVisualizationTab(GenericTabLayout):
             if self._finger_frame[finger].isChecked():
                 if type(self._finger_widgets[finger]) == list:
                     for electrode in range(self._electrode_count):
-                        if type(self._finger_widgets[finger][electrode]) == DotUnitBiotacSPPlus:
+                        if type(self._finger_widgets[finger][electrode]) == TactilePointBiotacSPPlus:
                             if electrode < len(self._data[finger][self._datatype_to_display]):
                                 try:
-                                    value = self._data[finger][self._datatype_to_display][electrode]
+                                    value = self._data[finger][self._datatype_to_display]
                                     self._finger_widgets[finger][electrode].update_data(value)
                                     self._finger_widgets[finger][electrode].show()
                                 except Exception:
@@ -308,7 +292,7 @@ class BiotacVisualizationTab(GenericTabLayout):
                     self._data_labels[finger]['tac'].setText("tac:{}".format(self._data[finger]['tac']))
                     self._data_labels[finger]['tdc'].setText("tdc:{}".format(self._data[finger]['tdc']))
 
-                elif type(self._finger_widgets[finger]) == DotUnitBiotacSPMinus:
+                elif type(self._finger_widgets[finger]) == TactilePointBiotacSPMinus:
                     self._finger_widgets[finger].update_data(self._data[finger])
 
 
