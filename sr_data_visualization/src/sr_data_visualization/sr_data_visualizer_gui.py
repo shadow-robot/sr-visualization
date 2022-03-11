@@ -35,7 +35,6 @@ from python_qt_binding.QtWidgets import (
 )
 
 from sr_data_visualization.data_tab import (
-    GenericDataTab,
     JointStatesDataTab,
     ControlLoopsDataTab,
     MotorStats1DataTab,
@@ -63,7 +62,7 @@ class SrDataVisualizer(Plugin):
             joints = [joint for joint in joint_states_msg.name if self.joint_prefix in joint]
             self.hand_joints = {self.joint_prefix[:-1]: joints}
         except (rospy.exceptions.ROSException, IndexError):
-            pass
+            rospy.logwarn("No hand connected or ROS bag is not playing")
 
         return self.joint_prefix and self.hand_joints
 
@@ -105,7 +104,6 @@ class SrDataVisualizer(Plugin):
         self.tab_container.currentChanged.connect(self.tab_changed)
 
     def create_tab(self, tab_name):
-
         if tab_name == "Joint States":
             self.tab_created = JointStatesDataTab(tab_name, self.hand_joints,
                                                   self.joint_prefix, parent=self.tab_container)
