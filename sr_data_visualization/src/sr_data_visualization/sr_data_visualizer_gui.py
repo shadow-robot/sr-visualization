@@ -19,6 +19,9 @@ from __future__ import absolute_import
 import rospy
 import sys
 
+from rqt_gui_py.plugin import Plugin
+from sr_data_visualization.data_plot import GenericDataPlot
+from sensor_msgs.msg import JointState
 from python_qt_binding.QtCore import Qt
 
 from python_qt_binding.QtWidgets import (
@@ -40,13 +43,6 @@ from sr_data_visualization.data_tab import (
     PalmExtrasDataTab
 )
 
-from rqt_gui_py.plugin import Plugin
-
-from sr_data_visualization.data_plot import GenericDataPlot
-
-from sensor_msgs.msg import JointState
-from control_msgs.msg import JointTrajectoryControllerState
-
 
 class SrDataVisualizer(Plugin):
     TITLE = "Data Visualizer"
@@ -60,17 +56,16 @@ class SrDataVisualizer(Plugin):
     def _detect_hand_id_and_joints(self):
         self.joint_prefix = None
         self.hand_joints = None
-        for prefix in ["rh_", "lh_"]:
-            try:
-                rospy.wait_for_message("/{}trajectory_controller/state".format(prefix),
-                                       JointTrajectoryControllerState, timeout=1)
-                self.joint_prefix = prefix
-                joint_states_msg = rospy.wait_for_message("/joint_states", JointState, timeout=1)
-                self.hand_joints = {self.joint_prefix[:-1]: [hand_joint for hand_joint in [joint_states_msg.name]][0]}
-                rospy.logwarn(self.joint_prefix)
-                return True
-            except rospy.exceptions.ROSException:
-                return False
+
+        try:
+            joint_states_msg = rospy.wait_for_message("/joint_states", JointState, timeout=1)
+            self.joint_prefix = joint_states_msg.name[0].split("_")[0] + "_"
+            joints = [joint for joint in joint_states_msg.name if self.joint_prefix in joint]
+            self.hand_joints = {self.joint_prefix[:-1]: joints}
+        except rospy.exceptions.ROSException:
+            pass
+
+        return self.joint_prefix and self.hand_joints
 
     def init_ui(self):
         self._widget = QWidget()
