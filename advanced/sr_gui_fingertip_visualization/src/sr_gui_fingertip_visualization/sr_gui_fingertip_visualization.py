@@ -19,20 +19,14 @@ from __future__ import absolute_import
 import rospy
 import rostopic
 import sys
-
-from python_qt_binding.QtCore import Qt, QTimer, QRectF
-from python_qt_binding.QtGui import QPainter, QColor
 from qt_gui.plugin import Plugin
 
+from python_qt_binding.QtCore import Qt
 from python_qt_binding.QtWidgets import (
     QWidget,
-    QApplication,
     QTabWidget,
     QVBoxLayout,
-    QBoxLayout,
-    QHBoxLayout,
     QPushButton,
-    QComboBox,
     QMessageBox,
     QLabel
 )
@@ -117,6 +111,6 @@ class SrFingertipVisualizer(Plugin):
 if __name__ == "__main__":
     rospy.init_node("sr_data_visualizer")
     app = QGuiApplication(sys.argv)
-    data_visualiser_gui = SrDataVisualizer(None)
+    data_visualiser_gui = SrFingertipVisualizer(None)
     data_visualiser_gui._widget.show()
     sys.exit(app.exec_())

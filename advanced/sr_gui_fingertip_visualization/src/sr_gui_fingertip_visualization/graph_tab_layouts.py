@@ -16,51 +16,29 @@
 
 from __future__ import absolute_import, division
 
-import os
-import rospkg
 import rospy
-import rostopic
-from enum import Enum
-import numpy as np
+from sr_robot_msgs.msg import ShadowPST, BiotacAll
+from sr_gui_fingertip_visualization.plot_units import DataPlotBiotac, DataPlotPST
 
-from python_qt_binding.QtGui import QIcon, QColor, QPalette, QFontMetrics, QPen
 from python_qt_binding.QtCore import Qt, QTimer
-
 from python_qt_binding.QtWidgets import (
     QPushButton,
     QWidget,
-    QGridLayout,
-    QRadioButton,
     QHBoxLayout,
     QVBoxLayout,
-    QLineEdit,
     QGroupBox,
-    QProgressBar,
     QFormLayout,
     QLabel,
     QComboBox,
     QCheckBox,
-    QSizePolicy,
-    QSpacerItem,
-    QStackedLayout,
-    QLayout
+    QStackedLayout
 )
-
-from qwt import (
-    QwtPlot,
-    QwtPlotCurve,
-    QwtScaleDraw
-)
-
-from sr_robot_msgs.msg import ShadowPST, BiotacAll
-from sr_gui_fingertip_visualization.plot_units import DataPlotBiotac, DataPlotPST
-
 
 class PSTGraphTab(QWidget):
     def __init__(self, side, parent):
         super().__init__(parent)
         self._side = side
-        self._buffer_size = 500
+        self._buffer_size = 100
         self._initialize_data_structure()
         self._init_graph_layout()
         self.start_timer_and_subscriber()

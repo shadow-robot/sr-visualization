@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>sr_gui_fingertip_visualization</name>
-  <version>0.0.0</version>
+  <version>0.0.1</version>
   <description>The sr_gui_fingertip_visualization</description>
 
   <maintainer email="software@shadowrobot.com">Shadow Software Team</maintainer>

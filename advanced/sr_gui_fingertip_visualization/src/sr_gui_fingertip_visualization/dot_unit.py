@@ -20,19 +20,15 @@ import os
 import rospkg
 import rospy
 
-from python_qt_binding.QtGui import QColor, QPainter, QPaintDevice, QFont, QTextOption
-from python_qt_binding.QtCore import Qt, QTimer, QRectF, QPoint, QSize
+from python_qt_binding.QtGui import QColor, QPainter, QFont
+from python_qt_binding.QtCore import Qt,QPoint
 import numpy as np
 
 from python_qt_binding.QtWidgets import (
     QFormLayout,
-    QPushButton,
     QWidget,
-    QGroupBox,
     QVBoxLayout,
-    QLabel,
-    QTextEdit,
-    QPushButton
+    QLabel
 )
 
 
@@ -66,12 +62,14 @@ class CircleDot(QWidget):
             self._painter.drawText(self._center.x() - 5, self._center.y() + 5, self._index)
         self._painter.end()
 
+    def setColor(self, color):
+        self._color = color
+
 
 class DotUnitGeneric(QWidget):
     def __init__(self, parent, index=None):
         super().__init__(parent=parent)
         self._dot = CircleDot(index=index, parent=self)
-        self._dot.update_color_dot = self._value_to_color
 
     def resize_dot(self, radius):
         self._dot._radius = radius
@@ -85,7 +83,6 @@ class DotUnitGeneric(QWidget):
         raise NotImplementedError
 
     def _value_to_color(self, value):
-        # Overwrite self._dot._color = QColor(r,g,b)
         raise NotImplementedError
 
     def get_dot(self):
@@ -106,7 +103,7 @@ class DotUnitPST(DotUnitGeneric):
         max_color, min_color = 255, 0
         value = max(min_color, min(max_color, (value - self._pst_min)*(max_color-min_color) /
                                    (self._pst_max - self._pst_min) + min_color))
-        self._dot._color = QColor(255-value, 0, value)
+        return QColor(255-value, 0, value)
 
     def _initialize_data_structure(self):
         self._data = dict()
@@ -130,7 +127,7 @@ class DotUnitPST(DotUnitGeneric):
     def update_data(self, data):
         for data_field in self._data_fields:
             self.label[data_field].setText(str(data[data_field]))
-        self._dot.update_color_dot(data['pressure'])
+        self._dot.setColor(self._value_to_color(data['pressure']))
         self.get_dot().update()
 
 
@@ -149,7 +146,7 @@ class DotUnitBiotacSPMinus(DotUnitGeneric):
         r = min(255, max(0, 255 * (value - 1000) / 200))
         g = 0
         b = 255 - r
-        self._dot._color = QColor(r, g, b)
+        self._dot.setColor(QColor(r, g, b))
 
     def _init_widget(self):
         widget_layout = QFormLayout()
@@ -208,7 +205,7 @@ class DotUnitBiotacSPPlus(DotUnitGeneric):
             r = 0
             g = 255 * ((threshold[4] - value) / (threshold[4] - threshold[3]))
             b = 255
-        self._dot._color = QColor(r, g, b)
+        return QColor(r, g, b)
 
     def _init_widget(self):
         main_layout = QVBoxLayout()

@@ -20,7 +20,7 @@ import numpy as np
 import rospy
 
 from python_qt_binding.QtGui import QPen, QColor
-from python_qt_binding.QtCore import Qt, QTimer
+from python_qt_binding.QtCore import Qt
 
 from qwt import (
     QwtPlot,
