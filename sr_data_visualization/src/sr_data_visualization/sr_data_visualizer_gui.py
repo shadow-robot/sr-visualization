@@ -20,7 +20,6 @@ import rospy
 import sys
 
 from rqt_gui_py.plugin import Plugin
-from sr_data_visualization.data_plot import GenericDataPlot
 from sensor_msgs.msg import JointState
 from python_qt_binding.QtCore import Qt
 
