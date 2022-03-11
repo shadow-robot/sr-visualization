@@ -1,0 +1,3 @@
+<launch>
+  <node pkg="sr_data_visualization" type="sr_gui_fingertip_visualization.py" name="fingertip_gui" output="screen"/>
+</launch>
