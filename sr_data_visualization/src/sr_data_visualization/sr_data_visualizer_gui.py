@@ -27,10 +27,9 @@ from python_qt_binding.QtWidgets import (
     QTabWidget,
     QVBoxLayout,
     QPushButton,
-    QMessageBox
+    QMessageBox,
+    QLabel
 )
-
-from sr_utilities.hand_finder import HandFinder
 
 from sr_data_visualization.data_tab import (
     GenericDataTab,
@@ -45,6 +44,9 @@ from rqt_gui_py.plugin import Plugin
 
 from sr_data_visualization.data_plot import GenericDataPlot
 
+from sensor_msgs.msg import JointState
+from control_msgs.msg import JointTrajectoryControllerState
+
 
 class SrDataVisualizer(Plugin):
     TITLE = "Data Visualizer"
@@ -53,13 +55,22 @@ class SrDataVisualizer(Plugin):
         super().__init__(context)
 
         self.context = context
-
-        self._hand_finder = HandFinder()
-        self._hand_parameters = self._hand_finder.get_hand_parameters()
-        self.joint_prefix = next(iter(list(self._hand_parameters.joint_prefix.values())))
-        self.hand_joints = self._hand_finder.get_hand_joints()
-
         self.init_ui()
+
+    def _detect_hand_id_and_joints(self):
+        self.joint_prefix = None
+        self.hand_joints = None
+        for prefix in ["rh_", "lh_"]:
+            try:
+                rospy.wait_for_message("/{}trajectory_controller/state".format(prefix),
+                                       JointTrajectoryControllerState, timeout=1)
+                self.joint_prefix = prefix
+                joint_states_msg = rospy.wait_for_message("/joint_states", JointState, timeout=1)
+                self.hand_joints = {self.joint_prefix[:-1]: [hand_joint for hand_joint in [joint_states_msg.name]][0]}
+                rospy.logwarn(self.joint_prefix)
+                return True
+            except rospy.exceptions.ROSException:
+                return False
 
     def init_ui(self):
         self._widget = QWidget()
@@ -79,9 +90,14 @@ class SrDataVisualizer(Plugin):
         # Create info button on the top right of the gui
         self.information_btn = QPushButton("Info")
         self.layout.addWidget(self.information_btn, alignment=Qt.AlignRight)
+        self.information_btn.clicked.connect(self.display_information)
+        self.tab_container = QTabWidget()
+
+        if not self._detect_hand_id_and_joints():
+            self.layout.addWidget(QLabel("No hand connected or ROS bag is not playing"), alignment=Qt.AlignCenter)
+            return
 
         # Initialize tabs
-        self.tab_container = QTabWidget()
         self.layout.addWidget(self.tab_container)
 
         # Create tabs
@@ -92,9 +108,9 @@ class SrDataVisualizer(Plugin):
         self.create_tab("Palm Extras")
 
         self.tab_container.currentChanged.connect(self.tab_changed)
-        self.information_btn.clicked.connect(self.display_information)
 
     def create_tab(self, tab_name):
+
         if tab_name == "Joint States":
             self.tab_created = JointStatesDataTab(tab_name, self.hand_joints,
                                                   self.joint_prefix, parent=self.tab_container)
