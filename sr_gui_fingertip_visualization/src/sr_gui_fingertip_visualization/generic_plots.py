@@ -45,16 +45,17 @@ class Trace():
 
 
 class GenericDataPlot(QwtPlot):
-    _GRAPH_MINW = 150
-    _GRAPH_MINH = 50
+    _GRAPH_MINW = 50
+    _GRAPH_MINH = 30
 
     def __init__(self, data, colors):
         super().__init__()
         self._colors = colors
-        self.setMinimumSize(self._GRAPH_MINW, self._GRAPH_MINH)
         self.setCanvasBackground(Qt.white)
-        self.axisScaleDraw(QwtPlot.xBottom).enableComponent(QwtScaleDraw.Labels, False)
-        self.axisScaleDraw(QwtPlot.yLeft).enableComponent(QwtScaleDraw.Labels, False)
+        #self.setMinimumSize(self._GRAPH_MINW, self._GRAPH_MINH)
+        #rospy.logwarn(self.size) 
+        #self.axisScaleDraw(QwtPlot.xBottom).enableComponent(QwtScaleDraw.Labels, False)
+        #self.axisScaleDraw(QwtPlot.yLeft).enableComponent(QwtScaleDraw.Labels, False)
         self._traces = dict()
         self.generate_plots(data)
 
@@ -68,10 +69,10 @@ class GenericDataPlot(QwtPlot):
             for data_field in self._data_fields:
                 self._traces[data_field].get_plot().detach()
                 if data_field in selected_traces:                        
-                    self.axisScaleDraw(QwtPlot.yLeft).enableComponent(QwtScaleDraw.Labels, True)
-                    self.axisAutoScale(QwtPlot.yLeft)
+                    #self.axisScaleDraw(QwtPlot.yLeft).enableComponent(QwtScaleDraw.Labels, True)
+                    #self.axisAutoScale(QwtPlot.yLeft)
                     self._traces[data_field].get_plot().attach(self)   
-                       
+
     def update_plot(self, data):
         for data_field in list(data.keys()):
             self._traces[data_field].update_trace_data(data[data_field])

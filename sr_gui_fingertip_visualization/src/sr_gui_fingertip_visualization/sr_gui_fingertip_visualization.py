@@ -32,8 +32,8 @@ from python_qt_binding.QtWidgets import (
     QLabel
 )
 
-from sr_gui_fingertip_visualization.visual_tab_layouts import VisualizationTab
-from sr_gui_fingertip_visualization.graph_tab_layouts import GraphTab
+from sr_gui_fingertip_visualization.tab_layouts_visual import VisualizationTab
+from sr_gui_fingertip_visualization.tab_layouts_graph import GraphTab
 
 class SrFingertipVisualizer(Plugin):
     TITLE = "Fingertip Visualizer"

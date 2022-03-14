@@ -24,7 +24,7 @@ from python_qt_binding.QtWidgets import (
     QLabel
 )
 
-from sr_gui_fingertip_visualization.generic_tactile_point import TactilePointGeneric
+from sr_gui_fingertip_visualization.tactile_point_generic import TactilePointGeneric
 
 
 class TactilePointPST(TactilePointGeneric):
