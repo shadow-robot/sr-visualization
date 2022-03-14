@@ -19,7 +19,7 @@ from __future__ import absolute_import, division
 from python_qt_binding.QtGui import QColor, QPainter
 from python_qt_binding.QtCore import QPoint
 from python_qt_binding.QtWidgets import QWidget
-
+import rospy
 
 class TactilePoint(QWidget):
 
@@ -30,7 +30,7 @@ class TactilePoint(QWidget):
         super().__init__(parent=parent)
         self._color = QColor(0, 0, 0)
         self._text_color = QColor(0, 0, 0)
-        self._painter = QPainter(self)
+        self._painter = QPainter()
         self._index = str(index)
 
         self._radius = self._INIT_RADIUS
