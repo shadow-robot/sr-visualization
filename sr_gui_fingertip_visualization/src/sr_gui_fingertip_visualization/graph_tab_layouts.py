@@ -233,8 +233,8 @@ class BiotacGraphTab(GenericGraphTab):
             self._plot[finger].show_traces(traces_to_show)    
 
 class GraphTab(QWidget):
-    def __init__(self, parent, tactile_topics):
-        super().__init__(parent=parent)
+    def __init__(self, tactile_topics):
+        super().__init__()
         self._tactile_topics = tactile_topics
         self._init_layout()
         self._create_connections()

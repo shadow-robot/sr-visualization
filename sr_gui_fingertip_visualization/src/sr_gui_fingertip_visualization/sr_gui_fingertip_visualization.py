@@ -85,11 +85,11 @@ class SrFingertipVisualizer(Plugin):
 
     def create_tab(self, tab_name):
         if tab_name == "Visualizer":
-            tab = VisualizationTab(self._widget, self._tactile_topics)
+            tab = VisualizationTab(self._tactile_topics)
             self.tab_container.addTab(tab, tab_name)
 
         elif tab_name == "Graphs":
-            tab = GraphTab(self._widget, self._tactile_topics)
+            tab = GraphTab(self._tactile_topics)
             self.tab_container.addTab(tab, tab_name)
 
     def tab_changed(self, index):

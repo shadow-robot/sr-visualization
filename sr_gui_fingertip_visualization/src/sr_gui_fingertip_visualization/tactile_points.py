@@ -140,7 +140,6 @@ class TactilePointBiotacSPPlus(TactilePointGeneric):
         self.setLayout(widget_layout)
 
     def update_data(self, data):
-        self._electrode_label.setText(str(data['electrode']))
-        #check change data['electrode'] <- data
-        self.get_dot().set_color(self._value_to_color(data['electrode']))
+        self._electrode_label.setText(str(data))
+        self.get_dot().set_color(self._value_to_color(data))
         self.get_dot().update()
