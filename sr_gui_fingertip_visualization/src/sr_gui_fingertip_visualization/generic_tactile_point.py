@@ -74,9 +74,6 @@ class TactilePointGeneric(QWidget):
         super().__init__(parent=parent)
         self._dot = TactilePoint(index=index, parent=self)
 
-    def _initialize_data_structure(self):
-        raise NotImplementedError
-
     def _init_widget(self):
         raise NotImplementedError
 

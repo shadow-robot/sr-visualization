@@ -21,7 +21,6 @@ from python_qt_binding.QtGui import QColor, QFont
 from python_qt_binding.QtCore import Qt
 from python_qt_binding.QtWidgets import (
     QFormLayout,
-    QVBoxLayout,
     QLabel
 )
 
@@ -31,8 +30,8 @@ from sr_gui_fingertip_visualization.generic_tactile_point import TactilePointGen
 class TactilePointPST(TactilePointGeneric):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.get_dot().resize_dot(25)
-        self._initialize_data_structure()        
+        self._data_fields = ['pressure', 'temperature']
+        self.get_dot().resize_dot(25)    
         self._init_widget()
 
     def _value_to_color(self, value):
@@ -41,10 +40,6 @@ class TactilePointPST(TactilePointGeneric):
         value = max(min_color, min(max_color, (value - pst_min)*(max_color-min_color) /
                                    (pst_max - pst_min) + min_color))
         return QColor(255-value, 0, value)
-
-    def _initialize_data_structure(self):
-        self._data_fields = ['pressure', 'temperature']
-        self._data = dict.fromkeys(self._data_fields, 0)
 
     def _init_widget(self):
         data_layout = QFormLayout()
@@ -66,12 +61,9 @@ class TactilePointPST(TactilePointGeneric):
 class TactilePointBiotacSPMinus(TactilePointGeneric):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self._initialize_data_structure()
+        self._data_fields = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
         self.get_dot().resize_dot(20)
         self._init_widget()
-
-    def _initialize_data_structure(self):
-        self._data_fields = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
 
     def _value_to_color(self, value):
         # to change value (1000 and 200) as its taken from the topic
@@ -93,8 +85,6 @@ class TactilePointBiotacSPMinus(TactilePointGeneric):
             self._data_labels[data_field].setMinimumSize(40, 10)
             self._data_labels[data_field].setSizePolicy(2, 2)
             widget_layout.addRow(QLabel(data_field+":"), self._data_labels[data_field])
-
-        #self.setMinimumSize(100, 200)
         self.setLayout(widget_layout)
 
     def update_data(self, data):
@@ -107,11 +97,8 @@ class TactilePointBiotacSPMinus(TactilePointGeneric):
 class TactilePointBiotacSPPlus(TactilePointGeneric):
     def __init__(self, electrode_index, parent=None):
         super().__init__(index=electrode_index, parent=parent)
-        self._initialize_data_structure(electrode_index)
-        self._init_widget()
-
-    def _initialize_data_structure(self, electrode_index):
         self.electrode_index = electrode_index
+        self._init_widget()
 
     def _value_to_color(self, value):
         r = 0.0
@@ -144,16 +131,16 @@ class TactilePointBiotacSPPlus(TactilePointGeneric):
         widget_layout.setLabelAlignment(Qt.AlignCenter)
         widget_layout.setFormAlignment(Qt.AlignCenter)
 
-        self.electrode_label = QLabel("-", alignment=Qt.AlignCenter)
-        self.electrode_label.setFont(QFont('Arial', 8))
+        self._electrode_label = QLabel("-", alignment=Qt.AlignCenter)
+        self._electrode_label.setFont(QFont('Arial', 8))
 
         widget_layout.addRow(self.get_dot())
-        widget_layout.addRow(self.electrode_label)
+        widget_layout.addRow(self._electrode_label)
 
         self.setLayout(widget_layout)
 
     def update_data(self, data):
-        self.electrode_label.setText(str(data['electrode']))
+        self._electrode_label.setText(str(data['electrode']))
         #check change data['electrode'] <- data
         self.get_dot().set_color(self._value_to_color(data['electrode']))
         self.get_dot().update()

@@ -22,7 +22,7 @@ import rospkg
 from sr_robot_msgs.msg import ShadowPST, BiotacAll
 from sr_gui_fingertip_visualization.generic_plots import GenericDataPlot
 
-from python_qt_binding.QtCore import Qt, QTimer
+from python_qt_binding.QtCore import QTimer
 from python_qt_binding.QtGui import QIcon, QColor
 from python_qt_binding.QtWidgets import (
     QPushButton,
@@ -75,10 +75,18 @@ class GenericGraphTab(QWidget):
         self.start_timer_and_subscriber()     
 
     def _init_graph_layout(self):
-        self.finger_complete_layout = QHBoxLayout()
+        finger_complete_layout = QHBoxLayout()
         for finger in ['th', 'ff', 'mf', 'rf', 'lf']:
-            self.finger_complete_layout.addWidget(self._init_finger_widget(finger))
-        self.setLayout(self.finger_complete_layout)       
+            self._finger_frame[finger] = QGroupBox(finger)
+            self._finger_frame[finger].setCheckable(True)
+            self._finger_frame[finger].setSizePolicy(1, 1)
+            
+            self._data_selection[finger] = QHBoxLayout()
+            self._data_selection_checkboxes[finger] = dict()
+
+            finger_complete_layout.addWidget(self._init_finger_widget(finger))
+
+        self.setLayout(finger_complete_layout)       
 
     def _initialize_data_structure(self):
         raise NotImplementedError("The function _initialize_data_structure must be implemented")
@@ -99,22 +107,12 @@ class PSTGraphTab(GenericGraphTab):
 
     def _init_finger_widget(self, finger):
 
-        self._finger_frame[finger] = QGroupBox(finger)
-        self._finger_frame[finger].setCheckable(True)
-        self._finger_frame[finger].setSizePolicy(1, 1)
-        #self._finger_frame[finger].setMinimumSize(50,50)
-
-        finger_layout = QVBoxLayout()
-        #finger_layout.setAlignment(Qt.AlignTop)
-
-        self._data_selection[finger] = QHBoxLayout()
-        self._data_selection_checkboxes[finger] = dict()
-
         for data_field in self._data_fields:
             self._data_selection_checkboxes[finger][data_field] = QCheckBox(data_field)
             self._data_selection_checkboxes[finger][data_field].setIcon(self._legend_colors[data_field]['icon'])
             self._data_selection[finger].addWidget(self._data_selection_checkboxes[finger][data_field])
-        
+
+        finger_layout = QVBoxLayout() 
         finger_layout.addLayout(self._data_selection[finger])
 
         self._plot[finger] = GenericDataPlot(self._data[finger], self._legend_colors)
@@ -169,21 +167,11 @@ class BiotacGraphTab(GenericGraphTab):
 
     def _init_finger_widget(self, finger):
 
-        self._finger_frame[finger] = QGroupBox(finger)
-        self._finger_frame[finger].setCheckable(True)
-        self._finger_frame[finger].setSizePolicy(1, 1)
-
-        finger_layout = QVBoxLayout()
-        #finger_layout.setAlignment(Qt.AlignTop)
-
-        self._data_selection_checkboxes[finger] = dict()
-
         group_box_pressure = QGroupBox("Pressure", self)
         layout_pressure = QHBoxLayout()
         group_box_temperature = QGroupBox("Temperature", self)        
         layout_temperature = QHBoxLayout()
-
-        data_selection_layout = QVBoxLayout()
+        
         for data_field in self._data_fields:
             self._data_selection_checkboxes[finger][data_field] = QCheckBox(data_field)
             self._data_selection_checkboxes[finger][data_field].setIcon(self._legend_colors[data_field]['icon'])
@@ -195,10 +183,11 @@ class BiotacGraphTab(GenericGraphTab):
         group_box_pressure.setLayout(layout_pressure)
         group_box_temperature.setLayout(layout_temperature)
     
-        data_selection_layout.addWidget(group_box_pressure)
-        data_selection_layout.addWidget(group_box_temperature)
+        self._data_selection[finger].addWidget(group_box_pressure)
+        self._data_selection[finger].addWidget(group_box_temperature)
 
-        finger_layout.addLayout(data_selection_layout)
+        finger_layout = QVBoxLayout()
+        finger_layout.addLayout(self._data_selection[finger])
 
         self._plot[finger] = GenericDataPlot(self._data[finger], self._legend_colors)
         self._plot[finger].setMinimumSize(50, 50)
@@ -252,30 +241,30 @@ class GraphTab(QWidget):
 
     def _init_layout(self):
 
-        self.finger_layout = QVBoxLayout(self)
+        finger_layout = QVBoxLayout(self)
 
-        self.options_layout_groupbbox = QGroupBox("Options")
-        self.options_layout_groupbbox.setSizePolicy(1, 2)
-        self.options_layout = QHBoxLayout()
+        options_layout_groupbbox = QGroupBox("Options")
+        options_layout_groupbbox.setSizePolicy(1, 2)
+        options_layout = QHBoxLayout()
 
-        self.hand_id_selection_layout = QFormLayout()
+        hand_id_selection_layout = QFormLayout()
         self.hand_id_selection = QComboBox()
         self.hand_id_selection.addItems(self._tactile_topics.keys())
-        self.hand_id_selection_layout.addRow(QLabel("Hand ID:"), self.hand_id_selection)
+        hand_id_selection_layout.addRow(QLabel("Hand ID:"), self.hand_id_selection)
 
-        self.finger_selection_label = QLabel("Finger selection:")
+        finger_selection_label = QLabel("Finger selection:")
         self.finger_selection_show_selected_button = QPushButton("Show selected")
         self.finger_selection_show_selected_button.setSizePolicy(2, 2)
         self.finger_selection_show_all_button = QPushButton("Show all")
         self.finger_selection_show_all_button.setSizePolicy(2, 2)
 
-        self.options_layout.addLayout(self.hand_id_selection_layout)
-        self.options_layout.addStretch(1)
-        self.options_layout.addWidget(self.finger_selection_label)
-        self.options_layout.addWidget(self.finger_selection_show_selected_button)
-        self.options_layout.addWidget(self.finger_selection_show_all_button)
+        options_layout.addLayout(hand_id_selection_layout)
+        options_layout.addStretch(1)
+        options_layout.addWidget(finger_selection_label)
+        options_layout.addWidget(self.finger_selection_show_selected_button)
+        options_layout.addWidget(self.finger_selection_show_all_button)
 
-        self.options_layout_groupbbox.setLayout(self.options_layout)
+        options_layout_groupbbox.setLayout(options_layout)
         self.stacked_layout = QStackedLayout(self)
 
         self.fingertip_widget = dict()
@@ -286,9 +275,9 @@ class GraphTab(QWidget):
                 self.fingertip_widget[side] = BiotacGraphTab(side, self)
             self.stacked_layout.addWidget(self.fingertip_widget[side])
 
-        self.finger_layout.addWidget(self.options_layout_groupbbox)
-        self.finger_layout.addLayout(self.stacked_layout)
-        self.setLayout(self.finger_layout)
+        finger_layout.addWidget(options_layout_groupbbox)
+        finger_layout.addLayout(self.stacked_layout)
+        self.setLayout(finger_layout)
 
         self._current_side = list(self._tactile_topics.keys())[0]
         #self._start_selected_widget(self.fingertip_widget[self._current_side])

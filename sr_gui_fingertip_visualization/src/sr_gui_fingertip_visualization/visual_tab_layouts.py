@@ -39,14 +39,13 @@ from sr_robot_msgs.msg import ShadowPST, BiotacAll
 class GenericTabLayout(QWidget):
     def __init__(self, parent):
         super().__init__()
-        self.parent = parent
 
         self._subscriber = None
         self._fingers = ["ff", 'mf', 'rf', 'lf', 'th']
         self._finger_frame = dict()
         self._finger_widgets = dict()
         self._timer = QTimer(self)
-
+    
     def _init_tactile_layout(self):
         raise NotImplementedError("The function _init_tactile_layout must be implemented")
 
@@ -55,6 +54,11 @@ class GenericTabLayout(QWidget):
 
     def _initialize_data_structure(self):
         raise NotImplementedError("The function _initialize_data_structure must be implemented")
+
+    def stop_timer_and_subscriber(self):
+        self._timer.stop()
+        if self._subscriber:
+            self._subscriber.unregister()
 
     def get_finger_frames(self):
         return self._finger_frame
@@ -69,21 +73,12 @@ class PSTVisualizationTab(GenericTabLayout):
 
     def _initialize_data_structure(self):
         self._data_fields = ['pressure', 'temperature']
-        self._data = dict()
-        for finger in self._fingers:
-            self._data[finger] = dict()
-            for data_field in self._data_fields:
-                self._data[finger][data_field] = 0
+        self._data = dict.fromkeys(self._fingers, dict.fromkeys(self._data_fields, 0))
 
     def start_timer_and_subscriber(self):
         self._subscriber = rospy.Subscriber('/{}/tactile'.format(self._side), ShadowPST, self._tactile_data_callback)
         self._timer.timeout.connect(self.timerEvent)
         self._timer.start(10)
-
-    def stop_timer_and_subscriber(self):
-        self._timer.stop()
-        if self._subscriber:
-            self._subscriber.unregister()
 
     def _tactile_data_callback(self, data):
         for i, finger in enumerate(self._fingers):
@@ -142,11 +137,8 @@ class BiotacVisualizationTab(GenericTabLayout):
 
     def _initialize_data_structure(self):
         self._data_fields = ['pac0', 'pac1', 'pac', 'pdc', 'tac', 'tdc', 'electrodes']
-        self._data = dict()
-        self._data_labels = dict()
-        for finger in self._fingers:
-            self._data[finger] = dict()
-            self._data_labels[finger] = dict()
+        self._data = dict.fromkeys(self._fingers, dict())
+        self._data_labels = dict.fromkeys(self._fingers, dict())
 
         self._tactile_data_callback(rospy.wait_for_message('/{}/tactile'.format(self._side), BiotacAll))
 
@@ -193,10 +185,10 @@ class BiotacVisualizationTab(GenericTabLayout):
                     self._data[finger][data_field] = list(data.tactiles[i].electrodes)
 
     def _init_tactile_layout(self):
-        self.finger_complete_layout = QHBoxLayout()
+        finger_complete_layout = QHBoxLayout()
         for finger in ['th', 'ff', 'mf', 'rf', 'lf']:
-            self.finger_complete_layout.addWidget(self._init_finger_widget(finger))
-        self.setLayout(self.finger_complete_layout)
+            finger_complete_layout.addWidget(self._init_finger_widget(finger))
+        self.setLayout(finger_complete_layout)
 
     def _init_finger_widget(self, finger):
         self._finger_frame[finger] = QGroupBox(finger)
@@ -215,11 +207,11 @@ class BiotacVisualizationTab(GenericTabLayout):
         detected_fingertip_type = self._detect_biotac_type(finger)
 
         if detected_fingertip_type == BiotacType.SP_PLUS:
-            self._finger_widgets[finger] = [QWidget()] * len(self._coordinates[self._version]['sensing']['x'])
+            self._finger_widgets[finger] = list()
             container_widget = QWidget()
             container_widget.setMinimumSize((max_x) * 50, ((max_y) * 19))
             for i, (x, y) in enumerate(zip(x_cords, y_cords)):
-                self._finger_widgets[finger][i] = TactilePointBiotacSPPlus(i, container_widget)
+                self._finger_widgets[finger].append(TactilePointBiotacSPPlus(i, container_widget))
                 self._finger_widgets[finger][i].move((x + min_x) * 20, ((y - y_offset - min_y / 2) * 20))
             layout.addWidget(container_widget, alignment=Qt.AlignCenter)
 
@@ -273,16 +265,16 @@ class BiotacVisualizationTab(GenericTabLayout):
     def timerEvent(self):
         for finger in self._fingers:
             if self._finger_frame[finger].isChecked():
-                if type(self._finger_widgets[finger]) == list:
+                if isinstance(self._finger_widgets[finger], list):
                     for electrode in range(self._electrode_count):
-                        if type(self._finger_widgets[finger][electrode]) == TactilePointBiotacSPPlus:
+                        if isinstance(self._finger_widgets[finger][electrode], TactilePointBiotacSPPlus):
                             if electrode < len(self._data[finger][self._datatype_to_display]):
                                 try:
                                     value = self._data[finger][self._datatype_to_display]
                                     self._finger_widgets[finger][electrode].update_data(value)
                                     self._finger_widgets[finger][electrode].show()
                                 except Exception:
-                                    pass
+                                    rospy.logwarn("issue")
                             else:
                                 self._finger_widgets[finger][electrode].hide()
 
@@ -292,7 +284,7 @@ class BiotacVisualizationTab(GenericTabLayout):
                     self._data_labels[finger]['tac'].setText("tac:{}".format(self._data[finger]['tac']))
                     self._data_labels[finger]['tdc'].setText("tdc:{}".format(self._data[finger]['tdc']))
 
-                elif type(self._finger_widgets[finger]) == TactilePointBiotacSPMinus:
+                elif isinstance(self._finger_widgets[finger], TactilePointBiotacSPMinus):
                     self._finger_widgets[finger].update_data(self._data[finger])
 
 
@@ -305,33 +297,33 @@ class VisualizationTab(QWidget):
 
     def _init_layout(self):
 
-        self.finger_layout = QVBoxLayout(self)
+        finger_layout = QVBoxLayout(self)
 
-        self.options_layout_groupbbox = QGroupBox("Options")
-        self.options_layout_groupbbox.setSizePolicy(1, 2)
-        self.options_layout = QHBoxLayout()
+        options_layout_groupbbox = QGroupBox("Options")
+        options_layout_groupbbox.setSizePolicy(1, 2)
+        options_layout = QHBoxLayout()
 
-        self.hand_id_selection_layout = QFormLayout()
+        hand_id_selection_layout = QFormLayout()
         self.hand_id_selection = QComboBox()
         self.hand_id_selection.addItems(self._tactile_topics.keys())
-        self.hand_id_selection_layout.addRow(QLabel("Hand ID:"), self.hand_id_selection)
+        hand_id_selection_layout.addRow(QLabel("Hand ID:"), self.hand_id_selection)
 
         self.data_type_selection_button = QPushButton("Show pac")
 
-        self.finger_selection_label = QLabel("Finger selection:")
+        finger_selection_label = QLabel("Finger selection:")
         self.finger_selection_show_selected_button = QPushButton("Show selected")
         self.finger_selection_show_selected_button.setSizePolicy(2, 2)
         self.finger_selection_show_all_button = QPushButton("Show all")
         self.finger_selection_show_all_button.setSizePolicy(2, 2)
 
-        self.options_layout.addLayout(self.hand_id_selection_layout)
-        self.options_layout.addStretch(1)
-        self.options_layout.addWidget(self.data_type_selection_button)
-        self.options_layout.addWidget(self.finger_selection_label)
-        self.options_layout.addWidget(self.finger_selection_show_selected_button)
-        self.options_layout.addWidget(self.finger_selection_show_all_button)
+        options_layout.addLayout(hand_id_selection_layout)
+        options_layout.addStretch(1)
+        options_layout.addWidget(self.data_type_selection_button)
+        options_layout.addWidget(finger_selection_label)
+        options_layout.addWidget(self.finger_selection_show_selected_button)
+        options_layout.addWidget(self.finger_selection_show_all_button)
 
-        self.options_layout_groupbbox.setLayout(self.options_layout)
+        options_layout_groupbbox.setLayout(options_layout)
         self.stacked_layout = QStackedLayout(self)
 
         self.fingertip_widget = dict()
@@ -342,11 +334,11 @@ class VisualizationTab(QWidget):
                 self.fingertip_widget[side] = BiotacVisualizationTab(side, self)
             self.stacked_layout.addWidget(self.fingertip_widget[side])
 
-        self.finger_layout.addWidget(self.options_layout_groupbbox)
-        self.finger_layout.addLayout(self.stacked_layout)
-        self.setLayout(self.finger_layout)
+        finger_layout.addWidget(options_layout_groupbbox)
+        finger_layout.addLayout(self.stacked_layout)
+        self.setLayout(finger_layout)
 
-        self._current_side = list(self._tactile_topics.keys())[0]
+        self._current_side = next(iter(self._tactile_topics.keys()))
         self._start_selected_widget(self.fingertip_widget[self._current_side])
 
     def _create_connections(self):
@@ -371,7 +363,6 @@ class VisualizationTab(QWidget):
 
     def _button_action_data_type_selection(self):
         self._data_type_options_to_display = ["pac", "electrodes"]
-        fingertip_widgets = self.fingertip_widget[self._current_side].get_finger_frames()
         if isinstance(self.fingertip_widget[self._current_side], BiotacVisualizationTab):
             for datatype in self._data_type_options_to_display:
                 if datatype in self.data_type_selection_button.text():

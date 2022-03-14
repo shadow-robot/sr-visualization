@@ -48,8 +48,8 @@ class SrFingertipVisualizer(Plugin):
         type_right = rostopic.get_topic_type("/rh/tactile")
         type_left = rostopic.get_topic_type("/lh/tactile")
 
-        self._hand_ids = [i[1].split('/')[1] for i in [type_right, type_left] if i[1]]
-        self._types = [i[0].split('/')[1] for i in [type_right, type_left] if i[1]]
+        self._hand_ids = [topic_data[1].split('/')[1] for topic_data in [type_right, type_left] if topic_data[1]]
+        self._types = [topic_data[0].split('/')[1] for topic_data in [type_right, type_left] if topic_data[1]]
         self._tactile_topics = dict(zip(self._hand_ids, self._types))
 
     def _init_ui(self):
@@ -67,15 +67,15 @@ class SrFingertipVisualizer(Plugin):
 
     def fill_layout(self):
         # Create info button on the top right of the gui
-        self.information_btn = QPushButton("Info")
-        self.main_layout.addWidget(self.information_btn, alignment=Qt.AlignRight)
+        information_btn = QPushButton("Info")
+        self.main_layout.addWidget(information_btn, alignment=Qt.AlignRight)
 
         self.tab_container = QTabWidget()
         self.tab_container.currentChanged.connect(self.tab_changed)
-        self.information_btn.clicked.connect(self.display_information)
+        information_btn.clicked.connect(self.display_information)
 
         if not list(self._tactile_topics.keys()):
-            label = QLabel("No tactiles", self.tab_container)
+            label = QLabel("No tactiles", parent=self.tab_container)
             label.setSizePolicy(1,1)            
             self.main_layout.addWidget(label, alignment=Qt.AlignCenter)
         else:
@@ -85,12 +85,12 @@ class SrFingertipVisualizer(Plugin):
 
     def create_tab(self, tab_name):
         if tab_name == "Visualizer":
-            self.tab_created = VisualizationTab(self._widget, self._tactile_topics)
-            self.tab_container.addTab(self.tab_created, tab_name)
+            tab = VisualizationTab(self._widget, self._tactile_topics)
+            self.tab_container.addTab(tab, tab_name)
 
         elif tab_name == "Graphs":
-            self.tab_created = GraphTab(self._widget, self._tactile_topics)
-            self.tab_container.addTab(self.tab_created, tab_name)
+            tab = GraphTab(self._widget, self._tactile_topics)
+            self.tab_container.addTab(tab, tab_name)
 
     def tab_changed(self, index):
         pass
