@@ -40,14 +40,14 @@ from python_qt_binding.QtWidgets import (
 
 class GenericGraphTab(QWidget):
     def __init__(self, side, parent):
-        super().__init__(parent)
+        super().__init__(parent=parent)
 
         self._side = side
         self._buffer_size = 100
         self._fingers = ['ff', 'mf', 'rf', 'lf', 'th']        
         self._data = dict()
         self._timer = QTimer()
-        self._finger_frame = dict()
+        self._finger_widgets = dict()
         self._data_selection = dict()
         self._data_selection_checkboxes = dict()
         self._plot = dict()
@@ -71,39 +71,22 @@ class GenericGraphTab(QWidget):
             self._legend_colors[data_field]['icon'] = self.ICONS[available_colors[i]]
             self._legend_colors[data_field]['plot_color'] = QColor(available_colors[i])
 
-        self._init_graph_layout()
-        self.start_timer_and_subscriber()     
-
-    def _init_graph_layout(self):
-        finger_complete_layout = QHBoxLayout()
-        for finger in ['th', 'ff', 'mf', 'rf', 'lf']:
-            self._finger_frame[finger] = QGroupBox(finger)
-            self._finger_frame[finger].setCheckable(True)
-            self._finger_frame[finger].setSizePolicy(1, 1)
-            
-            self._data_selection[finger] = QHBoxLayout()
-            self._data_selection_checkboxes[finger] = dict()
-
-            finger_complete_layout.addWidget(self._init_finger_widget(finger))
-
-        self.setLayout(finger_complete_layout)       
-
     def _initialize_data_structure(self):
         raise NotImplementedError("The function _initialize_data_structure must be implemented")
+
     def start_timer_and_subscriber(self):
         raise NotImplementedError("The function start_timer_and_subscriber must be implemented")
 
-    def get_finger_frames(self):
-        return self._finger_frame
+    def get_finger_widgets(self):
+        return self._finger_widgets
 
 
 class GenericTabLayout(QWidget):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent):
+        super().__init__(parent=parent)
 
         self._subscriber = None
         self._fingers = ["ff", 'mf', 'rf', 'lf', 'th']
-        self._finger_frame = dict()
         self._finger_widgets = dict()
         self._timer = QTimer(self)
     
@@ -121,5 +104,5 @@ class GenericTabLayout(QWidget):
         if self._subscriber:
             self._subscriber.unregister()
 
-    def get_finger_frames(self):
-        return self._finger_frame
+    def get_finger_widgets(self):
+        return self._finger_widgets

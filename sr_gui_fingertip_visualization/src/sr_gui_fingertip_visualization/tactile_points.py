@@ -97,7 +97,7 @@ class TactilePointBiotacSPMinus(TactilePointGeneric):
 class TactilePointBiotacSPPlus(TactilePointGeneric):
     def __init__(self, electrode_index, parent=None):
         super().__init__(index=electrode_index, parent=parent)
-        self.electrode_index = electrode_index
+        self._data_fields = ['pac0', 'pac1', 'pdc', 'tac', 'tdc', 'electrodes', 'pac']
         self._init_widget()
 
     def _value_to_color(self, value):

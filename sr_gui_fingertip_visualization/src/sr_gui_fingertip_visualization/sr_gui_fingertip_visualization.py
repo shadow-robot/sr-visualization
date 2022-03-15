@@ -35,6 +35,7 @@ from python_qt_binding.QtWidgets import (
 from sr_gui_fingertip_visualization.tab_layouts_visual import VisualizationTab
 from sr_gui_fingertip_visualization.tab_layouts_graph import GraphTab
 
+
 class SrFingertipVisualizer(Plugin):
     TITLE = "Fingertip Visualizer"
 
@@ -80,6 +81,7 @@ class SrFingertipVisualizer(Plugin):
             self.main_layout.addWidget(label, alignment=Qt.AlignCenter)
         else:
             self.create_tab("Visualizer")
+            #self.create_tab("Visualizer")
             self.create_tab("Graphs")
             self.main_layout.addWidget(self.tab_container)
 
@@ -93,7 +95,8 @@ class SrFingertipVisualizer(Plugin):
             self.tab_container.addTab(tab, tab_name)
 
     def tab_changed(self, index):
-        pass
+        tab = self.tab_container.widget(index)
+        rospy.logwarn(tab)
 
     def display_information(self, message):
         message = "To be defined"
@@ -105,7 +108,8 @@ class SrFingertipVisualizer(Plugin):
         msg.exec_()
 
     def shutdown_plugin(self):
-        pass
+        for i in range(self.tab_container.count()):
+            finger_widgets = self.tab_container.widget(i).findChildren(VisualizationTab)
 
 
 if __name__ == "__main__":

@@ -73,6 +73,10 @@ class TactilePointGeneric(QWidget):
     def __init__(self, parent, index=None):
         super().__init__(parent=parent)
         self._dot = TactilePoint(index=index, parent=self)
+        self._data_fields = None
+
+    def get_data_fields(self):
+        return self._data_fields
 
     def _init_widget(self):
         raise NotImplementedError

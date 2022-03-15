@@ -78,3 +78,4 @@ class GenericDataPlot(QwtPlot):
             self._traces[data_field].update_trace_data(data[data_field])
 
 
+
