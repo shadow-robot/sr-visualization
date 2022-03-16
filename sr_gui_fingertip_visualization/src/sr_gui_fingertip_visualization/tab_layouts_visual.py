@@ -32,12 +32,17 @@ from python_qt_binding.QtWidgets import (
     QStackedLayout
 )
 
-from sr_gui_fingertip_visualization.tactile_points import TactilePointPST, TactilePointBiotacSPPlus, TactilePointBiotacSPMinus
-from sr_gui_fingertip_visualization.tab_layouts_generic import GenericTabLayout
+from sr_gui_fingertip_visualization.tactile_points import (
+    TactilePointPST,
+    TactilePointBiotacSPPlus,
+    TactilePointBiotacSPMinus
+)
+
+from sr_gui_fingertip_visualization.tab_layouts_generic import GenericGraphTab, GenericTabLayout, GenericOptionBar
 from sr_gui_fingertip_visualization.finger_widgets_visual import (
-    FingerWidgetVisualBiotacSPMinus, 
-    FingerWidgetVisualBiotacSPPlus, 
-    FingerWidgetVisualBiotacBlank, 
+    FingerWidgetVisualBiotacSPMinus,
+    FingerWidgetVisualBiotacSPPlus,
+    FingerWidgetVisualBiotacBlank,
     FingerWidgetVisualPST
 )
 from sr_robot_msgs.msg import ShadowPST, BiotacAll
@@ -60,7 +65,7 @@ class VisualizationTab(QWidget):
             elif tactile_topic == "BiotacAll":
                 self.tactile_widgets[side] = BiotacVisualizationTab(side, parent=self)
             self.stacked_layout.addWidget(self.tactile_widgets[side])
-        self._option_bar = OptionBar(list(self._tactile_topics.keys()), childs=self.stacked_layout)
+        self._option_bar = VisualOptionBar(list(self._tactile_topics.keys()), childs=self.stacked_layout)
         
         finger_layout.addWidget(self._option_bar)
         finger_layout.addLayout(self.stacked_layout)        
@@ -242,49 +247,31 @@ class BiotacSPPlusInfo(QGroupBox):
             self._labels[key].setText(f"{key}:{self._data[key]}") 
 
 
-class OptionBar(QGroupBox):
+class VisualOptionBar(GenericOptionBar):
     def __init__(self, hand_ids, childs):
-        super().__init__()
-        self._childs = childs
-        self._fingers = ["ff", 'mf', 'rf', 'lf', 'th']
+        super().__init__(hand_ids, childs)
+        self.init_layout()
+        self.create_connections()
 
-        self.setTitle("Options")
-        self.setSizePolicy(1, 2)
-
-        options_layout = QHBoxLayout()
-
-        hand_id_selection_layout = QFormLayout()
-        self.hand_id_selection = QComboBox()
-        self.hand_id_selection.addItems(hand_ids)
-        hand_id_selection_layout.addRow(QLabel("Hand ID:"), self.hand_id_selection)
-
+    def init_layout(self):
+        super().init_layout()
         self.data_type_selection_button = QPushButton("Show pac")
+        self.options_layout.addLayout(self.hand_id_selection_layout)
+        self.options_layout.addStretch(1)
+        self.options_layout.addWidget(self.data_type_selection_button)
+        self.options_layout.addWidget(self.finger_selection_label)
+        self.options_layout.addWidget(self.finger_selection_show_selected_button)
+        self.options_layout.addWidget(self.finger_selection_show_all_button)
 
-        finger_selection_label = QLabel("Finger selection:")
-        self.finger_selection_show_selected_button = QPushButton("Show selected")
-        self.finger_selection_show_selected_button.setSizePolicy(2, 2)
-        self.finger_selection_show_all_button = QPushButton("Show all")
-        self.finger_selection_show_all_button.setSizePolicy(2, 2)
-
-        options_layout.addLayout(hand_id_selection_layout)
-        options_layout.addStretch(1)
-        options_layout.addWidget(self.data_type_selection_button)
-        options_layout.addWidget(finger_selection_label)
-        options_layout.addWidget(self.finger_selection_show_selected_button)
-        options_layout.addWidget(self.finger_selection_show_all_button)
-
-        self.setLayout(options_layout)
+        self.setLayout(self.options_layout)
         self._current_widget = self._childs.currentWidget()        
-        self._create_connections()
-
-    def _create_connections(self):
-        self.hand_id_selection.currentIndexChanged.connect(self._combobox_action_hand_id_selection)
+        
+    def create_connections(self):
+        super().create_connections()
         self.data_type_selection_button.clicked.connect(self._button_action_data_type_selection)
-        self.finger_selection_show_selected_button.clicked.connect(self._button_action_show_selected_fingers)
-        self.finger_selection_show_all_button.clicked.connect(self._button_action_show_all)
 
     def _combobox_action_hand_id_selection(self):
-        self._current_widget = self._childs.currentWidget()        
+        self._current_widget = self._childs.currentWidget()       
         self._childs.setCurrentIndex(self.hand_id_selection.currentIndex())
 
     def _button_action_data_type_selection(self):
@@ -295,30 +282,3 @@ class OptionBar(QGroupBox):
                 opposite_option = [option for option in data_type_options_to_display if option is not widget.get_datatype_to_display()][0]
                 widget.change_datatype_to_display(opposite_option)
                 self.data_type_selection_button.setText("Show {}".format(opposite_option))
-
-    def _button_action_show_selected_fingers(self):
-        fingertip_widgets = self._childs.currentWidget().get_finger_widgets()
-        self._selected_fingers = [finger for finger in self._fingers if fingertip_widgets[finger].isChecked()]
-        for finger in self._fingers:
-            if finger in self._selected_fingers:
-                fingertip_widgets[finger].show()
-            else:
-                fingertip_widgets[finger].hide()
-
-    def _button_action_show_all(self):
-        fingertip_widgets = self._childs.currentWidget().get_finger_widgets()
-        self._selected_fingers = [finger for finger in self._fingers if fingertip_widgets[finger].isChecked()]
-        for finger in self._fingers:
-            fingertip_widgets[finger].stop_timer_and_subscriber()
-            fingertip_widgets[finger].setChecked(False)
-            fingertip_widgets[finger].show()
-
-    # to remove
-    def _start_selected_widget(self, selected_widget):
-        for widget_index in range(self._childs.count()):
-            finger_widgets_from_tab = self._childs.currentWidget().get_finger_widgets()
-            for finger, widget in finger_widgets_from_tab.items():
-                if self._childs.currentWidget() == selected_widget:
-                    widget.start_timer_and_subscriber()
-                else:
-                    widget.stop_timer_and_subscriber()

@@ -73,6 +73,8 @@ class FingerWidgetGraphGeneric(QGroupBox):
     def test(self):
         if not self.isChecked():
             self.stop_timer_and_subscriber()
+        else:
+            self.start_timer_and_subscriber()
 
     def stop_timer_and_subscriber(self):
         self._timer.stop()

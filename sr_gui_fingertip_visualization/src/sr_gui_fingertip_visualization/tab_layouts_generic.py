@@ -105,3 +105,65 @@ class GenericTabLayout(QWidget):
 
     def get_finger_widgets(self):
         return self._finger_widgets
+
+
+class GenericOptionBar(QGroupBox):
+    def __init__(self, hand_ids, childs):
+        super().__init__()
+        self._hand_ids = hand_ids
+        self._childs = childs
+        self._fingers = ["ff", 'mf', 'rf', 'lf', 'th']
+        self.setTitle("Options")
+        self.setSizePolicy(1, 2)        
+
+    def init_layout(self):
+        self.options_layout = QHBoxLayout()
+
+        self.hand_id_selection_layout = QFormLayout()
+        self.hand_id_selection = QComboBox()
+        self.hand_id_selection.addItems(self._hand_ids)
+        self.hand_id_selection_layout.addRow(QLabel("Hand ID:"), self.hand_id_selection)
+
+        self.finger_selection_label = QLabel("Finger selection:")
+        self.finger_selection_show_selected_button = QPushButton("Show selected")
+        self.finger_selection_show_selected_button.setSizePolicy(2, 2)
+        self.finger_selection_show_all_button = QPushButton("Show all")
+        self.finger_selection_show_all_button.setSizePolicy(2, 2)
+        
+    def create_connections(self):
+        self.hand_id_selection.currentIndexChanged.connect(self._combobox_action_hand_id_selection)
+        self.finger_selection_show_selected_button.clicked.connect(self._button_action_show_selected_fingers)
+        self.finger_selection_show_all_button.clicked.connect(self._button_action_show_all)
+
+    def _combobox_action_hand_id_selection(self):
+        self._current_widget = self._childs.currentWidget()       
+        self._childs.setCurrentIndex(self.hand_id_selection.currentIndex())
+
+    def _button_action_show_selected_fingers(self):
+        fingertip_widgets = self._childs.currentWidget().get_finger_widgets()
+        self._selected_fingers = [finger for finger in self._fingers if fingertip_widgets[finger].isChecked()]
+        for finger in self._fingers:
+            if finger in self._selected_fingers:
+                fingertip_widgets[finger].start_timer_and_subscriber()
+                fingertip_widgets[finger].show()
+            else:
+                fingertip_widgets[finger].stop_timer_and_subscriber()
+                fingertip_widgets[finger].hide()
+
+    def _button_action_show_all(self):
+        fingertip_widgets = self._childs.currentWidget().get_finger_widgets()
+        self._selected_fingers = [finger for finger in self._fingers if fingertip_widgets[finger].isChecked()]
+        for finger in self._fingers:
+            fingertip_widgets[finger].setChecked(False)
+            fingertip_widgets[finger].stop_timer_and_subscriber()
+            fingertip_widgets[finger].show()
+
+    def _start_selected_widget(self, selected_widget):
+        rospy.logwarn("start_selected from generic")
+        for widget_index in range(self._childs.count()):
+            finger_widgets_from_tab = self._childs.currentWidget().get_finger_widgets()
+            for finger, widget in finger_widgets_from_tab.items():
+                if self._childs.currentWidget() == selected_widget:
+                    widget.start_timer_and_subscriber()
+                else:
+                    widget.start_timer_and_subscriber()
