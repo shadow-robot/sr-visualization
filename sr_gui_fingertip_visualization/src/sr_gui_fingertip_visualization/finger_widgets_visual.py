@@ -316,7 +316,7 @@ class FingerWidgetVisualBiotacBlank(QGroupBox):
         layout = QHBoxLayout()
         no_tactile_label = QLabel()
         no_tactile_label.setText("No tactile sensor")
-        layout.addWidget(no_tactile_label)
+        layout.addWidget(no_tactile_label, alignment=Qt.AlignCenter)
         self.setLayout(layout)
 
     def start_timer_and_subscriber(self):

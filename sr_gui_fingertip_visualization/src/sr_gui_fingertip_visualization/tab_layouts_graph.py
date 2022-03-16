@@ -137,8 +137,6 @@ class OptionBar(QGroupBox):
         self.hand_id_selection.addItems(hand_ids)
         hand_id_selection_layout.addRow(QLabel("Hand ID:"), self.hand_id_selection)
 
-        self.data_type_selection_button = QPushButton("Show pac")
-
         finger_selection_label = QLabel("Finger selection:")
         self.finger_selection_show_selected_button = QPushButton("Show selected")
         self.finger_selection_show_selected_button.setSizePolicy(2, 2)
@@ -147,7 +145,6 @@ class OptionBar(QGroupBox):
 
         options_layout.addLayout(hand_id_selection_layout)
         options_layout.addStretch(1)
-        options_layout.addWidget(self.data_type_selection_button)
         options_layout.addWidget(finger_selection_label)
         options_layout.addWidget(self.finger_selection_show_selected_button)
         options_layout.addWidget(self.finger_selection_show_all_button)
@@ -159,7 +156,6 @@ class OptionBar(QGroupBox):
 
     def _create_connections(self):
         self.hand_id_selection.currentIndexChanged.connect(self._combobox_action_hand_id_selection)
-        self.data_type_selection_button.clicked.connect(self._button_action_data_type_selection)
         self.finger_selection_show_selected_button.clicked.connect(self._button_action_show_selected_fingers)
         self.finger_selection_show_all_button.clicked.connect(self._button_action_show_all)
 
@@ -167,16 +163,6 @@ class OptionBar(QGroupBox):
         self._current_widget = self._childs.currentWidget()        
         self._start_selected_widget(self._current_widget)
         self._childs.setCurrentIndex(self.hand_id_selection.currentIndex())
-
-    def _button_action_data_type_selection(self):
-        self._data_type_options_to_display = ["pac", "electrodes"]
-        if isinstance(self._childs.currentWidget(), BiotacVisualizationTab):
-            for datatype in self._data_type_options_to_display:
-                if datatype in self.data_type_selection_button.text():
-                    self._childs.currentWidget().change_datatype_to_display(datatype)
-                    opposite_option = [i for i in self._data_type_options_to_display if i is not datatype][0]
-                    self.data_type_selection_button.setText("Show {}".format(opposite_option))
-                    break
 
     def _button_action_show_selected_fingers(self):
         fingertip_widgets = self._childs.currentWidget().get_finger_widgets()

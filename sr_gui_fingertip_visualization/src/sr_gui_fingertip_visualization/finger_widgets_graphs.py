@@ -43,7 +43,7 @@ from sr_gui_fingertip_visualization.generic_plots import GenericDataPlot
 
 class FingerWidgetGraphGeneric(QGroupBox):
 
-    _BUFFER_SIZE = 100
+    _BUFFER_SIZE = 350
 
     def __init__(self, finger, side, parent):
         super().__init__(parent=parent)
@@ -58,6 +58,7 @@ class FingerWidgetGraphGeneric(QGroupBox):
         self.setCheckable(True)
         self.setChecked(False)
         self.setSizePolicy(1, 1) 
+        self.clicked.connect(self.test)
 
         ICON_DIR = os.path.join(rospkg.RosPack().get_path('sr_visualization_icons'), 'icons')
         self.plot_descriptors = {
@@ -68,6 +69,10 @@ class FingerWidgetGraphGeneric(QGroupBox):
             'gray': QIcon(os.path.join(ICON_DIR, 'gray.png')),
             'cyan': QIcon(os.path.join(ICON_DIR, 'cyan.png'))
         }
+
+    def test(self):
+        if not self.isChecked():
+            self.stop_timer_and_subscriber()
 
     def stop_timer_and_subscriber(self):
         self._timer.stop()

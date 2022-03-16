@@ -34,6 +34,7 @@ from python_qt_binding.QtWidgets import (
 
 from sr_gui_fingertip_visualization.tab_layouts_visual import VisualizationTab
 from sr_gui_fingertip_visualization.tab_layouts_graph import GraphTab
+from sr_robot_msgs.msg import BiotacAll, ShadowPST
 
 
 class SrFingertipVisualizer(Plugin):
@@ -46,12 +47,24 @@ class SrFingertipVisualizer(Plugin):
         self._init_ui()
 
     def _detect_hand_and_tactile_type(self):
-        type_right = rostopic.get_topic_type("/rh/tactile")
-        type_left = rostopic.get_topic_type("/lh/tactile")
+        self._tactile_topics = None
 
-        self._hand_ids = [topic_data[1].split('/')[1] for topic_data in [type_right, type_left] if topic_data[1]]
-        self._types = [topic_data[0].split('/')[1] for topic_data in [type_right, type_left] if topic_data[1]]
-        self._tactile_topics = dict(zip(self._hand_ids, self._types))
+        try:
+            type_right = rostopic.get_topic_type("/rh/tactile")
+            type_left = rostopic.get_topic_type("/lh/tactile")
+
+            for topic_type in [type_right, type_left]:
+                if topic_type[0]:
+                    rospy.wait_for_message(topic_type[1], rostopic.get_topic_class(topic_type[1])[0], timeout=1)           
+
+            self._hand_ids = [topic_data[1].split('/')[1] for topic_data in [type_right, type_left] if topic_data[1]]
+            self._types = [topic_data[0].split('/')[1] for topic_data in [type_right, type_left] if topic_data[1]]
+            self._tactile_topics = dict(zip(self._hand_ids, self._types))    
+
+        except (rospy.exceptions.ROSException, AttributeError) as e:
+            msg = "No available messages on tactile topic!"
+            rospy.logwarn(msg)
+
 
     def _init_ui(self):
         self._widget = QWidget()
@@ -75,9 +88,10 @@ class SrFingertipVisualizer(Plugin):
         self.tab_container.currentChanged.connect(self.tab_changed)
         information_btn.clicked.connect(self.display_information)
 
-        if not list(self._tactile_topics.keys()):
+        if self._tactile_topics is None:
             label = QLabel("No tactiles", parent=self.tab_container)
             label.setSizePolicy(1,1)            
+            
             self.main_layout.addWidget(label, alignment=Qt.AlignCenter)
         else:
             self.create_tab("Visualizer")
@@ -120,7 +134,6 @@ class SrFingertipVisualizer(Plugin):
             for tactile_widget in tactile_widgets.values():
                 for fingertip_widget in tactile_widget.get_finger_widgets().values():
                     fingertip_widget.stop_timer_and_subscriber()
-                    rospy.logwarn(f"{fingertip_widget}")
 
 
 if __name__ == "__main__":
