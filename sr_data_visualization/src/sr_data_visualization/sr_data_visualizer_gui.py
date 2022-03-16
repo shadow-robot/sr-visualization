@@ -19,9 +19,11 @@ from __future__ import absolute_import
 import rospy
 import sys
 
+from sr_data_visualization.data_plot import GenericDataPlot
 from rqt_gui_py.plugin import Plugin
 from sensor_msgs.msg import JointState
 from python_qt_binding.QtCore import Qt
+
 
 from python_qt_binding.QtWidgets import (
     QWidget,
