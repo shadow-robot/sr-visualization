@@ -40,7 +40,7 @@ from python_qt_binding.QtWidgets import (
 )
 
 
-from sr_gui_fingertip_visualization.finger_widgets_graphs import FingerWidgetGraphPST
+from sr_gui_fingertip_visualization.finger_widgets_graphs import FingerWidgetGraphPST, FingerWidgetGraphBiotac
 
 
 class PSTGraphTab(GenericGraphTab):
@@ -62,26 +62,18 @@ class PSTGraphTab(GenericGraphTab):
         for finger in ['th', 'ff', 'mf', 'rf', 'lf']:
             fingers_layout.addWidget(self._init_finger_widget(finger))
         self.setLayout(fingers_layout)
-        rospy.logwarn("init")
 
     def _init_finger_widget(self, finger):
         self._finger_widgets[finger] = FingerWidgetGraphPST(self._side, finger, self)
         return self._finger_widgets[finger]
 
-    def _tactile_data_callback(self, data):
-        for i, finger in enumerate(self._fingers):
-            for data_field in self._data_fields:
-                if len(self._data[finger][data_field]) >= self._buffer_size:
-                    self._data[finger][data_field] = self._data[finger][data_field][1:]           
-                if data_field == "pressure":
-                    self._data[finger][data_field].append(data.pressure[i]) 
-                elif data_field == "temperature":
-                    self._data[finger][data_field].append(data.temperature[i])    
-
 
 class BiotacGraphTab(GenericGraphTab):
     def __init__(self, side, parent):
         super().__init__(side, parent)
+        self._side = side
+        self.parent = parent
+        self._init_tactile_layout()
        
     def _initialize_data_structure(self):
         self._data_fields = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
@@ -90,51 +82,15 @@ class BiotacGraphTab(GenericGraphTab):
             for data_field in self._data_fields:
                 self._data[finger][data_field] = list()
 
+    def _init_tactile_layout(self):
+        fingers_layout = QHBoxLayout()
+        for finger in ['th', 'ff', 'mf', 'rf', 'lf']:
+            fingers_layout.addWidget(self._init_finger_widget(finger))
+        self.setLayout(fingers_layout)
+
     def _init_finger_widget(self, finger):
-        group_box_pressure = QGroupBox("Pressure", self)
-        layout_pressure = QHBoxLayout()
-        group_box_temperature = QGroupBox("Temperature", self)        
-        layout_temperature = QHBoxLayout()
-        
-        for data_field in self._data_fields:
-            self._data_selection_checkboxes[finger][data_field] = QCheckBox(data_field)
-            self._data_selection_checkboxes[finger][data_field].setIcon(self._legend_colors[data_field]['icon'])
-            if data_field in ['pac0', 'pac1', 'pdc']:
-                layout_pressure.addWidget(self._data_selection_checkboxes[finger][data_field])
-            elif data_field in ['tac', 'tdc']:  
-                layout_temperature.addWidget(self._data_selection_checkboxes[finger][data_field])
-        
-        group_box_pressure.setLayout(layout_pressure)
-        group_box_temperature.setLayout(layout_temperature)
-    
-        self._data_selection[finger].addWidget(group_box_pressure)
-        self._data_selection[finger].addWidget(group_box_temperature)
-
-        finger_layout = QVBoxLayout()
-        finger_layout.addLayout(self._data_selection[finger])
-
-        self._plot[finger] = GenericDataPlot(self._data[finger], self._legend_colors)
-        finger_layout.addWidget(self._plot[finger])
-        
-        self._finger_frame[finger].setLayout(finger_layout)
-        return self._finger_frame[finger]
-
-    def _tactile_data_callback(self, data):
-        for i, finger in enumerate(self._fingers):
-            for data_field in self._data_fields:
-                if len(self._data[finger][data_field]) >= self._buffer_size:
-                    self._data[finger][data_field] = self._data[finger][data_field][1:]           
-
-                if data_field == "pac0":
-                    self._data[finger][data_field].append(data.tactiles[i].pac0)
-                elif data_field == "pac1":
-                    self._data[finger][data_field].append(data.tactiles[i].pac1)
-                elif data_field == "pdc":
-                    self._data[finger][data_field].append(data.tactiles[i].pdc)
-                elif data_field == "tac":
-                    self._data[finger][data_field].append(data.tactiles[i].tac)
-                elif data_field == "tdc":
-                    self._data[finger][data_field].append(data.tactiles[i].tdc)
+        self._finger_widgets[finger] = FingerWidgetGraphBiotac(self._side, finger, self)
+        return self._finger_widgets[finger]
 
 
 class GraphTab(QWidget):
@@ -147,13 +103,13 @@ class GraphTab(QWidget):
         finger_layout = QVBoxLayout()
         self.stacked_layout = QStackedLayout()
 
-        self.fingertip_widget = dict()
+        self.tactile_widgets = dict()
         for side, tactile_topic in self._tactile_topics.items():
             if tactile_topic == "ShadowPST":
-                self.fingertip_widget[side] = PSTGraphTab(side, self)
+                self.tactile_widgets[side] = PSTGraphTab(side, self)
             elif tactile_topic == "BiotacAll":
-                self.fingertip_widget[side] = BiotacGraphTab(side, self)
-            self.stacked_layout.addWidget(self.fingertip_widget[side])
+                self.tactile_widgets[side] = BiotacGraphTab(side, self)
+            self.stacked_layout.addWidget(self.tactile_widgets[side])
 
         self._option_bar = OptionBar(list(self._tactile_topics.keys()), childs=self.stacked_layout)
         
@@ -161,8 +117,8 @@ class GraphTab(QWidget):
         finger_layout.addLayout(self.stacked_layout)
         self.setLayout(finger_layout)
 
-    def get_fingertip_widgets(self):
-        return self.fingertip_widget
+    def get_tactile_widgets(self):
+        return self.tactile_widgets
 
 
 class OptionBar(QGroupBox):
@@ -198,7 +154,6 @@ class OptionBar(QGroupBox):
 
         self.setLayout(options_layout)
         self._current_widget = self._childs.currentWidget()        
-        self._start_selected_widget(self._current_widget)
         self._childs.setCurrentIndex(self.hand_id_selection.currentIndex())
         self._create_connections()
 
@@ -224,25 +179,27 @@ class OptionBar(QGroupBox):
                     break
 
     def _button_action_show_selected_fingers(self):
-        fingertip_widgets = self._childs.currentWidget().get_finger_frames()
+        fingertip_widgets = self._childs.currentWidget().get_finger_widgets()
         self._selected_fingers = [finger for finger in self._fingers if fingertip_widgets[finger].isChecked()]
         for finger in self._fingers:
             if finger in self._selected_fingers:
+                fingertip_widgets[finger].start_timer_and_subscriber()
                 fingertip_widgets[finger].show()
             else:
+                fingertip_widgets[finger].stop_timer_and_subscriber()
                 fingertip_widgets[finger].hide()
 
     def _button_action_show_all(self):
-        fingertip_widgets = self._childs.currentWidget().get_finger_frames()
+        fingertip_widgets = self._childs.currentWidget().get_finger_widgets()
         self._selected_fingers = [finger for finger in self._fingers if fingertip_widgets[finger].isChecked()]
         for finger in self._fingers:
             fingertip_widgets[finger].setChecked(False)
+            fingertip_widgets[finger].stop_timer_and_subscriber()
             fingertip_widgets[finger].show()
 
     def _start_selected_widget(self, selected_widget):
         for widget_index in range(self._childs.count()):
             finger_widgets_from_tab = self._childs.currentWidget().get_finger_widgets()
-            rospy.logwarn(finger_widgets_from_tab)
             for finger, widget in finger_widgets_from_tab.items():
                 if self._childs.currentWidget() == selected_widget:
                     widget.start_timer_and_subscriber()

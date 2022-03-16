@@ -34,11 +34,11 @@ from python_qt_binding.QtWidgets import (
 
 from sr_gui_fingertip_visualization.tactile_points import TactilePointPST, TactilePointBiotacSPPlus, TactilePointBiotacSPMinus
 from sr_gui_fingertip_visualization.tab_layouts_generic import GenericTabLayout
-from sr_gui_fingertip_visualization.finger_widgets import (
-    FingerWidgetBiotacSPMinus, 
-    FingerWidgetBiotacSPPlus, 
-    FingerWidgetBiotacBlank, 
-    FingerWidgetPST
+from sr_gui_fingertip_visualization.finger_widgets_visual import (
+    FingerWidgetVisualBiotacSPMinus, 
+    FingerWidgetVisualBiotacSPPlus, 
+    FingerWidgetVisualBiotacBlank, 
+    FingerWidgetVisualPST
 )
 from sr_robot_msgs.msg import ShadowPST, BiotacAll
 
@@ -53,19 +53,21 @@ class VisualizationTab(QWidget):
     def _init_layout(self):
         finger_layout = QVBoxLayout()    
         self.stacked_layout = QStackedLayout()
-        self.fingertip_widget = dict()
+        self.tactile_widgets = dict()
         for side, tactile_topic in self._tactile_topics.items():
             if tactile_topic == "ShadowPST":
-                self.fingertip_widget[side] = PSTVisualizationTab(side, parent=self)
+                self.tactile_widgets[side] = PSTVisualizationTab(side, parent=self)
             elif tactile_topic == "BiotacAll":
-                self.fingertip_widget[side] = BiotacVisualizationTab(side, parent=self)
-            self.stacked_layout.addWidget(self.fingertip_widget[side])
+                self.tactile_widgets[side] = BiotacVisualizationTab(side, parent=self)
+            self.stacked_layout.addWidget(self.tactile_widgets[side])
         self._option_bar = OptionBar(list(self._tactile_topics.keys()), childs=self.stacked_layout)
         
         finger_layout.addWidget(self._option_bar)
         finger_layout.addLayout(self.stacked_layout)        
         self.setLayout(finger_layout)
 
+    def get_tactile_widgets(self):
+        return self.tactile_widgets
 
 class PSTVisualizationTab(GenericTabLayout):
     def __init__(self, side, parent):
@@ -93,7 +95,7 @@ class PSTVisualizationTab(GenericTabLayout):
         self.setLayout(fingers_layout)
 
     def _init_finger_widget(self, finger):
-        self._finger_widgets[finger] = FingerWidgetPST(self._side, finger, self)
+        self._finger_widgets[finger] = FingerWidgetVisualPST(self._side, finger, self)
         return self._finger_widgets[finger]
 
 
@@ -179,12 +181,11 @@ class BiotacVisualizationTab(GenericTabLayout):
     def _init_finger_widget(self, finger):        
         detected_fingertip_type = self._detect_biotac_type(finger)
         if detected_fingertip_type == BiotacType.SP_PLUS:
-            self._finger_widgets[finger] = FingerWidgetBiotacSPPlus(self._side, finger, self)
+            self._finger_widgets[finger] = FingerWidgetVisualBiotacSPPlus(self._side, finger, self)
         elif detected_fingertip_type == BiotacType.SP_MINUS:
-            self._finger_widgets[finger] = FingerWidgetBiotacSPMinus(self._side, finger, self)
+            self._finger_widgets[finger] = FingerWidgetVisualBiotacSPMinus(self._side, finger, self)
         elif detected_fingertip_type == BiotacType.BLANK:
-            self._finger_widgets[finger] = FingerWidgetBiotacBlank(finger, self)
-
+            self._finger_widgets[finger] = FingerWidgetVisualBiotacBlank(finger, self)
         return self._finger_widgets[finger]
 
     def _detect_biotac_type(self, finger):
@@ -276,8 +277,6 @@ class OptionBar(QGroupBox):
 
         self.setLayout(options_layout)
         self._current_widget = self._childs.currentWidget()        
-        #self._start_selected_widget(self._current_widget)
-        self._childs.setCurrentIndex(self.hand_id_selection.currentIndex())
         self._create_connections()
 
     def _create_connections(self):
@@ -288,7 +287,6 @@ class OptionBar(QGroupBox):
 
     def _combobox_action_hand_id_selection(self):
         self._current_widget = self._childs.currentWidget()        
-        self._start_selected_widget(self._current_widget)
         self._childs.setCurrentIndex(self.hand_id_selection.currentIndex())
 
     def _button_action_data_type_selection(self):
@@ -317,6 +315,7 @@ class OptionBar(QGroupBox):
             fingertip_widgets[finger].setChecked(False)
             fingertip_widgets[finger].show()
 
+    # to remove
     def _start_selected_widget(self, selected_widget):
         for widget_index in range(self._childs.count()):
             finger_widgets_from_tab = self._childs.currentWidget().get_finger_widgets()

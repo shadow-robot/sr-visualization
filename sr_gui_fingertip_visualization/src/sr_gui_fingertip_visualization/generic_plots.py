@@ -19,7 +19,7 @@ from __future__ import absolute_import
 import numpy as np
 import rospy
 
-from python_qt_binding.QtGui import QPen
+from python_qt_binding.QtGui import QPen, QColor
 from python_qt_binding.QtCore import Qt
 
 from qwt import (
@@ -45,37 +45,36 @@ class Trace():
 
 
 class GenericDataPlot(QwtPlot):
-    _GRAPH_MINW = 50
-    _GRAPH_MINH = 30
+    _GRAPH_MINW = 300
+    _GRAPH_MINH = 200
 
     def __init__(self, data, colors):
         super().__init__()
         self._colors = colors
         self.setCanvasBackground(Qt.white)
-        #self.setMinimumSize(self._GRAPH_MINW, self._GRAPH_MINH)
-        #rospy.logwarn(self.size) 
-        #self.axisScaleDraw(QwtPlot.xBottom).enableComponent(QwtScaleDraw.Labels, False)
-        #self.axisScaleDraw(QwtPlot.yLeft).enableComponent(QwtScaleDraw.Labels, False)
+        self.setMaximumSize(self._GRAPH_MINW, self._GRAPH_MINH)
+        self.axisScaleDraw(QwtPlot.xBottom).enableComponent(QwtScaleDraw.Labels, False)
+        self.axisScaleDraw(QwtPlot.yLeft).enableComponent(QwtScaleDraw.Labels, False)
         self._traces = dict()
         self.generate_plots(data)
 
     def generate_plots(self, data):
         self._data_fields = list(data.keys())
-        for data_field in self._data_fields:
-            self._traces[data_field] = Trace(data_field, self._colors[data_field]['plot_color'])
+        for i, data_field in enumerate(self._data_fields):
+            self._traces[data_field] = Trace(data_field, QColor(self._colors[i]))
 
-    def show_traces(self, selected_traces):
-        if selected_traces:
-            for data_field in self._data_fields:
-                self._traces[data_field].get_plot().detach()
-                if data_field in selected_traces:                        
-                    #self.axisScaleDraw(QwtPlot.yLeft).enableComponent(QwtScaleDraw.Labels, True)
-                    #self.axisAutoScale(QwtPlot.yLeft)
-                    self._traces[data_field].get_plot().attach(self)   
+    def show_trace(self, data_field, show = True):                     
+        self.axisScaleDraw(QwtPlot.yLeft).enableComponent(QwtScaleDraw.Labels, True)
+        self.axisAutoScale(QwtPlot.yLeft)
+        if show:
+            self._traces[data_field].get_plot().attach(self)   
+            return
+        self._traces[data_field].get_plot().detach()
 
     def update_plot(self, data):
         for data_field in list(data.keys()):
-            self._traces[data_field].update_trace_data(data[data_field])
+            if self._traces[data_field].get_plot().plot():
+                self._traces[data_field].update_trace_data(data[data_field])
 
 
 

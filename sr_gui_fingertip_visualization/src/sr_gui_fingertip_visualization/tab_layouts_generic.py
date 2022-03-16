@@ -43,7 +43,6 @@ class GenericGraphTab(QWidget):
         super().__init__(parent=parent)
 
         self._side = side
-        self._buffer_size = 100
         self._fingers = ['ff', 'mf', 'rf', 'lf', 'th']        
         self._data = dict()
         self._timer = QTimer()

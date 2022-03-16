@@ -81,7 +81,6 @@ class SrFingertipVisualizer(Plugin):
             self.main_layout.addWidget(label, alignment=Qt.AlignCenter)
         else:
             self.create_tab("Visualizer")
-            #self.create_tab("Visualizer")
             self.create_tab("Graphs")
             self.main_layout.addWidget(self.tab_container)
 
@@ -95,8 +94,16 @@ class SrFingertipVisualizer(Plugin):
             self.tab_container.addTab(tab, tab_name)
 
     def tab_changed(self, index):
-        tab = self.tab_container.widget(index)
-        rospy.logwarn(tab)
+        current_tab = self.tab_container.widget(index)
+        for i in range(self.tab_container.count()):
+            indexed_widget = self.tab_container.widget(i)
+            tactile_widgets = indexed_widget.get_tactile_widgets()
+            for tactile_widget in tactile_widgets.values():
+                for fingertip_widget in tactile_widget.get_finger_widgets().values():
+                    if indexed_widget is not current_tab:
+                        fingertip_widget.stop_timer_and_subscriber()
+                    if fingertip_widget.isChecked():
+                        fingertip_widget.start_timer_and_subscriber()
 
     def display_information(self, message):
         message = "To be defined"
@@ -109,7 +116,11 @@ class SrFingertipVisualizer(Plugin):
 
     def shutdown_plugin(self):
         for i in range(self.tab_container.count()):
-            finger_widgets = self.tab_container.widget(i).findChildren(VisualizationTab)
+            tactile_widgets = self.tab_container.widget(i).get_tactile_widgets()
+            for tactile_widget in tactile_widgets.values():
+                for fingertip_widget in tactile_widget.get_finger_widgets().values():
+                    fingertip_widget.stop_timer_and_subscriber()
+                    rospy.logwarn(f"{fingertip_widget}")
 
 
 if __name__ == "__main__":
