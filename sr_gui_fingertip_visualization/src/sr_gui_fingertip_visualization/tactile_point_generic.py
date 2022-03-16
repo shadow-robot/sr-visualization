@@ -21,6 +21,7 @@ from python_qt_binding.QtCore import QPoint
 from python_qt_binding.QtWidgets import QWidget
 import rospy
 
+
 class TactilePoint(QWidget):
 
     _MIN_SIZE_X = 50

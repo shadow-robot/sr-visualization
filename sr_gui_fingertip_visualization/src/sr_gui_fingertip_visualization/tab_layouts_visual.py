@@ -56,7 +56,7 @@ class VisualizationTab(QWidget):
         self._fingers = ['th', 'ff', 'mf', 'rf', 'lf']
 
     def _init_layout(self):
-        finger_layout = QVBoxLayout()    
+        finger_layout = QVBoxLayout()
         self.stacked_layout = QStackedLayout()
         self.tactile_widgets = dict()
         for side, tactile_topic in self._tactile_topics.items():
@@ -66,13 +66,14 @@ class VisualizationTab(QWidget):
                 self.tactile_widgets[side] = BiotacVisualizationTab(side, parent=self)
             self.stacked_layout.addWidget(self.tactile_widgets[side])
         self._option_bar = VisualOptionBar(list(self._tactile_topics.keys()), childs=self.stacked_layout)
-        
+
         finger_layout.addWidget(self._option_bar)
-        finger_layout.addLayout(self.stacked_layout)        
+        finger_layout.addLayout(self.stacked_layout)
         self.setLayout(finger_layout)
 
     def get_tactile_widgets(self):
         return self.tactile_widgets
+
 
 class PSTVisualizationTab(GenericTabLayout):
     def __init__(self, side, parent):
@@ -107,7 +108,7 @@ class PSTVisualizationTab(GenericTabLayout):
 class BiotacVisualizationTab(GenericTabLayout):
     def __init__(self, side, parent):
         super().__init__(parent=parent)
-        self._side = side        
+        self._side = side
         self._electrode_count = 0
         self._version = "v1"
         self._selected_fingers = []
@@ -125,7 +126,7 @@ class BiotacVisualizationTab(GenericTabLayout):
                 self._data[finger][data_field] = 0
                 self._data_labels[finger] = dict()
                 if data_field in ['pac', 'electrodes']:
-                    self._data[finger][data_field] = list()   
+                    self._data[finger][data_field] = list()
                     self._data_labels[finger][data_field] = 0
 
         msg = rospy.wait_for_message('/{}/tactile'.format(self._side), BiotacAll)
@@ -154,13 +155,13 @@ class BiotacVisualizationTab(GenericTabLayout):
         self._coordinates['v2']['excitation'] = dict()
         self._coordinates['v2']['excitation']['x'] = [5.30, 6.00, -5.30, -6.00]
         self._coordinates['v2']['excitation']['y'] = [9.00, 22.00, 9.00, 22.00]
-        
+
         self._electrode_count = len(self._coordinates[self._version]['sensing']['x'])
 
     def _tactile_data_callback(self, data):
         for i, finger in enumerate(self._fingers):
-            for data_field in self._data_fields:            
-                if data_field == "pac0":                    
+            for data_field in self._data_fields:
+                if data_field == "pac0":
                     self._data[finger][data_field] = data.tactiles[i].pac0
                 elif data_field == "pac1":
                     self._data[finger][data_field] = data.tactiles[i].pac1
@@ -179,11 +180,11 @@ class BiotacVisualizationTab(GenericTabLayout):
         finger_complete_layout = QHBoxLayout()
         self.text_data_layout = dict()
         self._data_bar = dict()
-        for finger in ['th', 'ff', 'mf', 'rf', 'lf']:            
+        for finger in ['th', 'ff', 'mf', 'rf', 'lf']:
             finger_complete_layout.addWidget(self._init_finger_widget(finger))
         self.setLayout(finger_complete_layout)
 
-    def _init_finger_widget(self, finger):        
+    def _init_finger_widget(self, finger):
         detected_fingertip_type = self._detect_biotac_type(finger)
         if detected_fingertip_type == BiotacType.SP_PLUS:
             self._finger_widgets[finger] = FingerWidgetVisualBiotacSPPlus(self._side, finger, self)
@@ -217,7 +218,7 @@ class BiotacSPPlusInfo(QGroupBox):
         self._data = dict.fromkeys(self._text_fields, 0)
         self._labels = dict()
 
-        self.setSizePolicy(1,2)
+        self.setSizePolicy(1, 2)
         self.setTitle("Data")
 
         for key in self._text_fields:
@@ -241,10 +242,10 @@ class BiotacSPPlusInfo(QGroupBox):
 
     def get_widget(self):
         return widget
-        
+
     def refresh(self):
         for key in self._text_fields:
-            self._labels[key].setText(f"{key}:{self._data[key]}") 
+            self._labels[key].setText(f"{key}:{self._data[key]}")
 
 
 class VisualOptionBar(GenericOptionBar):
@@ -264,21 +265,22 @@ class VisualOptionBar(GenericOptionBar):
         self.options_layout.addWidget(self.finger_selection_show_all_button)
 
         self.setLayout(self.options_layout)
-        self._current_widget = self._childs.currentWidget()        
-        
+        self._current_widget = self._childs.currentWidget()
+
     def create_connections(self):
         super().create_connections()
         self.data_type_selection_button.clicked.connect(self._button_action_data_type_selection)
 
     def _combobox_action_hand_id_selection(self):
-        self._current_widget = self._childs.currentWidget()       
+        self._current_widget = self._childs.currentWidget()
         self._childs.setCurrentIndex(self.hand_id_selection.currentIndex())
 
     def _button_action_data_type_selection(self):
         data_type_options_to_display = ['pac', 'electrodes']
 
         for finger, widget in self._childs.currentWidget().get_finger_widgets().items():
-            if isinstance(widget, FingerWidgetVisualBiotacSPPlus):               
-                opposite_option = [option for option in data_type_options_to_display if option is not widget.get_datatype_to_display()][0]
+            if isinstance(widget, FingerWidgetVisualBiotacSPPlus):
+                opposite_option = [option for option in data_type_options_to_display
+                                   if option is not widget.get_datatype_to_display()][0]
                 widget.change_datatype_to_display(opposite_option)
                 self.data_type_selection_button.setText("Show {}".format(opposite_option))

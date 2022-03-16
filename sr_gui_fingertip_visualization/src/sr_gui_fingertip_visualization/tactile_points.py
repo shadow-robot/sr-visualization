@@ -31,7 +31,7 @@ class TactilePointPST(TactilePointGeneric):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self._data_fields = ['pressure', 'temperature']
-        self.get_dot().resize_dot(25)    
+        self.get_dot().resize_dot(25)
         self._init_widget()
 
     def _value_to_color(self, value):

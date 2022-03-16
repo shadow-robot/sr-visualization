@@ -43,7 +43,7 @@ class GenericGraphTab(QWidget):
         super().__init__(parent=parent)
 
         self._side = side
-        self._fingers = ['ff', 'mf', 'rf', 'lf', 'th']        
+        self._fingers = ['ff', 'mf', 'rf', 'lf', 'th']
         self._data = dict()
         self._timer = QTimer()
         self._finger_widgets = dict()
@@ -88,7 +88,7 @@ class GenericTabLayout(QWidget):
         self._fingers = ["ff", 'mf', 'rf', 'lf', 'th']
         self._finger_widgets = dict()
         self._timer = QTimer(self)
-    
+
     def _init_tactile_layout(self):
         raise NotImplementedError("The function _init_tactile_layout must be implemented")
 
@@ -114,7 +114,7 @@ class GenericOptionBar(QGroupBox):
         self._childs = childs
         self._fingers = ["ff", 'mf', 'rf', 'lf', 'th']
         self.setTitle("Options")
-        self.setSizePolicy(1, 2)        
+        self.setSizePolicy(1, 2)
 
     def init_layout(self):
         self.options_layout = QHBoxLayout()
@@ -129,14 +129,14 @@ class GenericOptionBar(QGroupBox):
         self.finger_selection_show_selected_button.setSizePolicy(2, 2)
         self.finger_selection_show_all_button = QPushButton("Show all")
         self.finger_selection_show_all_button.setSizePolicy(2, 2)
-        
+
     def create_connections(self):
         self.hand_id_selection.currentIndexChanged.connect(self._combobox_action_hand_id_selection)
         self.finger_selection_show_selected_button.clicked.connect(self._button_action_show_selected_fingers)
         self.finger_selection_show_all_button.clicked.connect(self._button_action_show_all)
 
     def _combobox_action_hand_id_selection(self):
-        self._current_widget = self._childs.currentWidget()       
+        self._current_widget = self._childs.currentWidget()
         self._childs.setCurrentIndex(self.hand_id_selection.currentIndex())
 
     def _button_action_show_selected_fingers(self):

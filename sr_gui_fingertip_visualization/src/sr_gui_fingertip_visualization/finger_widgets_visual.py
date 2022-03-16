@@ -32,7 +32,11 @@ from python_qt_binding.QtWidgets import (
     QStackedLayout
 )
 
-from sr_gui_fingertip_visualization.tactile_points import TactilePointPST, TactilePointBiotacSPPlus, TactilePointBiotacSPMinus
+from sr_gui_fingertip_visualization.tactile_points import (
+    TactilePointPST,
+    TactilePointBiotacSPPlus,
+    TactilePointBiotacSPMinus
+)
 from sr_gui_fingertip_visualization.tab_layouts_generic import GenericTabLayout
 from sr_robot_msgs.msg import ShadowPST, BiotacAll
 
@@ -41,10 +45,10 @@ class FingerWidgetVisualPST(QGroupBox):
     def __init__(self, side, finger, parent):
         super().__init__(parent=parent)
         self._tactile_point_widget = TactilePointPST(self)
-        self._fingers = ['ff', 'mf', 'rf', 'lf', 'th',]
+        self._fingers = ['ff', 'mf', 'rf', 'lf', 'th']
         self._data = dict()
         self._finger = finger
-        self._side = side        
+        self._side = side
         self._timer = QTimer()
         self._subscriber = None
 
@@ -52,15 +56,15 @@ class FingerWidgetVisualPST(QGroupBox):
         self.setCheckable(True)
         self.setChecked(False)
         self.setSizePolicy(1, 1)
-        self.clicked.connect(self.refresh)               
+        self.clicked.connect(self.refresh)
 
         layout = QVBoxLayout()
         layout.addWidget(self._tactile_point_widget, alignment=Qt.AlignCenter)
         self._tactile_data_callback(rospy.wait_for_message('/{}/tactile'.format(self._side), ShadowPST))
         self.setLayout(layout)
-    
+
     def refresh(self, state):
-        if state:           
+        if state:
             self.start_timer_and_subscriber()
         elif not state:
             self.stop_timer_and_subscriber()
@@ -78,13 +82,13 @@ class FingerWidgetVisualPST(QGroupBox):
     def _tactile_data_callback(self, data):
         for i, finger in enumerate(self._fingers):
             if finger == self._finger:
-                for data_field in self._tactile_point_widget.get_data_fields():      
+                for data_field in self._tactile_point_widget.get_data_fields():
                     if data_field == "pressure":
                         self._data[data_field] = data.pressure[i]
                     elif data_field == "temperature":
-                        self._data[data_field] = data.temperature[i]  
+                        self._data[data_field] = data.temperature[i]
 
-    def timerEvent(self):        
+    def timerEvent(self):
         self._tactile_point_widget.update_data(self._data)
 
 
@@ -95,7 +99,7 @@ class BiotacSPPlusInfo(QGroupBox):
         self._data = dict.fromkeys(self._text_fields, 0)
         self._labels = dict()
 
-        self.setSizePolicy(1,2)
+        self.setSizePolicy(1, 2)
         self.setTitle("Data")
 
         layout_pressure = QHBoxLayout()
@@ -108,7 +112,7 @@ class BiotacSPPlusInfo(QGroupBox):
                 layout_pressure.addWidget(self._labels[key])
             elif key[0] == 't':
                 layout_temperature.addWidget(self._labels[key])
-        
+
         layout = QVBoxLayout()
         layout.addLayout(layout_pressure)
         layout.addLayout(layout_temperature)
@@ -117,24 +121,24 @@ class BiotacSPPlusInfo(QGroupBox):
     def update_values(self, data):
         common_keys = list(set(data.keys()) & set(self._text_fields))
         for key in common_keys:
-            self._data[key] = data[key]            
+            self._data[key] = data[key]
 
     def get_widget(self):
         return widget
-        
+
     def refresh(self):
         for key in self._text_fields:
-            self._labels[key].setText(f"{key}:{self._data[key]}") 
-            
+            self._labels[key].setText(f"{key}:{self._data[key]}")
+
 
 class FingerWidgetVisualBiotacSPMinus(QGroupBox):
     def __init__(self, side, finger, parent):
         super().__init__(parent=parent)
         self._tactile_point_widget = TactilePointBiotacSPMinus(self)
-        self._fingers = ['ff', 'mf', 'rf', 'lf', 'th',]
+        self._fingers = ['ff', 'mf', 'rf', 'lf', 'th']
         self._data = dict()
         self._finger = finger
-        self._side = side        
+        self._side = side
         self._timer = QTimer()
         self._subscriber = None
 
@@ -142,15 +146,15 @@ class FingerWidgetVisualBiotacSPMinus(QGroupBox):
         self.setCheckable(True)
         self.setChecked(False)
         self.setSizePolicy(1, 1)
-        self.clicked.connect(self.refresh)               
+        self.clicked.connect(self.refresh)
 
         layout = QVBoxLayout()
         layout.addWidget(self._tactile_point_widget, alignment=Qt.AlignCenter)
         self._tactile_data_callback(rospy.wait_for_message('/{}/tactile'.format(self._side), BiotacAll))
         self.setLayout(layout)
-    
+
     def refresh(self, state):
-        if state:           
+        if state:
             self.start_timer_and_subscriber()
         elif not state:
             self.stop_timer_and_subscriber()
@@ -167,9 +171,9 @@ class FingerWidgetVisualBiotacSPMinus(QGroupBox):
 
     def _tactile_data_callback(self, data):
         for i, finger in enumerate(self._fingers):
-            if finger == self._finger:                
-                for data_field in self._tactile_point_widget.get_data_fields():         
-                    if data_field == "pac0":                    
+            if finger == self._finger:
+                for data_field in self._tactile_point_widget.get_data_fields():
+                    if data_field == "pac0":
                         self._data[data_field] = data.tactiles[i].pac0
                     elif data_field == "pac1":
                         self._data[data_field] = data.tactiles[i].pac1
@@ -178,20 +182,20 @@ class FingerWidgetVisualBiotacSPMinus(QGroupBox):
                     elif data_field == "tac":
                         self._data[data_field] = data.tactiles[i].tac
                     elif data_field == "tdc":
-                        self._data[data_field] = data.tactiles[i].tdc       
+                        self._data[data_field] = data.tactiles[i].tdc
 
-    def timerEvent(self):        
+    def timerEvent(self):
         self._tactile_point_widget.update_data(self._data)
 
 
 class FingerWidgetVisualBiotacSPPlus(QGroupBox):
     def __init__(self, side, finger, parent):
         super().__init__(parent=parent)
-        self._fingers = ['ff', 'mf', 'rf', 'lf', 'th',]
+        self._fingers = ['ff', 'mf', 'rf', 'lf', 'th']
         self._version = 'v2'
         self._data = dict()
         self._finger = finger
-        self._side = side        
+        self._side = side
         self._timer = QTimer()
         self._data_bar = BiotacSPPlusInfo()
         self._datatype_to_display = 'electrodes'
@@ -201,7 +205,7 @@ class FingerWidgetVisualBiotacSPPlus(QGroupBox):
         self.setCheckable(True)
         self.setChecked(False)
         self.setSizePolicy(1, 1)
-        self.clicked.connect(self.refresh)              
+        self.clicked.connect(self.refresh)
 
         self._coordinates = dict()
         self._coordinates['v1'] = dict()
@@ -252,7 +256,7 @@ class FingerWidgetVisualBiotacSPPlus(QGroupBox):
         self.setLayout(layout)
 
     def refresh(self, state):
-        if state:           
+        if state:
             self.start_timer_and_subscriber()
         elif not state:
             self.stop_timer_and_subscriber()
@@ -269,9 +273,9 @@ class FingerWidgetVisualBiotacSPPlus(QGroupBox):
 
     def _tactile_data_callback(self, data):
         for i, finger in enumerate(self._fingers):
-            if finger == self._finger:                
-                for data_field in self._tactile_point_widget[i].get_data_fields():       
-                    if data_field == "pac0":                    
+            if finger == self._finger:
+                for data_field in self._tactile_point_widget[i].get_data_fields():
+                    if data_field == "pac0":
                         self._data[data_field] = data.tactiles[i].pac0
                     elif data_field == "pac1":
                         self._data[data_field] = data.tactiles[i].pac1
@@ -284,9 +288,9 @@ class FingerWidgetVisualBiotacSPPlus(QGroupBox):
                     elif data_field == "tdc":
                         self._data[data_field] = data.tactiles[i].tdc
                     elif data_field == "electrodes":
-                        self._data[data_field] = list(data.tactiles[i].electrodes)   
+                        self._data[data_field] = list(data.tactiles[i].electrodes)
 
-    def timerEvent(self):           
+    def timerEvent(self):
         for i in range(self._electrodes_to_display_count):
             self._tactile_point_widget[i].update_data(self._data[self._datatype_to_display][i])
         self._data_bar.update_values(self._data)

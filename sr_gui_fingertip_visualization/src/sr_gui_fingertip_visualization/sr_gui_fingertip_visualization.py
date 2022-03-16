@@ -55,16 +55,15 @@ class SrFingertipVisualizer(Plugin):
 
             for topic_type in [type_right, type_left]:
                 if topic_type[0]:
-                    rospy.wait_for_message(topic_type[1], rostopic.get_topic_class(topic_type[1])[0], timeout=1)           
+                    rospy.wait_for_message(topic_type[1], rostopic.get_topic_class(topic_type[1])[0], timeout=1)
 
             self._hand_ids = [topic_data[1].split('/')[1] for topic_data in [type_right, type_left] if topic_data[1]]
             self._types = [topic_data[0].split('/')[1] for topic_data in [type_right, type_left] if topic_data[1]]
-            self._tactile_topics = dict(zip(self._hand_ids, self._types))    
+            self._tactile_topics = dict(zip(self._hand_ids, self._types))
 
         except (rospy.exceptions.ROSException, AttributeError) as e:
             msg = "No available messages on tactile topic!"
             rospy.logwarn(msg)
-
 
     def _init_ui(self):
         self._widget = QWidget()
@@ -80,7 +79,6 @@ class SrFingertipVisualizer(Plugin):
             self.context.add_widget(self._widget)
 
     def fill_layout(self):
-        # Create info button on the top right of the gui
         information_btn = QPushButton("Info")
         self.main_layout.addWidget(information_btn, alignment=Qt.AlignRight)
 
@@ -90,8 +88,7 @@ class SrFingertipVisualizer(Plugin):
 
         if self._tactile_topics is None:
             label = QLabel("No tactiles", parent=self.tab_container)
-            label.setSizePolicy(1,1)            
-            
+            label.setSizePolicy(1, 1)
             self.main_layout.addWidget(label, alignment=Qt.AlignCenter)
         else:
             self.create_tab("Visualizer")

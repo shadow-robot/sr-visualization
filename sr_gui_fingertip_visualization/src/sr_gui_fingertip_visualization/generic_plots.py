@@ -39,7 +39,7 @@ class Trace():
     def update_trace_data(self, data):
         self._data = data
         self._plot.setData(np.linspace(0, 10, len(data)), data)
-    
+
     def get_plot(self):
         return self._plot
 
@@ -63,11 +63,11 @@ class GenericDataPlot(QwtPlot):
         for i, data_field in enumerate(self._data_fields):
             self._traces[data_field] = Trace(data_field, QColor(self._colors[i]))
 
-    def show_trace(self, data_field, show = True):                     
+    def show_trace(self, data_field, show=True):
         self.axisScaleDraw(QwtPlot.yLeft).enableComponent(QwtScaleDraw.Labels, True)
         self.axisAutoScale(QwtPlot.yLeft)
         if show:
-            self._traces[data_field].get_plot().attach(self)   
+            self._traces[data_field].get_plot().attach(self)
             return
         self._traces[data_field].get_plot().detach()
 
@@ -75,6 +75,3 @@ class GenericDataPlot(QwtPlot):
         for data_field in list(data.keys()):
             if self._traces[data_field].get_plot().plot():
                 self._traces[data_field].update_trace_data(data[data_field])
-
-
-

@@ -74,7 +74,7 @@ class BiotacGraphTab(GenericGraphTab):
         self._side = side
         self.parent = parent
         self._init_tactile_layout()
-       
+
     def _initialize_data_structure(self):
         self._data_fields = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
         for finger in self._fingers:
@@ -112,8 +112,8 @@ class GraphTab(QWidget):
             self.stacked_layout.addWidget(self.tactile_widgets[side])
 
         self._option_bar = GraphOptionBar(list(self._tactile_topics.keys()), childs=self.stacked_layout)
-        
-        finger_layout.addWidget(self._option_bar)        
+
+        finger_layout.addWidget(self._option_bar)
         finger_layout.addLayout(self.stacked_layout)
         self.setLayout(finger_layout)
 
@@ -136,4 +136,4 @@ class GraphOptionBar(GenericOptionBar):
         self.options_layout.addWidget(self.finger_selection_show_all_button)
 
         self.setLayout(self.options_layout)
-        self._current_widget = self._childs.currentWidget()        
+        self._current_widget = self._childs.currentWidget()
