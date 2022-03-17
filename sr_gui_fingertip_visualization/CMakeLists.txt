@@ -34,8 +34,8 @@ catkin_package(
 install(DIRECTORY launch
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
-install( FILES sr_gui_biotac_plugin.xml
+install( FILES sr_gui_fingertip_plugin.xml
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION} )
 
-catkin_install_python(PROGRAMS scripts/sr_gui_biotac_plugin
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+catkin_install_python(PROGRAMS scripts/sr_gui_fingertip_plugin
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
