@@ -20,6 +20,7 @@ import os
 import rospy
 import rospkg
 from sr_robot_msgs.msg import ShadowPST, BiotacAll
+from enum import Enum
 
 
 from python_qt_binding.QtCore import QTimer
@@ -167,3 +168,28 @@ class GenericOptionBar(QGroupBox):
                     widget.start_timer_and_subscriber()
                 else:
                     widget.start_timer_and_subscriber()
+
+
+class BiotacType(Enum):
+    SP_PLUS = 0
+    SP_MINUS = 1
+    BLANK = 3
+
+    @staticmethod
+    def detect_biotac_type(side, selected_finger):
+        sum_of_electrode_values = 0
+        sp_plus_electrode_count_range = [1, 30]
+
+        fingers = ['ff', 'mf', 'rf', 'lf', 'th']
+        msg = rospy.wait_for_message("/{}/tactile".format(side), BiotacAll, timeout=1)
+        for i, finger in enumerate(fingers):
+            if finger == selected_finger:
+                sum_of_electrode_values = sum(msg.tactiles[i].electrodes)
+
+        if sum_of_electrode_values == 0:
+            biotac_type = BiotacType.BLANK
+        elif sp_plus_electrode_count_range[0] <= sum_of_electrode_values <= sp_plus_electrode_count_range[1]:
+            biotac_type = BiotacType.SP_MINUS
+        else:
+            biotac_type = BiotacType.SP_PLUS
+        return biotac_type

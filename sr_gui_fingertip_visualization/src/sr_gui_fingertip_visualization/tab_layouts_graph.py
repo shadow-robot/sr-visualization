@@ -21,8 +21,12 @@ import rospy
 import rospkg
 from sr_robot_msgs.msg import ShadowPST, BiotacAll
 from sr_gui_fingertip_visualization.generic_plots import GenericDataPlot
-from sr_gui_fingertip_visualization.tab_layouts_generic import GenericGraphTab, GenericOptionBar, GenericOptionBar
-
+from sr_gui_fingertip_visualization.tab_layouts_generic import (
+    GenericGraphTab,
+    GenericOptionBar,
+    GenericOptionBar,
+    BiotacType
+)
 
 from python_qt_binding.QtCore import QTimer
 from python_qt_binding.QtGui import QIcon, QColor
@@ -39,15 +43,17 @@ from python_qt_binding.QtWidgets import (
     QStackedLayout
 )
 
-
-from sr_gui_fingertip_visualization.finger_widgets_graphs import FingerWidgetGraphPST, FingerWidgetGraphBiotac
+from sr_gui_fingertip_visualization.finger_widgets_graphs import (
+    FingerWidgetGraphPST,
+    FingerWidgetGraphBiotac,
+    FingerWidgetGraphBiotacBlank
+)
 
 
 class PSTGraphTab(GenericGraphTab):
     def __init__(self, side, parent):
         super().__init__(side, parent)
         self._side = side
-        self.parent = parent
         self._init_tactile_layout()
 
     def _initialize_data_structure(self):
@@ -72,7 +78,6 @@ class BiotacGraphTab(GenericGraphTab):
     def __init__(self, side, parent):
         super().__init__(side, parent)
         self._side = side
-        self.parent = parent
         self._init_tactile_layout()
 
     def _initialize_data_structure(self):
@@ -89,7 +94,10 @@ class BiotacGraphTab(GenericGraphTab):
         self.setLayout(fingers_layout)
 
     def _init_finger_widget(self, finger):
-        self._finger_widgets[finger] = FingerWidgetGraphBiotac(self._side, finger, self)
+        if BiotacType.detect_biotac_type(self._side, finger) == BiotacType.BLANK:
+            self._finger_widgets[finger] = FingerWidgetGraphBiotacBlank(self._side, finger, self)
+        else:
+            self._finger_widgets[finger] = FingerWidgetGraphBiotac(self._side, finger, self)
         return self._finger_widgets[finger]
 
 

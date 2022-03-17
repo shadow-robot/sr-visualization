@@ -38,7 +38,12 @@ from sr_gui_fingertip_visualization.tactile_points import (
     TactilePointBiotacSPMinus
 )
 
-from sr_gui_fingertip_visualization.tab_layouts_generic import GenericGraphTab, GenericTabLayout, GenericOptionBar
+from sr_gui_fingertip_visualization.tab_layouts_generic import (
+    GenericGraphTab,
+    GenericTabLayout,
+    GenericOptionBar,
+    BiotacType
+)
 from sr_gui_fingertip_visualization.finger_widgets_visual import (
     FingerWidgetVisualBiotacSPMinus,
     FingerWidgetVisualBiotacSPPlus,
@@ -185,7 +190,7 @@ class BiotacVisualizationTab(GenericTabLayout):
         self.setLayout(finger_complete_layout)
 
     def _init_finger_widget(self, finger):
-        detected_fingertip_type = self._detect_biotac_type(finger)
+        detected_fingertip_type = BiotacType.detect_biotac_type(self._side, finger)
         if detected_fingertip_type == BiotacType.SP_PLUS:
             self._finger_widgets[finger] = FingerWidgetVisualBiotacSPPlus(self._side, finger, self)
         elif detected_fingertip_type == BiotacType.SP_MINUS:
@@ -193,22 +198,6 @@ class BiotacVisualizationTab(GenericTabLayout):
         elif detected_fingertip_type == BiotacType.BLANK:
             self._finger_widgets[finger] = FingerWidgetVisualBiotacBlank(finger, self)
         return self._finger_widgets[finger]
-
-    def _detect_biotac_type(self, finger):
-        sum_of_electrode_values = sum(self._data[finger]['electrodes'])
-        if sum_of_electrode_values == 0:
-            biotac_type = BiotacType.BLANK
-        elif sum_of_electrode_values == self._electrode_count:
-            biotac_type = BiotacType.SP_MINUS
-        else:
-            biotac_type = BiotacType.SP_PLUS
-        return biotac_type
-
-
-class BiotacType(Enum):
-    SP_PLUS = 0
-    SP_MINUS = 1
-    BLANK = 3
 
 
 class BiotacSPPlusInfo(QGroupBox):

@@ -238,13 +238,11 @@ class FingerWidgetVisualBiotacSPPlus(QGroupBox):
         max_y = abs(max(self._coordinates[self._version]['sensing']['y']))
         y_offset = 2
 
-        self.setMinimumSize((max_x) * 50, ((max_y) * 19))
-
-        self._tactile_point_widget = [None] * len(x_cords)
+        self._tactile_point_widget = list()
         container_widget = QWidget()
         container_widget.setMinimumSize((max_x) * 50, ((max_y) * 19))
         for i, (x, y) in enumerate(zip(x_cords, y_cords)):
-            self._tactile_point_widget[i] = TactilePointBiotacSPPlus(i, container_widget)
+            self._tactile_point_widget.append(TactilePointBiotacSPPlus(i, container_widget))
             self._tactile_point_widget[i].move((x + min_x) * 20, ((y - y_offset - min_y / 2) * 20))
 
         layout = QVBoxLayout()

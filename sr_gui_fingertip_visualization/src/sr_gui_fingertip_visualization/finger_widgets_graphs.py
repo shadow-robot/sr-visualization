@@ -239,3 +239,33 @@ class FingerWidgetGraphBiotac(FingerWidgetGraphGeneric):
         for data_field in self._data_fields:
             if self._data_checkboxes[data_field].isChecked():
                 self._plot.update_plot(self._data)
+
+
+class FingerWidgetGraphBiotacBlank(FingerWidgetGraphGeneric):
+
+    def __init__(self, side, finger, parent):
+        super().__init__(finger, side, parent=parent)
+        layout = QHBoxLayout()
+        layout.addWidget(QLabel("No tactile sensor"))
+        self.setLayout(layout)
+
+    def start_timer_and_subscriber(self):
+        pass
+
+    def stop_timer_and_subscriber(self):
+        pass
+
+
+class FingerWidgetGraphPSTBlank(FingerWidgetGraphGeneric):
+
+    def __init__(self, side, finger, parent):
+        super().__init__(finger, side, parent=parent)
+        layout = QHBoxLayout()
+        layout.addWidget(QLabel("No tactile sensor"))
+        self.setLayout(layout)
+
+    def start_timer_and_subscriber(self):
+        pass
+
+    def stop_timer_and_subscriber(self):
+        pass
