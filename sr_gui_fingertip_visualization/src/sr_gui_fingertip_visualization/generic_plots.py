@@ -38,7 +38,7 @@ class Trace():
 
     def update_trace_data(self, data):
         self._data = data
-        self._plot.setData(np.linspace(0, 10, len(data)), data)
+        self._plot.setData(np.linspace(0, 100, len(data)), data)
 
     def get_plot(self):
         return self._plot
