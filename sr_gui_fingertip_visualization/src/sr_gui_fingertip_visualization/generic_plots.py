@@ -55,7 +55,9 @@ class GenericDataPlot(QwtPlot):
         self.setMaximumSize(self._GRAPH_MINW, self._GRAPH_MINH)
         self.axisScaleDraw(QwtPlot.xBottom).enableComponent(QwtScaleDraw.Labels, False)
         self.axisScaleDraw(QwtPlot.yLeft).enableComponent(QwtScaleDraw.Labels, False)
+
         self._traces = dict()
+        self._data_fields = None
         self.generate_plots(data)
 
     def generate_plots(self, data):
@@ -75,3 +77,6 @@ class GenericDataPlot(QwtPlot):
         for data_field in list(data.keys()):
             if self._traces[data_field].get_plot().plot():
                 self._traces[data_field].update_trace_data(data[data_field])
+
+    def get_data_fields(self):
+        return self._data_fields
