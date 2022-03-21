@@ -20,7 +20,7 @@ The **Graphs** tab respresents the data in form of plots for all of the data com
 The gui can be started via roslaunch with an optional robag. The rosbag will be played with the -l option (infinite loop):
 
 ```
-roslaunch sr_gui_fingertip_visualization tactile_visualizer.launch rosbag:=<absolute_path>
+roslaunch sr_gui_fingertip_visualization tactile_visualizer.launch rosbag_path:=<absolute_path>
 ```
 or as an rqt plugin:
 
