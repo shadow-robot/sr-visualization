@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package>
-  <name>sr_gui_fingertip_visualization</name>
+  <name>sr_fingertip_visualization</name>
   <version>0.0.1</version>
   <description>
-    The sr_gui_fingertip_visualization
+    The sr_fingertip_visualization GUI
   </description>
   <maintainer email="software@shadowrobot.com">Shadow Software Team</maintainer>
   <author email="max@shadowrobot.com">Maximilian Zieba</author>
@@ -30,6 +30,6 @@
   <run_depend>python3-qwt</run_depend>
 
   <export>
-    <rqt_gui plugin="${prefix}/sr_gui_fingertip_plugin.xml"/>
+    <rqt_gui plugin="${prefix}/sr_fingertip_plugin_gui.xml"/>
   </export>
 </package>

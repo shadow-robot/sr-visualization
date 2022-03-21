@@ -1,5 +1,5 @@
 <library path="src">
-  <class name="SrFingertipVisualizer" type="sr_gui_fingertip_visualization.sr_gui_fingertip_visualization.SrFingertipVisualizer" base_class_type="rqt_gui_py::Plugin">
+  <class name="SrFingertipVisualizer" type="sr_fingertip_visualization.sr_fingertip_visualization.SrFingertipVisualizer" base_class_type="rqt_gui_py::Plugin">
     <description>
       A plugin for visualising data from fingertip sensors on the Shadow Robot Hands
     </description>

@@ -20,8 +20,8 @@ import os
 import rospy
 import rospkg
 from sr_robot_msgs.msg import ShadowPST, BiotacAll
-from sr_gui_fingertip_visualization.generic_plots import GenericDataPlot
-from sr_gui_fingertip_visualization.tab_layouts_generic import (
+from sr_fingertip_visualization.generic_plots import GenericDataPlot
+from sr_fingertip_visualization.tab_layouts_generic import (
     GenericGraphTab,
     GenericOptionBar,
     GenericOptionBar,
@@ -43,7 +43,7 @@ from python_qt_binding.QtWidgets import (
     QStackedLayout
 )
 
-from sr_gui_fingertip_visualization.finger_widgets_graphs import (
+from sr_fingertip_visualization.finger_widgets_graphs import (
     FingerWidgetGraphPST,
     FingerWidgetGraphBiotac,
     FingerWidgetGraphBiotacBlank

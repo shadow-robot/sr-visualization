@@ -32,8 +32,8 @@ from python_qt_binding.QtWidgets import (
     QLabel
 )
 
-from sr_gui_fingertip_visualization.tab_layouts_visual import VisualizationTab
-from sr_gui_fingertip_visualization.tab_layouts_graph import GraphTab
+from sr_fingertip_visualization.tab_layouts_visual import VisualizationTab
+from sr_fingertip_visualization.tab_layouts_graph import GraphTab
 from sr_robot_msgs.msg import BiotacAll, ShadowPST
 
 

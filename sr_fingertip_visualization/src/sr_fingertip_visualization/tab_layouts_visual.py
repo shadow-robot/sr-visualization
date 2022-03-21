@@ -32,19 +32,19 @@ from python_qt_binding.QtWidgets import (
     QStackedLayout
 )
 
-from sr_gui_fingertip_visualization.tactile_points import (
+from sr_fingertip_visualization.tactile_points import (
     TactilePointPST,
     TactilePointBiotacSPPlus,
     TactilePointBiotacSPMinus
 )
 
-from sr_gui_fingertip_visualization.tab_layouts_generic import (
+from sr_fingertip_visualization.tab_layouts_generic import (
     GenericGraphTab,
     GenericTabLayout,
     GenericOptionBar,
     BiotacType
 )
-from sr_gui_fingertip_visualization.finger_widgets_visual import (
+from sr_fingertip_visualization.finger_widgets_visual import (
     FingerWidgetVisualBiotacSPMinus,
     FingerWidgetVisualBiotacSPPlus,
     FingerWidgetVisualBiotacBlank,

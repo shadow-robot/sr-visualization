@@ -36,15 +36,15 @@ from python_qt_binding.QtWidgets import (
     QCheckBox
 )
 
-from sr_gui_fingertip_visualization.tactile_points import (
+from sr_fingertip_visualization.tactile_points import (
     TactilePointPST,
     TactilePointBiotacSPPlus,
     TactilePointBiotacSPMinus
 )
 
-from sr_gui_fingertip_visualization.tab_layouts_generic import GenericTabLayout
+from sr_fingertip_visualization.tab_layouts_generic import GenericTabLayout
 from sr_robot_msgs.msg import ShadowPST, BiotacAll
-from sr_gui_fingertip_visualization.generic_plots import GenericDataPlot
+from sr_fingertip_visualization.generic_plots import GenericDataPlot
 
 
 class FingerWidgetGraphGeneric(QGroupBox):

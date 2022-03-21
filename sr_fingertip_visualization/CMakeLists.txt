@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(sr_gui_fingertip_visualization)
+project(sr_fingertip_visualization)
 
 
 ## Find catkin macros and libraries
@@ -34,8 +34,8 @@ catkin_package(
 install(DIRECTORY launch
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
-install( FILES sr_gui_fingertip_plugin.xml
+install( FILES sr_fingertip_plugin_gui.xml
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION} )
 
-catkin_install_python(PROGRAMS scripts/sr_gui_fingertip_plugin
+catkin_install_python(PROGRAMS scripts/sr_fingertip_plugin_gui
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
