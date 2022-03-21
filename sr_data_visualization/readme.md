@@ -13,7 +13,7 @@ The radio buttons let you choose specific data to show or you can choose “All�
 
 The check buttons next to each graph name allows you to show the graphs you select in larger detail by checking the boxes of the graphs you want to see and clicking “Show Selected”. To return to the full graph view click “Reset”.
 
-This plugin supports a hand connected and a recorded ROS bag. Currently only 1 hand at a time is support - in case of two hands connected, the plugin will populate its plots for the first detected hand.
+This plugin supports a connected hand or a recorded ROS bag. Currently only 1 hand at a time is supported - in case of two hands connected, the plugin will populate its plots for the first detected hand.
 
 ## How to use it
 
