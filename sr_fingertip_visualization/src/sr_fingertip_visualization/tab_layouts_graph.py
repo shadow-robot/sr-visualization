@@ -54,13 +54,13 @@ class PSTGraphTab(GenericGraphTab):
     def __init__(self, side, parent):
         super().__init__(side, parent)
         self._side = side
+        self._CONST_DATA_FIELDS = ['pressure', 'temperature']
         self._init_tactile_layout()
 
     def _initialize_data_structure(self):
-        self._data_fields = ['pressure', 'temperature']
-        for finger in self._fingers:
+        for finger in self._CONST_FINGERS:
             self._data[finger] = dict()
-            for data_field in self._data_fields:
+            for data_field in self._CONST_DATA_FIELDS:
                 self._data[finger][data_field] = list()
 
     def _init_tactile_layout(self):
@@ -78,13 +78,13 @@ class BiotacGraphTab(GenericGraphTab):
     def __init__(self, side, parent):
         super().__init__(side, parent)
         self._side = side
+        self._CONST_DATA_FIELDS = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
         self._init_tactile_layout()
 
     def _initialize_data_structure(self):
-        self._data_fields = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
-        for finger in self._fingers:
+        for finger in self._CONST_FINGERS:
             self._data[finger] = dict()
-            for data_field in self._data_fields:
+            for data_field in self._CONST_DATA_FIELDS:
                 self._data[finger][data_field] = list()
 
     def _init_tactile_layout(self):

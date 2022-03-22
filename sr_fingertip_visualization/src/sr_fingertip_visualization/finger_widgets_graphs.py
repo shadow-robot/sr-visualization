@@ -53,7 +53,7 @@ class FingerWidgetGraphGeneric(QGroupBox):
 
     def __init__(self, finger, side, parent):
         super().__init__(parent=parent)
-        self._fingers = ['ff', 'mf', 'rf', 'lf', 'th']
+        self._CONST_FINGERS = ['ff', 'mf', 'rf', 'lf', 'th']
         self._finger = finger
         self._side = side
         self._data = dict()
@@ -91,7 +91,7 @@ class FingerWidgetGraphGeneric(QGroupBox):
 class FingerWidgetGraphPST(FingerWidgetGraphGeneric):
     def __init__(self, side, finger, parent):
         super().__init__(finger, side, parent=parent)
-        self._data_fields = ['pressure', 'temperature']
+        self._CONST_DATA_FIELDS = ['pressure', 'temperature']
         self._initialize_data_structure()
 
         self._tactile_data_callback(rospy.wait_for_message('/{}/tactile'.format(self._side), ShadowPST))
@@ -103,7 +103,7 @@ class FingerWidgetGraphPST(FingerWidgetGraphGeneric):
         plot_checkboxes.setSizePolicy(1, 2)
         plot_checkboxes_layout = QHBoxLayout()
         self._data_checkboxes = dict()
-        for i, data_field in enumerate(self._data_fields):
+        for i, data_field in enumerate(self._CONST_DATA_FIELDS):
             self._data_checkboxes[data_field] = QCheckBox(data_field)
             self._data_checkboxes[data_field].setIcon(self.plot_descriptors[self._plot_colors[i]])
             plot_checkboxes_layout.addWidget(self._data_checkboxes[data_field])
@@ -120,8 +120,7 @@ class FingerWidgetGraphPST(FingerWidgetGraphGeneric):
         self.start_timer_and_subscriber()
 
     def _initialize_data_structure(self):
-        self._data_fields = ['pressure', 'temperature']
-        for data_field in self._data_fields:
+        for data_field in self._CONST_DATA_FIELDS:
             self._data[data_field] = [0]
 
     def action_checkbox_pressure(self, state):
@@ -136,9 +135,9 @@ class FingerWidgetGraphPST(FingerWidgetGraphGeneric):
         self._timer.start(10)
 
     def _tactile_data_callback(self, data):
-        for i, finger in enumerate(self._fingers):
+        for i, finger in enumerate(self._CONST_FINGERS):
             if finger == self._finger:
-                for data_field in self._data_fields:
+                for data_field in self._CONST_DATA_FIELDS:
                     if len(self._data[data_field]) >= self._BUFFER_SIZE:
                         self._data[data_field] = self._data[data_field][1:]
                     if data_field == "pressure":
@@ -147,17 +146,15 @@ class FingerWidgetGraphPST(FingerWidgetGraphGeneric):
                         self._data[data_field].append(data.temperature[i])
 
     def timerEvent(self):
-        for data_field in self._data_fields:
+        for data_field in self._CONST_DATA_FIELDS:
             if self._data_checkboxes[data_field].isChecked():
                 self._plot.update_plot(self._data)
 
 
 class FingerWidgetGraphBiotac(FingerWidgetGraphGeneric):
-
     def __init__(self, side, finger, parent):
         super().__init__(finger, side, parent=parent)
-
-        self._data_fields = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
+        self._CONST_DATA_FIELDS = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
         self._initialize_data_structure()
         self._tactile_data_callback(rospy.wait_for_message('/{}/tactile'.format(self._side), BiotacAll))
 
@@ -168,7 +165,7 @@ class FingerWidgetGraphBiotac(FingerWidgetGraphGeneric):
         plot_checkboxes.setSizePolicy(1, 2)
         plot_checkboxes_layout = QGridLayout()
         self._data_checkboxes = dict()
-        for i, data_field in enumerate(self._data_fields):
+        for i, data_field in enumerate(self._CONST_DATA_FIELDS):
             self._data_checkboxes[data_field] = QCheckBox(data_field)
             self._data_checkboxes[data_field].setIcon(self.plot_descriptors[self._plot_colors[i]])
 
@@ -180,11 +177,11 @@ class FingerWidgetGraphBiotac(FingerWidgetGraphGeneric):
 
         plot_checkboxes.setLayout(plot_checkboxes_layout)
 
-        self._data_checkboxes['pac0'].clicked.connect(self.action_checkbox_pac0)
-        self._data_checkboxes['pac1'].clicked.connect(self.action_checkbox_pac1)
-        self._data_checkboxes['pdc'].clicked.connect(self.action_checkbox_pdc)
-        self._data_checkboxes['tac'].clicked.connect(self.action_checkbox_tac)
-        self._data_checkboxes['tdc'].clicked.connect(self.action_checkbox_tdc)
+        self._data_checkboxes['pac0'].clicked.connect(self.action_data_checkbox)
+        self._data_checkboxes['pac1'].clicked.connect(self.action_data_checkbox)
+        self._data_checkboxes['pdc'].clicked.connect(self.action_data_checkbox)
+        self._data_checkboxes['tac'].clicked.connect(self.action_data_checkbox)
+        self._data_checkboxes['tdc'].clicked.connect(self.action_data_checkbox)
 
         layout = QVBoxLayout()
         layout.addWidget(plot_checkboxes, alignment=Qt.AlignTop)
@@ -194,24 +191,13 @@ class FingerWidgetGraphBiotac(FingerWidgetGraphGeneric):
         self.start_timer_and_subscriber()
 
     def _initialize_data_structure(self):
-        self._data_fields = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
-        for data_field in self._data_fields:
+        for data_field in self._CONST_DATA_FIELDS:
             self._data[data_field] = list()
 
-    def action_checkbox_pac0(self, state):
-        self._plot.show_trace('pac0', state)
-
-    def action_checkbox_pac1(self, state):
-        self._plot.show_trace('pac1', state)
-
-    def action_checkbox_pdc(self, state):
-        self._plot.show_trace('pdc', state)
-
-    def action_checkbox_tac(self, state):
-        self._plot.show_trace('tac', state)
-
-    def action_checkbox_tdc(self, state):
-        self._plot.show_trace('tdc', state)
+    def action_data_checkbox(self, state):
+        caller = self.sender()
+        if isinstance(caller, QCheckBox):
+            self._plot.show_trace(caller.text(), state)
 
     def start_timer_and_subscriber(self):
         self._subscriber = rospy.Subscriber('/{}/tactile'.format(self._side), BiotacAll, self._tactile_data_callback)
@@ -219,9 +205,9 @@ class FingerWidgetGraphBiotac(FingerWidgetGraphGeneric):
         self._timer.start(10)
 
     def _tactile_data_callback(self, data):
-        for i, finger in enumerate(self._fingers):
+        for i, finger in enumerate(self._CONST_FINGERS):
             if finger == self._finger:
-                for data_field in self._data_fields:
+                for data_field in self._CONST_DATA_FIELDS:
                     if len(self._data[data_field]) >= self._BUFFER_SIZE:
                         self._data[data_field] = self._data[data_field][1:]
                     if data_field == "pac0":
@@ -236,13 +222,12 @@ class FingerWidgetGraphBiotac(FingerWidgetGraphGeneric):
                         self._data[data_field].append(data.tactiles[i].tdc)
 
     def timerEvent(self):
-        for data_field in self._data_fields:
+        for data_field in self._CONST_DATA_FIELDS:
             if self._data_checkboxes[data_field].isChecked():
                 self._plot.update_plot(self._data)
 
 
 class FingerWidgetGraphBiotacBlank(FingerWidgetGraphGeneric):
-
     def __init__(self, side, finger, parent):
         super().__init__(finger, side, parent=parent)
         layout = QHBoxLayout()
@@ -257,7 +242,6 @@ class FingerWidgetGraphBiotacBlank(FingerWidgetGraphGeneric):
 
 
 class FingerWidgetGraphPSTBlank(FingerWidgetGraphGeneric):
-
     def __init__(self, side, finger, parent):
         super().__init__(finger, side, parent=parent)
         layout = QHBoxLayout()

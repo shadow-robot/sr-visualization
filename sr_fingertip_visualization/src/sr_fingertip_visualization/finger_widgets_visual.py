@@ -16,7 +16,10 @@
 
 from __future__ import absolute_import, division
 import rospy
+import rospkg
 from enum import Enum
+import yaml
+import os
 
 from python_qt_binding.QtCore import Qt, QTimer
 from python_qt_binding.QtWidgets import (
@@ -45,7 +48,7 @@ class FingerWidgetVisualPST(QGroupBox):
     def __init__(self, side, finger, parent):
         super().__init__(parent=parent)
         self._tactile_point_widget = TactilePointPST(self)
-        self._fingers = ['ff', 'mf', 'rf', 'lf', 'th']
+        self._CONST_FINGERS = ['ff', 'mf', 'rf', 'lf', 'th']
         self._data = dict()
         self._finger = finger
         self._side = side
@@ -80,7 +83,7 @@ class FingerWidgetVisualPST(QGroupBox):
             self._subscriber.unregister()
 
     def _tactile_data_callback(self, data):
-        for i, finger in enumerate(self._fingers):
+        for i, finger in enumerate(self._CONST_FINGERS):
             if finger == self._finger:
                 for data_field in self._tactile_point_widget.get_data_fields():
                     if data_field == "pressure":
@@ -135,7 +138,7 @@ class FingerWidgetVisualBiotacSPMinus(QGroupBox):
     def __init__(self, side, finger, parent):
         super().__init__(parent=parent)
         self._tactile_point_widget = TactilePointBiotacSPMinus(self)
-        self._fingers = ['ff', 'mf', 'rf', 'lf', 'th']
+        self._CONST_FINGERS = ['ff', 'mf', 'rf', 'lf', 'th']
         self._data = dict()
         self._finger = finger
         self._side = side
@@ -170,7 +173,7 @@ class FingerWidgetVisualBiotacSPMinus(QGroupBox):
             self._subscriber.unregister()
 
     def _tactile_data_callback(self, data):
-        for i, finger in enumerate(self._fingers):
+        for i, finger in enumerate(self._CONST_FINGERS):
             if finger == self._finger:
                 for data_field in self._tactile_point_widget.get_data_fields():
                     if data_field == "pac0":
@@ -191,7 +194,7 @@ class FingerWidgetVisualBiotacSPMinus(QGroupBox):
 class FingerWidgetVisualBiotacSPPlus(QGroupBox):
     def __init__(self, side, finger, parent):
         super().__init__(parent=parent)
-        self._fingers = ['ff', 'mf', 'rf', 'lf', 'th']
+        self._CONST_FINGERS = ['ff', 'mf', 'rf', 'lf', 'th']
         self._version = 'v2'
         self._data = dict()
         self._finger = finger
@@ -206,29 +209,21 @@ class FingerWidgetVisualBiotacSPPlus(QGroupBox):
         self.setChecked(False)
         self.setSizePolicy(1, 1)
         self.clicked.connect(self.refresh)
+        self._succeded_config_load = False
 
-        self._coordinates = dict()
-        self._coordinates['v1'] = dict()
-        self._coordinates['v1']['sensing'] = dict()
-        self._coordinates['v1']['sensing']['x'] = [6.45, 3.65, 3.65, 6.45, 3.65, 6.45, 0.00, 1.95, -1.95, 0.00,
-                                                   -6.45, - 3.65, -3.65, -6.45, -3.65, -6.45, 0.00, 0.00, 0.00]
-        self._coordinates['v1']['sensing']['y'] = [7.58, 11.28, 14.78, 16.58, 19.08, 21.98, 4.38, 6.38, 6.38, 8.38,
-                                                   7.58, 11.28, 14.78, 16.58, 19.08, 21.98, 11.38, 18.38, 22.18]
-        self._coordinates['v1']['excitation'] = dict()
-        self._coordinates['v1']['excitation']['x'] = [6.45, 3.75, -3.75, -6.45]
-        self._coordinates['v1']['excitation']['y'] = [12.48, 24.48, 24.48, 12.48]
-
-        self._coordinates['v2'] = dict()
-        self._coordinates['v2']['sensing'] = dict()
-        self._coordinates['v2']['sensing']['x'] = [5.00, 3.65, 6.45, 4.40, 2.70, 6.45, 4.40, 1.50, 4.00, 4.50, -5.00,
-                                                   -3.65, -6.45, -4.40, -2.70, -6.45, -4.40, -1.50, -4.00, -4.50, 0.00,
-                                                   1.95, -1.95, 0.00]
-        self._coordinates['v2']['sensing']['y'] = [4.38, 6.38, 10.78, 11.50, 14.50, 15.08, 16.00, 17.00, 19.00, 21.00,
-                                                   4.38, 6.38, 10.78, 11.50, 14.50, 15.08, 16.00, 17.00, 19.00, 21.00,
-                                                   7.38, 9.50, 9.50, 11.20]
-        self._coordinates['v2']['excitation'] = dict()
-        self._coordinates['v2']['excitation']['x'] = [5.30, 6.00, -5.30, -6.00]
-        self._coordinates['v2']['excitation']['y'] = [9.00, 22.00, 9.00, 22.00]
+        try:
+            config_dir = os.path.join(rospkg.RosPack().get_path('sr_fingertip_visualization'), 'config')
+            rospy.logwarn(config_dir)
+            stream = open(config_dir + "/tactile_point_cooridinates.yaml", 'r')
+            self._coordinates = yaml.safe_load(stream)
+            self._succeded_config_load = True
+        except FileNotFoundError as e:
+            rospy.logerr("Config file not found!")
+            layout = QVBoxLayout()
+            layout.addWidget(QLabel("Error!"), alignment=Qt.AlignBottom | Qt.AlignHCenter)
+            layout.addWidget(QLabel("Layout config file not found!"), alignment=Qt.AlignTop | Qt.AlignHCenter)
+            self.setLayout(layout)
+            return
 
         x_cords = self._coordinates[self._version]['sensing']['x']
         y_cords = self._coordinates[self._version]['sensing']['y']
@@ -260,9 +255,11 @@ class FingerWidgetVisualBiotacSPPlus(QGroupBox):
             self.stop_timer_and_subscriber()
 
     def start_timer_and_subscriber(self):
-        self._subscriber = rospy.Subscriber('/{}/tactile'.format(self._side), BiotacAll, self._tactile_data_callback)
-        self._timer.timeout.connect(self.timerEvent)
-        self._timer.start(10)
+        if self._succeded_config_load:
+            topic = '/{}/tactile'.format(self._side)
+            self._subscriber = rospy.Subscriber(topic, BiotacAll, self._tactile_data_callback)
+            self._timer.timeout.connect(self.timerEvent)
+            self._timer.start(10)
 
     def stop_timer_and_subscriber(self):
         self._timer.stop()
@@ -270,7 +267,7 @@ class FingerWidgetVisualBiotacSPPlus(QGroupBox):
             self._subscriber.unregister()
 
     def _tactile_data_callback(self, data):
-        for i, finger in enumerate(self._fingers):
+        for i, finger in enumerate(self._CONST_FINGERS):
             if finger == self._finger:
                 for data_field in self._tactile_point_widget[i].get_data_fields():
                     if data_field == "pac0":
@@ -298,15 +295,16 @@ class FingerWidgetVisualBiotacSPPlus(QGroupBox):
         return self._datatype_to_display
 
     def change_datatype_to_display(self, datatype):
-        if datatype in ["pac", "electrodes"]:
-            self._datatype_to_display = datatype
-            self._electrodes_to_display_count = len(self._data[self._datatype_to_display])
+        if self._succeded_config_load:
+            if datatype in ["pac", "electrodes"]:
+                self._datatype_to_display = datatype
+                self._electrodes_to_display_count = len(self._data[self._datatype_to_display])
 
-        for i in range(len(self._tactile_point_widget)):
-            if i < self._electrodes_to_display_count:
-                self._tactile_point_widget[i].show()
-            else:
-                self._tactile_point_widget[i].hide()
+            for i in range(len(self._tactile_point_widget)):
+                if i < self._electrodes_to_display_count:
+                    self._tactile_point_widget[i].show()
+                else:
+                    self._tactile_point_widget[i].hide()
 
 
 class FingerWidgetVisualBiotacBlank(QGroupBox):

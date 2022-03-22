@@ -17,7 +17,7 @@ The **Graphs** tab respresents the data in form of plots for all of the data com
 ## How to use it
 
 
-The gui can be started via roslaunch with an optional robag. The rosbag will be played with the -l option (infinite loop):
+The gui can be started via roslaunch with an optional rosbag. The rosbag will be played with the -l option (infinite loop):
 
 ```
 roslaunch sr_gui_fingertip_visualization tactile_visualizer.launch rosbag_path:=<absolute_path>
@@ -30,7 +30,7 @@ rqt
 
 and go to Plugins -> Shadow Robot -> Fingertip Visualizer
 
-This plugin supports presenting the data coming in real time from the Dexterous Hand and from a ROSbag.
+This plugin supports presenting the data coming in real time from the Dexterous Hand and from a rosbag.
 
 
 ## Requirement

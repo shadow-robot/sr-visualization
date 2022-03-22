@@ -44,7 +44,8 @@ class GenericGraphTab(QWidget):
         super().__init__(parent=parent)
 
         self._side = side
-        self._fingers = ['ff', 'mf', 'rf', 'lf', 'th']
+        self._CONST_FINGERS = ['ff', 'mf', 'rf', 'lf', 'th']
+        self._CONST_DATA_FIELDS = ['pressure', 'temperature']
         self._data = dict()
         self._timer = QTimer()
         self._finger_widgets = dict()
@@ -66,7 +67,7 @@ class GenericGraphTab(QWidget):
 
         available_colors = list(self.ICONS.keys())
         self._legend_colors = dict()
-        for i, data_field in enumerate(self._data_fields):
+        for i, data_field in enumerate(self._CONST_DATA_FIELDS):
             self._legend_colors[data_field] = dict()
             self._legend_colors[data_field]['icon'] = self.ICONS[available_colors[i]]
             self._legend_colors[data_field]['plot_color'] = QColor(available_colors[i])
@@ -86,7 +87,7 @@ class GenericTabLayout(QWidget):
         super().__init__(parent=parent)
 
         self._subscriber = None
-        self._fingers = ["ff", 'mf', 'rf', 'lf', 'th']
+        self._CONST_FINGERS = ["ff", 'mf', 'rf', 'lf', 'th']
         self._finger_widgets = dict()
         self._timer = QTimer(self)
 
@@ -113,7 +114,7 @@ class GenericOptionBar(QGroupBox):
         super().__init__()
         self._hand_ids = hand_ids
         self._childs = childs
-        self._fingers = ["ff", 'mf', 'rf', 'lf', 'th']
+        self._CONST_FINGERS = ["ff", 'mf', 'rf', 'lf', 'th']
         self.setTitle("Options")
         self.setSizePolicy(1, 2)
 
@@ -142,8 +143,8 @@ class GenericOptionBar(QGroupBox):
 
     def _button_action_show_selected_fingers(self):
         fingertip_widgets = self._childs.currentWidget().get_finger_widgets()
-        self._selected_fingers = [finger for finger in self._fingers if fingertip_widgets[finger].isChecked()]
-        for finger in self._fingers:
+        self._selected_fingers = [finger for finger in self._CONST_FINGERS if fingertip_widgets[finger].isChecked()]
+        for finger in self._CONST_FINGERS:
             if finger in self._selected_fingers:
                 fingertip_widgets[finger].start_timer_and_subscriber()
                 fingertip_widgets[finger].show()
@@ -153,8 +154,8 @@ class GenericOptionBar(QGroupBox):
 
     def _button_action_show_all(self):
         fingertip_widgets = self._childs.currentWidget().get_finger_widgets()
-        self._selected_fingers = [finger for finger in self._fingers if fingertip_widgets[finger].isChecked()]
-        for finger in self._fingers:
+        self._selected_fingers = [finger for finger in self._CONST_FINGERS if fingertip_widgets[finger].isChecked()]
+        for finger in self._CONST_FINGERS:
             fingertip_widgets[finger].setChecked(False)
             fingertip_widgets[finger].stop_timer_and_subscriber()
             fingertip_widgets[finger].show()

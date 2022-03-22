@@ -47,7 +47,7 @@ class SrFingertipVisualizer(Plugin):
         self._init_ui()
 
     def _detect_hand_and_tactile_type(self):
-        self._tactile_topics = None
+        self._tactile_topics = dict()
 
         try:
             type_right = rostopic.get_topic_type("/rh/tactile")
@@ -86,7 +86,7 @@ class SrFingertipVisualizer(Plugin):
         self.tab_container.currentChanged.connect(self.tab_changed)
         information_btn.clicked.connect(self.display_information)
 
-        if self._tactile_topics is None:
+        if len(self._tactile_topics) == 0:
             label = QLabel("No tactiles", parent=self.tab_container)
             label.setSizePolicy(1, 1)
             self.main_layout.addWidget(label, alignment=Qt.AlignCenter)

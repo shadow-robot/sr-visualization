@@ -30,7 +30,7 @@ from sr_fingertip_visualization.tactile_point_generic import TactilePointGeneric
 class TactilePointPST(TactilePointGeneric):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self._data_fields = ['pressure', 'temperature']
+        self._CONST_DATA_FIELDS = ['pressure', 'temperature']
         self.get_dot().resize_dot(25)
         self._init_widget()
 
@@ -46,13 +46,13 @@ class TactilePointPST(TactilePointGeneric):
         data_layout.addRow(self.get_dot())
         self._label = dict()
 
-        for data_field in self._data_fields:
+        for data_field in self._CONST_DATA_FIELDS:
             self._label[data_field] = QLabel("-")
             data_layout.addRow(QLabel(f"{data_field[0]}: "), self._label[data_field])
         self.setLayout(data_layout)
 
     def update_data(self, data):
-        for data_field in self._data_fields:
+        for data_field in self._CONST_DATA_FIELDS:
             self._label[data_field].setText(str(data[data_field]))
         self.get_dot().set_color(self._value_to_color(data['pressure']))
         self.get_dot().update()
@@ -61,12 +61,13 @@ class TactilePointPST(TactilePointGeneric):
 class TactilePointBiotacSPMinus(TactilePointGeneric):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self._data_fields = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
+        self._CONST_DATA_FIELDS = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
         self.get_dot().resize_dot(20)
         self._init_widget()
 
     def _value_to_color(self, value):
-        # to change value (1000 and 200) as its taken from the topic
+        # to change values (1000 and 200), experimentally assigned for now but
+        # need to be verified and changed after agreeing with production
         r = min(255, max(0, 255 * (value - 1000) / 200))
         g = 0
         b = 255 - r
@@ -80,7 +81,7 @@ class TactilePointBiotacSPMinus(TactilePointGeneric):
         widget_layout.addRow(self.get_dot())
 
         self._data_labels = dict()
-        for data_field in self._data_fields:
+        for data_field in self._CONST_DATA_FIELDS:
             self._data_labels[data_field] = QLabel("-")
             self._data_labels[data_field].setMinimumSize(40, 10)
             self._data_labels[data_field].setSizePolicy(2, 2)
@@ -88,7 +89,7 @@ class TactilePointBiotacSPMinus(TactilePointGeneric):
         self.setLayout(widget_layout)
 
     def update_data(self, data):
-        for data_field in self._data_fields:
+        for data_field in self._CONST_DATA_FIELDS:
             self._data_labels[data_field].setText(str(data[data_field]))
         self.get_dot().set_color(self._value_to_color(data['pdc']))
         self.get_dot().update()
@@ -97,7 +98,7 @@ class TactilePointBiotacSPMinus(TactilePointGeneric):
 class TactilePointBiotacSPPlus(TactilePointGeneric):
     def __init__(self, electrode_index, parent=None):
         super().__init__(index=electrode_index, parent=parent)
-        self._data_fields = ['pac0', 'pac1', 'pdc', 'tac', 'tdc', 'electrodes', 'pac']
+        self._CONST_DATA_FIELDS = ['pac0', 'pac1', 'pdc', 'tac', 'tdc', 'electrodes', 'pac']
         self._init_widget()
 
     def _value_to_color(self, value):
@@ -105,6 +106,8 @@ class TactilePointBiotacSPPlus(TactilePointGeneric):
         g = 0.0
         b = 255.0
         value = float(value)
+        # values taken from previous version of the plugin
+        # this is to have a specific color indication
         threshold = (0.0, 1000.0, 2000.0, 3000.0, 4095.0)
         if value <= threshold[0]:
             pass

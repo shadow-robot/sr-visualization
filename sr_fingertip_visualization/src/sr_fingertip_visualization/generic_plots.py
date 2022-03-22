@@ -57,7 +57,6 @@ class GenericDataPlot(QwtPlot):
         self.axisScaleDraw(QwtPlot.yLeft).enableComponent(QwtScaleDraw.Labels, False)
 
         self._traces = dict()
-        self._data_fields = None
         self.generate_plots(data)
 
     def generate_plots(self, data):
