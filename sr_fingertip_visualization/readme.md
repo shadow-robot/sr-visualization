@@ -31,12 +31,3 @@ rqt
 and go to Plugins -> Shadow Robot -> Fingertip Visualizer
 
 This plugin supports presenting the data coming in real time from the Dexterous Hand and from a rosbag.
-
-
-## Requirement
-
-To be able to use this gui you must have installed pyqwt:
-
-```
-sudo apt install python3-qwt
-```
