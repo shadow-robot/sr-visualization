@@ -98,8 +98,8 @@ class FingerWidgetVisualPST(QGroupBox):
 class BiotacSPPlusInfo(QGroupBox):
     def __init__(self):
         super().__init__()
-        self._text_fields = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
-        self._data = dict.fromkeys(self._text_fields, 0)
+        self._CONST_TEXT_FIELDS = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
+        self._data = dict.fromkeys(self._CONST_TEXT_FIELDS, 0)
         self._labels = dict()
 
         self.setSizePolicy(1, 2)
@@ -108,7 +108,7 @@ class BiotacSPPlusInfo(QGroupBox):
         layout_pressure = QHBoxLayout()
         layout_temperature = QHBoxLayout()
 
-        for key in self._text_fields:
+        for key in self._CONST_TEXT_FIELDS:
             self._labels[key] = QLabel(self)
             self._labels[key].setText(f"{key}:0")
             if key[0] == 'p':
@@ -122,7 +122,7 @@ class BiotacSPPlusInfo(QGroupBox):
         self.setLayout(layout)
 
     def update_values(self, data):
-        common_keys = list(set(data.keys()) & set(self._text_fields))
+        common_keys = list(set(data.keys()) & set(self._CONST_TEXT_FIELDS))
         for key in common_keys:
             self._data[key] = data[key]
 
@@ -130,7 +130,7 @@ class BiotacSPPlusInfo(QGroupBox):
         return widget
 
     def refresh(self):
-        for key in self._text_fields:
+        for key in self._CONST_TEXT_FIELDS:
             self._labels[key].setText(f"{key}:{self._data[key]}")
 
 
