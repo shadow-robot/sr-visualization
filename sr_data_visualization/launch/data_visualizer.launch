@@ -1,3 +1,5 @@
-<launch>
+<launch>  
+  <arg name="rosbag_path" default=""/>
   <node pkg="sr_data_visualization" type="sr_data_visualizer_gui.py" name="data_gui" output="screen"/>
+  <node pkg="rosbag" type="play" name="rosbag" args="$(arg rosbag_path) -l"  unless="$(eval arg('rosbag_path') == '')"/>
 </launch>
