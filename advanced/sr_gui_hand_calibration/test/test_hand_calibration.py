@@ -27,7 +27,7 @@ import unittest
 import rostest
 import tempfile
 from mock import patch
-
+from pyvirtualdisplay import Display
 from sr_gui_hand_calibration.sr_hand_calibration_model import HandCalibration
 
 from PyQt5.uic import loadUi
@@ -68,5 +68,7 @@ class TestHandCalibration(unittest.TestCase):
 
 
 if __name__ == "__main__":
+    display = Display(visible=False, size=(1024, 768), color_depth=24)
+    display.start()
     rospy.init_node("test_hand_calibration")
     rostest.rosrun(PKG, NAME, TestHandCalibration)

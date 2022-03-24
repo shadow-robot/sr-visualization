@@ -17,5 +17,5 @@ install( FILES sr_gui_hand_calibration_plugin.xml DESTINATION ${CATKIN_PACKAGE_S
 set(QT_DEBUG_PLUGINS 1)
 
 if(CATKIN_ENABLE_TESTING)
-  # catkin_add_nosetests(test/test_hand_calibration.py)
+    catkin_add_nosetests(test/test_hand_calibration.py)
 endif()
