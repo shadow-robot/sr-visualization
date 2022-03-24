@@ -110,7 +110,7 @@ class FingerWidgetGraphPST(FingerWidgetGraphGeneric):
             self._data_checkboxes[data_field].setIcon(self.plot_descriptors[self._plot_colors[i]])
             self._data_checkboxes[data_field].stateChanged.connect(self.action_data_checkbox)
             plot_checkboxes_layout.addWidget(self._data_checkboxes[data_field])
-        plot_checkboxes.setLayout(plot_checkboxes_layout)        
+        plot_checkboxes.setLayout(plot_checkboxes_layout)
 
         layout = QVBoxLayout()
         layout.addWidget(plot_checkboxes, alignment=Qt.AlignTop)
@@ -129,8 +129,9 @@ class FingerWidgetGraphPST(FingerWidgetGraphGeneric):
             self._plot.show_trace(caller.text(), state)
 
     def start_timer_and_subscriber(self):
-        if not self._subscriber:            
-            self._subscriber = rospy.Subscriber('/{}/tactile'.format(self._side), ShadowPST, self._tactile_data_callback)
+        if not self._subscriber:
+            self._subscriber = rospy.Subscriber('/{}/tactile'.format(self._side), ShadowPST,
+                                                self._tactile_data_callback)
             self._timer.timeout.connect(self.timerEvent)
             self._timer.start(10)
 
@@ -175,7 +176,7 @@ class FingerWidgetGraphBiotac(FingerWidgetGraphGeneric):
         plot_checkboxes_layout.addWidget(self._data_checkboxes['tac'], 1, 0, alignment=Qt.AlignLeft)
         plot_checkboxes_layout.addWidget(self._data_checkboxes['tdc'], 1, 1, alignment=Qt.AlignLeft)
 
-        plot_checkboxes.setLayout(plot_checkboxes_layout)        
+        plot_checkboxes.setLayout(plot_checkboxes_layout)
 
         layout = QVBoxLayout()
         layout.addWidget(plot_checkboxes, alignment=Qt.AlignTop)
@@ -212,7 +213,8 @@ class FingerWidgetGraphBiotac(FingerWidgetGraphGeneric):
 
     def start_timer_and_subscriber(self):
         if not self._subscriber:
-            self._subscriber = rospy.Subscriber('/{}/tactile'.format(self._side), BiotacAll, self._tactile_data_callback)
+            self._subscriber = rospy.Subscriber('/{}/tactile'.format(self._side), BiotacAll,
+                                                self._tactile_data_callback)
             self._timer.timeout.connect(self.timerEvent)
             self._timer.start(10)
 

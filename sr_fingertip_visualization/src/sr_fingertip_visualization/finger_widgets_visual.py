@@ -74,7 +74,8 @@ class FingerWidgetVisualPST(QGroupBox):
 
     def start_timer_and_subscriber(self):
         if not self._subscriber:
-            self._subscriber = rospy.Subscriber('/{}/tactile'.format(self._side), ShadowPST, self._tactile_data_callback)
+            self._subscriber = rospy.Subscriber('/{}/tactile'.format(self._side), ShadowPST,
+                                                self._tactile_data_callback)
             self._timer.timeout.connect(self.timerEvent)
             self._timer.start(10)
 
@@ -163,7 +164,8 @@ class FingerWidgetVisualBiotacSPMinus(QGroupBox):
 
     def start_timer_and_subscriber(self):
         if not self._subscriber:
-            self._subscriber = rospy.Subscriber('/{}/tactile'.format(self._side), BiotacAll, self._tactile_data_callback)
+            self._subscriber = rospy.Subscriber('/{}/tactile'.format(self._side), BiotacAll,
+                                                self._tactile_data_callback)
             self._timer.timeout.connect(self.timerEvent)
             self._timer.start(10)
 
@@ -171,7 +173,7 @@ class FingerWidgetVisualBiotacSPMinus(QGroupBox):
         self._timer.stop()
         if self._subscriber:
             self._subscriber.unregister()
-            self._subscriber = None 
+            self._subscriber = None
 
     def _tactile_data_callback(self, data):
         for i, finger in enumerate(self._CONST_FINGERS):
@@ -255,8 +257,9 @@ class FingerWidgetVisualBiotacSPPlus(QGroupBox):
             self.stop_timer_and_subscriber()
 
     def start_timer_and_subscriber(self):
-        if self._succeded_config_load and not self._subscriber:      
-            self._subscriber = rospy.Subscriber('/{}/tactile'.format(self._side), BiotacAll, self._tactile_data_callback)
+        if self._succeded_config_load and not self._subscriber:
+            self._subscriber = rospy.Subscriber('/{}/tactile'.format(self._side), BiotacAll,
+                                                self._tactile_data_callback)
             self._timer.timeout.connect(self.timerEvent)
             self._timer.start(10)
 

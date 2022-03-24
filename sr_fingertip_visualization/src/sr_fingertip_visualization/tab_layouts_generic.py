@@ -160,7 +160,7 @@ class GenericOptionBar(QGroupBox):
         for finger in self._CONST_FINGERS:
             fingertip_widgets[finger].setChecked(True)
             fingertip_widgets[finger].start_timer_and_subscriber()
-            fingertip_widgets[finger].show()            
+            fingertip_widgets[finger].show()
 
     def _button_action_reset(self):
         fingertip_widgets = self._childs.currentWidget().get_finger_widgets()

@@ -154,7 +154,7 @@ class GraphOptionBar(GenericOptionBar):
             fingertip_widgets[finger].setChecked(True)
             fingertip_widgets[finger].start_timer_and_subscriber()
             fingertip_widgets[finger].show()
-            
+
             for data_checkbox in fingertip_widgets[finger].get_data_checkboxes().values():
                 data_checkbox.setChecked(True)
 
@@ -164,6 +164,6 @@ class GraphOptionBar(GenericOptionBar):
             fingertip_widgets[finger].setChecked(False)
             fingertip_widgets[finger].stop_timer_and_subscriber()
             fingertip_widgets[finger].show()
-            
+
             for data_checkbox in fingertip_widgets[finger].get_data_checkboxes().values():
                 data_checkbox.setChecked(False)
