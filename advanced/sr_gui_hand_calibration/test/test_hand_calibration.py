@@ -43,7 +43,7 @@ class TestHandCalibration(unittest.TestCase):
         self.app = QApplication(sys.argv)
         self._widget = QWidget()
         ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_hand_calibration'), 'uis', 'SrHandCalibration.ui')
-        loadUi(ui_file, self._widget)
+        #loadUi(ui_file, self._widget)
 
         self.mock_file = tempfile.NamedTemporaryFile(delete=False)
         self.mock_file.write(b"""sr_calibrations: [\n""" +
