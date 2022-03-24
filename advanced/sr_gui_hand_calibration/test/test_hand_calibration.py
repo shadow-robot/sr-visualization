@@ -46,12 +46,12 @@ class TestHandCalibration(unittest.TestCase):
         loadUi(ui_file, self._widget)
 
         self.mock_file = tempfile.NamedTemporaryFile(delete=False)
-        self.mock_file.write(b"""sr_calibrations: [\n""" +
-                             b"""["mock", [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]],\n""" +
-                             b"""]""")
-        self.mock_file.write(b"""\n\nsr_calibrations_coupled: [\n""" +
-                             b"""[["mock_1", "mock_2"], [[[0.0, 0.0], 0.0, 0.0]]],\n""" +
-                             b"""]""")
+        self.mock_file.write("""sr_calibrations: [\n""" +
+                             """["mock", [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]],\n""" +
+                             """]""")
+        self.mock_file.write("""\n\nsr_calibrations_coupled: [\n""" +
+                             """[["mock_1", "mock_2"], [[[0.0, 0.0], 0.0, 0.0]]],\n""" +
+                             """]""")
         self.mock_file.close()
 
     def tearDown(self):
@@ -59,7 +59,6 @@ class TestHandCalibration(unittest.TestCase):
 
     @patch('sr_gui_hand_calibration.sr_hand_calibration_model.EtherCAT_Hand_Lib')
     def test_progress_bar(self, EtherCAT_Hand_Lib):
-        print("HELLLOO")
         self.hand_model = HandCalibration(tree_widget=self._widget.tree_calibration,
                                           progress_bar=self._widget.progress)
 
