@@ -40,7 +40,7 @@ PKG = "sr_gui_hand_calibration"
 class TestHandCalibration(unittest.TestCase):
 
     def setUp(self):
-        self.app = QApplication([sys.argv, "0"])
+        self.app = QApplication([sys.argv, "dsadsadasd"])
         self._widget = QWidget()
         ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_hand_calibration'), 'uis', 'SrHandCalibration.ui')
         loadUi(ui_file, self._widget)
