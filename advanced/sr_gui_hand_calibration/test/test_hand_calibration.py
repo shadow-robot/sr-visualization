@@ -40,6 +40,8 @@ PKG = "sr_gui_hand_calibration"
 class TestHandCalibration(unittest.TestCase):
 
     def setUp(self):
+        display = Display(visible=False, size=(1024, 768), color_depth=24)
+        display.start()
         self.app = QApplication([sys.argv, "dsadsadasd"])
         self._widget = QWidget()
         ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_hand_calibration'), 'uis', 'SrHandCalibration.ui')
@@ -68,7 +70,5 @@ class TestHandCalibration(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    display = Display(visible=False, size=(1024, 768), color_depth=24)
-    display.start()
     rospy.init_node("test_hand_calibration")
     rostest.rosrun(PKG, NAME, TestHandCalibration)
