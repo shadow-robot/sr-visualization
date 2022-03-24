@@ -199,40 +199,6 @@ class BiotacVisualizationTab(GenericTabLayout):
         return self._finger_widgets[finger]
 
 
-class BiotacSPPlusInfo(QGroupBox):
-    def __init__(self, parent):
-        super().__init__(parent=parent)
-        self._text_fields = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
-        self._data = dict.fromkeys(self._text_fields, 0)
-        self._labels = dict()
-
-        self.setSizePolicy(1, 2)
-        self.setTitle("Data")
-
-        for key in self._text_fields:
-            self._labels[key] = QLabel(self)
-            self._labels[key].setText(f"{key}:0")
-
-        layout = QGridLayout()
-        layout.addWidget(self._labels['pac0'], 0, 0, alignment=Qt.AlignLeft)
-        layout.addWidget(self._labels['pac1'], 0, 1, alignment=Qt.AlignLeft)
-        layout.addWidget(self._labels['pdc'], 0, 2, alignment=Qt.AlignLeft)
-        layout.addWidget(self._labels['tac'], 1, 0, alignment=Qt.AlignLeft)
-        layout.addWidget(self._labels['tdc'], 1, 1, alignment=Qt.AlignLeft)
-
-        layout = QVBoxLayout()
-        self.setLayout(layout)
-
-    def update_values(self, data):
-        common_keys = list(set(data.keys()) & set(self._text_fields))
-        for key in common_keys:
-            self._data[key] = data[key]
-
-    def refresh(self):
-        for key in self._text_fields:
-            self._labels[key].setText(f"{key}:{self._data[key]}")
-
-
 class VisualOptionBar(GenericOptionBar):
     def __init__(self, hand_ids, childs):
         super().__init__(hand_ids, childs)

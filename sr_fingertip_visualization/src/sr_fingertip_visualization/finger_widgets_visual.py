@@ -108,20 +108,18 @@ class BiotacSPPlusInfo(QGroupBox):
         self.setSizePolicy(1, 2)
         self.setTitle("Data")
 
-        layout_pressure = QHBoxLayout()
-        layout_temperature = QHBoxLayout()
-
         for key in self._CONST_TEXT_FIELDS:
             self._labels[key] = QLabel(self)
-            self._labels[key].setText(f"{key}:0")
-            if key[0] == 'p':
-                layout_pressure.addWidget(self._labels[key])
-            elif key[0] == 't':
-                layout_temperature.addWidget(self._labels[key])
+            self._labels[key].setText(f"{key}: -")
 
-        layout = QVBoxLayout()
-        layout.addLayout(layout_pressure)
-        layout.addLayout(layout_temperature)
+        layout = QGridLayout()
+        layout.addWidget(self._labels['pac0'], 0, 0, alignment=Qt.AlignLeft)
+        layout.addWidget(self._labels['pac1'], 0, 1, alignment=Qt.AlignLeft)
+        layout.addWidget(self._labels['pdc'], 0, 2, alignment=Qt.AlignLeft)
+        layout.addWidget(self._labels['tac'], 1, 0, alignment=Qt.AlignLeft)
+        layout.addWidget(self._labels['tdc'], 1, 1, alignment=Qt.AlignLeft)
+        layout.addWidget(QLabel(), 1, 2, alignment=Qt.AlignLeft)
+
         self.setLayout(layout)
 
     def update_values(self, data):
@@ -131,7 +129,7 @@ class BiotacSPPlusInfo(QGroupBox):
 
     def refresh(self):
         for key in self._CONST_TEXT_FIELDS:
-            self._labels[key].setText(f"{key}:{self._data[key]}")
+            self._labels[key].setText(f"{key}: {self._data[key]}")
 
 
 class FingerWidgetVisualBiotacSPMinus(QGroupBox):
