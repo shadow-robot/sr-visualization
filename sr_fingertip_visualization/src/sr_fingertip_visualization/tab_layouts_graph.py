@@ -142,6 +142,28 @@ class GraphOptionBar(GenericOptionBar):
         self.options_layout.addWidget(self.finger_selection_label)
         self.options_layout.addWidget(self.finger_selection_show_selected_button)
         self.options_layout.addWidget(self.finger_selection_show_all_button)
+        self.options_layout.addWidget(self.finger_selection_reset_button)
 
         self.setLayout(self.options_layout)
         self._current_widget = self._childs.currentWidget()
+
+    def _button_action_show_all(self):
+        fingertip_widgets = self._childs.currentWidget().get_finger_widgets()
+        self._selected_fingers = [finger for finger in self._CONST_FINGERS if fingertip_widgets[finger].isChecked()]
+        for finger in self._CONST_FINGERS:
+            fingertip_widgets[finger].setChecked(True)
+            fingertip_widgets[finger].start_timer_and_subscriber()
+            fingertip_widgets[finger].show()
+            
+            for data_checkbox in fingertip_widgets[finger].get_data_checkboxes().values():
+                data_checkbox.setChecked(True)
+
+    def _button_action_reset(self):
+        fingertip_widgets = self._childs.currentWidget().get_finger_widgets()
+        for finger in self._CONST_FINGERS:
+            fingertip_widgets[finger].setChecked(False)
+            fingertip_widgets[finger].stop_timer_and_subscriber()
+            fingertip_widgets[finger].show()
+            
+            for data_checkbox in fingertip_widgets[finger].get_data_checkboxes().values():
+                data_checkbox.setChecked(False)

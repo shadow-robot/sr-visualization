@@ -131,11 +131,14 @@ class GenericOptionBar(QGroupBox):
         self.finger_selection_show_selected_button.setSizePolicy(2, 2)
         self.finger_selection_show_all_button = QPushButton("Show all")
         self.finger_selection_show_all_button.setSizePolicy(2, 2)
+        self.finger_selection_reset_button = QPushButton("Reset")
+        self.finger_selection_reset_button.setSizePolicy(2, 2)
 
     def create_connections(self):
         self.hand_id_selection.currentIndexChanged.connect(self._combobox_action_hand_id_selection)
         self.finger_selection_show_selected_button.clicked.connect(self._button_action_show_selected_fingers)
         self.finger_selection_show_all_button.clicked.connect(self._button_action_show_all)
+        self.finger_selection_reset_button.clicked.connect(self._button_action_reset)
 
     def _combobox_action_hand_id_selection(self):
         self._current_widget = self._childs.currentWidget()
@@ -154,17 +157,22 @@ class GenericOptionBar(QGroupBox):
 
     def _button_action_show_all(self):
         fingertip_widgets = self._childs.currentWidget().get_finger_widgets()
-        self._selected_fingers = [finger for finger in self._CONST_FINGERS if fingertip_widgets[finger].isChecked()]
+        for finger in self._CONST_FINGERS:
+            fingertip_widgets[finger].setChecked(True)
+            fingertip_widgets[finger].start_timer_and_subscriber()
+            fingertip_widgets[finger].show()            
+
+    def _button_action_reset(self):
+        fingertip_widgets = self._childs.currentWidget().get_finger_widgets()
         for finger in self._CONST_FINGERS:
             fingertip_widgets[finger].setChecked(False)
             fingertip_widgets[finger].stop_timer_and_subscriber()
             fingertip_widgets[finger].show()
 
     def _start_selected_widget(self, selected_widget):
-        rospy.logwarn("start_selected from generic")
-        for widget_index in range(self._childs.count()):
+        for i in range(self._childs.count()):
             finger_widgets_from_tab = self._childs.currentWidget().get_finger_widgets()
-            for finger, widget in finger_widgets_from_tab.items():
+            for widget in finger_widgets_from_tab.values():
                 if self._childs.currentWidget() == selected_widget:
                     widget.start_timer_and_subscriber()
                 else:

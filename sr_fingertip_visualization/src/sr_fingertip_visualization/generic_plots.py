@@ -45,14 +45,14 @@ class Trace():
 
 
 class GenericDataPlot(QwtPlot):
-    _GRAPH_MINW = 300
-    _GRAPH_MINH = 200
+    _GRAPH_MINW = 80
+    _GRAPH_MINH = 100
 
     def __init__(self, data, colors):
         super().__init__()
         self._colors = colors
         self.setCanvasBackground(Qt.white)
-        self.setMaximumSize(self._GRAPH_MINW, self._GRAPH_MINH)
+        self.setMinimumSize(self._GRAPH_MINW, self._GRAPH_MINH)
         self.axisScaleDraw(QwtPlot.xBottom).enableComponent(QwtScaleDraw.Labels, False)
         self.axisScaleDraw(QwtPlot.yLeft).enableComponent(QwtScaleDraw.Labels, False)
 

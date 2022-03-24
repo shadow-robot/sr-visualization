@@ -61,7 +61,7 @@ class SrFingertipVisualizer(Plugin):
             self._types = [topic_data[0].split('/')[1] for topic_data in [type_right, type_left] if topic_data[1]]
             self._tactile_topics = dict(zip(self._hand_ids, self._types))
 
-        except (rospy.exceptions.ROSException, AttributeError) as e:
+        except (rospy.exceptions.ROSException, AttributeError):
             msg = "No available messages on tactile topic!"
             rospy.logwarn(msg)
 

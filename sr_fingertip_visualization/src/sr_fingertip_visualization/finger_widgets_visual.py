@@ -59,7 +59,7 @@ class FingerWidgetVisualPST(QGroupBox):
         self.setCheckable(True)
         self.setChecked(False)
         self.setSizePolicy(1, 1)
-        self.clicked.connect(self.refresh)
+        self.toggled.connect(self.refresh)
 
         layout = QVBoxLayout()
         layout.addWidget(self._tactile_point_widget, alignment=Qt.AlignCenter)
@@ -73,14 +73,16 @@ class FingerWidgetVisualPST(QGroupBox):
             self.stop_timer_and_subscriber()
 
     def start_timer_and_subscriber(self):
-        self._subscriber = rospy.Subscriber('/{}/tactile'.format(self._side), ShadowPST, self._tactile_data_callback)
-        self._timer.timeout.connect(self.timerEvent)
-        self._timer.start(10)
+        if not self._subscriber:
+            self._subscriber = rospy.Subscriber('/{}/tactile'.format(self._side), ShadowPST, self._tactile_data_callback)
+            self._timer.timeout.connect(self.timerEvent)
+            self._timer.start(10)
 
     def stop_timer_and_subscriber(self):
         self._timer.stop()
         if self._subscriber:
             self._subscriber.unregister()
+            self._subscriber = None
 
     def _tactile_data_callback(self, data):
         for i, finger in enumerate(self._CONST_FINGERS):
@@ -126,9 +128,6 @@ class BiotacSPPlusInfo(QGroupBox):
         for key in common_keys:
             self._data[key] = data[key]
 
-    def get_widget(self):
-        return widget
-
     def refresh(self):
         for key in self._CONST_TEXT_FIELDS:
             self._labels[key].setText(f"{key}:{self._data[key]}")
@@ -149,7 +148,7 @@ class FingerWidgetVisualBiotacSPMinus(QGroupBox):
         self.setCheckable(True)
         self.setChecked(False)
         self.setSizePolicy(1, 1)
-        self.clicked.connect(self.refresh)
+        self.toggled.connect(self.refresh)
 
         layout = QVBoxLayout()
         layout.addWidget(self._tactile_point_widget, alignment=Qt.AlignCenter)
@@ -163,14 +162,16 @@ class FingerWidgetVisualBiotacSPMinus(QGroupBox):
             self.stop_timer_and_subscriber()
 
     def start_timer_and_subscriber(self):
-        self._subscriber = rospy.Subscriber('/{}/tactile'.format(self._side), BiotacAll, self._tactile_data_callback)
-        self._timer.timeout.connect(self.timerEvent)
-        self._timer.start(10)
+        if not self._subscriber:
+            self._subscriber = rospy.Subscriber('/{}/tactile'.format(self._side), BiotacAll, self._tactile_data_callback)
+            self._timer.timeout.connect(self.timerEvent)
+            self._timer.start(10)
 
     def stop_timer_and_subscriber(self):
         self._timer.stop()
         if self._subscriber:
             self._subscriber.unregister()
+            self._subscriber = None 
 
     def _tactile_data_callback(self, data):
         for i, finger in enumerate(self._CONST_FINGERS):
@@ -208,16 +209,15 @@ class FingerWidgetVisualBiotacSPPlus(QGroupBox):
         self.setCheckable(True)
         self.setChecked(False)
         self.setSizePolicy(1, 1)
-        self.clicked.connect(self.refresh)
+        self.toggled.connect(self.refresh)
         self._succeded_config_load = False
 
         try:
             config_dir = os.path.join(rospkg.RosPack().get_path('sr_fingertip_visualization'), 'config')
-            rospy.logwarn(config_dir)
             stream = open(config_dir + "/tactile_point_cooridinates.yaml", 'r')
             self._coordinates = yaml.safe_load(stream)
             self._succeded_config_load = True
-        except FileNotFoundError as e:
+        except FileNotFoundError:
             rospy.logerr("Config file not found!")
             layout = QVBoxLayout()
             layout.addWidget(QLabel("Error!"), alignment=Qt.AlignBottom | Qt.AlignHCenter)
@@ -255,9 +255,8 @@ class FingerWidgetVisualBiotacSPPlus(QGroupBox):
             self.stop_timer_and_subscriber()
 
     def start_timer_and_subscriber(self):
-        if self._succeded_config_load:
-            topic = '/{}/tactile'.format(self._side)
-            self._subscriber = rospy.Subscriber(topic, BiotacAll, self._tactile_data_callback)
+        if self._succeded_config_load and not self._subscriber:      
+            self._subscriber = rospy.Subscriber('/{}/tactile'.format(self._side), BiotacAll, self._tactile_data_callback)
             self._timer.timeout.connect(self.timerEvent)
             self._timer.start(10)
 
@@ -265,6 +264,7 @@ class FingerWidgetVisualBiotacSPPlus(QGroupBox):
         self._timer.stop()
         if self._subscriber:
             self._subscriber.unregister()
+            self._subscriber = None
 
     def _tactile_data_callback(self, data):
         for i, finger in enumerate(self._CONST_FINGERS):
@@ -287,7 +287,10 @@ class FingerWidgetVisualBiotacSPPlus(QGroupBox):
 
     def timerEvent(self):
         for i in range(self._electrodes_to_display_count):
-            self._tactile_point_widget[i].update_data(self._data[self._datatype_to_display][i])
+            try:
+                self._tactile_point_widget[i].update_data(self._data[self._datatype_to_display][i])
+            except IndexError:
+                pass
         self._data_bar.update_values(self._data)
         self._data_bar.refresh()
 

@@ -116,7 +116,6 @@ class BiotacVisualizationTab(GenericTabLayout):
         self._side = side
         self._electrode_count = 0
         self._version = "v1"
-        self._selected_fingers = []
         self._initialize_data_structure()
         self._init_tactile_layout()
 
@@ -229,9 +228,6 @@ class BiotacSPPlusInfo(QGroupBox):
         for key in common_keys:
             self._data[key] = data[key]
 
-    def get_widget(self):
-        return widget
-
     def refresh(self):
         for key in self._text_fields:
             self._labels[key].setText(f"{key}:{self._data[key]}")
@@ -252,6 +248,7 @@ class VisualOptionBar(GenericOptionBar):
         self.options_layout.addWidget(self.finger_selection_label)
         self.options_layout.addWidget(self.finger_selection_show_selected_button)
         self.options_layout.addWidget(self.finger_selection_show_all_button)
+        self.options_layout.addWidget(self.finger_selection_reset_button)
 
         self.setLayout(self.options_layout)
         self._current_widget = self._childs.currentWidget()
@@ -267,9 +264,16 @@ class VisualOptionBar(GenericOptionBar):
     def _button_action_data_type_selection(self):
         data_type_options_to_display = ['pac', 'electrodes']
 
-        for finger, widget in self._childs.currentWidget().get_finger_widgets().items():
+        for widget in self._childs.currentWidget().get_finger_widgets().values():
             if isinstance(widget, FingerWidgetVisualBiotacSPPlus):
                 opposite_option = [option for option in data_type_options_to_display
                                    if option is not widget.get_datatype_to_display()][0]
                 widget.change_datatype_to_display(opposite_option)
                 self.data_type_selection_button.setText("Show {}".format(opposite_option))
+
+    def _button_action_show_all(self):
+        fingertip_widgets = self._childs.currentWidget().get_finger_widgets()
+        for finger in self._CONST_FINGERS:
+            fingertip_widgets[finger].setChecked(True)
+            fingertip_widgets[finger].start_timer_and_subscriber()
+            fingertip_widgets[finger].show()
