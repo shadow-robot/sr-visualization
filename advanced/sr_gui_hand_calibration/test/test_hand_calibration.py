@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-# Copyright 2020 Shadow Robot Company Ltd.
+# Copyright 2020, 2022 Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -46,12 +46,12 @@ class TestHandCalibration(unittest.TestCase):
         loadUi(ui_file, self._widget)
 
         self.mock_file = tempfile.NamedTemporaryFile(delete=False)
-        self.mock_file.write("""sr_calibrations: [\n""" +
-                             """["mock", [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]],\n""" +
-                             """]""")
-        self.mock_file.write("""\n\nsr_calibrations_coupled: [\n""" +
-                             """[["mock_1", "mock_2"], [[[0.0, 0.0], 0.0, 0.0]]],\n""" +
-                             """]""")
+        self.mock_file.write(b"""sr_calibrations: [\n""" +
+                             b"""["mock", [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]],\n""" +
+                             b"""]""")
+        self.mock_file.write(b"""\n\nsr_calibrations_coupled: [\n""" +
+                             b"""[["mock_1", "mock_2"], [[[0.0, 0.0], 0.0, 0.0]]],\n""" +
+                             b"""]""")
         self.mock_file.close()
 
     def tearDown(self):
