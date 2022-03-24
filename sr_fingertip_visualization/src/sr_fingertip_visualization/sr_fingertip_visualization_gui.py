@@ -120,7 +120,7 @@ class SrFingertipVisualizer(Plugin):
         message = "This plugin is used to display data coming from the tactile sensors" + "\n" + \
                   "of the Dexterous Hand. There are 2 tabs - Visualizer and Graphs." + "\n" + \
                   "As a user you can select which hands and corresponding sensors you would like" + \
-                  "to inspect by selecting the HandID." + "\n" + "Selecting a specific finger will enable" + \
+                  "to inspect by selecting the HandID." + "\n" + "Selecting a specific finger will enable " + \
                   "or disable the refreshing." + "\n" + "You have also the possibility to present only selected " + \
                   "fingers by pressing the Show selected button or bring back all of the fingers" + "\n" + \
                   "to the tab by pressing the Show all button." + "\n" + \
@@ -129,7 +129,7 @@ class SrFingertipVisualizer(Plugin):
                   "In case of a Dexterous Hand equiped with Biotacs as tactile sensors" + "\n" + \
                   "there is also a button which will allow you to switch the visual representation mode " + \
                   "of the tactile points between electrodes" + "\n" + "or pac values coming from the sensor." + "\n" + \
-                  "The Graphs tab respresents the data in form of plots for" + \
+                  "The Graphs tab respresents the data in form of plots for " + \
                   "all of the data coming from the sensors." + "\n" + \
                   "Ticking the corresponding checkbox for the datatype will either add" + "\n" + \
                   "or remove the plot from the graph of the finger."
