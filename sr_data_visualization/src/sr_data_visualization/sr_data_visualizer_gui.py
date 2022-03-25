@@ -32,7 +32,9 @@ from python_qt_binding.QtWidgets import (
     QVBoxLayout,
     QPushButton,
     QMessageBox,
-    QLabel
+    QLabel,
+    QComboBox,
+    QFormLayout
 )
 
 from sr_data_visualization.data_tab import (
@@ -87,6 +89,15 @@ class SrDataVisualizer(Plugin):
         self.layout.addWidget(self.information_btn, alignment=Qt.AlignRight)
         self.information_btn.clicked.connect(self.display_information)
         self.tab_container = QTabWidget()
+
+        self.hand_labels = ['lh', 'rh']
+        self.hand_id_selection = QComboBox()
+        self.hand_id_selection.addItems(self.hand_labels)
+        self.hand_id_selection.currentIndexChanged.connect(self.combobox_action_hand_id_selection)
+        self.hand_id_selection.setFixedSize(50,20)
+        self.hand_id_selection_layout = QFormLayout()
+        self.hand_id_selection_layout.addRow(QLabel("Hand ID:"), self.hand_id_selection)
+        self.layout.addLayout(self.hand_id_selection_layout)
 
         if not self._detect_hand_id_and_joints():
             self.layout.addWidget(QLabel("No hand connected or ROS bag is not playing"), alignment=Qt.AlignCenter)
@@ -156,6 +167,14 @@ class SrDataVisualizer(Plugin):
         msg.setText(message)
         msg.setStandardButtons(QMessageBox.Ok)
         msg.exec_()
+
+    def combobox_action_hand_id_selection(self):
+        idx = self.hand_id_selection.currentIndex()
+        side = self.hand_labels[idx]
+
+        for tab in range(self.tab_container.count()):
+            for child in self.tab_container.widget(tab).findChildren(GenericDataPlot):
+                child.change_side(side)
 
     def shutdown_plugin(self):
         for tab in range(self.tab_container.count()):

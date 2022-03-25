@@ -71,13 +71,6 @@ class GenericTabOptions(QWidget):
         raise NotImplementedError("The function create_variable_trace_buttons must be implemented")
 
     def create_common_buttons(self):
-        self.hand_id_selection_layout = QFormLayout()
-        self.hand_id_selection = QComboBox()
-        self.hand_labels = ['lh', 'rh']
-        self.hand_id_selection.addItems(self.hand_labels)
-        self.hand_id_selection_layout.addRow(QLabel("Hand ID:"), self.hand_id_selection)
-        self.check_layout.addWidget(self.hand_id_selection)
-        
         self.all_button = QRadioButton("All")
         self.all_button.setObjectName("toggle_all")
         self.check_layout.addWidget(self.all_button)
