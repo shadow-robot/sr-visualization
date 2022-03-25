@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<package>
+  <name>sr_fingertip_visualization</name>
+  <version>0.0.1</version>
+  <description>
+    The sr_fingertip_visualization GUI
+  </description>
+  <maintainer email="software@shadowrobot.com">Shadow Software Team</maintainer>
+  <author email="max@shadowrobot.com">Maximilian Zieba</author>
+
+  <license>GPL</license>
+
+  <url type="repository">https://github.com/shadow-robot/sr-visualization</url>
+  <url type="bugtracker">https://github.com/shadow-robot/sr-visualization/issues</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>rqt_gui</build_depend>
+  <build_depend>rqt_gui_py</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>sr_robot_msgs</build_depend>
+
+  <run_depend>rospy</run_depend>
+  <run_depend>rqt_gui</run_depend>
+  <run_depend>rqt_gui_py</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>sr_robot_msgs</run_depend>
+  <run_depend version_gte="0.2.19">python_qt_binding</run_depend>
+  <run_depend>qwt_dependency</run_depend>
+  <run_depend>python3-qwt</run_depend>
+
+  <export>
+    <rqt_gui plugin="${prefix}/sr_fingertip_plugin_gui.xml"/>
+  </export>
+</package>
