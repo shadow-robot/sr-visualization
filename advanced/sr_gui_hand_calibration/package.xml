@@ -34,6 +34,8 @@
 
 
   <test_depend>python3-mock</test_depend>
+  <test_depend>python-pyvirtualdisplay-pip</test_depend>
+  <test_depend>xvfb</test_depend>
 
 <export>
     <rqt_gui plugin="${prefix}/sr_gui_hand_calibration_plugin.xml" />
