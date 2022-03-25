@@ -105,7 +105,12 @@ class GenericDataPlot(QwtPlot):
 
         self.replot()
 
-    def plot_data(self, plot):
+    def plot_data(self, plot, side, new_sub=True):
+
+        self._topic_name = self._topic_name[0:4] + side + self._topic_name[6:]
+
+        self.clear_data()
+
         if plot:
             self._subscriber = rospy.Subscriber(self._topic_name, self._topic_type,
                                                 self.callback, queue_size=1)
@@ -129,6 +134,12 @@ class GenericDataPlot(QwtPlot):
             else:
                 trace.plot.detach()
 
+    def clear_data(self):
+        for trace in self.traces:
+                trace.data = np.zeros(self.x_data.shape)
+                trace.plot.setData(self.x_data, trace.data)
+        self.replot()
+
 
 class JointStatesDataPlot(GenericDataPlot):
     def __init__(self, joint_name, topic_name, topic_type):
@@ -148,8 +159,25 @@ class JointStatesDataPlot(GenericDataPlot):
                        Trace("Effort", Qt.blue, self.x_data),
                        Trace("Velocity", Qt.green, self.x_data)]
 
-    def change_side(self, side):
+    def plot_data(self, plot, side, new_sub=True):
         self.side = side
+        
+        if new_sub:
+            self._topic_name = self._topic_name[0:4] + side + self._topic_name[6:]
+
+            self.clear_data()
+
+            if plot:
+                self._subscriber = rospy.Subscriber(self._topic_name, self._topic_type,
+                                                    self.callback, queue_size=1)
+                if self.timer is None:
+                    self.initialize_and_start_timer()
+                else:
+                    self.timer.start()
+            elif self._subscriber is not None:
+                self._subscriber.unregister()
+                self.timer.stop()
+            
 
     def callback(self, data):
         for name, position, velocity, effort in zip(data.name, data.position,
@@ -200,25 +228,6 @@ class ControlLoopsDataPlot(GenericDataPlot):
         self.traces[2].latest_value = data.process_value_dot
         self.traces[3].latest_value = data.error
         self.traces[4].latest_value = data.command
-
-    def change_side(self, side):
-        if self._subscriber is not None:
-            self._subscriber.unregister()
-            self.timer.stop()
-            
-            for trace in self.traces:
-                trace.data = np.zeros(self.x_data.shape)
-                trace.plot.setData(self.x_data, trace.data)
-
-            self.replot()
-
-            self._topic_name = self._topic_name[0:4] + side + self._topic_name[6:]
-            self._subscriber = rospy.Subscriber(self._topic_name, self._topic_type,
-                                                self.callback, queue_size=1)
-            if self.timer is None:
-                self.initialize_and_start_timer()
-            else:
-                self.timer.start()
 
 
 class MotorStatsGenericDataPlot(GenericDataPlot):

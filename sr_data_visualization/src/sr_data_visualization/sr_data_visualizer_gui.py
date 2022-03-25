@@ -91,6 +91,7 @@ class SrDataVisualizer(Plugin):
         self.tab_container = QTabWidget()
 
         self.hand_labels = ['lh', 'rh']
+        self.hand_id = 0
         self.hand_id_selection = QComboBox()
         self.hand_id_selection.addItems(self.hand_labels)
         self.hand_id_selection.currentIndexChanged.connect(self.combobox_action_hand_id_selection)
@@ -107,6 +108,7 @@ class SrDataVisualizer(Plugin):
         self.layout.addWidget(self.tab_container)
 
         # Create tabs
+        self.tab_index = 0
         self.create_tab("Joint States")
         self.create_tab("Control Loops")
         self.create_tab("Motor Stats 1")
@@ -135,14 +137,15 @@ class SrDataVisualizer(Plugin):
         self.tab_container.addTab(self.tab_created, tab_name)
 
     def tab_changed(self, index):
+        self.tab_index = index
         for tab in range(self.tab_container.count()):
             graphs = self.tab_container.widget(tab).findChildren(GenericDataPlot)
             if tab is not index:
                 for graph in graphs:
-                    graph.plot_data(False)
+                    graph.plot_data(False, self.hand_labels[self.hand_id])
             else:
                 for graph in graphs:
-                    graph.plot_data(True)
+                    graph.plot_data(True, self.hand_labels[self.hand_id])
 
     def display_information(self, message):
         message = "This GUI shows all the data available for the Dexterous Hand.\n" + \
@@ -169,18 +172,23 @@ class SrDataVisualizer(Plugin):
         msg.exec_()
 
     def combobox_action_hand_id_selection(self):
-        idx = self.hand_id_selection.currentIndex()
-        side = self.hand_labels[idx]
-
+        self.side_id = self.hand_id_selection.currentIndex()
+        side = self.hand_labels[self.side_id]
+        
         for tab in range(self.tab_container.count()):
-            for child in self.tab_container.widget(tab).findChildren(GenericDataPlot):
-                child.change_side(side)
+            graphs = self.tab_container.widget(tab).findChildren(GenericDataPlot)
+            if tab is not self.tab_index:
+                for graph in graphs:
+                    graph.plot_data(False, side, True)
+            else:
+                for graph in graphs:
+                    graph.plot_data(True, side, False)
 
     def shutdown_plugin(self):
         for tab in range(self.tab_container.count()):
             graphs = self.tab_container.widget(tab).findChildren(GenericDataPlot)
             for graph in graphs:
-                graph.plot_data(False)
+                graph.plot_data(False, self.hand_labels[self.hand_id])
 
 
 if __name__ == "__main__":
