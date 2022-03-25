@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-# Copyright 2020 Shadow Robot Company Ltd.
+# Copyright 2020, 2022 Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -27,7 +27,7 @@ import unittest
 import rostest
 import tempfile
 from mock import patch
-
+from pyvirtualdisplay import Display
 from sr_gui_hand_calibration.sr_hand_calibration_model import HandCalibration
 
 from PyQt5.uic import loadUi
@@ -40,18 +40,20 @@ PKG = "sr_gui_hand_calibration"
 class TestHandCalibration(unittest.TestCase):
 
     def setUp(self):
+        display = Display(visible=False, size=(1024, 768), color_depth=24)
+        display.start()
         self.app = QApplication(sys.argv)
         self._widget = QWidget()
         ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_hand_calibration'), 'uis', 'SrHandCalibration.ui')
         loadUi(ui_file, self._widget)
 
         self.mock_file = tempfile.NamedTemporaryFile(delete=False)
-        self.mock_file.write("""sr_calibrations: [\n""" +
-                             """["mock", [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]],\n""" +
-                             """]""")
-        self.mock_file.write("""\n\nsr_calibrations_coupled: [\n""" +
-                             """[["mock_1", "mock_2"], [[[0.0, 0.0], 0.0, 0.0]]],\n""" +
-                             """]""")
+        self.mock_file.write(b"""sr_calibrations: [\n""" +
+                             b"""["mock", [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]],\n""" +
+                             b"""]""")
+        self.mock_file.write(b"""\n\nsr_calibrations_coupled: [\n""" +
+                             b"""[["mock_1", "mock_2"], [[[0.0, 0.0], 0.0, 0.0]]],\n""" +
+                             b"""]""")
         self.mock_file.close()
 
     def tearDown(self):
