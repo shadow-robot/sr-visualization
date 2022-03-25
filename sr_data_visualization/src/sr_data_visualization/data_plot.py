@@ -201,6 +201,22 @@ class ControlLoopsDataPlot(GenericDataPlot):
         self.traces[3].latest_value = data.error
         self.traces[4].latest_value = data.command
 
+    def change_side(self, side):
+        if self._subscriber is not None:
+            self._subscriber.unregister()
+            self.timer.stop()
+            print(self._topic_name)
+
+            self._topic_name = self._topic_name[0:4] + side + self._topic_name[6:]
+
+            print("subscribing to: " + self._topic_name)
+            self._subscriber = rospy.Subscriber(self._topic_name, self._topic_type,
+                                                self.callback, queue_size=1)
+            if self.timer is None:
+                self.initialize_and_start_timer()
+            else:
+                self.timer.start()
+
 
 class MotorStatsGenericDataPlot(GenericDataPlot):
     def __init__(self, joint_name, topic_name, topic_type):
@@ -215,7 +231,7 @@ class MotorStatsGenericDataPlot(GenericDataPlot):
             if len(parts) == 4:
                 # Splits the 4th part into words & decides if it is a Motor
                 parts = parts[3].split(' ')
-                # Find SRDMotor part andthen use this to locate
+                # Find SRDMotor part and then use this to locate
                 # the values for the specific joint
                 if len(parts) == 3 and parts[1] == 'SRDMotor':
                     joint = parts[0] + '_' + parts[2]
