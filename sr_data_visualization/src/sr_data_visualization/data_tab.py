@@ -87,6 +87,14 @@ class GenericDataTab(QWidget):
         self.tab_options.all_button.toggled.connect(lambda: self.radio_button_selected("All"))
         self.tab_options.show_seleted_button.clicked.connect(lambda: self.check_button_selected("Selection"))
         self.tab_options.reset_button.clicked.connect(lambda: self.check_button_selected("All"))
+        self.tab_options.hand_id_selection.currentIndexChanged.connect(lambda: self.combobox_action_hand_id_selection())
+
+    def combobox_action_hand_id_selection(self):
+        idx = self.tab_options.hand_id_selection.currentIndex()
+        side = self.tab_options.hand_labels[idx]
+
+        for child in self.findChildren(JointGraph):
+            child.joint_plot.change_side(side)
 
     def radio_button_selected(self, radio_button):
         for child in self.findChildren(JointGraph):
