@@ -51,6 +51,9 @@ class DataBuffer():
         self.data = np.concatenate((self.data[:1], self.data[:-1]))
         self.data[0] = self.latest_value
 
+    def clear(self):
+        self.data = np.zeros(self.buf_size)
+
 
 class GenericDataPlot(QwtPlot):
     GRAPH_MINW = 150
@@ -212,6 +215,16 @@ class JointStatesDataPlot(GenericDataPlot):
             trace.plot.setData(self.x_data, trace.data)
 
         self.replot()
+
+    def clear_data(self):
+        for trace in self.traces:
+                trace.data = np.zeros(self.x_data.shape)
+                trace.plot.setData(self.x_data, trace.data)
+        self.replot()
+
+        for buf in range(len(self.buffers_left)):
+            self.buffers_left[buf].clear()
+            self.buffers_right[buf].clear()
 
 
 class ControlLoopsDataPlot(GenericDataPlot):
