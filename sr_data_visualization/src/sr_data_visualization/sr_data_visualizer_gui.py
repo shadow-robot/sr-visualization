@@ -172,8 +172,8 @@ class SrDataVisualizer(Plugin):
         msg.exec_()
 
     def combobox_action_hand_id_selection(self):
-        self.side_id = self.hand_id_selection.currentIndex()
-        side = self.hand_labels[self.side_id]
+        self.hand_id = self.hand_id_selection.currentIndex()
+        side = self.hand_labels[self.hand_id]
         
         for tab in range(self.tab_container.count()):
             graphs = self.tab_container.widget(tab).findChildren(GenericDataPlot)

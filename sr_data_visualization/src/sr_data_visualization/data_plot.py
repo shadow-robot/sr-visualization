@@ -112,6 +112,10 @@ class GenericDataPlot(QwtPlot):
         self.clear_data()
 
         if plot:
+
+            if self._subscriber is not None:
+                self._subscriber.unregister()
+
             self._subscriber = rospy.Subscriber(self._topic_name, self._topic_type,
                                                 self.callback, queue_size=1)
             if self.timer is None:
@@ -163,7 +167,6 @@ class JointStatesDataPlot(GenericDataPlot):
         self.side = side
         
         if new_sub:
-            self._topic_name = self._topic_name[0:4] + side + self._topic_name[6:]
 
             self.clear_data()
 
