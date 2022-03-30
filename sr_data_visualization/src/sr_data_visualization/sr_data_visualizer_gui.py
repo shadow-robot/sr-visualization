@@ -138,14 +138,16 @@ class SrDataVisualizer(Plugin):
 
     def tab_changed(self, index):
         self.tab_index = index
+        side = self.hand_labels[self.hand_id]
         for tab in range(self.tab_container.count()):
             graphs = self.tab_container.widget(tab).findChildren(GenericDataPlot)
+            self.tab_container.widget(tab).change_side(side)
             if tab is not index:
                 for graph in graphs:
-                    graph.plot_data(False, self.hand_labels[self.hand_id])
+                    graph.plot_data(False, side)
             else:
                 for graph in graphs:
-                    graph.plot_data(True, self.hand_labels[self.hand_id])
+                    graph.plot_data(True, side)
 
     def display_information(self, message):
         message = "This GUI shows all the data available for the Dexterous Hand.\n" + \
@@ -177,6 +179,7 @@ class SrDataVisualizer(Plugin):
         
         for tab in range(self.tab_container.count()):
             graphs = self.tab_container.widget(tab).findChildren(GenericDataPlot)
+            self.tab_container.widget(tab).change_side(side)
             if tab is not self.tab_index:
                 for graph in graphs:
                     graph.plot_data(False, side, True)

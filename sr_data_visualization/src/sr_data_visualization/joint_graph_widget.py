@@ -44,6 +44,7 @@ class JointGraph(QWidget):
         self.check_box = check_box
         self.setObjectName(self.joint_name)
         self.init_ui()
+        self.joint_check_box = None
         self._create_joint_graph_widget(joint_data_plot)
 
     def init_ui(self):
@@ -69,3 +70,7 @@ class JointGraph(QWidget):
         groupbox.setLayout(self.check_layout)
 
         self.setLayout(self.layout)
+
+    def change_side(self, side):
+        if self.joint_check_box is not None:
+            self.joint_check_box.setText(side + self.joint_name[2:])
