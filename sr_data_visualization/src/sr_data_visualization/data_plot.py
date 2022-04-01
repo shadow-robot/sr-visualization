@@ -144,6 +144,7 @@ class GenericDataPlot(QwtPlot):
     def clear_data(self):
         for trace in self.traces:
                 trace.data = np.zeros(self.x_data.shape)
+                trace.latest_value = 0.0
                 trace.plot.setData(self.x_data, trace.data)
         self.replot()
 
@@ -250,6 +251,9 @@ class MotorStatsGenericDataPlot(GenericDataPlot):
     def __init__(self, joint_name, topic_name, topic_type):
         super().__init__(joint_name, topic_name, topic_type)
 
+        self.side = 'lh'
+        self.joint_name = self.side + self.joint_name[2:]
+
     def callback(self, data):
         for message in data.status:
             # Splits the name into parts e.g.
@@ -268,6 +272,25 @@ class MotorStatsGenericDataPlot(GenericDataPlot):
                             for trace in range(len(self.traces)):
                                 if item.key == self.traces[trace].name:
                                     self.traces[trace].latest_value = item.value
+
+    def plot_data(self, plot, side, new_sub=True):
+        self.side = side
+        self.joint_name = self.side + self.joint_name[2:]
+        
+        self.clear_data()
+
+        if new_sub:
+
+            if plot:
+                self._subscriber = rospy.Subscriber(self._topic_name, self._topic_type,
+                                                    self.callback, queue_size=1)
+                if self.timer is None:
+                    self.initialize_and_start_timer()
+                else:
+                    self.timer.start()
+            elif self._subscriber is not None:
+                self._subscriber.unregister()
+                self.timer.stop()
 
 
 class MotorStats1DataPlot(MotorStatsGenericDataPlot):
