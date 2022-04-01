@@ -318,7 +318,33 @@ class MotorStats2DataPlot(MotorStatsGenericDataPlot):
                        Trace("Encoder Position", Qt.gray, self.x_data)]
 
 
-class PalmExtrasAcellDataPlot(GenericDataPlot):
+class PalmExtras(GenericDataPlot):
+    def __init__(self, joint_name, topic_name, topic_type):
+            super().__init__(joint_name, topic_name, topic_type)
+
+    def plot_data(self, plot, side, new_sub=True):
+
+        self._topic_name = self._topic_name[0] + side + self._topic_name[3:]
+
+        self.clear_data()
+
+        if plot:
+
+            if self._subscriber is not None:
+                self._subscriber.unregister()
+
+            self._subscriber = rospy.Subscriber(self._topic_name, self._topic_type,
+                                                self.callback, queue_size=1)
+            if self.timer is None:
+                self.initialize_and_start_timer()
+            else:
+                self.timer.start()
+        elif self._subscriber is not None:
+            self._subscriber.unregister()
+            self.timer.stop()
+
+
+class PalmExtrasAcellDataPlot(PalmExtras):
     def __init__(self, joint_name, topic_name, topic_type):
         super().__init__(joint_name, topic_name, topic_type)
 
@@ -333,7 +359,7 @@ class PalmExtrasAcellDataPlot(GenericDataPlot):
         self.traces[2].latest_value = data.data[2]
 
 
-class PalmExtrasGyroDataPlot(GenericDataPlot):
+class PalmExtrasGyroDataPlot(PalmExtras):
     def __init__(self, joint_name, topic_name, topic_type):
         super().__init__(joint_name, topic_name, topic_type)
 
@@ -348,7 +374,7 @@ class PalmExtrasGyroDataPlot(GenericDataPlot):
         self.traces[2].latest_value = data.data[5]
 
 
-class PalmExtrasADCDataPlot(GenericDataPlot):
+class PalmExtrasADCDataPlot(PalmExtras):
     def __init__(self, joint_name, topic_name, topic_type):
         super().__init__(joint_name, topic_name, topic_type)
 
