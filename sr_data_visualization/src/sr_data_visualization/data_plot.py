@@ -118,6 +118,7 @@ class GenericDataPlot(QwtPlot):
 
             if self._subscriber is not None:
                 self._subscriber.unregister()
+                self.clear_data()
 
             self._subscriber = rospy.Subscriber(self._topic_name, self._topic_type,
                                                 self.callback, queue_size=1)
@@ -128,6 +129,7 @@ class GenericDataPlot(QwtPlot):
         elif self._subscriber is not None:
             self._subscriber.unregister()
             self.timer.stop()
+            self.clear_data()
 
     def show_trace(self, trace_name):
         for trace in self.traces:
@@ -184,6 +186,7 @@ class JointStatesDataPlot(GenericDataPlot):
             elif self._subscriber is not None:
                 self._subscriber.unregister()
                 self.timer.stop()
+                self.clear_data()
             
 
     def callback(self, data):
@@ -220,6 +223,7 @@ class JointStatesDataPlot(GenericDataPlot):
     def clear_data(self):
         for trace in self.traces:
                 trace.data = np.zeros(self.x_data.shape)
+                trace.latest_value = 0.0
                 trace.plot.setData(self.x_data, trace.data)
         self.replot()
 
@@ -332,6 +336,7 @@ class PalmExtras(GenericDataPlot):
 
             if self._subscriber is not None:
                 self._subscriber.unregister()
+                self.clear_data()
 
             self._subscriber = rospy.Subscriber(self._topic_name, self._topic_type,
                                                 self.callback, queue_size=1)
@@ -342,6 +347,7 @@ class PalmExtras(GenericDataPlot):
         elif self._subscriber is not None:
             self._subscriber.unregister()
             self.timer.stop()
+            self.clear_data()
 
 
 class PalmExtrasAcellDataPlot(PalmExtras):
