@@ -111,7 +111,8 @@ class GenericDataPlot(QwtPlot):
 
     def plot_data(self, plot, side, new_sub=True):
 
-        self._topic_name = self._topic_name[0:4] + side + self._topic_name[6:]
+        self._topic_name = self._topic_name.replace("lh", side)
+        self._topic_name = self._topic_name.replace("rh", side)
 
         if plot:
 
@@ -160,6 +161,7 @@ class JointStatesDataPlot(GenericDataPlot):
         self.buffers_left = [DataBuffer(self.x_data.shape),
                              DataBuffer(self.x_data.shape),
                              DataBuffer(self.x_data.shape)]
+
         self.buffers_right = [DataBuffer(self.x_data.shape),
                               DataBuffer(self.x_data.shape),
                               DataBuffer(self.x_data.shape)]
@@ -322,35 +324,7 @@ class MotorStats2DataPlot(MotorStatsGenericDataPlot):
                        Trace("Encoder Position", Qt.gray, self.x_data)]
 
 
-class PalmExtras(GenericDataPlot):
-    def __init__(self, joint_name, topic_name, topic_type):
-            super().__init__(joint_name, topic_name, topic_type)
-
-    def plot_data(self, plot, side, new_sub=True):
-
-        self._topic_name = self._topic_name[0] + side + self._topic_name[3:]
-
-        self.clear_data()
-
-        if plot:
-
-            if self._subscriber is not None:
-                self._subscriber.unregister()
-                self.clear_data()
-
-            self._subscriber = rospy.Subscriber(self._topic_name, self._topic_type,
-                                                self.callback, queue_size=1)
-            if self.timer is None:
-                self.initialize_and_start_timer()
-            else:
-                self.timer.start()
-        elif self._subscriber is not None:
-            self._subscriber.unregister()
-            self.timer.stop()
-            self.clear_data()
-
-
-class PalmExtrasAcellDataPlot(PalmExtras):
+class PalmExtrasAcellDataPlot(GenericDataPlot):
     def __init__(self, joint_name, topic_name, topic_type):
         super().__init__(joint_name, topic_name, topic_type)
 
@@ -365,7 +339,7 @@ class PalmExtrasAcellDataPlot(PalmExtras):
         self.traces[2].latest_value = data.data[2]
 
 
-class PalmExtrasGyroDataPlot(PalmExtras):
+class PalmExtrasGyroDataPlot(GenericDataPlot):
     def __init__(self, joint_name, topic_name, topic_type):
         super().__init__(joint_name, topic_name, topic_type)
 
@@ -380,7 +354,7 @@ class PalmExtrasGyroDataPlot(PalmExtras):
         self.traces[2].latest_value = data.data[5]
 
 
-class PalmExtrasADCDataPlot(PalmExtras):
+class PalmExtrasADCDataPlot(GenericDataPlot):
     def __init__(self, joint_name, topic_name, topic_type):
         super().__init__(joint_name, topic_name, topic_type)
 
