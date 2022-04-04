@@ -90,8 +90,14 @@ class SrDataVisualizer(Plugin):
         self.information_btn.clicked.connect(self.display_information)
         self.tab_container = QTabWidget()
 
+        if not self._detect_hand_id_and_joints():
+            self.layout.addWidget(QLabel("No hand connected or ROS bag is not playing"), alignment=Qt.AlignCenter)
+            return
+
         self.hand_labels = ['lh', 'rh']
-        self.hand_id = 0
+        self.hand_id = self.hand_labels.index(self.joint_prefix[0:2])
+        if self.hand_id:
+            self.hand_labels.reverse()
         self.hand_id_selection = QComboBox()
         self.hand_id_selection.addItems(self.hand_labels)
         self.hand_id_selection.currentIndexChanged.connect(self.combobox_action_hand_id_selection)
@@ -99,10 +105,6 @@ class SrDataVisualizer(Plugin):
         self.hand_id_selection_layout = QFormLayout()
         self.hand_id_selection_layout.addRow(QLabel("Hand ID:"), self.hand_id_selection)
         self.layout.addLayout(self.hand_id_selection_layout)
-
-        if not self._detect_hand_id_and_joints():
-            self.layout.addWidget(QLabel("No hand connected or ROS bag is not playing"), alignment=Qt.AlignCenter)
-            return
 
         # Initialize tabs
         self.layout.addWidget(self.tab_container)

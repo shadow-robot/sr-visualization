@@ -154,7 +154,7 @@ class JointStatesDataPlot(GenericDataPlot):
     def __init__(self, joint_name, topic_name, topic_type):
         super().__init__(joint_name, topic_name, topic_type, start_plotting=True)
 
-        self.side = 'lh'
+        self.side = self.joint_name[0:2]
 
     def create_traces(self):
         self.buffers_left = [DataBuffer(self.x_data.shape),
@@ -255,7 +255,7 @@ class MotorStatsGenericDataPlot(GenericDataPlot):
     def __init__(self, joint_name, topic_name, topic_type):
         super().__init__(joint_name, topic_name, topic_type)
 
-        self.side = 'lh'
+        self.side = self.joint_name[0:2]
         self.joint_name = self.side + self.joint_name[2:]
 
     def callback(self, data):
