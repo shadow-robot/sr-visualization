@@ -252,7 +252,7 @@ class SrGuiControllerTuner(Plugin):
         if not hand_parameters.mapping:
             rospy.logerr("No hand detected")
             QMessageBox.warning(
-                self._widget, "warning", "No hands connected!")
+                self._widget, "warning", "No hand is detected")
         else:
             self._widget.select_prefix.setCurrentIndex(0)
             self._prefix = list(hand_parameters.mapping.values())[0]
