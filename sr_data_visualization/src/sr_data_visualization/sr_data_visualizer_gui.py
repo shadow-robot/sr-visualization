@@ -184,10 +184,10 @@ class SrDataVisualizer(Plugin):
             self.tab_container.widget(tab).change_side(side)
             if tab is not self.tab_index:
                 for graph in graphs:
-                    graph.plot_data(False, side, True)
+                    graph.plot_data(False, side)
             else:
                 for graph in graphs:
-                    graph.plot_data(True, side, False)
+                    graph.plot_data(True, side, new_sub=False)
 
     def shutdown_plugin(self):
         for tab in range(self.tab_container.count()):

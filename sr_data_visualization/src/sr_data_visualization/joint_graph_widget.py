@@ -72,5 +72,8 @@ class JointGraph(QWidget):
         self.setLayout(self.layout)
 
     def change_side(self, side):
+        self.joint_name = self.joint_name.replace("lh", side)
+        self.joint_name = self.joint_name.replace("rh", side)
+        
         if self.joint_check_box is not None:
-            self.joint_check_box.setText(side + self.joint_name[2:])
+            self.joint_check_box.setText(self.joint_name)
