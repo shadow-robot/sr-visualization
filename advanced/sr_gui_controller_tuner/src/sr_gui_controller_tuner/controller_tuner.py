@@ -252,7 +252,9 @@ class SrGuiControllerTuner(Plugin):
         if not hand_parameters.mapping:
             rospy.logerr("No hand detected")
             QMessageBox.warning(
-                self._widget, "warning", "No hand is detected")
+                self._widget, "warning", "No hands connected locally! " + \
+                "Please only launch this plugin on the computer that the hand " + \
+                "is plugged into.")
         else:
             self._widget.select_prefix.setCurrentIndex(0)
             self._prefix = list(hand_parameters.mapping.values())[0]
@@ -414,7 +416,9 @@ class SrGuiControllerTuner(Plugin):
 
         if not detected_hands:
             QMessageBox.warning(
-                self._widget, "warning", "No hands connected!")
+                self._widget, "warning", "No hands connected locally! " + \
+                "Please only launch this plugin on the computer that the hand " + \
+                "is plugged into.")
             return None
 
         if len(detected_hands) > 1:
