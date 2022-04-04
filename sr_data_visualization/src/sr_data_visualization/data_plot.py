@@ -53,6 +53,7 @@ class DataBuffer():
 
     def clear(self):
         self.data = np.zeros(self.buf_size)
+        self.latest_value = 0.0
 
 
 class GenericDataPlot(QwtPlot):
@@ -111,8 +112,6 @@ class GenericDataPlot(QwtPlot):
     def plot_data(self, plot, side, new_sub=True):
 
         self._topic_name = self._topic_name[0:4] + side + self._topic_name[6:]
-
-        self.clear_data()
 
         if plot:
 
@@ -221,12 +220,13 @@ class JointStatesDataPlot(GenericDataPlot):
         self.replot()
 
     def clear_data(self):
+        # Clear plots
         for trace in self.traces:
                 trace.data = np.zeros(self.x_data.shape)
-                trace.latest_value = 0.0
                 trace.plot.setData(self.x_data, trace.data)
         self.replot()
 
+        # Clear buffers
         for buf in range(len(self.buffers_left)):
             self.buffers_left[buf].clear()
             self.buffers_right[buf].clear()

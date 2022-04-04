@@ -86,7 +86,7 @@ class GenericDataTab(QWidget):
     def generic_button_connections(self):
         self.tab_options.all_button.toggled.connect(lambda: self.radio_button_selected("All"))
         self.tab_options.show_seleted_button.clicked.connect(lambda: self.check_button_selected("Selection"))
-        self.tab_options.reset_button.clicked.connect(lambda: self.check_button_selected("All"))        
+        self.tab_options.reset_button.clicked.connect(lambda: self.check_button_selected("All"))
 
     def radio_button_selected(self, radio_button):
         for child in self.findChildren(JointGraph):
