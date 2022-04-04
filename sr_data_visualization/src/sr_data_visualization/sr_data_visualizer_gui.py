@@ -94,10 +94,16 @@ class SrDataVisualizer(Plugin):
             self.layout.addWidget(QLabel("No hand connected or ROS bag is not playing"), alignment=Qt.AlignCenter)
             return
 
-        self.hand_labels = ['lh', 'rh']
-        self.hand_id = self.hand_labels.index(self.joint_prefix[0:2])
-        if self.hand_id:
-            self.hand_labels.reverse()
+        self.hand_labels = []
+        self.hand_id = 0
+
+        if self.joint_prefix == "rh_":
+            self.hand_labels.append("rh")
+            self.hand_labels.append("lh")
+        else:
+            self.hand_labels.append("lh")
+            self.hand_labels.append("rh")
+
         self.hand_id_selection = QComboBox()
         self.hand_id_selection.addItems(self.hand_labels)
         self.hand_id_selection.currentIndexChanged.connect(self.combobox_action_hand_id_selection)
