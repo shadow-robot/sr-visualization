@@ -99,7 +99,10 @@ class SrDataVisualizer(Plugin):
             return
 
         self.hand_id_selection = QComboBox()
-        self.hand_id_selection.addItems(self.joint_prefix)
+        labels = []
+        for label in self.joint_prefix:
+            labels.append(label[:-1])
+        self.hand_id_selection.addItems(labels)
         self.hand_id_selection.currentIndexChanged.connect(self.combobox_action_hand_id_selection)
         self.hand_id_selection.setFixedSize(50, 20)
 
