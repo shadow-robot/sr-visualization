@@ -38,24 +38,6 @@ class Trace():
         self.latest_value = 0.0
 
 
-class DataBuffer():
-    def __init__(self, buf_size):
-        self.buf_size = buf_size
-        self.data = np.zeros(buf_size)
-        self.latest_value = 0.0
-
-    def introduce(self, value):
-        self.latest_value = value
-
-    def shift(self):
-        self.data = np.concatenate((self.data[:1], self.data[:-1]))
-        self.data[0] = self.latest_value
-
-    def clear(self):
-        self.data = np.zeros(self.buf_size)
-        self.latest_value = 0.0
-
-
 class GenericDataPlot(QwtPlot):
     GRAPH_MINW = 150
     GRAPH_MINH = 50
@@ -158,20 +140,15 @@ class JointStatesDataPlot(GenericDataPlot):
         self.side = self.joint_name[0:2]
 
     def create_traces(self):
-        self.buffers_left = [DataBuffer(self.x_data.shape),
-                             DataBuffer(self.x_data.shape),
-                             DataBuffer(self.x_data.shape)]
-
-        self.buffers_right = [DataBuffer(self.x_data.shape),
-                              DataBuffer(self.x_data.shape),
-                              DataBuffer(self.x_data.shape)]
-
         self.traces = [Trace("Position", Qt.red, self.x_data),
                        Trace("Effort", Qt.blue, self.x_data),
                        Trace("Velocity", Qt.green, self.x_data)]
 
     def plot_data(self, plot, side, new_sub=True):
         self.side = side
+        self.joint_name = self.side + self.joint_name[2:]
+
+        self.clear_data()
 
         if new_sub:
 
@@ -192,32 +169,11 @@ class JointStatesDataPlot(GenericDataPlot):
     def callback(self, data):
         for name, position, velocity, effort in zip(data.name, data.position,
                                                     data.velocity, data.effort):
-            if name[2:] in self.joint_name[2:]:
-                if 'lh' in name:
-                    self.buffers_left[0].introduce(position)
-                    self.buffers_left[1].introduce(effort)
-                    self.buffers_left[2].introduce(velocity)
-                if 'rh' in name:
-                    self.buffers_right[0].introduce(position)
-                    self.buffers_right[1].introduce(effort)
-                    self.buffers_right[2].introduce(velocity)
-
-    def timerEvent(self):
-        # Data moves from left to right:
-        # Shift data array right and assign new value data[0]
-
-        for trace, buffer_left, buffer_right in zip(self.traces, self.buffers_left, self.buffers_right):
-            buffer_left.shift()
-            buffer_right.shift()
-
-            if self.side == 'lh':
-                trace.data = buffer_left.data
-            if self.side == 'rh':
-                trace.data = buffer_right.data
-
-            trace.plot.setData(self.x_data, trace.data)
-
-        self.replot()
+            if name == self.joint_name:
+                print(name)
+                self.traces[0].latest_value = position
+                self.traces[1].latest_value = effort
+                self.traces[2].latest_value = velocity
 
     def clear_data(self):
         # Clear plots
@@ -225,11 +181,6 @@ class JointStatesDataPlot(GenericDataPlot):
             trace.data = np.zeros(self.x_data.shape)
             trace.plot.setData(self.x_data, trace.data)
         self.replot()
-
-        # Clear buffers
-        for buf in range(len(self.buffers_left)):
-            self.buffers_left[buf].clear()
-            self.buffers_right[buf].clear()
 
 
 class ControlLoopsDataPlot(GenericDataPlot):
