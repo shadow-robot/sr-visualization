@@ -170,7 +170,6 @@ class JointStatesDataPlot(GenericDataPlot):
         for name, position, velocity, effort in zip(data.name, data.position,
                                                     data.velocity, data.effort):
             if name == self.joint_name:
-                print(name)
                 self.traces[0].latest_value = position
                 self.traces[1].latest_value = effort
                 self.traces[2].latest_value = velocity
