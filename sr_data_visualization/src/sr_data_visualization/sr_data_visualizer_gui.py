@@ -107,7 +107,7 @@ class SrDataVisualizer(Plugin):
         self.hand_id_selection = QComboBox()
         self.hand_id_selection.addItems(self.hand_labels)
         self.hand_id_selection.currentIndexChanged.connect(self.combobox_action_hand_id_selection)
-        self.hand_id_selection.setFixedSize(50,20)
+        self.hand_id_selection.setFixedSize(50, 20)
         self.hand_id_selection_layout = QFormLayout()
         self.hand_id_selection_layout.addRow(QLabel("Hand ID:"), self.hand_id_selection)
         self.layout.addLayout(self.hand_id_selection_layout)
@@ -184,7 +184,7 @@ class SrDataVisualizer(Plugin):
     def combobox_action_hand_id_selection(self):
         self.hand_id = self.hand_id_selection.currentIndex()
         side = self.hand_labels[self.hand_id]
-        
+
         for tab in range(self.tab_container.count()):
             graphs = self.tab_container.widget(tab).findChildren(GenericDataPlot)
             self.tab_container.widget(tab).change_side(side)

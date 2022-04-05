@@ -145,9 +145,9 @@ class GenericDataPlot(QwtPlot):
 
     def clear_data(self):
         for trace in self.traces:
-                trace.data = np.zeros(self.x_data.shape)
-                trace.latest_value = 0.0
-                trace.plot.setData(self.x_data, trace.data)
+            trace.data = np.zeros(self.x_data.shape)
+            trace.latest_value = 0.0
+            trace.plot.setData(self.x_data, trace.data)
         self.replot()
 
 
@@ -172,7 +172,7 @@ class JointStatesDataPlot(GenericDataPlot):
 
     def plot_data(self, plot, side, new_sub=True):
         self.side = side
-        
+
         if new_sub:
 
             self.clear_data()
@@ -188,7 +188,6 @@ class JointStatesDataPlot(GenericDataPlot):
                 self._subscriber.unregister()
                 self.timer.stop()
                 self.clear_data()
-            
 
     def callback(self, data):
         for name, position, velocity, effort in zip(data.name, data.position,
@@ -207,8 +206,7 @@ class JointStatesDataPlot(GenericDataPlot):
         # Data moves from left to right:
         # Shift data array right and assign new value data[0]
 
-        for trace, buffer_left, buffer_right  in zip(self.traces, self.buffers_left, 
-                                                     self.buffers_right):
+        for trace, buffer_left, buffer_right in zip(self.traces, self.buffers_left, self.buffers_right):
             buffer_left.shift()
             buffer_right.shift()
 
@@ -224,8 +222,8 @@ class JointStatesDataPlot(GenericDataPlot):
     def clear_data(self):
         # Clear plots
         for trace in self.traces:
-                trace.data = np.zeros(self.x_data.shape)
-                trace.plot.setData(self.x_data, trace.data)
+            trace.data = np.zeros(self.x_data.shape)
+            trace.plot.setData(self.x_data, trace.data)
         self.replot()
 
         # Clear buffers
@@ -282,7 +280,7 @@ class MotorStatsGenericDataPlot(GenericDataPlot):
     def plot_data(self, plot, side, new_sub=True):
         self.side = side
         self.joint_name = self.side + self.joint_name[2:]
-        
+
         self.clear_data()
 
         if new_sub:
