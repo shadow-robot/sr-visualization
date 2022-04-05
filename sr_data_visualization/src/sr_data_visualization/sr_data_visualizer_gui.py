@@ -57,13 +57,16 @@ class SrDataVisualizer(Plugin):
         self.init_ui()
 
     def _detect_hand_id_and_joints(self):
-        self.joint_prefix = None
+        self.joint_prefix = []
         self.hand_joints = None
 
         try:
             joint_states_msg = rospy.wait_for_message("/joint_states", JointState, timeout=1)
-            self.joint_prefix = ([prefix for prefix in joint_states_msg.name if 'h_' in prefix][0]).split("_")[0] + "_"
-            joints = [joint for joint in joint_states_msg.name if self.joint_prefix in joint]
+            for joint in joint_states_msg.name:
+                if 'h_' in joint:
+                    if joint[0:2] not in self.joint_prefix:
+                        self.joint_prefix.append(joint[0:2])
+            joints = [joint for joint in joint_states_msg.name if self.joint_prefix[0] in joint]
             self.hand_joints = {self.joint_prefix[:-1]: joints}
         except (rospy.exceptions.ROSException, IndexError):
             rospy.logwarn("No hand connected or ROS bag is not playing")
