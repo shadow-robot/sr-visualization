@@ -64,10 +64,10 @@ class SrDataVisualizer(Plugin):
             joint_states_msg = rospy.wait_for_message("/joint_states", JointState, timeout=1)
             for joint in joint_states_msg.name:
                 if 'h_' in joint:
-                    if joint[0:2] not in self.joint_prefix:
-                        self.joint_prefix.append(joint[0:2])
+                    if joint[0:3] not in self.joint_prefix:
+                        self.joint_prefix.append(joint[0:3])
             joints = [joint for joint in joint_states_msg.name if self.joint_prefix[0] in joint]
-            self.hand_joints = {self.joint_prefix[:-1]: joints}
+            self.hand_joints = {self.joint_prefix[0][:-1]: joints}
         except (rospy.exceptions.ROSException, IndexError):
             rospy.logwarn("No hand connected or ROS bag is not playing")
 
@@ -98,17 +98,8 @@ class SrDataVisualizer(Plugin):
             self.layout.addWidget(QLabel("No hand connected or ROS bag is not playing"), alignment=Qt.AlignCenter)
             return
 
-        self.hand_id = []
-
-        if self.joint_prefix == "rh_":
-            self.hand_id.append("rh")
-            self.hand_id.append("lh")
-        else:
-            self.hand_id.append("lh")
-            self.hand_id.append("rh")
-
         self.hand_id_selection = QComboBox()
-        self.hand_id_selection.addItems(self.hand_id)
+        self.hand_id_selection.addItems(self.joint_prefix)
         self.hand_id_selection.currentIndexChanged.connect(self.combobox_action_hand_id_selection)
         self.hand_id_selection.setFixedSize(50, 20)
 
@@ -134,19 +125,19 @@ class SrDataVisualizer(Plugin):
     def create_tab(self, tab_name):
         if tab_name == "Joint States":
             self.tab_created = JointStatesDataTab(tab_name, self.hand_joints,
-                                                  self.joint_prefix, parent=self.tab_container)
+                                                  self.joint_prefix[0], parent=self.tab_container)
         elif tab_name == "Control Loops":
             self.tab_created = ControlLoopsDataTab(tab_name, self.hand_joints,
-                                                   self.joint_prefix, parent=self.tab_container)
+                                                   self.joint_prefix[0], parent=self.tab_container)
         elif tab_name == "Motor Stats 1":
             self.tab_created = MotorStats1DataTab(tab_name, self.hand_joints,
-                                                  self.joint_prefix, parent=self.tab_container)
+                                                  self.joint_prefix[0], parent=self.tab_container)
         elif tab_name == "Motor Stats 2":
             self.tab_created = MotorStats2DataTab(tab_name, self.hand_joints,
-                                                  self.joint_prefix, parent=self.tab_container)
+                                                  self.joint_prefix[0], parent=self.tab_container)
         elif tab_name == "Palm Extras":
             self.tab_created = PalmExtrasDataTab(tab_name, self.hand_joints,
-                                                 self.joint_prefix, parent=self.tab_container)
+                                                 self.joint_prefix[0], parent=self.tab_container)
 
         self.tab_container.addTab(self.tab_created, tab_name)
 
