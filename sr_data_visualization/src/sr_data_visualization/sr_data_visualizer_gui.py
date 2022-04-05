@@ -34,7 +34,8 @@ from python_qt_binding.QtWidgets import (
     QMessageBox,
     QLabel,
     QComboBox,
-    QFormLayout
+    QFormLayout,
+    QHBoxLayout
 )
 
 from sr_data_visualization.data_tab import (
@@ -86,8 +87,8 @@ class SrDataVisualizer(Plugin):
     def fill_layout(self):
         # Create info button on the top right of the gui
         self.information_btn = QPushButton("Info")
-        self.layout.addWidget(self.information_btn, alignment=Qt.AlignRight)
         self.information_btn.clicked.connect(self.display_information)
+        self.information_btn.setFixedSize(100, 20)
         self.tab_container = QTabWidget()
 
         if not self._detect_hand_id_and_joints():
@@ -107,9 +108,12 @@ class SrDataVisualizer(Plugin):
         self.hand_id_selection.addItems(self.hand_id)
         self.hand_id_selection.currentIndexChanged.connect(self.combobox_action_hand_id_selection)
         self.hand_id_selection.setFixedSize(50, 20)
-        self.hand_id_selection_layout = QFormLayout()
-        self.hand_id_selection_layout.addRow(QLabel("Hand ID:"), self.hand_id_selection)
-        self.layout.addLayout(self.hand_id_selection_layout)
+
+        self.info_button_and_hand_selection_layout = QHBoxLayout()
+        self.info_button_and_hand_selection_layout.addWidget(QLabel("Hand ID:"), alignment=Qt.AlignRight)
+        self.info_button_and_hand_selection_layout.addWidget(self.hand_id_selection)
+        self.info_button_and_hand_selection_layout.addWidget(self.information_btn)
+        self.layout.addLayout(self.info_button_and_hand_selection_layout)
 
         # Initialize tabs
         self.layout.addWidget(self.tab_container)
