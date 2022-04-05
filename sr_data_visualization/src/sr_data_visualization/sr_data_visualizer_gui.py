@@ -94,18 +94,17 @@ class SrDataVisualizer(Plugin):
             self.layout.addWidget(QLabel("No hand connected or ROS bag is not playing"), alignment=Qt.AlignCenter)
             return
 
-        self.hand_labels = []
-        self.hand_id = 0
+        self.hand_id = []
 
         if self.joint_prefix == "rh_":
-            self.hand_labels.append("rh")
-            self.hand_labels.append("lh")
+            self.hand_id.append("rh")
+            self.hand_id.append("lh")
         else:
-            self.hand_labels.append("lh")
-            self.hand_labels.append("rh")
+            self.hand_id.append("lh")
+            self.hand_id.append("rh")
 
         self.hand_id_selection = QComboBox()
-        self.hand_id_selection.addItems(self.hand_labels)
+        self.hand_id_selection.addItems(self.hand_id)
         self.hand_id_selection.currentIndexChanged.connect(self.combobox_action_hand_id_selection)
         self.hand_id_selection.setFixedSize(50, 20)
         self.hand_id_selection_layout = QFormLayout()
@@ -146,7 +145,7 @@ class SrDataVisualizer(Plugin):
 
     def tab_changed(self, index):
         self.tab_index = index
-        side = self.hand_labels[self.hand_id]
+        side = self.hand_id_selection.currentText()
         for tab in range(self.tab_container.count()):
             graphs = self.tab_container.widget(tab).findChildren(GenericDataPlot)
             self.tab_container.widget(tab).change_side(side)
@@ -182,8 +181,7 @@ class SrDataVisualizer(Plugin):
         msg.exec_()
 
     def combobox_action_hand_id_selection(self):
-        self.hand_id = self.hand_id_selection.currentIndex()
-        side = self.hand_labels[self.hand_id]
+        side = self.hand_id_selection.currentText()
 
         for tab in range(self.tab_container.count()):
             graphs = self.tab_container.widget(tab).findChildren(GenericDataPlot)
@@ -199,7 +197,7 @@ class SrDataVisualizer(Plugin):
         for tab in range(self.tab_container.count()):
             graphs = self.tab_container.widget(tab).findChildren(GenericDataPlot)
             for graph in graphs:
-                graph.plot_data(False, self.hand_labels[self.hand_id])
+                graph.plot_data(False, self.hand_id_selection.currentText())
 
 
 if __name__ == "__main__":
