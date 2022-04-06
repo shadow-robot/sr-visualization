@@ -92,7 +92,6 @@ class GenericDataPlot(QwtPlot):
         self.replot()
 
     def plot_data(self, plot, side, new_sub=True):
-
         self._topic_name = self._topic_name.replace("lh", side)
         self._topic_name = self._topic_name.replace("rh", side)
 
@@ -137,24 +136,25 @@ class JointStatesDataPlot(GenericDataPlot):
     def __init__(self, joint_name, topic_name, topic_type):
         super().__init__(joint_name, topic_name, topic_type, start_plotting=True)
 
-        self.side = self.joint_name[0:2]
-
     def create_traces(self):
         self.traces = [Trace("Position", Qt.red, self.x_data),
                        Trace("Effort", Qt.blue, self.x_data),
                        Trace("Velocity", Qt.green, self.x_data)]
 
     def plot_data(self, plot, side, new_sub=True):
-        self.side = side
-        self.joint_name = self.side + self.joint_name[2:]
+        self.joint_name = self.joint_name.replace("lh", side)
+        self.joint_name = self.joint_name.replace("rh", side)
 
         self.clear_data()
 
         if new_sub:
 
-            self.clear_data()
-
             if plot:
+
+                if self._subscriber is not None:
+                    self._subscriber.unregister()
+                    self.clear_data()
+
                 self._subscriber = rospy.Subscriber(self._topic_name, self._topic_type,
                                                     self.callback, queue_size=1)
                 if self.timer is None:
@@ -173,13 +173,6 @@ class JointStatesDataPlot(GenericDataPlot):
                 self.traces[0].latest_value = position
                 self.traces[1].latest_value = effort
                 self.traces[2].latest_value = velocity
-
-    def clear_data(self):
-        # Clear plots
-        for trace in self.traces:
-            trace.data = np.zeros(self.x_data.shape)
-            trace.plot.setData(self.x_data, trace.data)
-        self.replot()
 
 
 class ControlLoopsDataPlot(GenericDataPlot):
@@ -205,9 +198,6 @@ class MotorStatsGenericDataPlot(GenericDataPlot):
     def __init__(self, joint_name, topic_name, topic_type):
         super().__init__(joint_name, topic_name, topic_type)
 
-        self.side = self.joint_name[0:2]
-        self.joint_name = self.side + self.joint_name[2:]
-
     def callback(self, data):
         for message in data.status:
             # Splits the name into parts e.g.
@@ -228,14 +218,19 @@ class MotorStatsGenericDataPlot(GenericDataPlot):
                                     self.traces[trace].latest_value = item.value
 
     def plot_data(self, plot, side, new_sub=True):
-        self.side = side
-        self.joint_name = self.side + self.joint_name[2:]
+        self.joint_name = self.joint_name.replace("lh", side)
+        self.joint_name = self.joint_name.replace("rh", side)
 
         self.clear_data()
 
         if new_sub:
 
             if plot:
+
+                if self._subscriber is not None:
+                    self._subscriber.unregister()
+                    self.clear_data()
+
                 self._subscriber = rospy.Subscriber(self._topic_name, self._topic_type,
                                                     self.callback, queue_size=1)
                 if self.timer is None:
@@ -245,6 +240,7 @@ class MotorStatsGenericDataPlot(GenericDataPlot):
             elif self._subscriber is not None:
                 self._subscriber.unregister()
                 self.timer.stop()
+                self.clear_data()
 
 
 class MotorStats1DataPlot(MotorStatsGenericDataPlot):
