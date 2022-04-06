@@ -92,12 +92,10 @@ class GenericDataPlot(QwtPlot):
         self.replot()
 
     def plot_data(self, plot, side, new_sub=True):
-        self._topic_name = self._topic_name.replace("lh", side)
-        self._topic_name = self._topic_name.replace("rh", side)
+        self._topic_name = self._topic_name.replace("lh", side).replace("rh", side)
 
         if plot:
-
-            if self._subscriber is not None:
+            if self._subscriber:
                 self._subscriber.unregister()
                 self.clear_data()
 
@@ -107,7 +105,7 @@ class GenericDataPlot(QwtPlot):
                 self.initialize_and_start_timer()
             else:
                 self.timer.start()
-        elif self._subscriber is not None:
+        elif self._subscriber:
             self._subscriber.unregister()
             self.timer.stop()
             self.clear_data()
@@ -142,16 +140,13 @@ class JointStatesDataPlot(GenericDataPlot):
                        Trace("Velocity", Qt.green, self.x_data)]
 
     def plot_data(self, plot, side, new_sub=True):
-        self.joint_name = self.joint_name.replace("lh", side)
-        self.joint_name = self.joint_name.replace("rh", side)
+        self.joint_name = self.joint_name.replace("lh", side).replace("rh", side)
 
         self.clear_data()
 
         if new_sub:
-
             if plot:
-
-                if self._subscriber is not None:
+                if self._subscriber:
                     self._subscriber.unregister()
                     self.clear_data()
 
@@ -161,7 +156,7 @@ class JointStatesDataPlot(GenericDataPlot):
                     self.initialize_and_start_timer()
                 else:
                     self.timer.start()
-            elif self._subscriber is not None:
+            elif self._subscriber:
                 self._subscriber.unregister()
                 self.timer.stop()
                 self.clear_data()
@@ -218,16 +213,13 @@ class MotorStatsGenericDataPlot(GenericDataPlot):
                                     self.traces[trace].latest_value = item.value
 
     def plot_data(self, plot, side, new_sub=True):
-        self.joint_name = self.joint_name.replace("lh", side)
-        self.joint_name = self.joint_name.replace("rh", side)
+        self.joint_name = self.joint_name.replace("lh", side).replace("rh", side)
 
         self.clear_data()
 
         if new_sub:
-
             if plot:
-
-                if self._subscriber is not None:
+                if self._subscriber:
                     self._subscriber.unregister()
                     self.clear_data()
 
@@ -237,7 +229,7 @@ class MotorStatsGenericDataPlot(GenericDataPlot):
                     self.initialize_and_start_timer()
                 else:
                     self.timer.start()
-            elif self._subscriber is not None:
+            elif self._subscriber:
                 self._subscriber.unregister()
                 self.timer.stop()
                 self.clear_data()
