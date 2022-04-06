@@ -104,8 +104,8 @@ if __name__ == '__main__':
         detected_hands = yaml.safe_load(f)
 
     if not detected_hands:
-        raise ValueError("No hands connected locally! " + \
-                         "Please only launch this plugin on the computer that the hand " + \
+        raise ValueError("No hands connected locally! " +
+                         "Please only launch this plugin on the computer that the hand " +
                          "is plugged into.")
 
     if len(detected_hands) > 1:
