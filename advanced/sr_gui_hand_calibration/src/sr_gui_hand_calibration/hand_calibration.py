@@ -74,8 +74,8 @@ class SrHandCalibration(Plugin):
 
         if not detected_hands:
             QMessageBox.warning(
-                self._widget, "warning", "No hands connected locally! " + \
-                "Please only launch this plugin on the computer that the hand " + \
+                self._widget, "warning", "No hands connected locally! " +
+                "Please only launch this plugin on the computer that the hand " +
                 "is plugged into.")
             return None
 
