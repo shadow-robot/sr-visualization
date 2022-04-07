@@ -40,13 +40,48 @@ from sr_fingertip_visualization.tactile_points import (
     TactilePointBiotacSPPlus,
     TactilePointBiotacSPMinus
 )
+
 from sr_fingertip_visualization.tab_layouts_generic import GenericTabLayout
 from sr_robot_msgs.msg import ShadowPST, BiotacAll
+from diagnostic_msgs.msg import DiagnosticArray
 
 
-class FingerWidgetVisualPST(QGroupBox):
-    def __init__(self, side, finger, parent):
+class FingerWidget(QGroupBox):
+    def __init__(self, side, finger, parent=None):
         super().__init__(parent=parent)
+        self._CONST_FINGERS = ['ff', 'mf', 'rf', 'lf', 'th']
+        self._side = side
+        self._finger = finger
+
+        self.setTitle(f"{self._finger} ({self._get_serial_number()})")
+        self.setCheckable(True)
+        self.setChecked(False)
+        self.setSizePolicy(1, 1)
+
+    def _get_serial_number(self):
+        serial_number = '----'
+        tactile_index = self._CONST_FINGERS.index(self._finger) + 1
+        expected_diagnostic_name = f"{self._side} Tactile {tactile_index}"  # example name: "rh Tactile 5"
+
+        now = rospy.get_time()
+        while rospy.get_time() - now < 2:
+            try:
+                diagnostic_msg = rospy.wait_for_message('/diagnostics', DiagnosticArray, timeout=1)
+                diagnostic_data = [x for x in diagnostic_msg.status if x.name == expected_diagnostic_name]
+                if diagnostic_data:
+                    details_dict = dict()
+                    for entry in diagnostic_data[0].values:
+                        details_dict.update({entry.key: entry.value})
+                    serial_number = details_dict['Serial Number'][-4:]
+                    break
+            except rospy.exceptions.ROSException:
+                break
+        return serial_number
+
+
+class FingerWidgetVisualPST(FingerWidget):
+    def __init__(self, side, finger, parent):
+        super().__init__(side, finger, parent)
         self._tactile_point_widget = TactilePointPST(self)
         self._CONST_FINGERS = ['ff', 'mf', 'rf', 'lf', 'th']
         self._data = dict()
@@ -55,10 +90,6 @@ class FingerWidgetVisualPST(QGroupBox):
         self._timer = QTimer()
         self._subscriber = None
 
-        self.setTitle(finger)
-        self.setCheckable(True)
-        self.setChecked(False)
-        self.setSizePolicy(1, 1)
         self.toggled.connect(self.refresh)
 
         layout = QVBoxLayout()
@@ -132,9 +163,9 @@ class BiotacSPPlusInfo(QGroupBox):
             self._labels[key].setText(f"{key}: {self._data[key]}")
 
 
-class FingerWidgetVisualBiotacSPMinus(QGroupBox):
+class FingerWidgetVisualBiotacSPMinus(FingerWidget):
     def __init__(self, side, finger, parent):
-        super().__init__(parent=parent)
+        super().__init__(side, finger, parent)
         self._tactile_point_widget = TactilePointBiotacSPMinus(self)
         self._CONST_FINGERS = ['ff', 'mf', 'rf', 'lf', 'th']
         self._data = dict()
@@ -143,10 +174,6 @@ class FingerWidgetVisualBiotacSPMinus(QGroupBox):
         self._timer = QTimer()
         self._subscriber = None
 
-        self.setTitle(finger)
-        self.setCheckable(True)
-        self.setChecked(False)
-        self.setSizePolicy(1, 1)
         self.toggled.connect(self.refresh)
 
         layout = QVBoxLayout()
@@ -192,9 +219,9 @@ class FingerWidgetVisualBiotacSPMinus(QGroupBox):
         self._tactile_point_widget.update_data(self._data)
 
 
-class FingerWidgetVisualBiotacSPPlus(QGroupBox):
+class FingerWidgetVisualBiotacSPPlus(FingerWidget):
     def __init__(self, side, finger, parent):
-        super().__init__(parent=parent)
+        super().__init__(side, finger, parent)
         self._CONST_FINGERS = ['ff', 'mf', 'rf', 'lf', 'th']
         self._version = 'v2'
         self._data = dict()
@@ -205,10 +232,6 @@ class FingerWidgetVisualBiotacSPPlus(QGroupBox):
         self._datatype_to_display = 'electrodes'
         self._subscriber = None
 
-        self.setTitle(finger)
-        self.setCheckable(True)
-        self.setChecked(False)
-        self.setSizePolicy(1, 1)
         self.toggled.connect(self.refresh)
         self._succeded_config_load = False
 
@@ -311,12 +334,9 @@ class FingerWidgetVisualBiotacSPPlus(QGroupBox):
                     self._tactile_point_widget[i].hide()
 
 
-class FingerWidgetVisualBiotacBlank(QGroupBox):
+class FingerWidgetVisualBiotacBlank(FingerWidget):
     def __init__(self, finger, parent):
-        super().__init__(parent=parent)
-        self.setTitle(finger)
-        self.setCheckable(True)
-        self.setChecked(False)
+        super().__init__(None, finger, parent)
         layout = QHBoxLayout()
         no_tactile_label = QLabel()
         no_tactile_label.setText("No tactile sensor")
