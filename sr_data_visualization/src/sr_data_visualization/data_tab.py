@@ -265,8 +265,8 @@ class MotorStats2DataTab(MotorGroupsDataTab):
     def optional_button_connections(self):
         self.tab_options.effort_button.toggled.connect(lambda: self.radio_button_selected("Measured Effort"))
         self.tab_options.temp_button.toggled.connect(lambda: self.radio_button_selected("Temperature"))
-        self.tab_options.unf_position_button.toggled.connect(lambda: self.radio_button_selected("Unfiltered Position"))
-        self.tab_options.unf_force_button.toggled.connect(lambda: self.radio_button_selected("Unfiltered Force"))
+        self.tab_options.unf_position_button.toggled.connect(lambda: self.radio_button_selected("Unfiltered position"))
+        self.tab_options.unf_force_button.toggled.connect(lambda: self.radio_button_selected("Unfiltered force"))
         self.tab_options.last_effort_button.toggled.connect(lambda: self.radio_button_selected("Last Commanded Effort"))
         self.tab_options.encoder_pos_button.toggled.connect(lambda: self.radio_button_selected("Encoder Position"))
 
