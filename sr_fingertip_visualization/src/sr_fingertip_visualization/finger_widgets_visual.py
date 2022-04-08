@@ -64,8 +64,8 @@ class FingerWidget(QGroupBox):
         expected_diagnostic_name = f"{self._side} Tactile {tactile_index}"  # example name: "rh Tactile 5"
 
         now = rospy.get_time()
-        while rospy.get_time() - now < 2:  
-        # 2s to give more time for messages to arrive due to low publish rate to /diagnostics
+        while rospy.get_time() - now < 2:
+            # 2s to give more time for messages to arrive due to low publishing rate of /diagnostics
             try:
                 diagnostic_msg = rospy.wait_for_message('/diagnostics', DiagnosticArray, timeout=1)
                 diagnostic_data = [x for x in diagnostic_msg.status if x.name == expected_diagnostic_name]
