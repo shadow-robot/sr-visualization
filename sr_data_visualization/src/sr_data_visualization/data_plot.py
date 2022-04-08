@@ -94,10 +94,12 @@ class GenericDataPlot(QwtPlot):
     def plot_data(self, plot, side, new_sub=True):
         self._topic_name = self._topic_name.replace("lh", side).replace("rh", side)
 
+        if self._subscriber:
+            self._subscriber.unregister()
+            self.timer.stop()
+            self.clear_data()
+
         if plot:
-            if self._subscriber:
-                self._subscriber.unregister()
-                self.clear_data()
 
             self._subscriber = rospy.Subscriber(self._topic_name, self._topic_type,
                                                 self.callback, queue_size=1)
@@ -105,10 +107,6 @@ class GenericDataPlot(QwtPlot):
                 self.initialize_and_start_timer()
             else:
                 self.timer.start()
-        elif self._subscriber:
-            self._subscriber.unregister()
-            self.timer.stop()
-            self.clear_data()
 
     def show_trace(self, trace_name):
         for trace in self.traces:
@@ -145,10 +143,12 @@ class JointStatesDataPlot(GenericDataPlot):
         self.clear_data()
 
         if new_sub:
+            if self._subscriber:
+                self._subscriber.unregister()
+                self.timer.stop()
+                self.clear_data()
+
             if plot:
-                if self._subscriber:
-                    self._subscriber.unregister()
-                    self.clear_data()
 
                 self._subscriber = rospy.Subscriber(self._topic_name, self._topic_type,
                                                     self.callback, queue_size=1)
@@ -156,10 +156,6 @@ class JointStatesDataPlot(GenericDataPlot):
                     self.initialize_and_start_timer()
                 else:
                     self.timer.start()
-            elif self._subscriber:
-                self._subscriber.unregister()
-                self.timer.stop()
-                self.clear_data()
 
     def callback(self, data):
         for name, position, velocity, effort in zip(data.name, data.position,
@@ -218,10 +214,12 @@ class MotorStatsGenericDataPlot(GenericDataPlot):
         self.clear_data()
 
         if new_sub:
+            if self._subscriber:
+                self._subscriber.unregister()
+                self.timer.stop()
+                self.clear_data()
+
             if plot:
-                if self._subscriber:
-                    self._subscriber.unregister()
-                    self.clear_data()
 
                 self._subscriber = rospy.Subscriber(self._topic_name, self._topic_type,
                                                     self.callback, queue_size=1)
@@ -229,10 +227,6 @@ class MotorStatsGenericDataPlot(GenericDataPlot):
                     self.initialize_and_start_timer()
                 else:
                     self.timer.start()
-            elif self._subscriber:
-                self._subscriber.unregister()
-                self.timer.stop()
-                self.clear_data()
 
 
 class MotorStats1DataPlot(MotorStatsGenericDataPlot):
