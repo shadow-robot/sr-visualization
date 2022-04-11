@@ -36,36 +36,38 @@ from python_qt_binding.QtWidgets import (
 
 
 class GenericGraphTab(QWidget):
+
+    ICON_DIR = os.path.join(rospkg.RosPack().get_path('sr_visualization_icons'), 'icons')
+
     def __init__(self, side, parent):
         super().__init__(parent=parent)
 
         self._side = side
         self._CONST_FINGERS = ['ff', 'mf', 'rf', 'lf', 'th']
         self._CONST_DATA_FIELDS = ['pressure', 'temperature']
-        self._data = dict()
+        self._data = {}
         self._timer = QTimer()
-        self._finger_widgets = dict()
-        self._data_selection = dict()
-        self._data_selection_checkboxes = dict()
-        self._plot = dict()
+        self._finger_widgets = {}
+        self._data_selection = {}
+        self._data_selection_checkboxes = {}
+        self._plot = {}
 
         self._initialize_data_structure()
 
-        ICON_DIR = os.path.join(rospkg.RosPack().get_path('sr_visualization_icons'), 'icons')
-        self.ICONS = {
-            'blue': QIcon(os.path.join(ICON_DIR, 'blue.png')),
-            'red': QIcon(os.path.join(ICON_DIR, 'red.png')),
-            'green': QIcon(os.path.join(ICON_DIR, 'green.png')),
-            'magenta': QIcon(os.path.join(ICON_DIR, 'magenta.png')),
-            'gray': QIcon(os.path.join(ICON_DIR, 'gray.png')),
-            'cyan': QIcon(os.path.join(ICON_DIR, 'cyan.png'))
+        self._icons = {
+            'blue': QIcon(os.path.join(self.ICON_DIR, 'blue.png')),
+            'red': QIcon(os.path.join(self.ICON_DIR, 'red.png')),
+            'green': QIcon(os.path.join(self.ICON_DIR, 'green.png')),
+            'magenta': QIcon(os.path.join(self.ICON_DIR, 'magenta.png')),
+            'gray': QIcon(os.path.join(self.ICON_DIR, 'gray.png')),
+            'cyan': QIcon(os.path.join(self.ICON_DIR, 'cyan.png'))
         }
 
-        available_colors = list(self.ICONS.keys())
-        self._legend_colors = dict()
+        available_colors = list(self._icons.keys())
+        self._legend_colors = {}
         for i, data_field in enumerate(self._CONST_DATA_FIELDS):
-            self._legend_colors[data_field] = dict()
-            self._legend_colors[data_field]['icon'] = self.ICONS[available_colors[i]]
+            self._legend_colors[data_field] = {}
+            self._legend_colors[data_field]['icon'] = self._icons[available_colors[i]]
             self._legend_colors[data_field]['plot_color'] = QColor(available_colors[i])
 
     def _initialize_data_structure(self):
@@ -84,7 +86,8 @@ class GenericTabLayout(QWidget):
 
         self._subscriber = None
         self._CONST_FINGERS = ["ff", 'mf', 'rf', 'lf', 'th']
-        self._finger_widgets = dict()
+        self._selected_fingers = []
+        self._finger_widgets = {}
         self._timer = QTimer(self)
 
     def _init_tactile_layout(self):
@@ -106,11 +109,13 @@ class GenericTabLayout(QWidget):
 
 
 class GenericOptionBar(QGroupBox):
+
+    _CONST_FINGERS = ["ff", 'mf', 'rf', 'lf', 'th']
+
     def __init__(self, hand_ids, childs):
         super().__init__()
         self._hand_ids = hand_ids
         self._childs = childs
-        self._CONST_FINGERS = ["ff", 'mf', 'rf', 'lf', 'th']
         self.setTitle("Options")
         self.setSizePolicy(1, 2)
 
@@ -138,6 +143,7 @@ class GenericOptionBar(QGroupBox):
         self.finger_selection_reset_button.clicked.connect(self._button_action_reset)
 
     def _combobox_action_hand_id_selection(self):
+        # pylint: disable=W0201
         self._current_widget = self._childs.currentWidget()
         self._childs.setCurrentIndex(self.hand_id_selection.currentIndex())
 
@@ -167,7 +173,7 @@ class GenericOptionBar(QGroupBox):
             fingertip_widgets[finger].show()
 
     def _start_selected_widget(self, selected_widget):
-        for i in range(self._childs.count()):
+        for _ in range(self._childs.count()):
             finger_widgets_from_tab = self._childs.currentWidget().get_finger_widgets()
             for widget in finger_widgets_from_tab.values():
                 if self._childs.currentWidget() == selected_widget:
