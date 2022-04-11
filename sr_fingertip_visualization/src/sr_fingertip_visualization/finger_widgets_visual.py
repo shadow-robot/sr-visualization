@@ -15,35 +15,27 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import absolute_import, division
+import os
 import rospy
 import rospkg
 import yaml
-import os
 
 from python_qt_binding.QtCore import Qt, QTimer
 from python_qt_binding.QtWidgets import (
-    QPushButton,
     QWidget,
     QGridLayout,
     QHBoxLayout,
     QVBoxLayout,
     QGroupBox,
-    QFormLayout,
     QLabel,
-    QComboBox,
-    QStackedLayout
 )
-
+from sr_robot_msgs.msg import ShadowPST, BiotacAll
+from diagnostic_msgs.msg import DiagnosticArray
 from sr_fingertip_visualization.tactile_points import (
     TactilePointPST,
     TactilePointBiotacSPPlus,
     TactilePointBiotacSPMinus
 )
-
-from sr_fingertip_visualization.tab_layouts_generic import GenericTabLayout
-from sr_robot_msgs.msg import ShadowPST, BiotacAll
-from diagnostic_msgs.msg import DiagnosticArray
-
 
 class FingerWidget(QGroupBox):
 
