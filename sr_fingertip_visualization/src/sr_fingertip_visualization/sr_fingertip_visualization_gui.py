@@ -15,10 +15,9 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import absolute_import
-
+import sys
 import rospy
 import rostopic
-import sys
 from qt_gui.plugin import Plugin
 
 from python_qt_binding.QtCore import Qt
@@ -31,10 +30,8 @@ from python_qt_binding.QtWidgets import (
     QMessageBox,
     QLabel
 )
-
 from sr_fingertip_visualization.tab_layouts_visual import VisualizationTab
 from sr_fingertip_visualization.tab_layouts_graph import GraphTab
-from sr_robot_msgs.msg import BiotacAll, ShadowPST
 
 
 class SrFingertipVisualizer(Plugin):
@@ -152,5 +149,5 @@ if __name__ == "__main__":
     rospy.init_node("sr_fingertip_visualizer")
     app = QApplication(sys.argv)
     sr_fingertip_visualizer_gui = SrFingertipVisualizer(None)
-    sr_fingertip_visualizer_gui._widget.show()
+    sr_fingertip_visualizer_gui._widget.show() # pylint: disable=W0212
     sys.exit(app.exec_())

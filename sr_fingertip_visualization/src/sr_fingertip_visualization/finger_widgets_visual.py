@@ -239,9 +239,9 @@ class FingerWidgetVisualBiotacSPPlus(FingerWidget):
 
         try:
             config_dir = os.path.join(rospkg.RosPack().get_path('sr_fingertip_visualization'), 'config')
-            stream = open(config_dir + "/tactile_point_cooridinates.yaml", 'r', encoding="ASCII")
-            self._coordinates = yaml.safe_load(stream)
-            self._succeded_config_load = True
+            with open(config_dir + "/tactile_point_cooridinates.yaml", 'r', encoding="ASCII") as stream:
+                self._coordinates = yaml.safe_load(stream)
+                self._succeded_config_load = True
         except FileNotFoundError:
             rospy.logerr("Config file not found!")
             layout = QVBoxLayout()
