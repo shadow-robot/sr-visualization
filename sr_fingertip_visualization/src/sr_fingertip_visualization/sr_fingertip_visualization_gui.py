@@ -42,9 +42,10 @@ class SrFingertipVisualizer(Plugin):
         self._detect_hand_and_tactile_type()
         self.context = context
         self._init_ui()
+        self.tab_container = QTabWidget()
 
     def _detect_hand_and_tactile_type(self):
-        self._tactile_topics = dict()
+        self._tactile_topics = {}
 
         try:
             type_right = rostopic.get_topic_type("/rh/tactile")
@@ -79,7 +80,6 @@ class SrFingertipVisualizer(Plugin):
         information_btn = QPushButton("Info")
         self.main_layout.addWidget(information_btn, alignment=Qt.AlignRight)
 
-        self.tab_container = QTabWidget()
         self.tab_container.currentChanged.connect(self.tab_changed)
         information_btn.clicked.connect(self.display_information)
 
@@ -113,7 +113,15 @@ class SrFingertipVisualizer(Plugin):
                     elif fingertip_widget.isChecked():
                         fingertip_widget.start_timer_and_subscriber()
 
-    def display_information(self, message):
+    def shutdown_plugin(self):
+        for i in range(self.tab_container.count()):
+            tactile_widgets = self.tab_container.widget(i).get_tactile_widgets()
+            for tactile_widget in tactile_widgets.values():
+                for fingertip_widget in tactile_widget.get_finger_widgets().values():
+                    fingertip_widget.stop_timer_and_subscriber()
+
+
+def display_information(message):
         message = "This plugin is used to display data coming from the tactile sensors" + "\n" + \
                   "of the Dexterous Hand. There are 2 tabs - Visualizer and Graphs." + "\n" + \
                   "As a user you can select which hands and corresponding sensors you would like " + \
@@ -136,13 +144,6 @@ class SrFingertipVisualizer(Plugin):
         msg.setText(message)
         msg.setStandardButtons(QMessageBox.Ok)
         msg.exec_()
-
-    def shutdown_plugin(self):
-        for i in range(self.tab_container.count()):
-            tactile_widgets = self.tab_container.widget(i).get_tactile_widgets()
-            for tactile_widget in tactile_widgets.values():
-                for fingertip_widget in tactile_widget.get_finger_widgets().values():
-                    fingertip_widget.stop_timer_and_subscriber()
 
 
 if __name__ == "__main__":

@@ -15,12 +15,11 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import absolute_import, division
-
+from enum import Enum
 import os
 import rospy
 import rospkg
-from sr_robot_msgs.msg import ShadowPST, BiotacAll
-from enum import Enum
+from sr_robot_msgs.msg import BiotacAll
 
 
 from python_qt_binding.QtCore import QTimer
@@ -29,13 +28,10 @@ from python_qt_binding.QtWidgets import (
     QPushButton,
     QWidget,
     QHBoxLayout,
-    QVBoxLayout,
     QGroupBox,
     QFormLayout,
     QLabel,
-    QComboBox,
-    QCheckBox,
-    QStackedLayout
+    QComboBox
 )
 
 
@@ -119,6 +115,7 @@ class GenericOptionBar(QGroupBox):
         self.setSizePolicy(1, 2)
 
     def init_layout(self):
+        # pylint: disable=W0201
         self.options_layout = QHBoxLayout()
 
         self.hand_id_selection_layout = QFormLayout()
