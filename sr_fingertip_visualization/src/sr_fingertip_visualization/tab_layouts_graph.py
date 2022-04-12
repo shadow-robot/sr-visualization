@@ -15,34 +15,18 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import absolute_import, division
-
-import os
-import rospy
-import rospkg
-from sr_robot_msgs.msg import ShadowPST, BiotacAll
-from sr_fingertip_visualization.generic_plots import GenericDataPlot
 from sr_fingertip_visualization.tab_layouts_generic import (
     GenericGraphTab,
     GenericOptionBar,
     GenericOptionBar,
     BiotacType
 )
-
-from python_qt_binding.QtCore import QTimer
-from python_qt_binding.QtGui import QIcon, QColor
 from python_qt_binding.QtWidgets import (
-    QPushButton,
     QWidget,
     QHBoxLayout,
     QVBoxLayout,
-    QGroupBox,
-    QFormLayout,
-    QLabel,
-    QComboBox,
-    QCheckBox,
     QStackedLayout
 )
-
 from sr_fingertip_visualization.finger_widgets_graphs import (
     FingerWidgetGraphPST,
     FingerWidgetGraphBiotac,
