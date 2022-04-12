@@ -37,14 +37,14 @@ from python_qt_binding.QtWidgets import (
 
 class GenericGraphTab(QWidget):
 
-    ICON_DIR = os.path.join(rospkg.RosPack().get_path('sr_visualization_icons'), 'icons')
+    _ICON_DIR = os.path.join(rospkg.RosPack().get_path('sr_visualization_icons'), 'icons')
+    _CONST_FINGERS = ['ff', 'mf', 'rf', 'lf', 'th']
+    _CONST_DATA_FIELDS = ['pressure', 'temperature']
 
     def __init__(self, side, parent):
         super().__init__(parent=parent)
 
         self._side = side
-        self._CONST_FINGERS = ['ff', 'mf', 'rf', 'lf', 'th']
-        self._CONST_DATA_FIELDS = ['pressure', 'temperature']
         self._data = {}
         self._timer = QTimer()
         self._finger_widgets = {}
@@ -55,12 +55,12 @@ class GenericGraphTab(QWidget):
         self._initialize_data_structure()
 
         self._icons = {
-            'blue': QIcon(os.path.join(self.ICON_DIR, 'blue.png')),
-            'red': QIcon(os.path.join(self.ICON_DIR, 'red.png')),
-            'green': QIcon(os.path.join(self.ICON_DIR, 'green.png')),
-            'magenta': QIcon(os.path.join(self.ICON_DIR, 'magenta.png')),
-            'gray': QIcon(os.path.join(self.ICON_DIR, 'gray.png')),
-            'cyan': QIcon(os.path.join(self.ICON_DIR, 'cyan.png'))
+            'blue': QIcon(os.path.join(self._ICON_DIR, 'blue.png')),
+            'red': QIcon(os.path.join(self._ICON_DIR, 'red.png')),
+            'green': QIcon(os.path.join(self._ICON_DIR, 'green.png')),
+            'magenta': QIcon(os.path.join(self._ICON_DIR, 'magenta.png')),
+            'gray': QIcon(os.path.join(self._ICON_DIR, 'gray.png')),
+            'cyan': QIcon(os.path.join(self._ICON_DIR, 'cyan.png'))
         }
 
         available_colors = list(self._icons.keys())
@@ -81,11 +81,13 @@ class GenericGraphTab(QWidget):
 
 
 class GenericTabLayout(QWidget):
+
+    _CONST_FINGERS = ["ff", 'mf', 'rf', 'lf', 'th']
+
     def __init__(self, parent):
         super().__init__(parent=parent)
 
         self._subscriber = None
-        self._CONST_FINGERS = ["ff", 'mf', 'rf', 'lf', 'th']
         self._selected_fingers = []
         self._finger_widgets = {}
         self._timer = QTimer(self)
@@ -118,6 +120,7 @@ class GenericOptionBar(QGroupBox):
         self._childs = childs
         self.setTitle("Options")
         self.setSizePolicy(1, 2)
+        self._selected_fingers = []
 
     def init_layout(self):
         # pylint: disable=W0201

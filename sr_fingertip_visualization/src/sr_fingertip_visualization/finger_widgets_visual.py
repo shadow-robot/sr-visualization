@@ -224,6 +224,7 @@ class FingerWidgetVisualBiotacSPPlus(FingerWidget):
     _CONST_FINGERS = ['ff', 'mf', 'rf', 'lf', 'th']
 
     def __init__(self, side, finger, parent):
+        # pylint: disable=R0914
         super().__init__(side, finger, parent)
         self._version = 'v2'
         self._data = {}
