@@ -110,6 +110,10 @@ class GenericDataTab(QWidget):
                 else:
                     child.show()
 
+    def change_side(self, side):
+        for child in self.findChildren(JointGraph):
+            child.change_side(side)
+
 
 class JointStatesDataTab(GenericDataTab):
     def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
