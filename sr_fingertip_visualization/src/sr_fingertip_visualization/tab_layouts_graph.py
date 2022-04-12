@@ -59,11 +59,13 @@ class PSTGraphTab(GenericGraphTab):
         return self._finger_widgets[finger]
 
 
-class BiotacGraphTab(GenericGraphTab):
+class BiotacGraphTab(GenericGraphTab): # pylint: disable=W0223
+
+    CONST_DATA_FIELDS = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
+
     def __init__(self, side, parent):
         super().__init__(side, parent)
         self._side = side
-        self.CONST_DATA_FIELDS = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
         self._init_tactile_layout()
 
     def _initialize_data_structure(self):
