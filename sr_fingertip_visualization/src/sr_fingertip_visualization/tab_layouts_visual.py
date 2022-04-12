@@ -67,9 +67,9 @@ class VisualizationTab(QWidget):
         return self.tactile_widgets
 
 
-class PSTVisualizationTab(GenericTabLayout):
+class PSTVisualizationTab(GenericTabLayout): # pylint: disable=W0223
 
-    _CONST_DATA_FIELDS = ['pressure', 'temperature']
+    CONST_DATA_FIELDS = ['pressure', 'temperature']
 
     def __init__(self, side, parent):
         super().__init__(parent=parent)
@@ -78,11 +78,11 @@ class PSTVisualizationTab(GenericTabLayout):
         self._init_tactile_layout()
 
     def _initialize_data_structure(self):
-        self._data = dict.fromkeys(self._CONST_FINGERS, dict.fromkeys(self._CONST_DATA_FIELDS, 0))
+        self._data = dict.fromkeys(self._CONST_FINGERS, dict.fromkeys(self.CONST_DATA_FIELDS, 0))
 
-    def _tactile_data_callback(self, data):
+    def _tactile_data_callback(self, data): # pylint: disable=W0223
         for i, finger in enumerate(self._CONST_FINGERS):
-            for data_field in self._CONST_DATA_FIELDS:
+            for data_field in self.CONST_DATA_FIELDS:
                 if data_field == "pressure":
                     self._data[finger][data_field] = data.pressure[i]
                 elif data_field == "temperature":
@@ -100,6 +100,9 @@ class PSTVisualizationTab(GenericTabLayout):
 
 
 class BiotacVisualizationTab(GenericTabLayout):
+
+    CONST_DATA_FIELDS = ['pac0', 'pac1', 'pac', 'pdc', 'tac', 'tdc', 'electrodes']
+
     def __init__(self, side, parent):
         super().__init__(parent=parent)
         self._side = side
@@ -109,13 +112,12 @@ class BiotacVisualizationTab(GenericTabLayout):
         self._init_tactile_layout()
 
     def _initialize_data_structure(self):
-        self._CONST_DATA_FIELDS = ['pac0', 'pac1', 'pac', 'pdc', 'tac', 'tdc', 'electrodes']
         self._data = {}
         self._data_labels = {}
         for finger in self._CONST_FINGERS:
             self._data[finger] = {}
             self._data_labels[finger] = {}
-            for data_field in self._CONST_DATA_FIELDS:
+            for data_field in self.CONST_DATA_FIELDS:
                 self._data[finger][data_field] = 0
                 self._data_labels[finger] = {}
                 if data_field in ['pac', 'electrodes']:
@@ -151,9 +153,9 @@ class BiotacVisualizationTab(GenericTabLayout):
 
         self._electrode_count = len(self._coordinates[self._version]['sensing']['x'])
 
-    def _tactile_data_callback(self, data):
+    def _tactile_data_callback(self, data): # pylint: disable=W0223
         for i, finger in enumerate(self._CONST_FINGERS):
-            for data_field in self._CONST_DATA_FIELDS:
+            for data_field in self.CONST_DATA_FIELDS:
                 if data_field == "pac0":
                     self._data[finger][data_field] = data.tactiles[i].pac0
                 elif data_field == "pac1":
@@ -193,6 +195,7 @@ class VisualOptionBar(GenericOptionBar):
         super().__init__(hand_ids, childs)
         self.init_layout()
         self.create_connections()
+        self._current_widget = None
 
     def init_layout(self):
         super().init_layout()

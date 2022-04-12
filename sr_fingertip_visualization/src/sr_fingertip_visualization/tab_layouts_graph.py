@@ -33,7 +33,7 @@ from sr_fingertip_visualization.finger_widgets_graphs import (
 )
 
 
-class PSTGraphTab(GenericGraphTab):
+class PSTGraphTab(GenericGraphTab): # pylint: disable=W0223
 
     CONST_DATA_FIELDS = ['pressure', 'temperature']
 
