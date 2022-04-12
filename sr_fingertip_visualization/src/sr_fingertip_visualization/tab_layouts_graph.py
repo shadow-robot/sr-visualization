@@ -24,7 +24,6 @@ from python_qt_binding.QtWidgets import (
 from sr_fingertip_visualization.tab_layouts_generic import (
     GenericGraphTab,
     GenericOptionBar,
-    GenericOptionBar,
     BiotacType
 )
 from sr_fingertip_visualization.finger_widgets_graphs import (
@@ -35,10 +34,12 @@ from sr_fingertip_visualization.finger_widgets_graphs import (
 
 
 class PSTGraphTab(GenericGraphTab):
+
+    _CONST_DATA_FIELDS = ['pressure', 'temperature']
+
     def __init__(self, side, parent):
         super().__init__(side, parent)
         self._side = side
-        self._CONST_DATA_FIELDS = ['pressure', 'temperature']
         self._init_tactile_layout()
 
     def _initialize_data_structure(self):
@@ -136,7 +137,7 @@ class GraphOptionBar(GenericOptionBar):
         self._selected_fingers = [finger for finger in self._CONST_FINGERS if fingertip_widgets[finger].isChecked()]
         for finger in self._CONST_FINGERS:
             fingertip_widgets[finger].setChecked(True)
-            fingertip_widgets[finger].start_timer_and_subscriber()
+            fingertip_widgets[finger].start_timer_and_subscriber() # pylint: disable=W0223  pylint thinks the functions empty
             fingertip_widgets[finger].show()
 
             for data_checkbox in fingertip_widgets[finger].get_data_checkboxes().values():
