@@ -35,7 +35,7 @@ from sr_fingertip_visualization.finger_widgets_graphs import (
 
 class PSTGraphTab(GenericGraphTab):
 
-    _CONST_DATA_FIELDS = ['pressure', 'temperature']
+    CONST_DATA_FIELDS = ['pressure', 'temperature']
 
     def __init__(self, side, parent):
         super().__init__(side, parent)
@@ -45,7 +45,7 @@ class PSTGraphTab(GenericGraphTab):
     def _initialize_data_structure(self):
         for finger in self._CONST_FINGERS:
             self._data[finger] = {}
-            for data_field in self._CONST_DATA_FIELDS:
+            for data_field in self.CONST_DATA_FIELDS:
                 self._data[finger][data_field] = []
 
     def _init_tactile_layout(self):
@@ -63,13 +63,13 @@ class BiotacGraphTab(GenericGraphTab):
     def __init__(self, side, parent):
         super().__init__(side, parent)
         self._side = side
-        self._CONST_DATA_FIELDS = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
+        self.CONST_DATA_FIELDS = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
         self._init_tactile_layout()
 
     def _initialize_data_structure(self):
         for finger in self._CONST_FINGERS:
             self._data[finger] = {}
-            for data_field in self._CONST_DATA_FIELDS:
+            for data_field in self.CONST_DATA_FIELDS:
                 self._data[finger][data_field] = []
 
     def _init_tactile_layout(self):
@@ -137,7 +137,8 @@ class GraphOptionBar(GenericOptionBar):
         self._selected_fingers = [finger for finger in self._CONST_FINGERS if fingertip_widgets[finger].isChecked()]
         for finger in self._CONST_FINGERS:
             fingertip_widgets[finger].setChecked(True)
-            fingertip_widgets[finger].start_timer_and_subscriber() # pylint: disable=W0223  pylint thinks the functions empty
+            # pylint thinks the functions empty so have to disable check
+            fingertip_widgets[finger].start_timer_and_subscriber() # pylint: disable=W0223
             fingertip_widgets[finger].show()
 
             for data_checkbox in fingertip_widgets[finger].get_data_checkboxes().values():

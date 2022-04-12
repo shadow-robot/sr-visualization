@@ -16,30 +16,16 @@
 
 from __future__ import absolute_import, division
 import rospy
-from enum import Enum
-
-from python_qt_binding.QtCore import Qt, QTimer
+from sr_robot_msgs.msg import BiotacAll
 from python_qt_binding.QtWidgets import (
     QPushButton,
     QWidget,
-    QGridLayout,
     QHBoxLayout,
     QVBoxLayout,
-    QGroupBox,
-    QFormLayout,
-    QLabel,
-    QComboBox,
     QStackedLayout
 )
 
-from sr_fingertip_visualization.tactile_points import (
-    TactilePointPST,
-    TactilePointBiotacSPPlus,
-    TactilePointBiotacSPMinus
-)
-
 from sr_fingertip_visualization.tab_layouts_generic import (
-    GenericGraphTab,
     GenericTabLayout,
     GenericOptionBar,
     BiotacType
@@ -50,20 +36,21 @@ from sr_fingertip_visualization.finger_widgets_visual import (
     FingerWidgetVisualBiotacBlank,
     FingerWidgetVisualPST
 )
-from sr_robot_msgs.msg import ShadowPST, BiotacAll
 
 
 class VisualizationTab(QWidget):
+
+    _CONST_FINGERS = ['th', 'ff', 'mf', 'rf', 'lf']
+
     def __init__(self, tactile_topics):
         super().__init__()
         self._tactile_topics = tactile_topics
         self._init_layout()
-        self._CONST_FINGERS = ['th', 'ff', 'mf', 'rf', 'lf']
 
     def _init_layout(self):
         finger_layout = QVBoxLayout()
         self.stacked_layout = QStackedLayout()
-        self.tactile_widgets = dict()
+        self.tactile_widgets = {}
         for side, tactile_topic in self._tactile_topics.items():
             if tactile_topic == "ShadowPST":
                 self.tactile_widgets[side] = PSTVisualizationTab(side, parent=self)
@@ -81,10 +68,12 @@ class VisualizationTab(QWidget):
 
 
 class PSTVisualizationTab(GenericTabLayout):
+
+    _CONST_DATA_FIELDS = ['pressure', 'temperature']
+
     def __init__(self, side, parent):
         super().__init__(parent=parent)
         self._side = side
-        self._CONST_DATA_FIELDS = ['pressure', 'temperature']
         self._initialize_data_structure()
         self._init_tactile_layout()
 
@@ -121,42 +110,42 @@ class BiotacVisualizationTab(GenericTabLayout):
 
     def _initialize_data_structure(self):
         self._CONST_DATA_FIELDS = ['pac0', 'pac1', 'pac', 'pdc', 'tac', 'tdc', 'electrodes']
-        self._data = dict()
-        self._data_labels = dict()
+        self._data = {}
+        self._data_labels = {}
         for finger in self._CONST_FINGERS:
-            self._data[finger] = dict()
-            self._data_labels[finger] = dict()
+            self._data[finger] = {}
+            self._data_labels[finger] = {}
             for data_field in self._CONST_DATA_FIELDS:
                 self._data[finger][data_field] = 0
-                self._data_labels[finger] = dict()
+                self._data_labels[finger] = {}
                 if data_field in ['pac', 'electrodes']:
-                    self._data[finger][data_field] = list()
+                    self._data[finger][data_field] = []
                     self._data_labels[finger][data_field] = 0
 
         msg = rospy.wait_for_message('/{}/tactile'.format(self._side), BiotacAll)
         self._version = "v2" if len(msg.tactiles[0].electrodes) == 24 else "v1"
         self._tactile_data_callback(msg)
 
-        self._coordinates = dict()
-        self._coordinates['v1'] = dict()
-        self._coordinates['v1']['sensing'] = dict()
+        self._coordinates = {}
+        self._coordinates['v1'] = {}
+        self._coordinates['v1']['sensing'] = {}
         self._coordinates['v1']['sensing']['x'] = [6.45, 3.65, 3.65, 6.45, 3.65, 6.45, 0.00, 1.95, -1.95, 0.00,
                                                    -6.45, - 3.65, -3.65, -6.45, -3.65, -6.45, 0.00, 0.00, 0.00]
         self._coordinates['v1']['sensing']['y'] = [7.58, 11.28, 14.78, 16.58, 19.08, 21.98, 4.38, 6.38, 6.38, 8.38,
                                                    7.58, 11.28, 14.78, 16.58, 19.08, 21.98, 11.38, 18.38, 22.18]
-        self._coordinates['v1']['excitation'] = dict()
+        self._coordinates['v1']['excitation'] = {}
         self._coordinates['v1']['excitation']['x'] = [6.45, 3.75, -3.75, -6.45]
         self._coordinates['v1']['excitation']['y'] = [12.48, 24.48, 24.48, 12.48]
 
-        self._coordinates['v2'] = dict()
-        self._coordinates['v2']['sensing'] = dict()
+        self._coordinates['v2'] = {}
+        self._coordinates['v2']['sensing'] = {}
         self._coordinates['v2']['sensing']['x'] = [5.00, 3.65, 6.45, 4.40, 2.70, 6.45, 4.40, 1.50, 4.00, 4.50, -5.00,
                                                    -3.65, -6.45, -4.40, -2.70, -6.45, -4.40, -1.50, -4.00, -4.50, 0.00,
                                                    1.95, -1.95, 0.00]
         self._coordinates['v2']['sensing']['y'] = [4.38, 6.38, 10.78, 11.50, 14.50, 15.08, 16.00, 17.00, 19.00, 21.00,
                                                    4.38, 6.38, 10.78, 11.50, 14.50, 15.08, 16.00, 17.00, 19.00, 21.00,
                                                    7.38, 9.50, 9.50, 11.20]
-        self._coordinates['v2']['excitation'] = dict()
+        self._coordinates['v2']['excitation'] = {}
         self._coordinates['v2']['excitation']['x'] = [5.30, 6.00, -5.30, -6.00]
         self._coordinates['v2']['excitation']['y'] = [9.00, 22.00, 9.00, 22.00]
 
@@ -182,8 +171,8 @@ class BiotacVisualizationTab(GenericTabLayout):
 
     def _init_tactile_layout(self):
         finger_complete_layout = QHBoxLayout()
-        self.text_data_layout = dict()
-        self._data_bar = dict()
+        self.text_data_layout = {}
+        self._data_bar = {}
         for finger in ['th', 'ff', 'mf', 'rf', 'lf']:
             finger_complete_layout.addWidget(self._init_finger_widget(finger))
         self.setLayout(finger_complete_layout)
