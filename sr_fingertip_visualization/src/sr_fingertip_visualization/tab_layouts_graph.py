@@ -15,17 +15,17 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import absolute_import, division
-from sr_fingertip_visualization.tab_layouts_generic import (
-    GenericGraphTab,
-    GenericOptionBar,
-    GenericOptionBar,
-    BiotacType
-)
 from python_qt_binding.QtWidgets import (
     QWidget,
     QHBoxLayout,
     QVBoxLayout,
     QStackedLayout
+)
+from sr_fingertip_visualization.tab_layouts_generic import (
+    GenericGraphTab,
+    GenericOptionBar,
+    GenericOptionBar,
+    BiotacType
 )
 from sr_fingertip_visualization.finger_widgets_graphs import (
     FingerWidgetGraphPST,
@@ -43,9 +43,9 @@ class PSTGraphTab(GenericGraphTab):
 
     def _initialize_data_structure(self):
         for finger in self._CONST_FINGERS:
-            self._data[finger] = dict()
+            self._data[finger] = {}
             for data_field in self._CONST_DATA_FIELDS:
-                self._data[finger][data_field] = list()
+                self._data[finger][data_field] = []
 
     def _init_tactile_layout(self):
         fingers_layout = QHBoxLayout()
@@ -67,9 +67,9 @@ class BiotacGraphTab(GenericGraphTab):
 
     def _initialize_data_structure(self):
         for finger in self._CONST_FINGERS:
-            self._data[finger] = dict()
+            self._data[finger] = {}
             for data_field in self._CONST_DATA_FIELDS:
-                self._data[finger][data_field] = list()
+                self._data[finger][data_field] = []
 
     def _init_tactile_layout(self):
         fingers_layout = QHBoxLayout()
@@ -95,7 +95,7 @@ class GraphTab(QWidget):
         finger_layout = QVBoxLayout()
         self.stacked_layout = QStackedLayout()
 
-        self.tactile_widgets = dict()
+        self.tactile_widgets = {}
         for side, tactile_topic in self._tactile_topics.items():
             if tactile_topic == "ShadowPST":
                 self.tactile_widgets[side] = PSTGraphTab(side, self)
