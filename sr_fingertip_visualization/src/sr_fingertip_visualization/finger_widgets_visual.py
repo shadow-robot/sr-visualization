@@ -37,6 +37,7 @@ from sr_fingertip_visualization.tactile_points import (
     TactilePointBiotacSPMinus
 )
 
+
 class FingerWidget(QGroupBox):
 
     _CONST_FINGERS = ['ff', 'mf', 'rf', 'lf', 'th']

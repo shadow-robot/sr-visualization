@@ -33,7 +33,7 @@ from sr_fingertip_visualization.finger_widgets_graphs import (
 )
 
 
-class PSTGraphTab(GenericGraphTab): # pylint: disable=W0223
+class PSTGraphTab(GenericGraphTab):  # pylint: disable=W0223
 
     CONST_DATA_FIELDS = ['pressure', 'temperature']
 
@@ -59,7 +59,7 @@ class PSTGraphTab(GenericGraphTab): # pylint: disable=W0223
         return self._finger_widgets[finger]
 
 
-class BiotacGraphTab(GenericGraphTab): # pylint: disable=W0223
+class BiotacGraphTab(GenericGraphTab):  # pylint: disable=W0223
 
     CONST_DATA_FIELDS = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
 
@@ -140,7 +140,7 @@ class GraphOptionBar(GenericOptionBar):
         for finger in self._CONST_FINGERS:
             fingertip_widgets[finger].setChecked(True)
             # pylint thinks the functions empty so have to disable check
-            fingertip_widgets[finger].start_timer_and_subscriber() # pylint: disable=W0223
+            fingertip_widgets[finger].start_timer_and_subscriber()  # pylint: disable=W0223
             fingertip_widgets[finger].show()
 
             for data_checkbox in fingertip_widgets[finger].get_data_checkboxes().values():

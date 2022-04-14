@@ -1,4 +1,4 @@
-# Copyright 2011 Shadow Robot Company Ltd.
+# Copyright 2011, 2022 Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -16,17 +16,13 @@ from __future__ import absolute_import
 import os
 import rospy
 import rospkg
-
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
-from QtCore import QEvent, QObject, Qt, QTimer, Slot, QThread, QPoint, pyqtSignal
-from QtGui import QCursor, QColor
-from QtWidgets import QWidget, QShortcut, QMessageBox, QFrame, QHBoxLayout, QCheckBox, QLabel, QFileDialog
+from QtCore import Qt, QThread, QPoint, pyqtSignal
+from QtGui import QColor
+from QtWidgets import QWidget, QMessageBox, QFrame, QHBoxLayout, QCheckBox, QLabel, QFileDialog
 from sr_utilities.hand_finder import HandFinder
-
-from std_srvs.srv import Empty
 from diagnostic_msgs.msg import DiagnosticArray
-
 from sr_robot_msgs.srv import SimpleMotorFlasher, SimpleMotorFlasherResponse
 
 

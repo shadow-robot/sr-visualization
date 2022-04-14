@@ -67,7 +67,7 @@ class VisualizationTab(QWidget):
         return self.tactile_widgets
 
 
-class PSTVisualizationTab(GenericTabLayout): # pylint: disable=W0223
+class PSTVisualizationTab(GenericTabLayout):  # pylint: disable=W0223
 
     CONST_DATA_FIELDS = ['pressure', 'temperature']
 

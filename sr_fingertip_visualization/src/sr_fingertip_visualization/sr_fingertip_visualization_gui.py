@@ -150,5 +150,5 @@ if __name__ == "__main__":
     rospy.init_node("sr_fingertip_visualizer")
     app = QApplication(sys.argv)
     sr_fingertip_visualizer_gui = SrFingertipVisualizer(None)
-    sr_fingertip_visualizer_gui._widget.show() # pylint: disable=W0212
+    sr_fingertip_visualizer_gui._widget.show()  # pylint: disable=W0212
     sys.exit(app.exec_())
