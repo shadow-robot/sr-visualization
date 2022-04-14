@@ -19,20 +19,15 @@ from __future__ import absolute_import
 import rospy
 import rospkg
 import subprocess
+import yaml
+import os
 from sr_utilities.hand_finder import HandFinder
 from sr_robot_lib.etherCAT_hand_lib import EtherCAT_Hand_Lib
-from PyQt5.QtGui import QColor, QIcon
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QTreeWidgetItemIterator, QMessageBox, QPushButton
-from PyQt5.QtCore import QTimer, pyqtSignal
-
-import yaml
-try:
-    from yaml import CLoader as Loader, CDumper as Dumper
-except ImportError:
-    from yaml import Loader, Dumper
-import os
-
 from collections import deque
+from PyQt5.QtGui import QColor, QIcon
+from PyQt5.QtWidgets import QTreeWidgetItem, QTreeWidgetItemIterator, QMessageBox, QPushButton
+from PyQt5.QtCore import QTimer
+
 
 green = QColor(153, 231, 96)
 orange = QColor(247, 206, 134)
