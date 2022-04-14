@@ -15,16 +15,11 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import absolute_import
-
-import rospy
 import sys
-
-from sr_data_visualization.data_plot import GenericDataPlot
-from rqt_gui_py.plugin import Plugin
+import rospy
 from sensor_msgs.msg import JointState
+from rqt_gui_py.plugin import Plugin
 from python_qt_binding.QtCore import Qt
-
-
 from python_qt_binding.QtWidgets import (
     QWidget,
     QApplication,
@@ -34,7 +29,7 @@ from python_qt_binding.QtWidgets import (
     QMessageBox,
     QLabel
 )
-
+from sr_data_visualization.data_plot import GenericDataPlot
 from sr_data_visualization.data_tab import (
     JointStatesDataTab,
     ControlLoopsDataTab,
@@ -49,14 +44,15 @@ class SrDataVisualizer(Plugin):
 
     def __init__(self, context):
         super().__init__(context)
-
+        self.joint_prefix = None
+        self.hand_joints = None
+        self.information_btn = None
+        self.tab_container = None
+        self.tab_created = None
         self.context = context
         self.init_ui()
 
     def _detect_hand_id_and_joints(self):
-        self.joint_prefix = None
-        self.hand_joints = None
-
         try:
             joint_states_msg = rospy.wait_for_message("/joint_states", JointState, timeout=1)
             self.joint_prefix = ([prefix for prefix in joint_states_msg.name if 'h_' in prefix][0]).split("_")[0] + "_"
@@ -73,9 +69,7 @@ class SrDataVisualizer(Plugin):
         self.layout.setContentsMargins(0, 0, 0, 0)
         self._widget.setObjectName(self.TITLE)
         self._widget.setWindowTitle(self.TITLE)
-
         self.fill_layout()
-
         self._widget.setLayout(self.layout)
 
         if __name__ != "__main__":
@@ -168,5 +162,5 @@ if __name__ == "__main__":
     rospy.init_node("sr_data_visualizer")
     app = QApplication(sys.argv)
     data_visualiser_gui = SrDataVisualizer(None)
-    data_visualiser_gui._widget.show()
+    data_visualiser_gui._widget.show()  # pylint: disable=W0212
     sys.exit(app.exec_())

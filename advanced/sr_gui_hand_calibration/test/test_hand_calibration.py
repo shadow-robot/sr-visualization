@@ -47,7 +47,7 @@ class TestHandCalibration(unittest.TestCase):
         ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_hand_calibration'), 'uis', 'SrHandCalibration.ui')
         loadUi(ui_file, self._widget)
 
-        self.mock_file = tempfile.NamedTemporaryFile(delete=False)
+        self.mock_file = tempfile.NamedTemporaryFile(delete=False)  # pylint: disable=R1732
         self.mock_file.write(b"""sr_calibrations: [\n""" +
                              b"""["mock", [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]],\n""" +
                              b"""]""")
@@ -60,7 +60,7 @@ class TestHandCalibration(unittest.TestCase):
         os.remove(self.mock_file.name)
 
     @patch('sr_gui_hand_calibration.sr_hand_calibration_model.EtherCAT_Hand_Lib')
-    def test_progress_bar(self, _EtherCAT_Hand_Lib):
+    def test_progress_bar(self, _EtherCAT_Hand_Lib):  # pylint: disable=C0103
         self.hand_model = HandCalibration(tree_widget=self._widget.tree_calibration,
                                           progress_bar=self._widget.progress)
 

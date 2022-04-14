@@ -15,15 +15,16 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import absolute_import
-
 from python_qt_binding.QtWidgets import (
     QWidget,
     QGridLayout,
     QVBoxLayout,
 )
-
+from sensor_msgs.msg import JointState
+from control_msgs.msg import JointControllerState
+from diagnostic_msgs.msg import DiagnosticArray
+from std_msgs.msg import Float64MultiArray
 from sr_data_visualization.joint_graph_widget import JointGraph
-
 from sr_data_visualization.data_plot import (
     JointStatesDataPlot,
     ControlLoopsDataPlot,
@@ -42,11 +43,6 @@ from sr_data_visualization.tab_options import (
     PalmExtrasGyroTabOptions,
     PalmExtrasADCTabOptions
 )
-
-from sensor_msgs.msg import JointState
-from control_msgs.msg import JointControllerState
-from diagnostic_msgs.msg import DiagnosticArray
-from std_msgs.msg import Float64MultiArray
 
 
 class GenericDataTab(QWidget):
@@ -113,7 +109,9 @@ class GenericDataTab(QWidget):
 
 class JointStatesDataTab(GenericDataTab):
     def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
+        # pylint: disable=R1702
         super().__init__(tab_name, hand_joints, joint_prefix, parent)
+        self.tab_options = None
 
     def create_tab_options(self):
         self.tab_options = JointStatesTabOptions(self.tab_name)
@@ -160,8 +158,9 @@ class JointStatesDataTab(GenericDataTab):
         self.tab_options.effort_button.toggled.connect(lambda: self.radio_button_selected("Effort"))
 
 
-class MotorGroupsDataTab(GenericDataTab):
+class MotorGroupsDataTab(GenericDataTab):  # pylint: disable=W0223
     def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
+        # pylint: disable=W0235
         super().__init__(tab_name, hand_joints, joint_prefix, parent)
 
     def create_all_graphs(self):
@@ -224,7 +223,9 @@ class MotorGroupsDataTab(GenericDataTab):
 
 class ControlLoopsDataTab(MotorGroupsDataTab):
     def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
+        # pylint: disable=W0235
         super().__init__(tab_name, hand_joints, joint_prefix, parent)
+        self.tab_options = None
 
     def create_tab_options(self):
         self.tab_options = ControlLoopsTabOptions(self.tab_name)
@@ -240,7 +241,9 @@ class ControlLoopsDataTab(MotorGroupsDataTab):
 
 class MotorStats1DataTab(MotorGroupsDataTab):
     def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
+        # pylint: disable=W0235
         super().__init__(tab_name, hand_joints, joint_prefix, parent)
+        self.tab_options = None
 
     def create_tab_options(self):
         self.tab_options = MotorStats1TabOptions(self.tab_name)
@@ -256,7 +259,9 @@ class MotorStats1DataTab(MotorGroupsDataTab):
 
 class MotorStats2DataTab(MotorGroupsDataTab):
     def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
+        # pylint: disable=W0235
         super().__init__(tab_name, hand_joints, joint_prefix, parent)
+        self.tab_options = None
 
     def create_tab_options(self):
         self.tab_options = MotorStats2TabOptions(self.tab_name)
@@ -271,8 +276,9 @@ class MotorStats2DataTab(MotorGroupsDataTab):
         self.tab_options.encoder_pos_button.toggled.connect(lambda: self.radio_button_selected("Encoder Position"))
 
 
-class PalmExtrasDataTab(GenericDataTab):
+class PalmExtrasDataTab(GenericDataTab):  # pylint: disable=W0223
     def __init__(self, tab_name, hand_joints, joint_prefix, parent=None):
+        # pylint: disable=W0235
         super().__init__(tab_name, hand_joints, joint_prefix, parent)
 
     def create_full_tab(self):
@@ -324,7 +330,7 @@ class PalmExtrasDataTab(GenericDataTab):
         self.gyro_tab_options.all_gyro_button.toggled.connect(lambda: self.radio_button_selected("All", "gyro"))
         self.adc_tab_options.all_adc_button.toggled.connect(lambda: self.radio_button_selected("All", "adc"))
 
-    def radio_button_selected(self, radio_button, graph):
+    def radio_button_selected(self, radio_button, graph):  # pylint: disable=W0221
         if graph == "accel":
             self.accel_data_plot.show_trace(radio_button)
         elif graph == "gyro":

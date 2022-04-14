@@ -244,7 +244,7 @@ class JointCalibration(QTreeWidgetItem):
         except Exception:
             rospy.logerr("Failed to write temportary multiplot configuration file: {}".format(temporary_file_name))
             return
-        self.multiplot_processes.append(subprocess.Popen(process))
+        self.multiplot_processes.append(subprocess.Popen(process))  # pylint: disable=R1732
 
     def load_joint_calibration(self, new_calibrations):
         for calibration in self.calibrations:

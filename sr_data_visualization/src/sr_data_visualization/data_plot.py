@@ -81,7 +81,7 @@ class GenericDataPlot(QwtPlot):
         self.timer.timeout.connect(self.timerEvent)
         self.timer.start()
 
-    def timerEvent(self):
+    def timerEvent(self):  # pylint: disable=C0103
         # Data moves from left to right:
         # Shift data array right and assign new value data[0]
         for trace in self.traces:
@@ -153,11 +153,12 @@ class ControlLoopsDataPlot(GenericDataPlot):
         self.traces[4].latest_value = data.command
 
 
-class MotorStatsGenericDataPlot(GenericDataPlot):
+class MotorStatsGenericDataPlot(GenericDataPlot):  # pylint: disable=W0223
     def __init__(self, joint_name, topic_name, topic_type):
         super().__init__(joint_name, topic_name, topic_type)
 
     def callback(self, data):
+        # pylint: disable=R1702
         for message in data.status:
             # Splits the name into parts e.g.
             # name: "/Right Shadow Hand/Wrist/rh SRDMotor WRJ2"
@@ -179,6 +180,7 @@ class MotorStatsGenericDataPlot(GenericDataPlot):
 
 class MotorStats1DataPlot(MotorStatsGenericDataPlot):
     def __init__(self, joint_name, topic_name, topic_type):
+        # pylint: disable=W0235
         super().__init__(joint_name, topic_name, topic_type)
 
     def create_traces(self):
@@ -191,7 +193,8 @@ class MotorStats1DataPlot(MotorStatsGenericDataPlot):
 
 class MotorStats2DataPlot(MotorStatsGenericDataPlot):
     def __init__(self, joint_name, topic_name, topic_type):
-        super().__init__(joint_name, topic_name, topic_type)
+        # pylint: disable=W0235
+        super().__init__(joint_name, topic_name, topic_type)  
 
     def create_traces(self):
         self.traces = [Trace("Measured Effort", Qt.red, self.x_data),
