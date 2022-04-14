@@ -13,14 +13,15 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import absolute_import
+import sys
 import os
 import rospy
 import rospkg
-from qt_gui.plugin import Plugin
-from python_qt_binding import loadUi
 from QtCore import Qt, QThread, QPoint, pyqtSignal
 from QtGui import QColor
-from QtWidgets import QWidget, QMessageBox, QFrame, QHBoxLayout, QCheckBox, QLabel, QFileDialog
+from QtWidgets import QWidget, QMessageBox, QFrame, QHBoxLayout, QCheckBox, QLabel, QFileDialog, QApplication
+from qt_gui.plugin import Plugin
+from python_qt_binding import loadUi
 from sr_utilities.hand_finder import HandFinder
 from diagnostic_msgs.msg import DiagnosticArray
 from sr_robot_msgs.srv import SimpleMotorFlasher, SimpleMotorFlasherResponse
@@ -36,21 +37,22 @@ class MotorBootloader(QThread):
         self.parent = parent
         self.nb_motors_to_program = nb_motors_to_program
         self.prefix = prefix
+        self.bootloader_service = None
 
     def run(self):
         """
         perform bootloading on the selected motors
         """
         bootloaded_motors = 0
-        firmware_path = self.parent._widget.txt_path.text()
+        firmware_path = self.parent._widget.txt_path.text()  # pylint: disable=W0212
         for motor in self.parent.motors:
             if motor.checkbox.checkState() == Qt.Checked:
                 try:
                     self.bootloader_service = rospy.ServiceProxy(self.prefix + '/SimpleMotorFlasher',
                                                                  SimpleMotorFlasher)
                     resp = self.bootloader_service(firmware_path, motor.motor_index)
-                except rospy.ServiceException as e:
-                    self.failed.emit("Service did not process request: %s" % str(e))
+                except rospy.ServiceException as exception:
+                    self.failed.emit("Service did not process request: %s" % str(exception))
                     return
 
                 if resp == SimpleMotorFlasherResponse.FAIL:
@@ -66,6 +68,7 @@ class Motor(QFrame):
 
         self.motor_name = motor_name
         self.motor_index = motor_index
+        self.motor_bootloader = None
 
         self.layout = QHBoxLayout()
 
@@ -87,7 +90,7 @@ class SrGuiBootloader(Plugin):
     """
 
     def __init__(self, context):
-        super(SrGuiBootloader, self).__init__(context)
+        super().__init__(context)
         self.setObjectName('SrGuiBootloader')
 
         self._publisher = None
@@ -110,9 +113,8 @@ class SrGuiBootloader(Plugin):
             rospy.logerr("No hand detected")
             QMessageBox.warning(self._widget, "warning", "No hand is detected")
             return
-        else:
-            self._widget.select_prefix.setCurrentIndex(0)
-            self._prefix = list(hand_parameters.mapping.values())[0]
+        self._widget.select_prefix.setCurrentIndex(0)
+        self._prefix = list(hand_parameters.mapping.values())[0]
         self._widget.select_prefix.currentIndexChanged['QString'].connect(self.prefix_selected)
 
         # motors_frame is defined in the ui file with a grid layout
@@ -139,7 +141,6 @@ class SrGuiBootloader(Plugin):
         """
         path_to_bootloader = "~"
         try:
-            rp = rospkg.RosPack()
             path_to_bootloader = os.path.join(rospkg.RosPack().get_path(
                 'sr_external_dependencies'), '/compiled_firmware/released_firmware/')
         except Exception:
@@ -198,6 +199,7 @@ class SrGuiBootloader(Plugin):
             row += 1
 
     def diagnostics_callback(self, msg):
+        # pylint: disable=R1702
         for status in msg.status:
             for motor in self.motors:
                 if motor.motor_name in status.name and self._prefix.replace("/", "") in status.name:
@@ -282,7 +284,7 @@ class SrGuiBootloader(Plugin):
     def failed_programming_motors(self, message):
         QMessageBox.warning(self._widget.motors_frame, "Warning", message)
 
-    def _unregisterPublisher(self):
+    def _unregisterPublisher(self):  # pylint: disable=C0103
         if self._publisher is not None:
             self._publisher.unregister()
             self._publisher = None
@@ -302,10 +304,8 @@ class SrGuiBootloader(Plugin):
 
 
 if __name__ == "__main__":
-    from QtWidgets import QApplication
-    import sys
     rospy.init_node("bootloader")
     app = QApplication(sys.argv)
     ctrl = SrGuiBootloader(None)
-    ctrl._widget.show()
+    ctrl._widget.show()  # pylint: disable=W0212
     app.exec_()
