@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2011 Shadow Robot Company Ltd.
+# Copyright 2011, 2022 Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -20,15 +20,9 @@ import os
 import rospy
 import rospkg
 import yaml
-import sys
-
 from qt_gui.plugin import Plugin
 from PyQt5.uic import loadUi
-
-from PyQt5.QtCore import QEvent, QObject, Qt, QTimer, Slot
-from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QWidget, QShortcut, QTreeWidgetItem, QFileDialog, QMessageBox
-from PyQt5.QtCore import QVariant
+from PyQt5.QtWidgets import QWidget, QFileDialog, QMessageBox
 from sr_gui_hand_calibration.sr_hand_calibration_model import HandCalibration
 
 
@@ -39,7 +33,7 @@ class SrHandCalibration(Plugin):
     """
 
     def __init__(self, context):
-        super(SrHandCalibration, self).__init__(context)
+        super().__init__(context)
         self.setObjectName('SrHandCalibration')
 
         self._publisher = None
@@ -69,8 +63,8 @@ class SrHandCalibration(Plugin):
     def get_hand_serial(self):
         os.system('sr_hand_detector_node')
 
-        with open('/tmp/sr_hand_detector.yaml') as f:
-            detected_hands = yaml.safe_load(f)
+        with open('/tmp/sr_hand_detector.yaml', encoding="ASCII") as hand_file:
+            detected_hands = yaml.safe_load(hand_file)
 
         if not detected_hands:
             QMessageBox.warning(
@@ -183,7 +177,7 @@ class SrHandCalibration(Plugin):
         else:
             self.populate_tree(old_version=False)
 
-    def _unregisterPublisher(self):
+    def _unregisterPublisher(self):  # pylint: disable=C0103
         if self._publisher is not None:
             self._publisher.unregister()
             self._publisher = None
@@ -200,7 +194,7 @@ class SrHandCalibration(Plugin):
     def restore_settings(self, global_settings, perspective_settings):
         pass
 
-    def display_information(self, message):
+    def display_information(self, message):  # pylint: disable=R0201
         message = "This plugin is used internally by Shadow to calibrate the raw data " + \
                   "from the position sensors. The calibration has to be run on the " + \
                   "NUC machine, therefore rqt has to be started from it. To do that, " + \
