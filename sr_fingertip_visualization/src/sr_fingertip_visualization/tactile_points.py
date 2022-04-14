@@ -37,6 +37,7 @@ class TactilePointPST(TactilePointGeneric):
         self._init_widget()
 
     def _value_to_color(self, value):
+        # pylint: disable=W0221
         max_color, min_color = 255, 0
         pst_max, pst_min = 300, 800
         value = max(min_color, min(max_color, (value - pst_min)*(max_color-min_color) /
@@ -46,7 +47,7 @@ class TactilePointPST(TactilePointGeneric):
     def _init_widget(self):
         data_layout = QFormLayout()
         data_layout.addRow(self.get_dot())
-        self._label = dict()
+        self._label = {}
 
         for data_field in self.CONST_DATA_FIELDS:
             self._label[data_field] = QLabel("-")
@@ -54,6 +55,7 @@ class TactilePointPST(TactilePointGeneric):
         self.setLayout(data_layout)
 
     def update_data(self, data):
+        # pylint: disable=W0221
         for data_field in self.CONST_DATA_FIELDS:
             self._label[data_field].setText(str(data[data_field]))
         self.get_dot().set_color(self._value_to_color(data['pressure']))
@@ -70,6 +72,7 @@ class TactilePointBiotacSPMinus(TactilePointGeneric):
         self._init_widget()
 
     def _value_to_color(self, value):
+        # pylint: disable=W0221
         # to change values (1000 and 200), experimentally assigned for now but
         # need to be verified and changed after agreeing with production
         red = min(255, max(0, 255 * (value - 1000) / 200))
@@ -84,7 +87,7 @@ class TactilePointBiotacSPMinus(TactilePointGeneric):
 
         widget_layout.addRow(self.get_dot())
 
-        self._data_labels = dict()
+        self._data_labels = {}
         for data_field in self.CONST_DATA_FIELDS:
             self._data_labels[data_field] = QLabel("-")
             self._data_labels[data_field].setMinimumSize(40, 10)
@@ -93,6 +96,7 @@ class TactilePointBiotacSPMinus(TactilePointGeneric):
         self.setLayout(widget_layout)
 
     def update_data(self, data):
+        # pylint: disable=W0221
         for data_field in self.CONST_DATA_FIELDS:
             self._data_labels[data_field].setText(str(data[data_field]))
         self.get_dot().set_color(self._value_to_color(data['pdc']))
@@ -108,6 +112,7 @@ class TactilePointBiotacSPPlus(TactilePointGeneric):
         self._init_widget()
 
     def _value_to_color(self, value):
+        # pylint: disable=W0221
         red = 0.0
         green = 0.0
         blue = 255.0

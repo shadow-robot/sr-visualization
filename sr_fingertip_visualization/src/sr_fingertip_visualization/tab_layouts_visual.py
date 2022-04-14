@@ -81,7 +81,7 @@ class PSTVisualizationTab(GenericTabLayout): # pylint: disable=W0223
         self._data = dict.fromkeys(self._CONST_FINGERS, dict.fromkeys(self.CONST_DATA_FIELDS, 0))
 
     def _tactile_data_callback(self, data):
-        # pylint: disable=W0223
+        # pylint: disable=W0221
         for i, finger in enumerate(self._CONST_FINGERS):
             for data_field in self.CONST_DATA_FIELDS:
                 if data_field == "pressure":
@@ -154,8 +154,8 @@ class BiotacVisualizationTab(GenericTabLayout):
 
         self._electrode_count = len(self._coordinates[self._version]['sensing']['x'])
 
-    def _tactile_data_callback(self, data): 
-        # pylint: disable=W0223
+    def _tactile_data_callback(self, data):
+        # pylint: disable=W0221
         for i, finger in enumerate(self._CONST_FINGERS):
             for data_field in self.CONST_DATA_FIELDS:
                 if data_field == "pac0":
