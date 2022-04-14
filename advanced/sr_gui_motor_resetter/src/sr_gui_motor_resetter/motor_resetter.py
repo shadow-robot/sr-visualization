@@ -47,6 +47,7 @@ class MotorFlasher(QThread):
         self.parent = parent
         self.nb_motors_to_program = nb_motors_to_program
         self.prefix = prefix
+        self.flasher_service = None
 
     def run(self):
         programmed_motors = 0
@@ -60,8 +61,8 @@ class MotorFlasher(QThread):
                         'sr_hand_robot/' + self.prefix + 'reset_motor_' +
                         motor.motor_name, Empty)
                     self.flasher_service()
-                except rospy.ServiceException as e:
-                    self.failed['QString'].emit("Service did not process request: %s" % str(e))
+                except rospy.ServiceException as exception:
+                    self.failed['QString'].emit("Service did not process request: %s" % str(exception))
                     return
 
                 programmed_motors += 1
@@ -130,6 +131,7 @@ class SrGuiMotorResetter(Plugin):
             self.prefix_selected)
         # motors_frame is defined in the ui file with a grid layout
         self.motors = []
+        self.motor_flasher = None
         self.motors_frame = self._widget.motors_frame
         self.populate_motors()
         self.progress_bar = self._widget.motors_progress_bar
@@ -185,6 +187,7 @@ class SrGuiMotorResetter(Plugin):
             row += 1
 
     def diagnostics_callback(self, msg):
+        # pylint: disable=R1702
         for status in msg.status:
             for motor in self.motors:
                 if motor.motor_name in status.name and self._prefix.replace(
@@ -274,7 +277,7 @@ class SrGuiMotorResetter(Plugin):
     def failed_programming_motors(self, message):
         QMessageBox.warning(self.motors_frame, "Warning", message)
 
-    def _unregisterPublisher(self):
+    def _unregisterPublisher(self):  # pylint: disable=C0103
         if self._publisher is not None:
             self._publisher.unregister()
             self._publisher = None
