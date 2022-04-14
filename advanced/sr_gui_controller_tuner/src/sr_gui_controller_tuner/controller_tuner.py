@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2011 Shadow Robot Company Ltd.
+# Copyright 2011, 2022 Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -20,22 +20,18 @@ import os
 import subprocess
 import math
 import time
-import rospy
 import yaml
+from functools import partial
+from tempfile import NamedTemporaryFile
+import rospy
 import rosparam
 import rospkg
-
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
-
 from QtCore import Qt, QThread
 from QtWidgets import QMessageBox, QWidget, QTreeWidgetItem, QCheckBox,\
     QSpinBox, QDoubleSpinBox, QFileDialog, QFrame, QPushButton, QHBoxLayout
-from functools import partial
-from tempfile import NamedTemporaryFile
-
 from sensor_msgs.msg import JointState
-
 from sr_gui_controller_tuner.sr_controller_tuner import SrControllerTunerApp
 from sr_utilities.hand_finder import HandFinder
 
@@ -62,6 +58,7 @@ class PlotThread(QThread):
 
         # stores the subprocesses to be able to terminate them on close
         self.subprocess_ = []
+        self.subscriber_ = None
 
     def run(self):
         """
@@ -114,9 +111,9 @@ class PlotThread(QThread):
         self.subscriber_ = None
 
     def __del__(self):
-        for subprocess in self.subprocess_:
+        for process in self.subprocess_:
             # killing the rxplot to close the window
-            subprocess.kill()
+            process.kill()
 
         if self.subscriber_ is not None:
             self.subscriber_.unregister()
@@ -138,8 +135,8 @@ class MoveThread(QThread):
         self.launch_()
 
     def __del__(self):
-        for subprocess in self.subprocess_:
-            subprocess.terminate()
+        for process in self.subprocess_:
+            process.terminate()
         self.wait()
 
     def create_launch_file_(self):
@@ -409,8 +406,8 @@ class SrGuiControllerTuner(Plugin):
     def get_hand_serial(self):
         os.system('sr_hand_detector_node')
 
-        with open('/tmp/sr_hand_detector.yaml') as f:
-            detected_hands = yaml.safe_load(f)
+        with open('/tmp/sr_hand_detector.yaml') as hand_detector:
+            detected_hands = yaml.safe_load(hand_detector)
 
         if not detected_hands:
             QMessageBox.warning(
@@ -447,9 +444,9 @@ class SrGuiControllerTuner(Plugin):
             QMessageBox.warning(
                 self._widget.tree_ctrl_settings, "Warning", "No motors selected.")
 
-        for it in selected_items:
-            if str(it.text(1)) != "":
-                self.save_controller(str(it.text(1)))
+        for item in selected_items:
+            if str(item.text(1)) != "":
+                self.save_controller(str(item.text(1)))
 
     def on_btn_save_all_clicked_(self):
         """
@@ -468,9 +465,9 @@ class SrGuiControllerTuner(Plugin):
             QMessageBox.warning(
                 self._widget.tree_ctrl_settings, "Warning", "No motors selected.")
 
-        for it in selected_items:
-            if str(it.text(1)) != "":
-                self.set_controller(str(it.text(1)))
+        for item in selected_items:
+            if str(item.text(1)) != "":
+                self.set_controller(str(item.text(1)))
 
     def on_btn_set_all_clicked_(self):
         """
@@ -736,10 +733,9 @@ class SrGuiControllerTuner(Plugin):
         msg.setStandardButtons(QMessageBox.Ok)
         msg.exec_()
 
-    #
     # Default methods for the rosgui plugins
 
-    def _unregisterPublisher(self):
+    def _unregisterPublisher(self):  # pylint: disable=C0103
         if self._publisher is not None:
             self._publisher.unregister()
             self._publisher = None

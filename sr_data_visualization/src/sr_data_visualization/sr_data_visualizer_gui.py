@@ -128,6 +128,7 @@ class SrDataVisualizer(Plugin):
                     graph.plot_data(True)
 
     def display_information(self, message):
+        # pylint: disable=R0201
         message = "This GUI shows all the data available for the Dexterous Hand.\n" + \
                   "In each tab, you can find information about:\n\n" + \
                   "Joint states (position, effort, velocity)\n\n" + \

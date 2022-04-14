@@ -15,12 +15,9 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import absolute_import
-
 import os
 import rospkg
-
 from python_qt_binding.QtGui import QIcon
-
 from python_qt_binding.QtWidgets import (
     QPushButton,
     QWidget,
@@ -32,20 +29,20 @@ from python_qt_binding.QtWidgets import (
 
 
 class GenericTabOptions(QWidget):
-    def __init__(self, tab_name, parent=None):
-        super().__init__(parent=parent)
 
-        ICON_DIR = os.path.join(
+    ICON_DIR = os.path.join(
             rospkg.RosPack().get_path('sr_visualization_icons'), 'icons')
-        self.ICONS = {
-            'GREEN': QIcon(os.path.join(ICON_DIR, 'green.png')),
-            'RED': QIcon(os.path.join(ICON_DIR, 'red.png')),
-            'BLUE': QIcon(os.path.join(ICON_DIR, 'blue.png')),
-            'MAGENTA': QIcon(os.path.join(ICON_DIR, 'magenta.png')),
-            'GRAY': QIcon(os.path.join(ICON_DIR, 'gray.png')),
-            'CYAN': QIcon(os.path.join(ICON_DIR, 'cyan.png'))
-        }
+    ICONS = {
+        'GREEN': QIcon(os.path.join(ICON_DIR, 'green.png')),
+        'RED': QIcon(os.path.join(ICON_DIR, 'red.png')),
+        'BLUE': QIcon(os.path.join(ICON_DIR, 'blue.png')),
+        'MAGENTA': QIcon(os.path.join(ICON_DIR, 'magenta.png')),
+        'GRAY': QIcon(os.path.join(ICON_DIR, 'gray.png')),
+        'CYAN': QIcon(os.path.join(ICON_DIR, 'cyan.png'))
+    }
 
+    def __init__(self, _tab_name, parent=None):
+        super().__init__(parent=parent)
         self.init_ui()
         self.create_tab_options()
         self.setLayout(self.layout)
@@ -68,6 +65,7 @@ class GenericTabOptions(QWidget):
         raise NotImplementedError("The function create_variable_trace_buttons must be implemented")
 
     def create_common_buttons(self):
+        # pylint: disable=W0201
         self.all_button = QRadioButton("All")
         self.all_button.setObjectName("toggle_all")
         self.check_layout.addWidget(self.all_button)
@@ -85,9 +83,11 @@ class GenericTabOptions(QWidget):
 
 class JointStatesTabOptions(GenericTabOptions):
     def __init__(self, tab_name, parent=None):
+        # pylint: disable=W0235
         super().__init__(tab_name, parent)
 
     def create_variable_trace_buttons(self):
+        # pylint: disable=W0201
         self.position_button = QRadioButton("Position (rad)")
         self.position_button.setIcon(self.ICONS['RED'])
         self.check_layout.addWidget(self.position_button)
@@ -103,9 +103,11 @@ class JointStatesTabOptions(GenericTabOptions):
 
 class ControlLoopsTabOptions(GenericTabOptions):
     def __init__(self, tab_name, parent=None):
+        # pylint: disable=W0235
         super().__init__(tab_name, parent)
 
     def create_variable_trace_buttons(self):
+        # pylint: disable=W0201
         self.setpoint_button = QRadioButton("Set Point (rad)")
         self.setpoint_button.setIcon(self.ICONS['RED'])
         self.check_layout.addWidget(self.setpoint_button)
@@ -129,9 +131,11 @@ class ControlLoopsTabOptions(GenericTabOptions):
 
 class MotorStats1TabOptions(GenericTabOptions):
     def __init__(self, tab_name, parent=None):
+        # pylint: disable=W0235
         super().__init__(tab_name, parent)
 
     def create_variable_trace_buttons(self):
+        # pylint: disable=W0201
         self.strain_right_button = QRadioButton("Strain Gauge Right")
         self.strain_right_button.setIcon(self.ICONS['RED'])
         self.check_layout.addWidget(self.strain_right_button)
@@ -155,9 +159,11 @@ class MotorStats1TabOptions(GenericTabOptions):
 
 class MotorStats2TabOptions(GenericTabOptions):
     def __init__(self, tab_name, parent=None):
+        # pylint: disable=W0235
         super().__init__(tab_name, parent)
 
     def create_variable_trace_buttons(self):
+        # pylint: disable=W0201
         self.effort_button = QRadioButton("Measured Effort")
         self.effort_button.setIcon(self.ICONS['RED'])
         self.check_layout.addWidget(self.effort_button)
@@ -185,9 +191,11 @@ class MotorStats2TabOptions(GenericTabOptions):
 
 class PalmExtrasAcellTabOptions(GenericTabOptions):
     def __init__(self, tab_name, parent=None):
+        # pylint: disable=W0235
         super().__init__(tab_name, parent)
 
     def create_variable_trace_buttons(self):
+        # pylint: disable=W0201
         self.accel_x_button = QRadioButton("Accel X")
         self.accel_x_button.setIcon(self.ICONS['RED'])
         self.check_layout.addWidget(self.accel_x_button)
@@ -201,6 +209,7 @@ class PalmExtrasAcellTabOptions(GenericTabOptions):
         self.check_layout.addWidget(self.accel_z_button)
 
     def create_common_buttons(self):
+        # pylint: disable=W0201
         self.all_accel_button = QRadioButton("All")
         self.check_layout.addWidget(self.all_accel_button)
 
@@ -209,9 +218,11 @@ class PalmExtrasAcellTabOptions(GenericTabOptions):
 
 class PalmExtrasGyroTabOptions(GenericTabOptions):
     def __init__(self, tab_name, parent=None):
+        # pylint: disable=W0235
         super().__init__(tab_name, parent)
 
     def create_variable_trace_buttons(self):
+        # pylint: disable=W0201
         self.gyro_x_button = QRadioButton("Gyro X")
         self.gyro_x_button.setIcon(self.ICONS['CYAN'])
         self.check_layout.addWidget(self.gyro_x_button)
@@ -225,6 +236,7 @@ class PalmExtrasGyroTabOptions(GenericTabOptions):
         self.check_layout.addWidget(self.gyro_z_button)
 
     def create_common_buttons(self):
+        # pylint: disable=W0201
         self.all_gyro_button = QRadioButton("All")
         self.check_layout.addWidget(self.all_gyro_button)
 
@@ -233,9 +245,11 @@ class PalmExtrasGyroTabOptions(GenericTabOptions):
 
 class PalmExtrasADCTabOptions(GenericTabOptions):
     def __init__(self, tab_name, parent=None):
+        # pylint: disable=W0235
         super().__init__(tab_name, parent)
 
     def create_variable_trace_buttons(self):
+        # pylint: disable=W0201
         self.adc0_button = QRadioButton("ADC0")
         self.adc0_button.setIcon(self.ICONS['RED'])
         self.check_layout.addWidget(self.adc0_button)
@@ -253,6 +267,7 @@ class PalmExtrasADCTabOptions(GenericTabOptions):
         self.check_layout.addWidget(self.adc3_button)
 
     def create_common_buttons(self):
+        # pylint: disable=W0201
         self.all_adc_button = QRadioButton("All")
         self.check_layout.addWidget(self.all_adc_button)
 

@@ -97,7 +97,7 @@ class SrGuiMotorResetter(Plugin):
     """
 
     def __init__(self, context):
-        super(SrGuiMotorResetter, self).__init__(context)
+        super().__init__(context)
         self.setObjectName('SrGuiMotorResetter')
 
         self._publisher = None

@@ -16,18 +16,13 @@
 #
 
 from __future__ import absolute_import
-import rospy
 import os
 import yaml
+import rospy
 import rospkg
 
-try:
-    from yaml import CLoader as Loader, CDumper as Dumper
-except ImportError:
-    from yaml import Loader, Dumper
 
-
-class PidLoader(object):
+class PidLoader():
 
     """
     Loads pid parameters of each controller in parameters_dict from a yaml file
@@ -36,7 +31,7 @@ class PidLoader(object):
     def __init__(self):
         pass
 
-    def get_settings(self, param_name):
+    def get_settings(self, param_name):  # pylint: disable=R0201
         param_dict = {}
         if len(param_name) == 2:
             try:
@@ -70,11 +65,10 @@ class PidSaver(object):
         self.path = file_path
 
     def save_settings(self, param_path, parameters_dict):
-        f = open(self.path, 'r')
         document = ""
-        for line in f.readlines():
-            document += line
-        f.close()
+        with open(self.path, 'r', encoding="ASCII") as pid_file:
+            for line in pid_file.readlines():
+                document += line
 
         yaml_config = yaml.load(document)
 
@@ -90,13 +84,12 @@ class PidSaver(object):
 
         full_config_to_write = yaml.dump(yaml_config, default_flow_style=False)
 
-        f = open(self.path, 'w')
-        f.write(full_config_to_write)
-        f.close()
+        with open(self.path, 'w', encoding="ASCII") as pid_file:
+            f.write(full_config_to_write)
 
 
 if __name__ == '__main__':
-    path_to_config = "~"
+    PATH_TO_CONFIG = "~"
 
     os.system('sr_hand_detector_node')
 
@@ -114,10 +107,10 @@ if __name__ == '__main__':
     hand_serial = next(iter(detected_hands))
 
     try:
-        path_to_config = rospkg.RosPack().get_path("sr_hand_config")
+        PATH_TO_CONFIG = rospkg.RosPack().get_path("sr_hand_config")
 
         pid_saver = PidSaver(
-            path_to_config + "/" + str(hand_serial) +
+            PATH_TO_CONFIG + "/" + str(hand_serial) +
             "/controls/host/pwm/sr_edc_mixed_position_velocity_joint_controllers.yaml")
         pid_saver.save_settings(
             ["sh_wrj2_mixed_position_velocity_controller", "pid"], {"d": 1.0})
