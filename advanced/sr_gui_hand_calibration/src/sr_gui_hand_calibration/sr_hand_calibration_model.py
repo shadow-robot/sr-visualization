@@ -63,7 +63,7 @@ class IndividualCalibration(QTreeWidgetItem):
         self.is_calibrated = False
 
     def remove(self):
-        self.tree_widget.remove
+        self.tree_widget.remove  # pylint: disable=W0104
 
     def calibrate(self):
         """
@@ -107,7 +107,7 @@ class IndividualCalibrationCoupled(IndividualCalibration):
                  raw_values, calibrated_values,
                  parent_widget, tree_widget,
                  robot_lib):
-
+        # pylint: disable=W0231
         self.joint_names = joint_names
         self.raw_values = [int(raw_value) for raw_value in raw_values]
         self.calibrated_values = calibrated_values
@@ -226,7 +226,7 @@ class JointCalibration(QTreeWidgetItem):
                 replace_list.append(["sensor_name_{}".format(i), joint_name])
                 process = ["rosrun", "plotjuggler", "plotjuggler", "-n", "-l", temporary_file_name]
         try:
-            with open(template_filename, "r") as template_file:
+            with open(template_filename, "r", encoding="ASCII") as template_file:
                 template = template_file.read()
         except Exception:
             rospy.logerr("Failed to open multiplot template file: {}".format(template_filename))
@@ -239,7 +239,7 @@ class JointCalibration(QTreeWidgetItem):
         for replacement in replace_list:
             template = template.replace(replacement[0], replacement[1])
         try:
-            with open(temporary_file_name, "w+") as tmp_file:
+            with open(temporary_file_name, "w+", encoding="ASCII") as tmp_file:
                 tmp_file.write(template)
         except Exception:
             rospy.logerr("Failed to write temportary multiplot configuration file: {}".format(temporary_file_name))
@@ -363,12 +363,11 @@ class HandCalibration(QTreeWidgetItem):
                           "Ring Finger", "Little Finger",
                           "Thumb", "Wrist"],
                  old_version=False):
-
+        # pylint: disable=W0102
         self.old_version = old_version
 
         self.package_path = rospkg.RosPack().get_path('sr_gui_hand_calibration')
 
-        # TODO: Import this from an xml file?
         self.joint_map = {"First Finger": [["FFJ1", [[0.0, 0.0],
                                                      [0.0, 22.5],
                                                      [0.0, 45.0],
@@ -722,9 +721,8 @@ class HandCalibration(QTreeWidgetItem):
                     full_config_to_write += "]]"
             full_config_to_write += "\n]"
 
-        with open(filepath, 'w') as write_file:
+        with open(filepath, 'w', encoding="ASCII") as write_file:
             write_file.write(full_config_to_write)
-
 
     def is_calibration_complete(self):
         iterator = QTreeWidgetItemIterator(self)
