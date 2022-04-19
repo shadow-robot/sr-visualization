@@ -78,7 +78,7 @@ class CtrlSettings():
             self.motors.append(motors_for_finger)
 
 
-class SrControllerTunerApp(object):
+class SrControllerTunerApp():
 
     """
     Handles loading, saving and setting of controller settings
