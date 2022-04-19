@@ -27,7 +27,9 @@ from python_qt_binding.QtWidgets import (
     QVBoxLayout,
     QPushButton,
     QMessageBox,
-    QLabel
+    QLabel,
+    QComboBox,
+    QHBoxLayout
 )
 from sr_data_visualization.data_plot import GenericDataPlot
 from sr_data_visualization.data_tab import (
@@ -41,6 +43,7 @@ from sr_data_visualization.data_tab import (
 
 class SrDataVisualizer(Plugin):
     TITLE = "Data Visualizer"
+    PREFIXES = ['rh_', 'lh_']
 
     def __init__(self, context):
         super().__init__(context)
@@ -53,15 +56,21 @@ class SrDataVisualizer(Plugin):
         self.init_ui()
 
     def _detect_hand_id_and_joints(self):
+        self.joint_prefixes = []
+        self.hand_joints = None
         try:
             joint_states_msg = rospy.wait_for_message("/joint_states", JointState, timeout=1)
-            self.joint_prefix = ([prefix for prefix in joint_states_msg.name if 'h_' in prefix][0]).split("_")[0] + "_"
-            joints = [joint for joint in joint_states_msg.name if self.joint_prefix in joint]
-            self.hand_joints = {self.joint_prefix[:-1]: joints}
+            for prefix in self.PREFIXES:
+                for joint in joint_states_msg.name:
+                    if prefix in joint:
+                        self.joint_prefixes.append(prefix)
+                        break
+            joints = [joint for joint in joint_states_msg.name if self.joint_prefixes[0] in joint]
+            self.hand_joints = {self.joint_prefixes[0][:-1]: joints}
         except (rospy.exceptions.ROSException, IndexError):
             rospy.logwarn("No hand connected or ROS bag is not playing")
 
-        return self.joint_prefix and self.hand_joints
+        return self.joint_prefixes and self.hand_joints
 
     def init_ui(self):
         self._widget = QWidget()
@@ -78,18 +87,33 @@ class SrDataVisualizer(Plugin):
     def fill_layout(self):
         # Create info button on the top right of the gui
         self.information_btn = QPushButton("Info")
-        self.layout.addWidget(self.information_btn, alignment=Qt.AlignRight)
         self.information_btn.clicked.connect(self.display_information)
+        self.information_btn.setFixedSize(100, 20)
         self.tab_container = QTabWidget()
 
         if not self._detect_hand_id_and_joints():
             self.layout.addWidget(QLabel("No hand connected or ROS bag is not playing"), alignment=Qt.AlignCenter)
             return
 
+        self.hand_id_selection = QComboBox()
+        labels = []
+        for prefix in self.joint_prefixes:
+            labels.append(prefix[:-1])
+        self.hand_id_selection.addItems(labels)
+        self.hand_id_selection.currentIndexChanged.connect(self.combobox_action_hand_id_selection)
+        self.hand_id_selection.setFixedSize(50, 20)
+
+        self.info_button_and_hand_selection_layout = QHBoxLayout()
+        self.info_button_and_hand_selection_layout.addWidget(QLabel("Hand ID:"), alignment=Qt.AlignRight)
+        self.info_button_and_hand_selection_layout.addWidget(self.hand_id_selection)
+        self.info_button_and_hand_selection_layout.addWidget(self.information_btn)
+        self.layout.addLayout(self.info_button_and_hand_selection_layout)
+
         # Initialize tabs
         self.layout.addWidget(self.tab_container)
 
         # Create tabs
+        self.tab_index = 0
         self.create_tab("Joint States")
         self.create_tab("Control Loops")
         self.create_tab("Motor Stats 1")
@@ -101,31 +125,34 @@ class SrDataVisualizer(Plugin):
     def create_tab(self, tab_name):
         if tab_name == "Joint States":
             self.tab_created = JointStatesDataTab(tab_name, self.hand_joints,
-                                                  self.joint_prefix, parent=self.tab_container)
+                                                  self.joint_prefixes[0], parent=self.tab_container)
         elif tab_name == "Control Loops":
             self.tab_created = ControlLoopsDataTab(tab_name, self.hand_joints,
-                                                   self.joint_prefix, parent=self.tab_container)
+                                                   self.joint_prefixes[0], parent=self.tab_container)
         elif tab_name == "Motor Stats 1":
             self.tab_created = MotorStats1DataTab(tab_name, self.hand_joints,
-                                                  self.joint_prefix, parent=self.tab_container)
+                                                  self.joint_prefixes[0], parent=self.tab_container)
         elif tab_name == "Motor Stats 2":
             self.tab_created = MotorStats2DataTab(tab_name, self.hand_joints,
-                                                  self.joint_prefix, parent=self.tab_container)
+                                                  self.joint_prefixes[0], parent=self.tab_container)
         elif tab_name == "Palm Extras":
             self.tab_created = PalmExtrasDataTab(tab_name, self.hand_joints,
-                                                 self.joint_prefix, parent=self.tab_container)
+                                                 self.joint_prefixes[0], parent=self.tab_container)
 
         self.tab_container.addTab(self.tab_created, tab_name)
 
     def tab_changed(self, index):
+        self.tab_index = index
+        side = self.hand_id_selection.currentText()
         for tab in range(self.tab_container.count()):
             graphs = self.tab_container.widget(tab).findChildren(GenericDataPlot)
+            self.tab_container.widget(tab).change_side(side)
             if tab is not index:
                 for graph in graphs:
-                    graph.plot_data(False)
+                    graph.plot_data(False, side)
             else:
                 for graph in graphs:
-                    graph.plot_data(True)
+                    graph.plot_data(True, side)
 
     def display_information(self, message):
         # pylint: disable=R0201
@@ -152,11 +179,24 @@ class SrDataVisualizer(Plugin):
         msg.setStandardButtons(QMessageBox.Ok)
         msg.exec_()
 
+    def combobox_action_hand_id_selection(self):
+        side = self.hand_id_selection.currentText()
+
+        for tab in range(self.tab_container.count()):
+            graphs = self.tab_container.widget(tab).findChildren(GenericDataPlot)
+            self.tab_container.widget(tab).change_side(side)
+            if tab is not self.tab_index:
+                for graph in graphs:
+                    graph.plot_data(False, side)
+            else:
+                for graph in graphs:
+                    graph.plot_data(True, side, new_sub=False)
+
     def shutdown_plugin(self):
         for tab in range(self.tab_container.count()):
             graphs = self.tab_container.widget(tab).findChildren(GenericDataPlot)
             for graph in graphs:
-                graph.plot_data(False)
+                graph.plot_data(False, self.hand_id_selection.currentText())
 
 
 if __name__ == "__main__":

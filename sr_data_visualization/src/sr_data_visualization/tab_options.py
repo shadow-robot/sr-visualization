@@ -25,6 +25,9 @@ from python_qt_binding.QtWidgets import (
     QRadioButton,
     QHBoxLayout,
     QGroupBox,
+    QComboBox,
+    QLabel,
+    QFormLayout
 )
 
 
