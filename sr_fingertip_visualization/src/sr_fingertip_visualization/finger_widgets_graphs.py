@@ -50,14 +50,14 @@ class FingerWidgetGraphGeneric(QGroupBox):
         self.setChecked(False)
         self.clicked.connect(self.refresh_widget)
 
-        _icon_dir = os.path.join(rospkg.RosPack().get_path('sr_visualization_icons'), 'icons')
+        icon_dir = os.path.join(rospkg.RosPack().get_path('sr_visualization_icons'), 'icons')
         self.plot_descriptors = {
-            'blue': QIcon(os.path.join(_icon_dir, 'blue.png')),
-            'red': QIcon(os.path.join(_icon_dir, 'red.png')),
-            'green': QIcon(os.path.join(_icon_dir, 'green.png')),
-            'magenta': QIcon(os.path.join(_icon_dir, 'magenta.png')),
-            'gray': QIcon(os.path.join(_icon_dir, 'gray.png')),
-            'cyan': QIcon(os.path.join(_icon_dir, 'cyan.png'))
+            'blue': QIcon(os.path.join(icon_dir, 'blue.png')),
+            'red': QIcon(os.path.join(icon_dir, 'red.png')),
+            'green': QIcon(os.path.join(icon_dir, 'green.png')),
+            'magenta': QIcon(os.path.join(icon_dir, 'magenta.png')),
+            'gray': QIcon(os.path.join(icon_dir, 'gray.png')),
+            'cyan': QIcon(os.path.join(icon_dir, 'cyan.png'))
         }
 
     def refresh_widget(self):

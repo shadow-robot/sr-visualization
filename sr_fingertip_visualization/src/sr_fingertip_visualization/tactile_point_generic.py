@@ -36,7 +36,7 @@ class TactilePoint(QWidget):
         self._center = QPoint(self.frameSize().width()/2, self._radius + self._title_height)
         self.setMinimumSize(self._MIN_SIZE_X, 2*self._radius)
 
-    def paintEvent(self, _event):  # pylint: disable=C0103
+    def paintEvent(self, _):  # pylint: disable=C0103
         self._painter.begin(self)
         self._painter.setRenderHint(QPainter.Antialiasing)
         self._painter.setPen(self._color)

@@ -36,7 +36,7 @@ from python_qt_binding.QtWidgets import (
 
 class GenericGraphTab(QWidget):
 
-    _ICON_DIR = os.path.join(rospkg.RosPack().get_path('sr_visualization_icons'), 'icons')
+    icon_dir = os.path.join(rospkg.RosPack().get_path('sr_visualization_icons'), 'icons')
     _CONST_FINGERS = ['ff', 'mf', 'rf', 'lf', 'th']
     _CONST_DATA_FIELDS = ['pressure', 'temperature']
 
@@ -54,12 +54,12 @@ class GenericGraphTab(QWidget):
         self._initialize_data_structure()
 
         self._icons = {
-            'blue': QIcon(os.path.join(self._ICON_DIR, 'blue.png')),
-            'red': QIcon(os.path.join(self._ICON_DIR, 'red.png')),
-            'green': QIcon(os.path.join(self._ICON_DIR, 'green.png')),
-            'magenta': QIcon(os.path.join(self._ICON_DIR, 'magenta.png')),
-            'gray': QIcon(os.path.join(self._ICON_DIR, 'gray.png')),
-            'cyan': QIcon(os.path.join(self._ICON_DIR, 'cyan.png'))
+            'blue': QIcon(os.path.join(self.icon_dir, 'blue.png')),
+            'red': QIcon(os.path.join(self.icon_dir, 'red.png')),
+            'green': QIcon(os.path.join(self.icon_dir, 'green.png')),
+            'magenta': QIcon(os.path.join(self.icon_dir, 'magenta.png')),
+            'gray': QIcon(os.path.join(self.icon_dir, 'gray.png')),
+            'cyan': QIcon(os.path.join(self.icon_dir, 'cyan.png'))
         }
 
         available_colors = list(self._icons.keys())
