@@ -55,7 +55,7 @@ class PidLoader():
         return param_dict
 
 
-class PidSaver(object):
+class PidSaver():
 
     """
     Saves pid parameters of each controller in parameters_dict in a yaml file
@@ -93,7 +93,7 @@ if __name__ == '__main__':
 
     os.system('sr_hand_detector_node')
 
-    with open('/tmp/sr_hand_detector.yaml') as f:
+    with open('/tmp/sr_hand_detector.yaml', encoding="ASCII") as f:
         detected_hands = yaml.safe_load(f)
 
     if not detected_hands:

@@ -20,9 +20,9 @@ import os
 import subprocess
 import math
 import time
-import yaml
 from functools import partial
 from tempfile import NamedTemporaryFile
+import yaml
 import rospy
 import rosparam
 import rospkg
@@ -32,8 +32,8 @@ from QtCore import Qt, QThread
 from QtWidgets import QMessageBox, QWidget, QTreeWidgetItem, QCheckBox,\
     QSpinBox, QDoubleSpinBox, QFileDialog, QFrame, QPushButton, QHBoxLayout
 from sensor_msgs.msg import JointState
-from sr_gui_controller_tuner.sr_controller_tuner import SrControllerTunerApp
 from sr_utilities.hand_finder import HandFinder
+from sr_gui_controller_tuner.sr_controller_tuner import SrControllerTunerApp
 
 
 class PlotThread(QThread):
@@ -101,7 +101,7 @@ class PlotThread(QThread):
             rxplot_str += "sh_" + self.joint_name_.lower() + "_effort_controller/state/set_point,sh_" + \
                           self.joint_name_.lower() + "_effort_controller/state/process_value"
 
-        self.subprocess_.append(subprocess.Popen(rxplot_str.split()))
+        self.subprocess_.append(subprocess.Popen(rxplot_str.split()))  # pylint: disable=R1732
 
     def js_callback_(self, msg):
         # get the joint index once, then unregister
@@ -171,7 +171,7 @@ class MoveThread(QThread):
         string += "<param name=\"msg_type\" value=\"{}\"/>".format(
             message_type)
         string += "</node> </launch>"
-        tmp_launch_file = NamedTemporaryFile(delete=False, mode='w+t')
+        tmp_launch_file = NamedTemporaryFile(delete=False, mode='w+t')  # pylint: disable=R1732
 
         tmp_launch_file.writelines(string)
         tmp_launch_file.close()
@@ -184,27 +184,29 @@ class MoveThread(QThread):
         """
         # assuming 4 character joint names at the end and trimming any prefix
         # TODO: Shouldn't this be read from the URDF ?
+        min_max = None
         joint_name = self.joint_name_[-4:]
         if joint_name in ["FFJ0", "MFJ0", "RFJ0", "LFJ0"]:
-            return [0.0, math.radians(180.0)]
+            min_max = [0.0, math.radians(180.0)]
         elif joint_name in ["FFJ3", "MFJ3", "RFJ3", "LFJ3", "THJ1"]:
-            return [0.0, math.radians(90.0)]
+            min_max = [0.0, math.radians(90.0)]
         elif joint_name in ["LFJ5"]:
-            return [0.0, math.radians(45.0)]
+            min_max = [0.0, math.radians(45.0)]
         elif joint_name in ["FFJ4", "MFJ4", "RFJ4", "LFJ4"]:
-            return [math.radians(-20.0), math.radians(20.0)]
+            min_max = [math.radians(-20.0), math.radians(20.0)]
         elif joint_name in ["THJ2"]:
-            return [math.radians(-40.0), math.radians(40.0)]
+            min_max = [math.radians(-40.0), math.radians(40.0)]
         elif joint_name in ["THJ3"]:
-            return [math.radians(-15.0), math.radians(15.0)]
+            min_max = [math.radians(-15.0), math.radians(15.0)]
         elif joint_name in ["THJ4"]:
-            return [math.radians(0.0), math.radians(70.0)]
+            min_max = [math.radians(0.0), math.radians(70.0)]
         elif joint_name in ["THJ5"]:
-            return [math.radians(-60.0), math.radians(60.0)]
+            min_max = [math.radians(-60.0), math.radians(60.0)]
         elif joint_name in ["WRJ1"]:
-            return [math.radians(-30.0), math.radians(45.0)]
+            min_max = [math.radians(-30.0), math.radians(45.0)]
         elif joint_name in ["WRJ2"]:
-            return [math.radians(-30.0), math.radians(10.0)]
+            min_max = [math.radians(-30.0), math.radians(10.0)]
+        return min_max
 
     def launch_(self):
         """
@@ -214,7 +216,7 @@ class MoveThread(QThread):
 
         launch_string = "roslaunch " + filename
 
-        self.subprocess_.append(subprocess.Popen(launch_string.split()))
+        self.subprocess_.append(subprocess.Popen(launch_string.split()))  # pylint: disable=R1732
 
 
 class SrGuiControllerTuner(Plugin):
@@ -406,7 +408,7 @@ class SrGuiControllerTuner(Plugin):
     def get_hand_serial(self):
         os.system('sr_hand_detector_node')
 
-        with open('/tmp/sr_hand_detector.yaml') as hand_detector:
+        with open('/tmp/sr_hand_detector.yaml', encoding="ASCII") as hand_detector:
             detected_hands = yaml.safe_load(hand_detector)
 
         if not detected_hands:
@@ -689,7 +691,7 @@ class SrGuiControllerTuner(Plugin):
             move_thread.__del__()
         self.move_threads = []
 
-    def display_information(self, message):
+    def display_information(self, message):  # pylint: disable=R0201
         message = "Position controller\n" + \
                   "Here you can select a finger, thumb or wrist joints, " + \
                   "and adjust the different position control parameters. " + \
