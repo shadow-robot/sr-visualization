@@ -15,13 +15,10 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import absolute_import
-
 import sys
-
-from sr_data_visualization.sr_data_visualizer_gui import SrDataVisualizer
 from rqt_gui.main import Main
 
 
-plugin = 'sr_data_visualization.sr_data_visualizer_gui.SrDataVisualizer'
-main = Main(filename=plugin)
-sys.exit(main.main(standalone=plugin))
+PLUGIN = 'sr_data_visualization.sr_data_visualizer_gui.SrDataVisualizer'
+main = Main(filename=PLUGIN)
+sys.exit(main.main(standalone=PLUGIN))

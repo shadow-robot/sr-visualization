@@ -549,6 +549,7 @@ class SrGuiControllerTuner(Plugin):
             joint_name, self.controller_type, settings, self.file_to_save)
 
     def refresh_controller_tree_(self, controller_type="Motor Force"):
+        # pylint: disable=R1702
         """
         Get the controller settings and their ranges and display them in the tree.
         Buttons and plots will be added unless in edit_only mode.
