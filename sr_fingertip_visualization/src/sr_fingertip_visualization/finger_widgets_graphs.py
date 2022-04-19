@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import, division
 import os
 import rospy
 import rospkg
@@ -119,7 +118,7 @@ class FingerWidgetGraphPST(FingerWidgetGraphGeneric):
         if not self._subscriber:
             self._subscriber = rospy.Subscriber('/{}/tactile'.format(self._side), ShadowPST,
                                                 self._tactile_data_callback)
-            self._timer.timeout.connect(self.timer_event)
+            self._timer.timeout.connect(self.timerEvent)
             self._timer.start(10)
 
     def _tactile_data_callback(self, data):
@@ -133,7 +132,7 @@ class FingerWidgetGraphPST(FingerWidgetGraphGeneric):
                     elif data_field == "temperature":
                         self._data[data_field].append(data.temperature[i])
 
-    def timer_event(self):
+    def timerEvent(self):
         for data_field in self._CONST_DATA_FIELDS:
             if self._data_checkboxes[data_field].isChecked():
                 self._plot.update_plot(self._data)
@@ -204,10 +203,10 @@ class FingerWidgetGraphBiotac(FingerWidgetGraphGeneric):
         if not self._subscriber:
             self._subscriber = rospy.Subscriber('/{}/tactile'.format(self._side), BiotacAll,
                                                 self._tactile_data_callback)
-            self._timer.timeout.connect(self.timer_event)
+            self._timer.timeout.connect(self.timerEvent)
             self._timer.start(10)
 
-    def timer_event(self):
+    def timerEvent(self):
         for data_field in self._CONST_DATA_FIELDS:
             if self._data_checkboxes[data_field].isChecked():
                 self._plot.update_plot(self._data)

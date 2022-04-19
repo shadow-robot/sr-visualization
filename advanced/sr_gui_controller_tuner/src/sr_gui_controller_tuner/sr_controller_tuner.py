@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2011 Shadow Robot Company Ltd.
+# Copyright 2011, 2022 Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -15,7 +15,6 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-from __future__ import absolute_import
 import re
 from xml.etree import ElementTree as ET
 import rospy
@@ -24,7 +23,7 @@ from sr_robot_msgs.srv import ForceController, SetEffortControllerGains, SetMixe
 from sr_gui_controller_tuner.pid_loader_and_saver import PidLoader, PidSaver
 
 
-class CtrlSettings():
+class CtrlSettings:
 
     """
     Parses xml file and reads controller settings
@@ -78,7 +77,7 @@ class CtrlSettings():
             self.motors.append(motors_for_finger)
 
 
-class SrControllerTunerApp():
+class SrControllerTunerApp:
 
     """
     Handles loading, saving and setting of controller settings
@@ -195,7 +194,7 @@ class SrControllerTunerApp():
                     rospy.loginfo("Detected single loop")
                 except rospy.ROSException as exception:
                     rospy.loginfo(
-                        "Controller manager not running: %s" % str(exception))
+                        f"Controller manager not running: {exception}")
                     rospy.loginfo("Running Hand Tuning in edit-only mode")
                     return self.set_edit_only(running_ctrls)
             else:
@@ -207,7 +206,7 @@ class SrControllerTunerApp():
         try:
             resp = controllers()
         except rospy.ServiceException as exception:
-            rospy.logerr("Service did not process request: %s" % str(exception))
+            rospy.logerr(f"Service did not process request: {exception}")
 
         running_ctrls.append("Motor Force")
         if resp is not None:

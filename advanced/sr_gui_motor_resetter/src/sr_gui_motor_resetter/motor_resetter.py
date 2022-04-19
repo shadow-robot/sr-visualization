@@ -4,7 +4,7 @@
 # inheriting from QObject
 #
 
-# Copyright 2011 Shadow Robot Company Ltd.
+# Copyright 2011, 2022 Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -18,7 +18,6 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import
 import os
 import rospkg
 import rospy
@@ -62,7 +61,7 @@ class MotorFlasher(QThread):
                         motor.motor_name, Empty)
                     self.flasher_service()
                 except rospy.ServiceException as exception:
-                    self.failed['QString'].emit("Service did not process request: %s" % str(exception))
+                    self.failed['QString'].emit(f"Service did not process request: {exception}")
                     return
 
                 programmed_motors += 1

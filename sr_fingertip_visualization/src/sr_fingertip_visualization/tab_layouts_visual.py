@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import, division
 import rospy
 from sr_robot_msgs.msg import BiotacAll
 from python_qt_binding.QtWidgets import (

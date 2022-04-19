@@ -14,8 +14,6 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import, division
-
 from python_qt_binding.QtGui import QColor, QPainter
 from python_qt_binding.QtCore import QPoint
 from python_qt_binding.QtWidgets import QWidget

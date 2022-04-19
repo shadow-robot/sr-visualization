@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2011 Shadow Robot Company Ltd.
+# Copyright 2011, 2022 Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -15,14 +15,13 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-from __future__ import absolute_import
 import os
 import yaml
 import rospy
 import rospkg
 
 
-class PidLoader():
+class PidLoader:
 
     """
     Loads pid parameters of each controller in parameters_dict from a yaml file
@@ -55,7 +54,7 @@ class PidLoader():
         return param_dict
 
 
-class PidSaver():
+class PidSaver:
 
     """
     Saves pid parameters of each controller in parameters_dict in a yaml file
@@ -89,7 +88,7 @@ class PidSaver():
 
 
 if __name__ == '__main__':
-    PATH_TO_CONFIG = "~"
+    path_to_config = "~"
 
     os.system('sr_hand_detector_node')
 
@@ -107,10 +106,10 @@ if __name__ == '__main__':
     hand_serial = next(iter(detected_hands))
 
     try:
-        PATH_TO_CONFIG = rospkg.RosPack().get_path("sr_hand_config")
+        path_to_config = rospkg.RosPack().get_path("sr_hand_config")
 
         pid_saver = PidSaver(
-            PATH_TO_CONFIG + "/" + str(hand_serial) +
+            path_to_config + "/" + str(hand_serial) +
             "/controls/host/pwm/sr_edc_mixed_position_velocity_joint_controllers.yaml")
         pid_saver.save_settings(
             ["sh_wrj2_mixed_position_velocity_controller", "pid"], {"d": 1.0})

@@ -11,8 +11,6 @@
 #
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
-
-from __future__ import absolute_import
 import sys
 import os
 import rospy
@@ -52,7 +50,7 @@ class MotorBootloader(QThread):
                                                                  SimpleMotorFlasher)
                     resp = self.bootloader_service(firmware_path, motor.motor_index)
                 except rospy.ServiceException as exception:
-                    self.failed.emit("Service did not process request: %s" % str(exception))
+                    self.failed.emit(f"Service did not process request: {exception}")
                     return
 
                 if resp == SimpleMotorFlasherResponse.FAIL:

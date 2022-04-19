@@ -14,8 +14,6 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import
-
 import numpy as np
 import rospy
 
@@ -91,7 +89,7 @@ class GenericDataPlot(QwtPlot):
 
         self.replot()
 
-    def plot_data(self, plot, side, new_sub=True):
+    def plot_data(self, plot, side, new_sub=True):  # pylint: disable W0613
         self._topic_name = self._topic_name.replace("lh", side).replace("rh", side)
 
         if self._subscriber:
