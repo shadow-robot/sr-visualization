@@ -169,6 +169,7 @@ class SrControllerTunerApp():
         return True
 
     def get_ctrls(self):
+        # pylint: disable=R1702
         """
         Retrieve currently running controllers
         return ["Motor Force", "Position"]

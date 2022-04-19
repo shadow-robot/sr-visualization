@@ -24,10 +24,7 @@ from python_qt_binding.QtWidgets import (
     QGridLayout,
     QRadioButton,
     QHBoxLayout,
-    QGroupBox,
-    QComboBox,
-    QLabel,
-    QFormLayout
+    QGroupBox
 )
 
 
