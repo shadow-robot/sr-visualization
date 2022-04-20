@@ -88,7 +88,7 @@ class PidSaver:
 
 
 if __name__ == '__main__':
-    path_to_config = "~"
+    path_to_config = "~"  # pylint: disable=C0103
 
     os.system('sr_hand_detector_node')
 

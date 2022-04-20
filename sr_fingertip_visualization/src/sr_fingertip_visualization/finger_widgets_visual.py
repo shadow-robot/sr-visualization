@@ -121,7 +121,7 @@ class FingerWidgetVisualPST(FingerWidget):
                     elif data_field == "temperature":
                         self._data[data_field] = data.temperature[i]
 
-    def timerEvent(self):
+    def timerEvent(self):  # pylint: disable=C0103
         self._tactile_point_widget.update_data(self._data)
 
 
@@ -215,7 +215,7 @@ class FingerWidgetVisualBiotacSPMinus(FingerWidget):
                     elif data_field == "tdc":
                         self._data[data_field] = data.tactiles[i].tdc
 
-    def timerEvent(self):
+    def timerEvent(self):  # pylint: disable=C0103
         self._tactile_point_widget.update_data(self._data)
 
 
@@ -312,7 +312,7 @@ class FingerWidgetVisualBiotacSPPlus(FingerWidget):
                     elif data_field == "electrodes":
                         self._data[data_field] = [data.tactiles[i].electrodes]
 
-    def timerEvent(self):
+    def timerEvent(self):  # pylint: disable=C0103
         for i in range(self._electrodes_to_display_count):
             try:
                 self._tactile_point_widget[i].update_data(self._data[self._datatype_to_display][i])

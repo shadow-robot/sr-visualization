@@ -89,7 +89,7 @@ class GenericDataPlot(QwtPlot):
 
         self.replot()
 
-    def plot_data(self, plot, side, new_sub=True):  # pylint: disable W0613
+    def plot_data(self, plot, side, new_sub=True):  # pylint: disable=W0613
         self._topic_name = self._topic_name.replace("lh", side).replace("rh", side)
 
         if self._subscriber:

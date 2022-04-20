@@ -132,7 +132,7 @@ class FingerWidgetGraphPST(FingerWidgetGraphGeneric):
                     elif data_field == "temperature":
                         self._data[data_field].append(data.temperature[i])
 
-    def timerEvent(self):
+    def timerEvent(self):  # pylint: disable=C0103
         for data_field in self._CONST_DATA_FIELDS:
             if self._data_checkboxes[data_field].isChecked():
                 self._plot.update_plot(self._data)
@@ -206,7 +206,7 @@ class FingerWidgetGraphBiotac(FingerWidgetGraphGeneric):
             self._timer.timeout.connect(self.timerEvent)
             self._timer.start(10)
 
-    def timerEvent(self):
+    def timerEvent(self):  # pylint: disable=C0103
         for data_field in self._CONST_DATA_FIELDS:
             if self._data_checkboxes[data_field].isChecked():
                 self._plot.update_plot(self._data)
