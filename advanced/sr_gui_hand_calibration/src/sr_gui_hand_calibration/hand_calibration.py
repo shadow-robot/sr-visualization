@@ -176,7 +176,7 @@ class SrHandCalibration(Plugin):
         else:
             self.populate_tree(old_version=False)
 
-    def _unregisterPublisher(self):  # pylint: disable=C0103
+    def _unregister_publisher(self):
         if self._publisher is not None:
             self._publisher.unregister()
             self._publisher = None
@@ -185,7 +185,7 @@ class SrHandCalibration(Plugin):
             self.hand_model.unregister()
 
     def shutdown_plugin(self):
-        self._unregisterPublisher()
+        self._unregister_publisher()
 
     def save_settings(self, global_settings, perspective_settings):
         pass

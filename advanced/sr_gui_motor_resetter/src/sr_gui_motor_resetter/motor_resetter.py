@@ -276,13 +276,13 @@ class SrGuiMotorResetter(Plugin):
     def failed_programming_motors(self, message):
         QMessageBox.warning(self.motors_frame, "Warning", message)
 
-    def _unregisterPublisher(self):  # pylint: disable=C0103
+    def _unregister_publisher(self):
         if self._publisher is not None:
             self._publisher.unregister()
             self._publisher = None
 
     def shutdown_plugin(self):
-        self._unregisterPublisher()
+        self._unregister_publisher()
 
     def save_settings(self, global_settings, perspective_settings):
         pass

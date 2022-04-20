@@ -229,9 +229,7 @@ class MotorStatsGenericDataPlot(GenericDataPlot):  # pylint: disable=W0223
 
 
 class MotorStats1DataPlot(MotorStatsGenericDataPlot):
-    def __init__(self, joint_name, topic_name, topic_type):
-        # pylint: disable=W0235
-        super().__init__(joint_name, topic_name, topic_type)
+    pass
 
     def create_traces(self):
         self.traces = [Trace("Strain Gauge Right", Qt.red, self.x_data),
@@ -242,9 +240,7 @@ class MotorStats1DataPlot(MotorStatsGenericDataPlot):
 
 
 class MotorStats2DataPlot(MotorStatsGenericDataPlot):
-    def __init__(self, joint_name, topic_name, topic_type):
-        # pylint: disable=W0235
-        super().__init__(joint_name, topic_name, topic_type)
+    pass
 
     def create_traces(self):
         self.traces = [Trace("Measured Effort", Qt.red, self.x_data),

@@ -59,7 +59,7 @@ class TestHandCalibration(unittest.TestCase):
         os.remove(self.mock_file.name)
 
     @patch('sr_gui_hand_calibration.sr_hand_calibration_model.EtherCAT_Hand_Lib')
-    def test_progress_bar(self, _EtherCAT_Hand_Lib):  # pylint: disable=C0103
+    def test_progress_bar(self, _):  # pylint: disable=C0103
         self.hand_model = HandCalibration(tree_widget=self._widget.tree_calibration,
                                           progress_bar=self._widget.progress)
 
