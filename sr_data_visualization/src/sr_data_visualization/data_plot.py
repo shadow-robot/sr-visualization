@@ -229,7 +229,7 @@ class MotorStatsGenericDataPlot(GenericDataPlot):  # pylint: disable=W0223
 
 
 class MotorStats1DataPlot(MotorStatsGenericDataPlot):
-    pass
+    pass  # pylint: disable=W0107
 
     def create_traces(self):
         self.traces = [Trace("Strain Gauge Right", Qt.red, self.x_data),
@@ -240,7 +240,7 @@ class MotorStats1DataPlot(MotorStatsGenericDataPlot):
 
 
 class MotorStats2DataPlot(MotorStatsGenericDataPlot):
-    pass
+    pass  # pylint: disable=W0107
 
     def create_traces(self):
         self.traces = [Trace("Measured Effort", Qt.red, self.x_data),
