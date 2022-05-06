@@ -38,14 +38,15 @@ class SrFingertipVisualizer(Plugin):
 
     def __init__(self, context):
         super().__init__(context)
-        self._detect_hand_and_tactile_type()
         self.context = context
-        self._init_ui()
         self.tab_container = QTabWidget()
+        self._widget = QWidget()
+        self.main_layout = QVBoxLayout()
+        self._tactile_topics = {}
+        self._detect_hand_and_tactile_type()
+        self._init_ui()
 
     def _detect_hand_and_tactile_type(self):
-        self._tactile_topics = {}
-
         try:
             type_right = rostopic.get_topic_type("/rh/tactile")
             type_left = rostopic.get_topic_type("/lh/tactile")
@@ -63,12 +64,9 @@ class SrFingertipVisualizer(Plugin):
             rospy.logwarn(msg)
 
     def _init_ui(self):
-        self._widget = QWidget()
-        self.main_layout = QVBoxLayout()
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self._widget.setObjectName(self.TITLE)
         self._widget.setWindowTitle(self.TITLE)
-
         self._widget.setLayout(self.main_layout)
         self.fill_layout()
 
