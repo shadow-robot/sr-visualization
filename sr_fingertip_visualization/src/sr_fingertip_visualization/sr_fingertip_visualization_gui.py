@@ -78,7 +78,7 @@ class SrFingertipVisualizer(Plugin):
         self.main_layout.addWidget(information_btn, alignment=Qt.AlignRight)
 
         self.tab_container.currentChanged.connect(self.tab_changed)
-        information_btn.clicked.connect(self.display_information)
+        information_btn.clicked.connect(display_information)
 
         if len(self._tactile_topics) == 0:
             label = QLabel("No tactiles", parent=self.tab_container)
@@ -117,6 +117,8 @@ class SrFingertipVisualizer(Plugin):
                 for fingertip_widget in tactile_widget.get_finger_widgets().values():
                     fingertip_widget.stop_timer_and_subscriber()
 
+    def get_widget(self):
+        return self._widget
 
 def display_information(message):
     message = "This plugin is used to display data coming from the tactile sensors" + "\n" + \
@@ -147,5 +149,5 @@ if __name__ == "__main__":
     rospy.init_node("sr_fingertip_visualizer")
     app = QApplication(sys.argv)
     sr_fingertip_visualizer_gui = SrFingertipVisualizer(None)
-    sr_fingertip_visualizer_gui._widget.show()  # pylint: disable=W0212
+    sr_fingertip_visualizer_gui.get_widget().show()
     sys.exit(app.exec_())
