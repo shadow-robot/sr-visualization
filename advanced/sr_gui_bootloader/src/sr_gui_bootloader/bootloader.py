@@ -42,7 +42,7 @@ class MotorBootloader(QThread):
         perform bootloading on the selected motors
         """
         bootloaded_motors = 0
-        firmware_path = self.parent._widget.txt_path.text()  # pylint: disable=W0212
+        firmware_path = self.parent.get_widget().txt_path.text()
         for motor in self.parent.motors:
             if motor.checkbox.checkState() == Qt.Checked:
                 try:
@@ -300,6 +300,9 @@ class SrGuiBootloader(Plugin):
     def prefix_selected(self, prefix):
         self._prefix = prefix
         self.populate_motors()
+    
+    def get_widget(self):
+        return self._widget
 
 
 if __name__ == "__main__":

@@ -197,10 +197,13 @@ class SrDataVisualizer(Plugin):
             for graph in graphs:
                 graph.plot_data(False, self.hand_id_selection.currentText())
 
+    def get_widget(self):
+        return self._widget
+
 
 if __name__ == "__main__":
     rospy.init_node("sr_data_visualizer")
     app = QApplication(sys.argv)
     data_visualiser_gui = SrDataVisualizer(None)
-    data_visualiser_gui._widget.show()  # pylint: disable=W0212
+    data_visualiser_gui.get_widget().show()
     sys.exit(app.exec_())
