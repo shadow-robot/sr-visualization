@@ -120,6 +120,7 @@ class SrFingertipVisualizer(Plugin):
     def get_widget(self):
         return self._widget
 
+
 def display_information(message):
     message = "This plugin is used to display data coming from the tactile sensors" + "\n" + \
                 "of the Dexterous Hand. There are 2 tabs - Visualizer and Graphs." + "\n" + \
