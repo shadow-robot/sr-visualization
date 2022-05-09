@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2011 Shadow Robot Company Ltd.
+# Copyright 2011, 2022 Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -15,29 +15,24 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-from __future__ import absolute_import
 import os
 import subprocess
 import math
 import time
-import rospy
+from functools import partial
+from tempfile import NamedTemporaryFile
 import yaml
+import rospy
 import rosparam
 import rospkg
-
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
-
 from QtCore import Qt, QThread
 from QtWidgets import QMessageBox, QWidget, QTreeWidgetItem, QCheckBox,\
     QSpinBox, QDoubleSpinBox, QFileDialog, QFrame, QPushButton, QHBoxLayout
-from functools import partial
-from tempfile import NamedTemporaryFile
-
 from sensor_msgs.msg import JointState
-
-from sr_gui_controller_tuner.sr_controller_tuner import SrControllerTunerApp
 from sr_utilities.hand_finder import HandFinder
+from sr_gui_controller_tuner.sr_controller_tuner import SrControllerTunerApp
 
 
 class PlotThread(QThread):
@@ -62,6 +57,7 @@ class PlotThread(QThread):
 
         # stores the subprocesses to be able to terminate them on close
         self.subprocess_ = []
+        self.subscriber_ = None
 
     def run(self):
         """
@@ -104,7 +100,7 @@ class PlotThread(QThread):
             rxplot_str += "sh_" + self.joint_name_.lower() + "_effort_controller/state/set_point,sh_" + \
                           self.joint_name_.lower() + "_effort_controller/state/process_value"
 
-        self.subprocess_.append(subprocess.Popen(rxplot_str.split()))
+        self.subprocess_.append(subprocess.Popen(rxplot_str.split()))  # pylint: disable=R1732
 
     def js_callback_(self, msg):
         # get the joint index once, then unregister
@@ -114,9 +110,9 @@ class PlotThread(QThread):
         self.subscriber_ = None
 
     def __del__(self):
-        for subprocess in self.subprocess_:
+        for process in self.subprocess_:
             # killing the rxplot to close the window
-            subprocess.kill()
+            process.kill()
 
         if self.subscriber_ is not None:
             self.subscriber_.unregister()
@@ -138,8 +134,8 @@ class MoveThread(QThread):
         self.launch_()
 
     def __del__(self):
-        for subprocess in self.subprocess_:
-            subprocess.terminate()
+        for process in self.subprocess_:
+            process.terminate()
         self.wait()
 
     def create_launch_file_(self):
@@ -174,7 +170,7 @@ class MoveThread(QThread):
         string += "<param name=\"msg_type\" value=\"{}\"/>".format(
             message_type)
         string += "</node> </launch>"
-        tmp_launch_file = NamedTemporaryFile(delete=False, mode='w+t')
+        tmp_launch_file = NamedTemporaryFile(delete=False, mode='w+t')  # pylint: disable=R1732
 
         tmp_launch_file.writelines(string)
         tmp_launch_file.close()
@@ -187,27 +183,29 @@ class MoveThread(QThread):
         """
         # assuming 4 character joint names at the end and trimming any prefix
         # TODO: Shouldn't this be read from the URDF ?
+        min_max = None
         joint_name = self.joint_name_[-4:]
         if joint_name in ["FFJ0", "MFJ0", "RFJ0", "LFJ0"]:
-            return [0.0, math.radians(180.0)]
+            min_max = [0.0, math.radians(180.0)]
         elif joint_name in ["FFJ3", "MFJ3", "RFJ3", "LFJ3", "THJ1"]:
-            return [0.0, math.radians(90.0)]
+            min_max = [0.0, math.radians(90.0)]
         elif joint_name in ["LFJ5"]:
-            return [0.0, math.radians(45.0)]
+            min_max = [0.0, math.radians(45.0)]
         elif joint_name in ["FFJ4", "MFJ4", "RFJ4", "LFJ4"]:
-            return [math.radians(-20.0), math.radians(20.0)]
+            min_max = [math.radians(-20.0), math.radians(20.0)]
         elif joint_name in ["THJ2"]:
-            return [math.radians(-40.0), math.radians(40.0)]
+            min_max = [math.radians(-40.0), math.radians(40.0)]
         elif joint_name in ["THJ3"]:
-            return [math.radians(-15.0), math.radians(15.0)]
+            min_max = [math.radians(-15.0), math.radians(15.0)]
         elif joint_name in ["THJ4"]:
-            return [math.radians(0.0), math.radians(70.0)]
+            min_max = [math.radians(0.0), math.radians(70.0)]
         elif joint_name in ["THJ5"]:
-            return [math.radians(-60.0), math.radians(60.0)]
+            min_max = [math.radians(-60.0), math.radians(60.0)]
         elif joint_name in ["WRJ1"]:
-            return [math.radians(-30.0), math.radians(45.0)]
+            min_max = [math.radians(-30.0), math.radians(45.0)]
         elif joint_name in ["WRJ2"]:
-            return [math.radians(-30.0), math.radians(10.0)]
+            min_max = [math.radians(-30.0), math.radians(10.0)]
+        return min_max
 
     def launch_(self):
         """
@@ -217,7 +215,7 @@ class MoveThread(QThread):
 
         launch_string = "roslaunch " + filename
 
-        self.subprocess_.append(subprocess.Popen(launch_string.split()))
+        self.subprocess_.append(subprocess.Popen(launch_string.split()))  # pylint: disable=R1732
 
 
 class SrGuiControllerTuner(Plugin):
@@ -409,8 +407,8 @@ class SrGuiControllerTuner(Plugin):
     def get_hand_serial(self):
         os.system('sr_hand_detector_node')
 
-        with open('/tmp/sr_hand_detector.yaml') as f:
-            detected_hands = yaml.safe_load(f)
+        with open('/tmp/sr_hand_detector.yaml', encoding="ASCII") as hand_detector:
+            detected_hands = yaml.safe_load(hand_detector)
 
         if not detected_hands:
             QMessageBox.warning(
@@ -447,9 +445,9 @@ class SrGuiControllerTuner(Plugin):
             QMessageBox.warning(
                 self._widget.tree_ctrl_settings, "Warning", "No motors selected.")
 
-        for it in selected_items:
-            if str(it.text(1)) != "":
-                self.save_controller(str(it.text(1)))
+        for item in selected_items:
+            if str(item.text(1)) != "":
+                self.save_controller(str(item.text(1)))
 
     def on_btn_save_all_clicked_(self):
         """
@@ -468,9 +466,9 @@ class SrGuiControllerTuner(Plugin):
             QMessageBox.warning(
                 self._widget.tree_ctrl_settings, "Warning", "No motors selected.")
 
-        for it in selected_items:
-            if str(it.text(1)) != "":
-                self.set_controller(str(it.text(1)))
+        for item in selected_items:
+            if str(item.text(1)) != "":
+                self.set_controller(str(item.text(1)))
 
     def on_btn_set_all_clicked_(self):
         """
@@ -550,6 +548,7 @@ class SrGuiControllerTuner(Plugin):
             joint_name, self.controller_type, settings, self.file_to_save)
 
     def refresh_controller_tree_(self, controller_type="Motor Force"):
+        # pylint: disable=R1702
         """
         Get the controller settings and their ranges and display them in the tree.
         Buttons and plots will be added unless in edit_only mode.
@@ -692,7 +691,7 @@ class SrGuiControllerTuner(Plugin):
             move_thread.__del__()
         self.move_threads = []
 
-    def display_information(self, message):
+    def display_information(self, message):  # pylint: disable=R0201
         message = "Position controller\n" + \
                   "Here you can select a finger, thumb or wrist joints, " + \
                   "and adjust the different position control parameters. " + \
@@ -736,16 +735,15 @@ class SrGuiControllerTuner(Plugin):
         msg.setStandardButtons(QMessageBox.Ok)
         msg.exec_()
 
-    #
     # Default methods for the rosgui plugins
 
-    def _unregisterPublisher(self):
+    def _unregister_publisher(self):
         if self._publisher is not None:
             self._publisher.unregister()
             self._publisher = None
 
     def shutdown_plugin(self):
-        self._unregisterPublisher()
+        self._unregister_publisher()
 
     def save_settings(self, global_settings, perspective_settings):
         pass

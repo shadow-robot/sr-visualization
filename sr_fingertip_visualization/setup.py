@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from setuptools import setup
 from catkin_pkg.python_setup import generate_distutils_setup
 

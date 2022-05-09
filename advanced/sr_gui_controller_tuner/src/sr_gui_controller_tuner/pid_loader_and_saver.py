@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2011 Shadow Robot Company Ltd.
+# Copyright 2011, 2022 Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -15,19 +15,13 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-from __future__ import absolute_import
-import rospy
 import os
 import yaml
+import rospy
 import rospkg
 
-try:
-    from yaml import CLoader as Loader, CDumper as Dumper
-except ImportError:
-    from yaml import Loader, Dumper
 
-
-class PidLoader(object):
+class PidLoader:
 
     """
     Loads pid parameters of each controller in parameters_dict from a yaml file
@@ -36,7 +30,7 @@ class PidLoader(object):
     def __init__(self):
         pass
 
-    def get_settings(self, param_name):
+    def get_settings(self, param_name):  # pylint: disable=R0201
         param_dict = {}
         if len(param_name) == 2:
             try:
@@ -60,7 +54,7 @@ class PidLoader(object):
         return param_dict
 
 
-class PidSaver(object):
+class PidSaver:
 
     """
     Saves pid parameters of each controller in parameters_dict in a yaml file
@@ -70,11 +64,10 @@ class PidSaver(object):
         self.path = file_path
 
     def save_settings(self, param_path, parameters_dict):
-        f = open(self.path, 'r')
         document = ""
-        for line in f.readlines():
-            document += line
-        f.close()
+        with open(self.path, 'r', encoding="ASCII") as pid_file:
+            for line in pid_file.readlines():
+                document += line
 
         yaml_config = yaml.load(document)
 
@@ -90,17 +83,16 @@ class PidSaver(object):
 
         full_config_to_write = yaml.dump(yaml_config, default_flow_style=False)
 
-        f = open(self.path, 'w')
-        f.write(full_config_to_write)
-        f.close()
+        with open(self.path, 'w', encoding="ASCII") as pid_file:
+            f.write(full_config_to_write)
 
 
 if __name__ == '__main__':
-    path_to_config = "~"
+    path_to_config = "~"  # pylint: disable=C0103
 
     os.system('sr_hand_detector_node')
 
-    with open('/tmp/sr_hand_detector.yaml') as f:
+    with open('/tmp/sr_hand_detector.yaml', encoding="ASCII") as f:
         detected_hands = yaml.safe_load(f)
 
     if not detected_hands:

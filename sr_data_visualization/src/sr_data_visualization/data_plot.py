@@ -14,8 +14,6 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import
-
 import numpy as np
 import rospy
 
@@ -81,7 +79,7 @@ class GenericDataPlot(QwtPlot):
         self.timer.timeout.connect(self.timerEvent)
         self.timer.start()
 
-    def timerEvent(self):
+    def timerEvent(self):  # pylint: disable=C0103
         # Data moves from left to right:
         # Shift data array right and assign new value data[0]
         for trace in self.traces:
@@ -91,7 +89,7 @@ class GenericDataPlot(QwtPlot):
 
         self.replot()
 
-    def plot_data(self, plot, side, new_sub=True):
+    def plot_data(self, plot, side, new_sub=True):  # pylint: disable=W0613
         self._topic_name = self._topic_name.replace("lh", side).replace("rh", side)
 
         if self._subscriber:
@@ -185,11 +183,12 @@ class ControlLoopsDataPlot(GenericDataPlot):
         self.traces[4].latest_value = data.command
 
 
-class MotorStatsGenericDataPlot(GenericDataPlot):
+class MotorStatsGenericDataPlot(GenericDataPlot):  # pylint: disable=W0223
     def __init__(self, joint_name, topic_name, topic_type):
         super().__init__(joint_name, topic_name, topic_type)
 
     def callback(self, data):
+        # pylint: disable=R1702
         for message in data.status:
             # Splits the name into parts e.g.
             # name: "/Right Shadow Hand/Wrist/rh SRDMotor WRJ2"
@@ -230,8 +229,7 @@ class MotorStatsGenericDataPlot(GenericDataPlot):
 
 
 class MotorStats1DataPlot(MotorStatsGenericDataPlot):
-    def __init__(self, joint_name, topic_name, topic_type):
-        super().__init__(joint_name, topic_name, topic_type)
+    pass  # pylint: disable=W0107
 
     def create_traces(self):
         self.traces = [Trace("Strain Gauge Right", Qt.red, self.x_data),
@@ -242,8 +240,7 @@ class MotorStats1DataPlot(MotorStatsGenericDataPlot):
 
 
 class MotorStats2DataPlot(MotorStatsGenericDataPlot):
-    def __init__(self, joint_name, topic_name, topic_type):
-        super().__init__(joint_name, topic_name, topic_type)
+    pass  # pylint: disable=W0107
 
     def create_traces(self):
         self.traces = [Trace("Measured Effort", Qt.red, self.x_data),

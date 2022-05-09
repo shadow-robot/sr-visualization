@@ -14,9 +14,6 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import, division
-
-
 from python_qt_binding.QtGui import QColor, QFont
 from python_qt_binding.QtCore import Qt
 from python_qt_binding.QtWidgets import (
@@ -28,13 +25,16 @@ from sr_fingertip_visualization.tactile_point_generic import TactilePointGeneric
 
 
 class TactilePointPST(TactilePointGeneric):
+
+    CONST_DATA_FIELDS = ['pressure', 'temperature']
+
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self._CONST_DATA_FIELDS = ['pressure', 'temperature']
         self.get_dot().resize_dot(25)
         self._init_widget()
 
     def _value_to_color(self, value):
+        # pylint: disable=W0221
         max_color, min_color = 255, 0
         pst_max, pst_min = 300, 800
         value = max(min_color, min(max_color, (value - pst_min)*(max_color-min_color) /
@@ -44,34 +44,38 @@ class TactilePointPST(TactilePointGeneric):
     def _init_widget(self):
         data_layout = QFormLayout()
         data_layout.addRow(self.get_dot())
-        self._label = dict()
+        self._label = {}
 
-        for data_field in self._CONST_DATA_FIELDS:
+        for data_field in self.CONST_DATA_FIELDS:
             self._label[data_field] = QLabel("-")
             data_layout.addRow(QLabel(f"{data_field[0]}: "), self._label[data_field])
         self.setLayout(data_layout)
 
     def update_data(self, data):
-        for data_field in self._CONST_DATA_FIELDS:
+        # pylint: disable=W0221
+        for data_field in self.CONST_DATA_FIELDS:
             self._label[data_field].setText(str(data[data_field]))
         self.get_dot().set_color(self._value_to_color(data['pressure']))
         self.get_dot().update()
 
 
 class TactilePointBiotacSPMinus(TactilePointGeneric):
+
+    CONST_DATA_FIELDS = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
+
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self._CONST_DATA_FIELDS = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
         self.get_dot().resize_dot(20)
         self._init_widget()
 
     def _value_to_color(self, value):
+        # pylint: disable=W0221
         # to change values (1000 and 200), experimentally assigned for now but
         # need to be verified and changed after agreeing with production
-        r = min(255, max(0, 255 * (value - 1000) / 200))
-        g = 0
-        b = 255 - r
-        return QColor(r, g, b)
+        red = min(255, max(0, 255 * (value - 1000) / 200))
+        green = 0
+        blue = 255 - red
+        return QColor(red, green, blue)
 
     def _init_widget(self):
         widget_layout = QFormLayout()
@@ -80,8 +84,8 @@ class TactilePointBiotacSPMinus(TactilePointGeneric):
 
         widget_layout.addRow(self.get_dot())
 
-        self._data_labels = dict()
-        for data_field in self._CONST_DATA_FIELDS:
+        self._data_labels = {}
+        for data_field in self.CONST_DATA_FIELDS:
             self._data_labels[data_field] = QLabel("-")
             self._data_labels[data_field].setMinimumSize(40, 10)
             self._data_labels[data_field].setSizePolicy(2, 2)
@@ -89,22 +93,26 @@ class TactilePointBiotacSPMinus(TactilePointGeneric):
         self.setLayout(widget_layout)
 
     def update_data(self, data):
-        for data_field in self._CONST_DATA_FIELDS:
+        # pylint: disable=W0221
+        for data_field in self.CONST_DATA_FIELDS:
             self._data_labels[data_field].setText(str(data[data_field]))
         self.get_dot().set_color(self._value_to_color(data['pdc']))
         self.get_dot().update()
 
 
 class TactilePointBiotacSPPlus(TactilePointGeneric):
+
+    CONST_DATA_FIELDS = ['pac0', 'pac1', 'pdc', 'tac', 'tdc', 'electrodes', 'pac']
+
     def __init__(self, electrode_index, parent=None):
         super().__init__(index=electrode_index, parent=parent)
-        self._CONST_DATA_FIELDS = ['pac0', 'pac1', 'pdc', 'tac', 'tdc', 'electrodes', 'pac']
         self._init_widget()
 
     def _value_to_color(self, value):
-        r = 0.0
-        g = 0.0
-        b = 255.0
+        # pylint: disable=W0221
+        red = 0.0
+        green = 0.0
+        blue = 255.0
         value = float(value)
         # values taken from previous version of the plugin
         # this is to have a specific color indication
@@ -112,22 +120,22 @@ class TactilePointBiotacSPPlus(TactilePointGeneric):
         if value <= threshold[0]:
             pass
         elif value < threshold[1]:
-            r = 255
-            g = 255 * (value - threshold[0]) / (threshold[1] - threshold[0])
-            b = 0
+            red = 255
+            green = 255 * (value - threshold[0]) / (threshold[1] - threshold[0])
+            blue = 0
         elif value < threshold[2]:
-            r = 255 * ((threshold[2] - value) / (threshold[2] - threshold[1]))
-            g = 255
-            b = 0
+            red = 255 * ((threshold[2] - value) / (threshold[2] - threshold[1]))
+            green = 255
+            blue = 0
         elif value < threshold[3]:
-            r = 0
-            g = 255
-            b = 255 * ((value - threshold[2]) / (threshold[3] - threshold[2]))
+            red = 0
+            green = 255
+            blue = 255 * ((value - threshold[2]) / (threshold[3] - threshold[2]))
         elif value < threshold[4]:
-            r = 0
-            g = 255 * ((threshold[4] - value) / (threshold[4] - threshold[3]))
-            b = 255
-        return QColor(r, g, b)
+            red = 0
+            green = 255 * ((threshold[4] - value) / (threshold[4] - threshold[3]))
+            blue = 255
+        return QColor(red, green, blue)
 
     def _init_widget(self):
         widget_layout = QFormLayout()
@@ -143,6 +151,7 @@ class TactilePointBiotacSPPlus(TactilePointGeneric):
         self.setLayout(widget_layout)
 
     def update_data(self, data):
+        # pylint: disable=W0221
         self._electrode_label.setText(str(data))
         self.get_dot().set_color(self._value_to_color(data))
         self.get_dot().update()

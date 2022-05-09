@@ -14,14 +14,9 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import
-
 import numpy as np
-import rospy
-
 from python_qt_binding.QtGui import QPen, QColor
 from python_qt_binding.QtCore import Qt
-
 from qwt import (
     QwtPlot,
     QwtPlotCurve,
@@ -56,7 +51,7 @@ class GenericDataPlot(QwtPlot):
         self.axisScaleDraw(QwtPlot.xBottom).enableComponent(QwtScaleDraw.Labels, False)
         self.axisScaleDraw(QwtPlot.yLeft).enableComponent(QwtScaleDraw.Labels, False)
 
-        self._traces = dict()
+        self._traces = {}
         self.generate_plots(data)
 
     def generate_plots(self, data):

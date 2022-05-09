@@ -14,35 +14,19 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import, division
+import os
 import rospy
 import rospkg
-from enum import Enum
-import os
-
 from python_qt_binding.QtGui import QIcon
 from python_qt_binding.QtCore import Qt, QTimer
 from python_qt_binding.QtWidgets import (
-    QPushButton,
-    QWidget,
     QGridLayout,
     QHBoxLayout,
     QVBoxLayout,
     QGroupBox,
-    QFormLayout,
     QLabel,
-    QComboBox,
-    QStackedLayout,
     QCheckBox
 )
-
-from sr_fingertip_visualization.tactile_points import (
-    TactilePointPST,
-    TactilePointBiotacSPPlus,
-    TactilePointBiotacSPMinus
-)
-
-from sr_fingertip_visualization.tab_layouts_generic import GenericTabLayout
 from sr_robot_msgs.msg import ShadowPST, BiotacAll
 from sr_fingertip_visualization.generic_plots import GenericDataPlot
 
@@ -50,14 +34,14 @@ from sr_fingertip_visualization.generic_plots import GenericDataPlot
 class FingerWidgetGraphGeneric(QGroupBox):
 
     _BUFFER_SIZE = 350
+    _CONST_FINGERS = ['ff', 'mf', 'rf', 'lf', 'th']
 
     def __init__(self, finger, side, parent):
         super().__init__(parent=parent)
-        self._CONST_FINGERS = ['ff', 'mf', 'rf', 'lf', 'th']
         self._finger = finger
         self._side = side
-        self._data = dict()
-        self._data_checkboxes = dict()
+        self._data = {}
+        self._data_checkboxes = {}
         self._timer = QTimer()
         self._subscriber = None
 
@@ -66,14 +50,14 @@ class FingerWidgetGraphGeneric(QGroupBox):
         self.setChecked(False)
         self.clicked.connect(self.refresh_widget)
 
-        ICON_DIR = os.path.join(rospkg.RosPack().get_path('sr_visualization_icons'), 'icons')
+        icon_dir = os.path.join(rospkg.RosPack().get_path('sr_visualization_icons'), 'icons')
         self.plot_descriptors = {
-            'blue': QIcon(os.path.join(ICON_DIR, 'blue.png')),
-            'red': QIcon(os.path.join(ICON_DIR, 'red.png')),
-            'green': QIcon(os.path.join(ICON_DIR, 'green.png')),
-            'magenta': QIcon(os.path.join(ICON_DIR, 'magenta.png')),
-            'gray': QIcon(os.path.join(ICON_DIR, 'gray.png')),
-            'cyan': QIcon(os.path.join(ICON_DIR, 'cyan.png'))
+            'blue': QIcon(os.path.join(icon_dir, 'blue.png')),
+            'red': QIcon(os.path.join(icon_dir, 'red.png')),
+            'green': QIcon(os.path.join(icon_dir, 'green.png')),
+            'magenta': QIcon(os.path.join(icon_dir, 'magenta.png')),
+            'gray': QIcon(os.path.join(icon_dir, 'gray.png')),
+            'cyan': QIcon(os.path.join(icon_dir, 'cyan.png'))
         }
 
     def refresh_widget(self):
@@ -93,9 +77,11 @@ class FingerWidgetGraphGeneric(QGroupBox):
 
 
 class FingerWidgetGraphPST(FingerWidgetGraphGeneric):
+
+    _CONST_DATA_FIELDS = ['pressure', 'temperature']
+
     def __init__(self, side, finger, parent):
         super().__init__(finger, side, parent=parent)
-        self._CONST_DATA_FIELDS = ['pressure', 'temperature']
         self._initialize_data_structure()
 
         self._tactile_data_callback(rospy.wait_for_message('/{}/tactile'.format(self._side), ShadowPST))
@@ -146,16 +132,18 @@ class FingerWidgetGraphPST(FingerWidgetGraphGeneric):
                     elif data_field == "temperature":
                         self._data[data_field].append(data.temperature[i])
 
-    def timerEvent(self):
+    def timerEvent(self):  # pylint: disable=C0103
         for data_field in self._CONST_DATA_FIELDS:
             if self._data_checkboxes[data_field].isChecked():
                 self._plot.update_plot(self._data)
 
 
 class FingerWidgetGraphBiotac(FingerWidgetGraphGeneric):
+
+    _CONST_DATA_FIELDS = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
+
     def __init__(self, side, finger, parent):
         super().__init__(finger, side, parent=parent)
-        self._CONST_DATA_FIELDS = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
         self._initialize_data_structure()
         self._tactile_data_callback(rospy.wait_for_message('/{}/tactile'.format(self._side), BiotacAll))
 
@@ -187,7 +175,7 @@ class FingerWidgetGraphBiotac(FingerWidgetGraphGeneric):
 
     def _initialize_data_structure(self):
         for data_field in self._CONST_DATA_FIELDS:
-            self._data[data_field] = list()
+            self._data[data_field] = []
 
     def action_data_checkbox(self, state):
         caller = self.sender()
@@ -218,7 +206,7 @@ class FingerWidgetGraphBiotac(FingerWidgetGraphGeneric):
             self._timer.timeout.connect(self.timerEvent)
             self._timer.start(10)
 
-    def timerEvent(self):
+    def timerEvent(self):  # pylint: disable=C0103
         for data_field in self._CONST_DATA_FIELDS:
             if self._data_checkboxes[data_field].isChecked():
                 self._plot.update_plot(self._data)

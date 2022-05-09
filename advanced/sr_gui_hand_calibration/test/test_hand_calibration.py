@@ -18,20 +18,18 @@
 # Try as I might, I couldn't make Ubuntu leave it alone, so switched to the input events approach seen in
 # sr_triple_pedal.py. I'll leave this here in case it might be useful later.
 
-from __future__ import absolute_import
 import sys
 import os
+import tempfile
+import unittest
 import rospy
 import rospkg
-import unittest
 import rostest
-import tempfile
 from mock import patch
-from pyvirtualdisplay import Display
-from sr_gui_hand_calibration.sr_hand_calibration_model import HandCalibration
-
 from PyQt5.uic import loadUi
 from PyQt5.QtWidgets import QWidget, QApplication
+from pyvirtualdisplay import Display
+from sr_gui_hand_calibration.sr_hand_calibration_model import HandCalibration
 
 NAME = "test_hand_calibration"
 PKG = "sr_gui_hand_calibration"
@@ -42,12 +40,13 @@ class TestHandCalibration(unittest.TestCase):
     def setUp(self):
         display = Display(visible=False, size=(1024, 768), color_depth=24)
         display.start()
+        self.hand_model = None
         self.app = QApplication(sys.argv)
         self._widget = QWidget()
         ui_file = os.path.join(rospkg.RosPack().get_path('sr_gui_hand_calibration'), 'uis', 'SrHandCalibration.ui')
         loadUi(ui_file, self._widget)
 
-        self.mock_file = tempfile.NamedTemporaryFile(delete=False)
+        self.mock_file = tempfile.NamedTemporaryFile(delete=False)  # pylint: disable=R1732
         self.mock_file.write(b"""sr_calibrations: [\n""" +
                              b"""["mock", [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]],\n""" +
                              b"""]""")
@@ -60,7 +59,7 @@ class TestHandCalibration(unittest.TestCase):
         os.remove(self.mock_file.name)
 
     @patch('sr_gui_hand_calibration.sr_hand_calibration_model.EtherCAT_Hand_Lib')
-    def test_progress_bar(self, EtherCAT_Hand_Lib):
+    def test_progress_bar(self, _):  # pylint: disable=C0103
         self.hand_model = HandCalibration(tree_widget=self._widget.tree_calibration,
                                           progress_bar=self._widget.progress)
 

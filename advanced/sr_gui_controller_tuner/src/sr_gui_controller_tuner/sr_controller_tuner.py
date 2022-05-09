@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2011 Shadow Robot Company Ltd.
+# Copyright 2011, 2022 Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -15,18 +15,15 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-from __future__ import absolute_import
-import rospy
 import re
-
 from xml.etree import ElementTree as ET
+import rospy
 from controller_manager_msgs.srv import ListControllers
-
 from sr_robot_msgs.srv import ForceController, SetEffortControllerGains, SetMixedPositionVelocityPidGains, SetPidGains
 from sr_gui_controller_tuner.pid_loader_and_saver import PidLoader, PidSaver
 
 
-class CtrlSettings(object):
+class CtrlSettings:
 
     """
     Parses xml file and reads controller settings
@@ -35,11 +32,10 @@ class CtrlSettings(object):
 
     def __init__(self, xml_path, controller_type, joint_prefix):
         self.headers = []
-
+        xml_tree = None
         # open and parses the xml config file
-        xml_file = open(xml_path)
-        xml_tree = ET.parse(xml_file)
-        xml_file.close()
+        with open(xml_path, encoding="ASCII") as xml_file:
+            xml_tree = ET.parse(xml_file)
 
         # read the settings from the xml file
         ctrl_tree = None
@@ -81,7 +77,7 @@ class CtrlSettings(object):
             self.motors.append(motors_for_finger)
 
 
-class SrControllerTunerApp(object):
+class SrControllerTunerApp:
 
     """
     Handles loading, saving and setting of controller settings
@@ -172,6 +168,7 @@ class SrControllerTunerApp(object):
         return True
 
     def get_ctrls(self):
+        # pylint: disable=R1702
         """
         Retrieve currently running controllers
         return ["Motor Force", "Position"]
@@ -195,9 +192,9 @@ class SrControllerTunerApp(object):
                         ctrl_srv_name, self.CONTROLLER_MANAGER_DETECTION_TIMEOUT)
                     self.single_loop = True
                     rospy.loginfo("Detected single loop")
-                except rospy.ROSException as e:
+                except rospy.ROSException as exception:
                     rospy.loginfo(
-                        "Controller manager not running: %s" % str(e))
+                        f"Controller manager not running: {exception}")
                     rospy.loginfo("Running Hand Tuning in edit-only mode")
                     return self.set_edit_only(running_ctrls)
             else:
@@ -208,8 +205,8 @@ class SrControllerTunerApp(object):
         resp = None
         try:
             resp = controllers()
-        except rospy.ServiceException as e:
-            rospy.logerr("Service did not process request: %s" % str(e))
+        except rospy.ServiceException as exception:
+            rospy.logerr(f"Service did not process request: {exception}")
 
         running_ctrls.append("Motor Force")
         if resp is not None:

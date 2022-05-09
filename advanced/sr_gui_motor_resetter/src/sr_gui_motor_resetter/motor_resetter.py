@@ -4,7 +4,7 @@
 # inheriting from QObject
 #
 
-# Copyright 2011 Shadow Robot Company Ltd.
+# Copyright 2011, 2022 Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -18,7 +18,6 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import
 import os
 import rospkg
 import rospy
@@ -47,6 +46,7 @@ class MotorFlasher(QThread):
         self.parent = parent
         self.nb_motors_to_program = nb_motors_to_program
         self.prefix = prefix
+        self.flasher_service = None
 
     def run(self):
         programmed_motors = 0
@@ -60,8 +60,8 @@ class MotorFlasher(QThread):
                         'sr_hand_robot/' + self.prefix + 'reset_motor_' +
                         motor.motor_name, Empty)
                     self.flasher_service()
-                except rospy.ServiceException as e:
-                    self.failed['QString'].emit("Service did not process request: %s" % str(e))
+                except rospy.ServiceException as exception:
+                    self.failed['QString'].emit(f"Service did not process request: {exception}")
                     return
 
                 programmed_motors += 1
@@ -96,7 +96,7 @@ class SrGuiMotorResetter(Plugin):
     """
 
     def __init__(self, context):
-        super(SrGuiMotorResetter, self).__init__(context)
+        super().__init__(context)
         self.setObjectName('SrGuiMotorResetter')
 
         self._publisher = None
@@ -130,6 +130,7 @@ class SrGuiMotorResetter(Plugin):
             self.prefix_selected)
         # motors_frame is defined in the ui file with a grid layout
         self.motors = []
+        self.motor_flasher = None
         self.motors_frame = self._widget.motors_frame
         self.populate_motors()
         self.progress_bar = self._widget.motors_progress_bar
@@ -185,6 +186,7 @@ class SrGuiMotorResetter(Plugin):
             row += 1
 
     def diagnostics_callback(self, msg):
+        # pylint: disable=R1702
         for status in msg.status:
             for motor in self.motors:
                 if motor.motor_name in status.name and self._prefix.replace(
@@ -274,13 +276,13 @@ class SrGuiMotorResetter(Plugin):
     def failed_programming_motors(self, message):
         QMessageBox.warning(self.motors_frame, "Warning", message)
 
-    def _unregisterPublisher(self):
+    def _unregister_publisher(self):
         if self._publisher is not None:
             self._publisher.unregister()
             self._publisher = None
 
     def shutdown_plugin(self):
-        self._unregisterPublisher()
+        self._unregister_publisher()
 
     def save_settings(self, global_settings, perspective_settings):
         pass

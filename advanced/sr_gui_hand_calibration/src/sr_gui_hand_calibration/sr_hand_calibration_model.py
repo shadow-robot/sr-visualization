@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2011 Shadow Robot Company Ltd.
+# Copyright 2011, 2022 Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -15,24 +15,18 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-from __future__ import absolute_import
+from collections import deque
+import os
+import subprocess
+import yaml
 import rospy
 import rospkg
-import subprocess
 from sr_utilities.hand_finder import HandFinder
 from sr_robot_lib.etherCAT_hand_lib import EtherCAT_Hand_Lib
 from PyQt5.QtGui import QColor, QIcon
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QTreeWidgetItemIterator, QMessageBox, QPushButton
-from PyQt5.QtCore import QTimer, pyqtSignal
+from PyQt5.QtWidgets import QTreeWidgetItem, QTreeWidgetItemIterator, QMessageBox, QPushButton
+from PyQt5.QtCore import QTimer
 
-import yaml
-try:
-    from yaml import CLoader as Loader, CDumper as Dumper
-except ImportError:
-    from yaml import Loader, Dumper
-import os
-
-from collections import deque
 
 green = QColor(153, 231, 96)
 orange = QColor(247, 206, 134)
@@ -68,7 +62,7 @@ class IndividualCalibration(QTreeWidgetItem):
         self.is_calibrated = False
 
     def remove(self):
-        self.tree_widget.remove
+        self.tree_widget.remove  # pylint: disable=W0104
 
     def calibrate(self):
         """
@@ -112,7 +106,7 @@ class IndividualCalibrationCoupled(IndividualCalibration):
                  raw_values, calibrated_values,
                  parent_widget, tree_widget,
                  robot_lib):
-
+        # pylint: disable=W0231
         self.joint_names = joint_names
         self.raw_values = [int(raw_value) for raw_value in raw_values]
         self.calibrated_values = calibrated_values
@@ -176,7 +170,7 @@ class JointCalibration(QTreeWidgetItem):
         self.package_path = package_path
         self.multiplot_processes = []
 
-        if type(self.joint_name) is not list:
+        if not isinstance(self.joint_name, list):
             QTreeWidgetItem.__init__(
                 self, parent_widget, ["", joint_name, "", ""])
             tree_widget.setItemWidget(self, 2, self.plot_button)
@@ -206,8 +200,8 @@ class JointCalibration(QTreeWidgetItem):
 
     def plot_raw_button_clicked(self):
         temporary_file_name = "{}/resource/tmp_plot.xml".format(self.package_path)
-        if type(self.joint_name) is not list:
-            if type(self.raw_value_index) is not list:
+        if not isinstance(self.joint_name, list):
+            if not isinstance(self.raw_value_index, list):
                 # Single joint, single sensor
                 template_filename = "{}/resource/plotjuggler_1_sensor.xml".format(self.package_path)
                 replace_list = [['sensor_id_0', str(self.raw_value_index)],
@@ -231,8 +225,8 @@ class JointCalibration(QTreeWidgetItem):
                 replace_list.append(["sensor_name_{}".format(i), joint_name])
                 process = ["rosrun", "plotjuggler", "plotjuggler", "-n", "-l", temporary_file_name]
         try:
-            with open(template_filename, "r") as f:
-                template = f.read()
+            with open(template_filename, "r", encoding="ASCII") as template_file:
+                template = template_file.read()
         except Exception:
             rospy.logerr("Failed to open multiplot template file: {}".format(template_filename))
             return
@@ -244,12 +238,12 @@ class JointCalibration(QTreeWidgetItem):
         for replacement in replace_list:
             template = template.replace(replacement[0], replacement[1])
         try:
-            with open(temporary_file_name, "w+") as f:
-                f.write(template)
+            with open(temporary_file_name, "w+", encoding="ASCII") as tmp_file:
+                tmp_file.write(template)
         except Exception:
             rospy.logerr("Failed to write temportary multiplot configuration file: {}".format(temporary_file_name))
             return
-        self.multiplot_processes.append(subprocess.Popen(process))
+        self.multiplot_processes.append(subprocess.Popen(process))  # pylint: disable=R1732
 
     def load_joint_calibration(self, new_calibrations):
         for calibration in self.calibrations:
@@ -257,7 +251,7 @@ class JointCalibration(QTreeWidgetItem):
         self.calibrations = []
 
         for calibration in new_calibrations:
-            if type(self.joint_name) is not list:
+            if not isinstance(self.joint_name, list):
                 new_calib = IndividualCalibration(self.joint_name,
                                                   calibration[0], calibration[1],
                                                   self, self.tree_widget, self.robot_lib)
@@ -277,7 +271,7 @@ class JointCalibration(QTreeWidgetItem):
         if len(config) <= 1:
             # no config, or only one point
             # generating flat config
-            if type(self.joint_name) is not list:
+            if not isinstance(self.joint_name, list):
                 config = [[0, 0.0], [1, 0.0]]
             else:
                 config = [[[0, 0], [0.0, 0.0]], [[1, 1], [0.0, 0.0]]]
@@ -288,7 +282,7 @@ class JointCalibration(QTreeWidgetItem):
         Update the joint position if there are enough nonequal values
         If the values are equal it can be assumed the sensor are not measuring properly
         """
-        if type(self.joint_name) is not list:
+        if not isinstance(self.joint_name, list):
             raw_value = self.robot_lib.get_raw_value(self.joint_name)
             self.plot_button.setText(str(raw_value))
         else:
@@ -307,7 +301,7 @@ class JointCalibration(QTreeWidgetItem):
             all_equal = True
             last_data = self.last_raw_values[0]
             for data in self.last_raw_values:
-                if type(data) is not list:
+                if not isinstance(data, list):
                     last_data_not_equal = data != last_data
                 else:
                     last_data_not_equal = (data[0] != last_data[0] or data[1] != last_data[1])
@@ -368,12 +362,11 @@ class HandCalibration(QTreeWidgetItem):
                           "Ring Finger", "Little Finger",
                           "Thumb", "Wrist"],
                  old_version=False):
-
+        # pylint: disable=W0102
         self.old_version = old_version
 
         self.package_path = rospkg.RosPack().get_path('sr_gui_hand_calibration')
 
-        # TODO: Import this from an xml file?
         self.joint_map = {"First Finger": [["FFJ1", [[0.0, 0.0],
                                                      [0.0, 22.5],
                                                      [0.0, 45.0],
@@ -572,13 +565,13 @@ class HandCalibration(QTreeWidgetItem):
         self.tree_widget.itemActivated.connect(self.calibrate_item)
 
     def unregister(self):
-        it = QTreeWidgetItemIterator(self)
-        while it.value():
+        iterator = QTreeWidgetItemIterator(self)
+        while iterator.value():
             try:
-                it.value().on_close()
+                iterator.value().on_close()
             except Exception:
                 pass
-            it += 1
+            iterator += 1
 
         self.robot_lib.on_close()
 
@@ -604,12 +597,12 @@ class HandCalibration(QTreeWidgetItem):
                    "RFJ1", "RFJ2",
                    "LFJ1", "LFJ2"]
 
-        it = QTreeWidgetItemIterator(self)
-        while it.value():
-            if it.value().text(1) in joint0s:
-                it += self.joint_0_calibration_index + 1
-                it.value().calibrate()
-            it += 1
+        iterator = QTreeWidgetItemIterator(self)
+        while iterator.value():
+            if iterator.value().text(1) in joint0s:
+                iterator += self.joint_0_calibration_index + 1
+                iterator.value().calibrate()
+            iterator += 1
 
         self.joint_0_calibration_index += 1
         if self.joint_0_calibration_index == len(self.joint_map["First Finger"][0][1]):
@@ -623,13 +616,13 @@ class HandCalibration(QTreeWidgetItem):
         self.progress()
 
     def progress(self):
-        it = QTreeWidgetItemIterator(self)
+        iterator = QTreeWidgetItemIterator(self)
         nb_of_items = 0
         nb_of_calibrated_items = 0
-        while it.value():
-            it += 1
+        while iterator.value():
+            iterator += 1
             try:
-                if it.value().is_calibrated:
+                if iterator.value().is_calibrated:
                     nb_of_calibrated_items += 1
                 nb_of_items += 1
             except Exception:
@@ -639,11 +632,10 @@ class HandCalibration(QTreeWidgetItem):
             int(float(nb_of_calibrated_items) / float(nb_of_items) * 100.0))
 
     def load(self, filepath):
-        f = open(filepath, 'r')
         document = ""
-        for line in f.readlines():
-            document += line
-        f.close()
+        with open(filepath, 'r', encoding="ASCII") as yaml_file:
+            for line in yaml_file.readlines():
+                document += line
         yaml_config = yaml.load(document)
 
         if "sr_calibrations" not in list(yaml_config.keys()):
@@ -664,29 +656,27 @@ class HandCalibration(QTreeWidgetItem):
                 return
             used_yaml_config = yaml_config["sr_calibrations"] + yaml_config["sr_calibrations_coupled"]
         for joint in used_yaml_config:
-            it = QTreeWidgetItemIterator(self)
-            while it.value():
-                if type(joint[0]) is not list:
+            iterator = QTreeWidgetItemIterator(self)
+            while iterator.value():
+                if not isinstance(joint[0], list):
                     joint_name = joint[0]
                 else:
                     joint_name = ", ".join(joint[0])
-                if it.value().text(1) == joint_name:
-                    it.value().load_joint_calibration(joint[1])
-                it += 1
+                if iterator.value().text(1) == joint_name:
+                    iterator.value().load_joint_calibration(joint[1])
+                iterator += 1
 
         self.progress_bar.setValue(100)
 
     def save(self, filepath):
-        yaml_config = {}
-
         joint_configs = []
-        it = QTreeWidgetItemIterator(self)
-        while it.value():
+        iterator = QTreeWidgetItemIterator(self)
+        while iterator.value():
             try:
-                joint_configs.append(it.value().get_joint_calibration())
+                joint_configs.append(iterator.value().get_joint_calibration())
             except Exception:
                 pass
-            it += 1
+            iterator += 1
 
         # this doesn't work as we'd like
         # yaml_config["sr_calibrations"] = joint_configs
@@ -694,7 +684,7 @@ class HandCalibration(QTreeWidgetItem):
         # default_flow_style=False)
         full_config_to_write = "sr_calibrations: [\n"
         for joint_config in joint_configs:
-            if type(joint_config[0]) is not list:
+            if not isinstance(joint_config[0], list):
                 full_config_to_write += "[\""
                 full_config_to_write += joint_config[0] + "\", "
 
@@ -710,7 +700,7 @@ class HandCalibration(QTreeWidgetItem):
         if not self.old_version:
             full_config_to_write += "\n\nsr_calibrations_coupled: [\n"
             for joint_config in joint_configs:
-                if type(joint_config[0]) is list:
+                if isinstance(joint_config[0], list):
                     full_config_to_write += "[[\""
                     full_config_to_write += joint_config[0][0] + "\", \"" + joint_config[0][1] + "\"], ["
 
@@ -730,18 +720,17 @@ class HandCalibration(QTreeWidgetItem):
                     full_config_to_write += "]]"
             full_config_to_write += "\n]"
 
-        f = open(filepath, 'w')
-        f.write(full_config_to_write)
-        f.close()
+        with open(filepath, 'w', encoding="ASCII") as write_file:
+            write_file.write(full_config_to_write)
 
     def is_calibration_complete(self):
-        it = QTreeWidgetItemIterator(self)
-        while it.value():
+        iterator = QTreeWidgetItemIterator(self)
+        while iterator.value():
             try:
-                if not it.value().is_calibrated:
+                if not iterator.value().is_calibrated:
                     return False
             except Exception:
                 pass
-            it += 1
+            iterator += 1
 
         return True

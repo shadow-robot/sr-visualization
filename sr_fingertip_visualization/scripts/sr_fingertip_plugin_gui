@@ -14,14 +14,10 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import
-
 import sys
-
-from sr_gui_fingertip_visualization.sr_gui_fingertip_visualization import SrFingertipVisualizer
 from rqt_gui.main import Main
 
 
-plugin = 'sr_gui_fingertip_visualization.sr_gui_fingertip_visualization.SrFingertipVisualizer'
-main = Main(filename=plugin)
-sys.exit(main.main(standalone=plugin))
+PLUGIN = 'sr_gui_fingertip_visualization.sr_gui_fingertip_visualization.SrFingertipVisualizer'
+main = Main(filename=PLUGIN)
+sys.exit(main.main(standalone=PLUGIN))

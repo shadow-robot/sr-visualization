@@ -14,17 +14,11 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import
-
-import rospy
 import sys
-
-from sr_data_visualization.data_plot import GenericDataPlot
-from rqt_gui_py.plugin import Plugin
+import rospy
 from sensor_msgs.msg import JointState
+from rqt_gui_py.plugin import Plugin
 from python_qt_binding.QtCore import Qt
-
-
 from python_qt_binding.QtWidgets import (
     QWidget,
     QApplication,
@@ -34,10 +28,9 @@ from python_qt_binding.QtWidgets import (
     QMessageBox,
     QLabel,
     QComboBox,
-    QFormLayout,
     QHBoxLayout
 )
-
+from sr_data_visualization.data_plot import GenericDataPlot
 from sr_data_visualization.data_tab import (
     JointStatesDataTab,
     ControlLoopsDataTab,
@@ -53,14 +46,20 @@ class SrDataVisualizer(Plugin):
 
     def __init__(self, context):
         super().__init__(context)
-
+        self.joint_prefixes = []
+        self.hand_id_selection = QComboBox()
+        self.info_button_and_hand_selection_layout = QHBoxLayout()
+        self.tab_index = 0
+        self.joint_prefix = None
+        self.hand_joints = None
+        self.information_btn = None
+        self.tab_container = None
+        self.tab_created = None
         self.context = context
         self.init_ui()
 
     def _detect_hand_id_and_joints(self):
-        self.joint_prefixes = []
         self.hand_joints = None
-
         try:
             joint_states_msg = rospy.wait_for_message("/joint_states", JointState, timeout=1)
             for prefix in self.PREFIXES:
@@ -81,9 +80,7 @@ class SrDataVisualizer(Plugin):
         self.layout.setContentsMargins(0, 0, 0, 0)
         self._widget.setObjectName(self.TITLE)
         self._widget.setWindowTitle(self.TITLE)
-
         self.fill_layout()
-
         self._widget.setLayout(self.layout)
 
         if __name__ != "__main__":
@@ -100,7 +97,6 @@ class SrDataVisualizer(Plugin):
             self.layout.addWidget(QLabel("No hand connected or ROS bag is not playing"), alignment=Qt.AlignCenter)
             return
 
-        self.hand_id_selection = QComboBox()
         labels = []
         for prefix in self.joint_prefixes:
             labels.append(prefix[:-1])
@@ -108,7 +104,6 @@ class SrDataVisualizer(Plugin):
         self.hand_id_selection.currentIndexChanged.connect(self.combobox_action_hand_id_selection)
         self.hand_id_selection.setFixedSize(50, 20)
 
-        self.info_button_and_hand_selection_layout = QHBoxLayout()
         self.info_button_and_hand_selection_layout.addWidget(QLabel("Hand ID:"), alignment=Qt.AlignRight)
         self.info_button_and_hand_selection_layout.addWidget(self.hand_id_selection)
         self.info_button_and_hand_selection_layout.addWidget(self.information_btn)
@@ -118,7 +113,6 @@ class SrDataVisualizer(Plugin):
         self.layout.addWidget(self.tab_container)
 
         # Create tabs
-        self.tab_index = 0
         self.create_tab("Joint States")
         self.create_tab("Control Loops")
         self.create_tab("Motor Stats 1")
@@ -160,6 +154,7 @@ class SrDataVisualizer(Plugin):
                     graph.plot_data(True, side)
 
     def display_information(self, message):
+        # pylint: disable=R0201
         message = "This GUI shows all the data available for the Dexterous Hand.\n" + \
                   "In each tab, you can find information about:\n\n" + \
                   "Joint states (position, effort, velocity)\n\n" + \
@@ -202,10 +197,13 @@ class SrDataVisualizer(Plugin):
             for graph in graphs:
                 graph.plot_data(False, self.hand_id_selection.currentText())
 
+    def get_widget(self):
+        return self._widget
+
 
 if __name__ == "__main__":
     rospy.init_node("sr_data_visualizer")
     app = QApplication(sys.argv)
     data_visualiser_gui = SrDataVisualizer(None)
-    data_visualiser_gui._widget.show()
+    data_visualiser_gui.get_widget().show()
     sys.exit(app.exec_())

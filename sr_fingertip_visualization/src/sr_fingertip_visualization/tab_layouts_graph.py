@@ -14,35 +14,17 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import absolute_import, division
-
-import os
-import rospy
-import rospkg
-from sr_robot_msgs.msg import ShadowPST, BiotacAll
-from sr_fingertip_visualization.generic_plots import GenericDataPlot
-from sr_fingertip_visualization.tab_layouts_generic import (
-    GenericGraphTab,
-    GenericOptionBar,
-    GenericOptionBar,
-    BiotacType
-)
-
-from python_qt_binding.QtCore import QTimer
-from python_qt_binding.QtGui import QIcon, QColor
 from python_qt_binding.QtWidgets import (
-    QPushButton,
     QWidget,
     QHBoxLayout,
     QVBoxLayout,
-    QGroupBox,
-    QFormLayout,
-    QLabel,
-    QComboBox,
-    QCheckBox,
     QStackedLayout
 )
-
+from sr_fingertip_visualization.tab_layouts_generic import (
+    GenericGraphTab,
+    GenericOptionBar,
+    BiotacType
+)
 from sr_fingertip_visualization.finger_widgets_graphs import (
     FingerWidgetGraphPST,
     FingerWidgetGraphBiotac,
@@ -50,18 +32,20 @@ from sr_fingertip_visualization.finger_widgets_graphs import (
 )
 
 
-class PSTGraphTab(GenericGraphTab):
+class PSTGraphTab(GenericGraphTab):  # pylint: disable=W0223
+
+    CONST_DATA_FIELDS = ['pressure', 'temperature']
+
     def __init__(self, side, parent):
         super().__init__(side, parent)
         self._side = side
-        self._CONST_DATA_FIELDS = ['pressure', 'temperature']
         self._init_tactile_layout()
 
     def _initialize_data_structure(self):
         for finger in self._CONST_FINGERS:
-            self._data[finger] = dict()
-            for data_field in self._CONST_DATA_FIELDS:
-                self._data[finger][data_field] = list()
+            self._data[finger] = {}
+            for data_field in self.CONST_DATA_FIELDS:
+                self._data[finger][data_field] = []
 
     def _init_tactile_layout(self):
         fingers_layout = QHBoxLayout()
@@ -74,18 +58,20 @@ class PSTGraphTab(GenericGraphTab):
         return self._finger_widgets[finger]
 
 
-class BiotacGraphTab(GenericGraphTab):
+class BiotacGraphTab(GenericGraphTab):  # pylint: disable=W0223
+
+    CONST_DATA_FIELDS = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
+
     def __init__(self, side, parent):
         super().__init__(side, parent)
         self._side = side
-        self._CONST_DATA_FIELDS = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
         self._init_tactile_layout()
 
     def _initialize_data_structure(self):
         for finger in self._CONST_FINGERS:
-            self._data[finger] = dict()
-            for data_field in self._CONST_DATA_FIELDS:
-                self._data[finger][data_field] = list()
+            self._data[finger] = {}
+            for data_field in self.CONST_DATA_FIELDS:
+                self._data[finger][data_field] = []
 
     def _init_tactile_layout(self):
         fingers_layout = QHBoxLayout()
@@ -111,7 +97,7 @@ class GraphTab(QWidget):
         finger_layout = QVBoxLayout()
         self.stacked_layout = QStackedLayout()
 
-        self.tactile_widgets = dict()
+        self.tactile_widgets = {}
         for side, tactile_topic in self._tactile_topics.items():
             if tactile_topic == "ShadowPST":
                 self.tactile_widgets[side] = PSTGraphTab(side, self)
@@ -152,7 +138,8 @@ class GraphOptionBar(GenericOptionBar):
         self._selected_fingers = [finger for finger in self._CONST_FINGERS if fingertip_widgets[finger].isChecked()]
         for finger in self._CONST_FINGERS:
             fingertip_widgets[finger].setChecked(True)
-            fingertip_widgets[finger].start_timer_and_subscriber()
+            # pylint thinks the functions empty so have to disable check
+            fingertip_widgets[finger].start_timer_and_subscriber()  # pylint: disable=W0223
             fingertip_widgets[finger].show()
 
             for data_checkbox in fingertip_widgets[finger].get_data_checkboxes().values():
