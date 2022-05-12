@@ -26,8 +26,6 @@ from sr_fingertip_visualization.tactile_point_generic import TactilePointGeneric
 
 class TactilePointPST(TactilePointGeneric):
 
-    CONST_DATA_FIELDS = ['pressure', 'temperature']
-
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.get_dot().resize_dot(25)

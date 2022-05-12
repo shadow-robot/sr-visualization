@@ -68,6 +68,9 @@ class TactilePoint(QWidget):
 
 
 class TactilePointGeneric(QWidget):
+
+    _CONST_DATA_FIELDS = ['pressure', 'temperature']
+
     def __init__(self, parent, index=None):
         super().__init__(parent=parent)
         self._dot = TactilePoint(index=index, parent=self)
