@@ -26,7 +26,7 @@ from sr_fingertip_visualization.tactile_point_generic import TactilePointGeneric
 
 class TactilePointPST(TactilePointGeneric):
 
-    CONST_DATA_FIELDS = ['pressure', 'temperature']
+    _CONST_DATA_FIELDS = ['pressure', 'temperature']
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -46,14 +46,14 @@ class TactilePointPST(TactilePointGeneric):
         data_layout.addRow(self.get_dot())
         self._label = {}
 
-        for data_field in self.CONST_DATA_FIELDS:
+        for data_field in self._CONST_DATA_FIELDS:
             self._label[data_field] = QLabel("-")
             data_layout.addRow(QLabel(f"{data_field[0]}: "), self._label[data_field])
         self.setLayout(data_layout)
 
     def update_data(self, data):
         # pylint: disable=W0221
-        for data_field in self.CONST_DATA_FIELDS:
+        for data_field in self._CONST_DATA_FIELDS:
             self._label[data_field].setText(str(data[data_field]))
         self.get_dot().set_color(self._value_to_color(data['pressure']))
         self.get_dot().update()
@@ -61,7 +61,7 @@ class TactilePointPST(TactilePointGeneric):
 
 class TactilePointBiotacSPMinus(TactilePointGeneric):
 
-    CONST_DATA_FIELDS = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
+    _CONST_DATA_FIELDS = ['pac0', 'pac1', 'pdc', 'tac', 'tdc']
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -85,7 +85,7 @@ class TactilePointBiotacSPMinus(TactilePointGeneric):
         widget_layout.addRow(self.get_dot())
 
         self._data_labels = {}
-        for data_field in self.CONST_DATA_FIELDS:
+        for data_field in self._CONST_DATA_FIELDS:
             self._data_labels[data_field] = QLabel("-")
             self._data_labels[data_field].setMinimumSize(40, 10)
             self._data_labels[data_field].setSizePolicy(2, 2)
@@ -94,7 +94,7 @@ class TactilePointBiotacSPMinus(TactilePointGeneric):
 
     def update_data(self, data):
         # pylint: disable=W0221
-        for data_field in self.CONST_DATA_FIELDS:
+        for data_field in self._CONST_DATA_FIELDS:
             self._data_labels[data_field].setText(str(data[data_field]))
         self.get_dot().set_color(self._value_to_color(data['pdc']))
         self.get_dot().update()
@@ -102,7 +102,7 @@ class TactilePointBiotacSPMinus(TactilePointGeneric):
 
 class TactilePointBiotacSPPlus(TactilePointGeneric):
 
-    CONST_DATA_FIELDS = ['pac0', 'pac1', 'pdc', 'tac', 'tdc', 'electrodes', 'pac']
+    _CONST_DATA_FIELDS = ['pac0', 'pac1', 'pdc', 'tac', 'tdc', 'electrodes', 'pac']
 
     def __init__(self, electrode_index, parent=None):
         super().__init__(index=electrode_index, parent=parent)
