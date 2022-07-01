@@ -84,7 +84,7 @@ class PidSaver:
         full_config_to_write = yaml.dump(yaml_config, default_flow_style=False)
 
         with open(self.path, 'w', encoding="ASCII") as pid_file:
-            f.write(full_config_to_write)
+            pid_file.write(full_config_to_write)
 
 
 if __name__ == '__main__':
