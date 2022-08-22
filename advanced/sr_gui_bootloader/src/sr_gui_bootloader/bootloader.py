@@ -18,7 +18,7 @@ import rosnode
 import rospkg
 from QtCore import Qt, QThread, QPoint, pyqtSignal
 from QtGui import QColor
-from QtWidgets import {
+from QtWidgets import (
     QWidget,
     QMessageBox,
     QFrame,
@@ -28,7 +28,7 @@ from QtWidgets import {
     QFileDialog,
     QApplication,
     QVBoxLayout
-}
+)
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 from sr_utilities.hand_finder import HandFinder
@@ -102,7 +102,6 @@ class SrGuiBootloader(Plugin):
 
     def __init__(self, context):
         super().__init__(context)
-        rospy.logwarn(rospy.get_name())
         self.setObjectName('SrGuiBootloader')
 
         self._publisher = None
