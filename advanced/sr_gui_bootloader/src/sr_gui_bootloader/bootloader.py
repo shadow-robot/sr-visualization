@@ -18,15 +18,25 @@ import rosnode
 import rospkg
 from QtCore import Qt, QThread, QPoint, pyqtSignal
 from QtGui import QColor
-from QtWidgets import QWidget, QMessageBox, QFrame, QHBoxLayout, QCheckBox, QLabel, QFileDialog, QApplication, QVBoxLayout
+from QtWidgets import {
+    QWidget,
+    QMessageBox,
+    QFrame,
+    QHBoxLayout,
+    QCheckBox,
+    QLabel,
+    QFileDialog,
+    QApplication,
+    QVBoxLayout
+}
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 from sr_utilities.hand_finder import HandFinder
 from diagnostic_msgs.msg import DiagnosticArray
 from sr_robot_msgs.srv import SimpleMotorFlasher, SimpleMotorFlasherResponse
 
-SERVER_MACHINE_NAME = os.uname()[1]
 CONTROL_MACHINE_NAME = "nuc-control"
+
 
 class MotorBootloader(QThread):
 
@@ -90,7 +100,7 @@ class SrGuiBootloader(Plugin):
     A GUI plugin for bootloading the motors on the shadow etherCAT hand.
     """
 
-    def __init__(self, context):        
+    def __init__(self, context):
         super().__init__(context)
         rospy.logwarn(rospy.get_name())
         self.setObjectName('SrGuiBootloader')
@@ -98,10 +108,7 @@ class SrGuiBootloader(Plugin):
         self._publisher = None
         self._widget = QWidget()
 
-        correct = self._is_plugin_launched_on_correct_machine()
-        rospy.logwarn(f"Plugin launched:{correct}") 
-
-        if correct:
+        if self._is_plugin_launched_on_correct_machine():
             ui_file = os.path.join(rospkg.RosPack().get_path(
                 'sr_gui_bootloader'), 'uis', 'SrBootloader.ui')
             loadUi(ui_file, self._widget)
@@ -154,7 +161,6 @@ class SrGuiBootloader(Plugin):
 
     def _is_plugin_launched_on_correct_machine(self):
         machine_list = rosnode.get_machines_by_nodes()
-        rospy.logwarn(f"Available machines:{machine_list}")
         if CONTROL_MACHINE_NAME in machine_list:
             return rospy.get_name() in rosnode.get_nodes_by_machine(CONTROL_MACHINE_NAME)
         return True
