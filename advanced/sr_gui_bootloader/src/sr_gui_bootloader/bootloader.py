@@ -113,7 +113,7 @@ class SrGuiBootloader(Plugin):
             loadUi(ui_file, self._widget)
             self._widget.setObjectName('SrMotorResetterUi')
 
-            if context is not None:
+            if context:
                 context.add_widget(self._widget)
 
             # setting the prefixes
@@ -155,7 +155,7 @@ class SrGuiBootloader(Plugin):
             fault_label.setAlignment(Qt.AlignCenter)
             layout.addWidget(fault_label)
             self._widget.setLayout(layout)
-            if context is not None:
+            if context:
                 context.add_widget(self._widget)
 
     def _is_plugin_launched_on_correct_machine(self):
@@ -336,6 +336,7 @@ class SrGuiBootloader(Plugin):
 
 
 if __name__ == "__main__":
+    rospy.init_node("bootloader")
     app = QApplication(sys.argv)
     ctrl = SrGuiBootloader(None)
     ctrl._widget.show()  # pylint: disable=W0212
