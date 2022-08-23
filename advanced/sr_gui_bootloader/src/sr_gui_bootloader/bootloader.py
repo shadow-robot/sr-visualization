@@ -14,15 +14,28 @@
 import sys
 import os
 import rospy
+import rosnode
 import rospkg
 from QtCore import Qt, QThread, QPoint, pyqtSignal
 from QtGui import QColor
-from QtWidgets import QWidget, QMessageBox, QFrame, QHBoxLayout, QCheckBox, QLabel, QFileDialog, QApplication
+from QtWidgets import (
+    QWidget,
+    QMessageBox,
+    QFrame,
+    QHBoxLayout,
+    QCheckBox,
+    QLabel,
+    QFileDialog,
+    QApplication,
+    QVBoxLayout
+)
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 from sr_utilities.hand_finder import HandFinder
 from diagnostic_msgs.msg import DiagnosticArray
 from sr_robot_msgs.srv import SimpleMotorFlasher, SimpleMotorFlasherResponse
+
+CONTROL_MACHINE_NAME = "nuc-control"
 
 
 class MotorBootloader(QThread):
@@ -94,45 +107,62 @@ class SrGuiBootloader(Plugin):
         self._publisher = None
         self._widget = QWidget()
 
-        ui_file = os.path.join(rospkg.RosPack().get_path(
-            'sr_gui_bootloader'), 'uis', 'SrBootloader.ui')
-        loadUi(ui_file, self._widget)
-        self._widget.setObjectName('SrMotorResetterUi')
-        if context is not None:
-            context.add_widget(self._widget)
+        if self._is_plugin_launched_on_correct_machine():
+            ui_file = os.path.join(rospkg.RosPack().get_path(
+                'sr_gui_bootloader'), 'uis', 'SrBootloader.ui')
+            loadUi(ui_file, self._widget)
+            self._widget.setObjectName('SrMotorResetterUi')
 
-        # setting the prefixes
-        self._hand_finder = HandFinder()
-        hand_parameters = self._hand_finder.get_hand_parameters()
-        self._prefix = ""
-        for hand in hand_parameters.mapping:
-            self._widget.select_prefix.addItem(hand_parameters.mapping[hand])
-        if not hand_parameters.mapping:
-            rospy.logerr("No hand detected")
-            QMessageBox.warning(self._widget, "warning", "No hand is detected")
-            return
-        self._widget.select_prefix.setCurrentIndex(0)
-        self._prefix = list(hand_parameters.mapping.values())[0]
-        self._widget.select_prefix.currentIndexChanged['QString'].connect(self.prefix_selected)
+            if context:
+                context.add_widget(self._widget)
 
-        # motors_frame is defined in the ui file with a grid layout
-        self.motors = []
-        self.motors_frame = self._widget.motors_frame
-        self.motor_bootloader = None
-        self.progress_bar = self._widget.motors_progress_bar
-        self.progress_bar.hide()
+            # setting the prefixes
+            self._hand_finder = HandFinder()
+            hand_parameters = self._hand_finder.get_hand_parameters()
+            self._prefix = ""
+            for hand in hand_parameters.mapping:
+                self._widget.select_prefix.addItem(hand_parameters.mapping[hand])
+            if not hand_parameters.mapping:
+                rospy.logerr("No hand detected")
+                QMessageBox.warning(self._widget, "warning", "No hand is detected")
+                return
+            self._widget.select_prefix.setCurrentIndex(0)
+            self._prefix = list(hand_parameters.mapping.values())[0]
+            self._widget.select_prefix.currentIndexChanged['QString'].connect(self.prefix_selected)
 
-        self.server_revision = 0
-        self.diag_sub = rospy.Subscriber("/diagnostics", DiagnosticArray, self.diagnostics_callback)
+            # motors_frame is defined in the ui file with a grid layout
+            self.motors = []
+            self.motors_frame = self._widget.motors_frame
+            self.motor_bootloader = None
+            self.progress_bar = self._widget.motors_progress_bar
+            self.progress_bar.hide()
 
-        # Bind button clicks
-        self._widget.btn_select_bootloader.pressed.connect(self.on_select_bootloader_pressed)
-        self._widget.btn_select_all.pressed.connect(self.on_select_all_pressed)
-        self._widget.btn_select_none.pressed.connect(self.on_select_none_pressed)
-        self._widget.btn_bootload.pressed.connect(self.on_bootload_pressed)
+            self.server_revision = 0
+            self.diag_sub = rospy.Subscriber("/diagnostics", DiagnosticArray, self.diagnostics_callback)
 
-        # select the first available hand
-        self.prefix_selected(list(hand_parameters.mapping.values())[0])
+            # Bind button clicks
+            self._widget.btn_select_bootloader.pressed.connect(self.on_select_bootloader_pressed)
+            self._widget.btn_select_all.pressed.connect(self.on_select_all_pressed)
+            self._widget.btn_select_none.pressed.connect(self.on_select_none_pressed)
+            self._widget.btn_bootload.pressed.connect(self.on_bootload_pressed)
+
+            # select the first available hand
+            self.prefix_selected(list(hand_parameters.mapping.values())[0])
+
+        else:
+            layout = QVBoxLayout()
+            fault_label = QLabel("Please launch this plugin via RQT NUC")
+            fault_label.setAlignment(Qt.AlignCenter)
+            layout.addWidget(fault_label)
+            self._widget.setLayout(layout)
+            if context:
+                context.add_widget(self._widget)
+
+    def _is_plugin_launched_on_correct_machine(self):
+        machine_list = rosnode.get_machines_by_nodes()
+        if CONTROL_MACHINE_NAME in machine_list:
+            return rospy.get_name() in rosnode.get_nodes_by_machine(CONTROL_MACHINE_NAME)
+        return True
 
     def on_select_bootloader_pressed(self):
         """
