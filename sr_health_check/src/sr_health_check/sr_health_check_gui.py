@@ -16,7 +16,9 @@ import os
 import rospy
 import rosnode
 import rospkg
-from QtCore import Qt
+import threading
+
+from QtCore import Qt, QTimer
 from QtGui import QColor
 from QtWidgets import (
     QWidget,
@@ -34,6 +36,13 @@ from python_qt_binding import loadUi
 
 from sr_hand_health_report.monotonicity_check import MonotonicityCheck
 from sr_hand_health_report.position_sensor_noise_check import PositionSensorNoiseCheck
+from sr_hand_health_report.motor_check import MotorCheck
+
+import queue
+from datetime import datetime
+import yaml
+from os.path import exists
+
 
 class SrHealthCheck(Plugin):
 
@@ -45,6 +54,17 @@ class SrHealthCheck(Plugin):
         super().__init__(context)
         self.setObjectName('SrGuiHealthCheck')
         self._widget = QWidget()
+        self._timer = QTimer()
+        self._timer.timeout.connect(self.timerEvent)
+        self._results = {}
+
+        self._fingers = ['FF']
+        self._side = "right"
+        self._check_names = ['motor', 'position_sensor_noise']
+        self._checks_to_execute = {}
+        self._checks_running = False
+        self._check_queue = queue.Queue()
+        self._file_name = datetime.now().strftime("%d-%m-%Y-%H-%M-%S")
 
         ui_file = os.path.join(rospkg.RosPack().get_path('sr_health_check'), 'uis', 'SrHealthCheck.ui')
         loadUi(ui_file, self._widget)
@@ -53,34 +73,92 @@ class SrHealthCheck(Plugin):
         if context:
             context.add_widget(self._widget)
 
+        self.initialize_checks()
         self.setup_connections()
+        self._timer.start(100)
+
+        threading.Thread(target=self.worker, daemon=True).start()
+
+    def timerEvent(self):
+        checks_are_running = False
+        for check_name in self._check_names:
+            if self._checks_to_execute[check_name]['thread'].is_alive():
+                checks_are_running = True
+        self._widget.button_start_selected.setEnabled(not checks_are_running)
 
     def setup_connections(self):
-        #self._widget.checkbox_motor.clicked.connect(self.checkbox_motor_clicked)
-        #self._widget.checkbox_position_sensor.clicked.connect(self.checkbox_position_sensor_clicked)
         self._widget.button_start_selected.clicked.connect(self.button_start_selected_clicked)
-        #self._widget.button_start_all.clicked.connect(self.button_start_all_clicked)
-        #self._widget.button_stop.clicked.connect(self.button_stop_clicked)
+        self._widget.button_start_all.clicked.connect(self.button_start_all_clicked)
+
+    def initialize_checks(self):
+        self._file_name = datetime.now().strftime("%d-%m-%Y-%H-%M-%S")
+        for check_name in self._check_names:
+            self._checks_to_execute[check_name] = {'check': 0, 'thread': 0}
+
+        self._checks_to_execute['motor']['check'] = MotorCheck(self._side, self._fingers)
+        self._checks_to_execute['position_sensor_noise']['check'] = PositionSensorNoiseCheck(self._side, self._fingers)
+
+        self._checks_to_execute['motor']['thread'] = \
+            threading.Thread(target=self._checks_to_execute['motor']['check'].run_check)
+        self._checks_to_execute['position_sensor_noise']['thread'] = \
+            threading.Thread(target=self._checks_to_execute['position_sensor_noise']['check'].run_check)
 
     def button_start_selected_clicked(self):
+        self._file_name = datetime.now().strftime("%d-%m-%Y-%H-%M-%S")
+        self._results[self._file_name] = []
+
+        rospy.logwarn(f"selected {self._file_name}")
         is_checked = {}
-        is_checked['motor_check'] = self._widget.checkbox_motor.isChecked()
+        is_checked['motor'] = self._widget.checkbox_motor.isChecked()
         is_checked['position_sensor_noise'] = self._widget.checkbox_position_sensor.isChecked()
         '''
         to be extended with more checks
         '''
-        rospy.logwarn(is_checked)
-        for key, value in is_checked.items():
-            if value:
-                self.execute_test(key)
 
-    def execute_test(self, test):
-        side = 'right'
-        fingers = ['FF']
-        if 'motor_check' == test:
-            result = MonotonicityCheck(side, fingers).run_check()
-        rospy.logwarn(result)
-        return result
+        for check_name in self._check_names:
+            if is_checked[check_name]:
+                self._checks_to_execute[check_name]['thread'] = \
+                    threading.Thread(target=self._checks_to_execute[check_name]['check'].run_check)
+                self._check_queue.put(self._checks_to_execute[check_name])
+
+    def button_start_all_clicked(self):
+        self._file_name = datetime.now().strftime("%d-%m-%Y-%H-%M-%S")
+        self._results[self._file_name] = []
+
+        rospy.logwarn(f"all {self._file_name}")
+        for check_name in self._check_names:
+            self._checks_to_execute[check_name]['thread'] = \
+                threading.Thread(target=self._checks_to_execute[check_name]['check'].run_check)
+            self._check_queue.put(self._checks_to_execute[check_name])
+
+    def worker(self):
+        while True:
+            check = self._check_queue.get()
+            check['thread'].start()
+            check['thread'].join()
+
+            self._check_queue.task_done()
+
+            rospy.sleep(0.1)
+            rospy.logwarn(f"{self._results}")
+            rospy.logwarn(f"worker {self._file_name}")
+            self._results[self._file_name].append(check['check'].get_result())
+
+            rospy.logwarn(f"{self._check_queue.empty()}")
+            if self._check_queue.empty():
+                file = f"{rospkg.RosPack().get_path('sr_health_check')}/src/sr_health_check/results.yaml"
+                current_data = None
+                if exists(file):
+                    with open(file, 'r', encoding="ASCII") as yaml_file:
+                        current_data = yaml.safe_load(yaml_file)
+                        rospy.logwarn(current_data)
+                    with open(file, 'w', encoding="ASCII") as yaml_file:
+                        current_data.update(self._results)
+                        yaml.safe_dump(current_data, stream=yaml_file, default_flow_style=False)
+                else:
+                    with open(file, 'w', encoding="ASCII") as yaml_file:
+                        yaml.safe_dump(self._results, stream=yaml_file, default_flow_style=False)
+                self._results = {}
 
     def get_widget():
         return self._widget
