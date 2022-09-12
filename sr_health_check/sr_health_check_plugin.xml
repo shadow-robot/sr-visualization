@@ -1,0 +1,15 @@
+<library path="src">
+  <class name="HealthCheck" type="sr_health_check.sr_health_check_gui.SrHealthCheck" base_class_type="rqt_gui_py::Plugin">
+    <description>
+      A plugin for checking the health state of the Shadow Hand.
+    </description>
+    <qtgui>
+      <group>
+        <label>Shadow Robot</label>
+      </group>
+      <icon type="file">resource/hand.png</icon>
+      <label>Health Check</label>
+      <statustip>A plugin for checking the health state of the Shadow Hand.</statustip>
+    </qtgui>
+  </class>
+</library>
