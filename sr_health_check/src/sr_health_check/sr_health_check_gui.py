@@ -16,7 +16,7 @@ import sys
 import os
 import rospy
 import rosnode
-import rospkg
+
 import threading
 
 from QtCore import Qt, QTimer
@@ -50,11 +50,13 @@ class SrHealthCheck(Plugin):
 
     """
     A GUI plugin for health check execution.
+
     """
 
     def __init__(self, context):
         super().__init__(context)
         self.setObjectName('SrGuiHealthCheck')
+
         self._timer = QTimer()
         self._timer.timeout.connect(self.timerEvent)
         self._results = OrderedDict()
@@ -71,13 +73,13 @@ class SrHealthCheck(Plugin):
         self._filename = None
 
         self._widget = QWidget()
+
         ui_file = os.path.join(rospkg.RosPack().get_path('sr_health_check'), 'uis', 'SrHealthCheck.ui')
         loadUi(ui_file, self._widget)
         self._widget.setLayout(QVBoxLayout())
 
         if context:
-            context.add_widget(self._widget)
-
+            context.add_widget(self._widget
         self.initialize_checks()
         self.setup_connections()
         self._timer.start(100)
