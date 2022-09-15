@@ -15,6 +15,7 @@
 import sys
 import os
 import rospy
+import rospkg
 import rosnode
 
 import threading
@@ -62,7 +63,7 @@ class SrHealthCheck(Plugin):
         self._results = OrderedDict()
 
         self._fingers = ['FF']  # to be parametrized
-        self._side = "right"  # to be parametrized
+        self._side = "left"  # to be parametrized
         self._check_names = ['motor', 'position_sensor', 'monotonicity']  # to be extended
         self._checks_to_execute = {}
         self._checks_running = False
@@ -79,7 +80,8 @@ class SrHealthCheck(Plugin):
         self._widget.setLayout(QVBoxLayout())
 
         if context:
-            context.add_widget(self._widget
+            context.add_widget(self._widget)
+
         self.initialize_checks()
         self.setup_connections()
         self._timer.start(100)
