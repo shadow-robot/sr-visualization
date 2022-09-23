@@ -37,7 +37,6 @@ class SrFingertipVisualizer(Plugin):
     TITLE = "Fingertip Visualizer"
 
     def __init__(self, context):
-        self.useLess = 1
         super().__init__(context)
         self.context = context
         self.tab_container = QTabWidget()
