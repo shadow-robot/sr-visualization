@@ -16,22 +16,13 @@ import sys
 import os
 import rospy
 import rospkg
-import rosnode
-from copy import deepcopy
 import threading
 
 from QtCore import Qt, QTimer
-from QtGui import QColor
 from QtWidgets import (
     QWidget,
     QMessageBox,
-    QFrame,
-    QHBoxLayout,
-    QCheckBox,
-    QLabel,
-    QFileDialog,
     QApplication,
-    QVBoxLayout,
     QTreeWidget,
     QTreeWidgetItem
 )
