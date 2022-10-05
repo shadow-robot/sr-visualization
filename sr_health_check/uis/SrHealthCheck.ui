@@ -15,16 +15,13 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <widget class="QTabWidget" name="tab_widget">
-     <property name="accessibleName">
-      <string>tab_run</string>
-     </property>
+    <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab_run">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+       <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
@@ -206,18 +203,9 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_view">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="accessibleName">
-       <string>tab_view</string>
-      </property>
+     <widget class="QWidget" name="tab">
       <attribute name="title">
-       <string>View</string>
+       <string>Page</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_5">
        <item>
