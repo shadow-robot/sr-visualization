@@ -127,6 +127,7 @@ class SrHealthCheck(Plugin):
         self._widget.checkbox_position_sensor.clicked.connect(self.checkbox_selected)
         self._widget.checkbox_monotonicity.clicked.connect(self.checkbox_selected)
         self._widget.checkbox_tactile.clicked.connect(self.checkbox_selected)
+
         #  Creates connections with comboboxes
         self._widget.combobox_date.activated.connect(self.combobox_selected)
         self._widget.combobox_check.activated.connect(self.combobox_selected)
@@ -180,6 +181,7 @@ class SrHealthCheck(Plugin):
 
             self._check_queue.task_done()
             rospy.logwarn(check['check'].get_result())
+            
             self._results[self._entry_name].update(check['check'].get_result())
             self.update_passed_label(check['check'])
 
