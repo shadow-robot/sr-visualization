@@ -50,7 +50,7 @@ class SrHealthCheck(Plugin):
     def __init__(self, context):
         super().__init__(context)
         self.setObjectName('SrGuiHealthCheck')
-        self._file = f"{rospkg.RosPack().get_path('sr_health_check')}/src/sr_health_check/results.yaml"
+        self._results_file = f"{rospkg.RosPack().get_path('sr_health_check')}/src/sr_health_check/results.yaml"
         self._entry_name = None
 
         self._timer = QTimer()
@@ -69,7 +69,6 @@ class SrHealthCheck(Plugin):
 
         ui_file = os.path.join(rospkg.RosPack().get_path('sr_health_check'), 'uis', 'SrHealthCheck.ui')
         loadUi(ui_file, self._widget)
-        self._widget.setLayout(QVBoxLayout())
 
         if context:
             context.add_widget(self._widget)
@@ -180,7 +179,7 @@ class SrHealthCheck(Plugin):
     def get_data_from_results_file(self):
         output = {}
         try:
-            with open(self._file, 'r', encoding="ASCII") as yaml_file:
+            with open(self._results_file, 'r', encoding="ASCII") as yaml_file:
                 output = yaml.safe_load(yaml_file) or {}
         except FileNotFoundError:
             rospy.logwarn("Result file does not exists. Returning empty dictionary")
@@ -189,8 +188,7 @@ class SrHealthCheck(Plugin):
     def save_results_to_result_file(self, results):
         if results:
             self._current_data.update(self._results)
-        if exists(self._file):
-            with open(self._file, 'w', encoding="ASCII") as yaml_file:
+        with open(self._results_file, 'w', encoding="ASCII") as yaml_file:
                 yaml.safe_dump(self._current_data, stream=yaml_file, default_flow_style=False)
 
     def update_passed_label(self, check, text=None):
