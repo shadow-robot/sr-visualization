@@ -22,7 +22,9 @@ from QtCore import Qt, QTimer
 from QtWidgets import (
     QWidget,
     QMessageBox,
+    QFileDialog,
     QApplication,
+    QVBoxLayout,
     QTreeWidget,
     QTreeWidgetItem
 )
@@ -32,6 +34,7 @@ from python_qt_binding import loadUi
 from sr_hand_health_report.monotonicity_check import MonotonicityCheck
 from sr_hand_health_report.position_sensor_noise_check import PositionSensorNoiseCheck
 from sr_hand_health_report.motor_check import MotorCheck
+from sr_hand_health_report.tactile_check import TactileCheck
 
 import queue
 from datetime import datetime
@@ -59,7 +62,8 @@ class SrHealthCheck(Plugin):
 
         self._fingers = ['FF']  # to be parametrized later
         self._side = "right"  # to be parametrized later
-        self._check_names = ['motor', 'position_sensor_noise', 'monotonicity']  # to be extended
+        self._check_names = ['motor', 'position_sensor_noise', 'monotonicity', 'tactile']  # to be extended
+
         self._checks_to_execute = {}
         self._tree = {}
         self._checks_running = False
@@ -89,9 +93,9 @@ class SrHealthCheck(Plugin):
         selected_checks = any(check for check in self._check_names if self._currently_selected_check[check])
         self._widget.button_start_selected.setEnabled(not checks_are_running and selected_checks)
         self._widget.button_start_all.setEnabled(not checks_are_running)
-        self._widget.button_details_motor.setEnabled(self._widget.passed_motor.text() != "-")
-        self._widget.button_details_position_sensor.setEnabled(self._widget.passed_position_sensor.text() != "-")
-        self._widget.button_details_monotonicity.setEnabled(self._widget.passed_monotonicity.text() != "-")
+        #self._widget.button_details_motor.setEnabled(self._widget.passed_motor.text() != "-")
+        #self._widget.button_details_position_sensor.setEnabled(self._widget.passed_position_sensor.text() != "-")
+        #self._widget.button_details_monotonicity.setEnabled(self._widget.passed_monotonicity.text() != "-")
 
     def initialize_checks(self):
         for check_name in self._check_names:
@@ -100,6 +104,7 @@ class SrHealthCheck(Plugin):
         self._checks_to_execute['motor']['check'] = MotorCheck(self._side, self._fingers)
         self._checks_to_execute['position_sensor_noise']['check'] = PositionSensorNoiseCheck(self._side, self._fingers)
         self._checks_to_execute['monotonicity']['check'] = MonotonicityCheck(self._side, self._fingers)
+        self._checks_to_execute['tactile']['check'] =TactileCheck(self._side, self._fingers)
 
         self._checks_to_execute['motor']['thread'] = \
             threading.Thread(target=self._checks_to_execute['motor']['check'].run_check)
@@ -107,18 +112,24 @@ class SrHealthCheck(Plugin):
             threading.Thread(target=self._checks_to_execute['position_sensor_noise']['check'].run_check)
         self._checks_to_execute['monotonicity']['thread'] = \
             threading.Thread(target=self._checks_to_execute['monotonicity']['check'].run_check)
+        self._checks_to_execute['tactile']['thread'] = \
+            threading.Thread(target=self._checks_to_execute['tactile']['check'].run_check)
 
     def setup_connections(self):
         #  Creates connections with buttons
         self._widget.button_start_selected.clicked.connect(self.button_start_selected_clicked)
         self._widget.button_start_all.clicked.connect(self.button_start_all_clicked)
-        self._widget.button_details_motor.clicked.connect(self.button_details_clicked)
-        self._widget.button_details_position_sensor.clicked.connect(self.button_details_clicked)
-        self._widget.button_details_monotonicity.clicked.connect(self.button_details_clicked)
+
+        #self._widget.button_details_motor.clicked.connect(self.button_details_clicked)
+        #self._widget.button_details_position_sensor.clicked.connect(self.button_details_clicked)
+        #self._widget.button_details_monotonicity.clicked.connect(self.button_details_clicked)
+
         #  Creates connections with checkboxes
         self._widget.checkbox_motor.clicked.connect(self.checkbox_selected)
         self._widget.checkbox_position_sensor.clicked.connect(self.checkbox_selected)
         self._widget.checkbox_monotonicity.clicked.connect(self.checkbox_selected)
+        self._widget.checkbox_tactile.clicked.connect(self.checkbox_selected)
+
         #  Creates connections with comboboxes
         self._widget.combobox_date.activated.connect(self.combobox_selected)
         self._widget.combobox_check.activated.connect(self.combobox_selected)
@@ -161,6 +172,7 @@ class SrHealthCheck(Plugin):
         self._currently_selected_check['motor'] = self._widget.checkbox_motor.isChecked()
         self._currently_selected_check['position_sensor_noise'] = self._widget.checkbox_position_sensor.isChecked()
         self._currently_selected_check['monotonicity'] = self._widget.checkbox_monotonicity.isChecked()
+        self._currently_selected_check['tactile'] = self._widget.checkbox_tactile.isChecked()
 
     def check_execution(self):
         while True:
@@ -170,6 +182,8 @@ class SrHealthCheck(Plugin):
             check['thread'].join()
 
             self._check_queue.task_done()
+            rospy.logwarn(check['check'].get_result())
+            
             self._results[self._entry_name].update(check['check'].get_result())
             self.update_passed_label(check['check'])
 
@@ -201,6 +215,9 @@ class SrHealthCheck(Plugin):
             elif isinstance(check, MonotonicityCheck):
                 self._widget.passed_monotonicity.setText(str(self._checks_to_execute['monotonicity']
                                                              ['check'].has_passed()))
+            elif isinstance(check, TactileCheck):
+                self._widget.passed_tactile.setText(str(self._checks_to_execute['tactile']
+                                                             ['check'].has_passed()))
         else:
             if isinstance(check, MotorCheck):
                 self._widget.passed_motor.setText(text)
@@ -208,6 +225,8 @@ class SrHealthCheck(Plugin):
                 self._widget.passed_position_sensor.setText(text)
             elif isinstance(check, MonotonicityCheck):
                 self._widget.passed_monotonicity.setText(text)
+            elif isinstance(check, TactileCheck):
+                self._widget.passed_tactile.setText(text)
 
     def tab_changed(self, index):
         if self._widget.tab_widget.currentWidget().accessibleName() == "tab_view":
