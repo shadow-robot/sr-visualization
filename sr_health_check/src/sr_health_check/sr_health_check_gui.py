@@ -39,7 +39,7 @@ import queue
 from datetime import datetime
 import yaml
 from collections import OrderedDict
-
+from rosgraph_msgs.msg import Log
 
 class SrHealthCheck(Plugin):
 
@@ -84,6 +84,14 @@ class SrHealthCheck(Plugin):
         self._timer.start(100)
 
         self.display_data()
+
+        self._rqt_node_name = rospy.get_name()
+        rospy.Subscriber("/rosout", Log, self.status_subscriber)
+
+    def status_subscriber(self, msg):
+        if msg.name == self._rqt_node_name:
+            status = msg.msg
+            self._widget.label_status.setText(f"Status:{status}")
 
     def timerEvent(self):
         checks_are_running = False
