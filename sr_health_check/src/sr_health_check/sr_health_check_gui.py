@@ -19,16 +19,12 @@ import rospkg
 import threading
 
 from QtCore import Qt, QTimer
-from QtGui import QBrush
 from QtWidgets import (
     QWidget,
-    QMessageBox,
-    QFileDialog,
     QApplication,
-    QVBoxLayout,
-    QTreeWidget,
-    QTreeWidgetItem
+    QTreeWidgetItem,
 )
+from QtGui import QColor
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
@@ -37,11 +33,11 @@ from sr_hand_health_report.position_sensor_noise_check import PositionSensorNois
 from sr_hand_health_report.motor_check import MotorCheck
 from sr_hand_health_report.tactile_check import TactileCheck
 from sr_hand_health_report.backlash_check import BacklashCheck
+from sr_hand_health_report.overrun_check import OverrunCheck
 
 import queue
 from datetime import datetime
 import yaml
-from os.path import exists
 from collections import OrderedDict
 
 
@@ -52,14 +48,14 @@ class SrHealthCheck(Plugin):
 
     """
 
+    FAIL_COLOR = QColor.fromRgb(255, 100, 100)
+
     def __init__(self, context):
         super().__init__(context)
 
-        assert(isinstance(context, OrderedDict))
         self.setObjectName('SrGuiHealthCheck')
         self._results_file = f"{rospkg.RosPack().get_path('sr_health_check')}/src/sr_health_check/results.yaml"
         self._entry_name = None
-        self.do_once = True
 
         self._timer = QTimer()
         self._timer.timeout.connect(self.timerEvent)
@@ -67,11 +63,9 @@ class SrHealthCheck(Plugin):
 
         self._fingers = ('FF', 'MF', 'RF', 'LF', "TH", "WR")
         self._side = "right"  # to be parametrized later
-        self._check_names = ['motor', 'position_sensor_noise', 'monotonicity', 'tactile', 'backlash']  # to be extended
+        self._check_names = ['motor', 'position_sensor_noise', 'monotonicity', 'tactile', 'backlash', 'overrun']
 
         self._checks_to_execute = {}
-        self._tree = {}
-        self._checks_running = False
         self._check_queue = queue.Queue()
 
         self._widget = QWidget()
@@ -83,26 +77,25 @@ class SrHealthCheck(Plugin):
             context.add_widget(self._widget)
 
         self._current_data = self.get_data_from_results_file()
-        self._currently_selected_check = dict.fromkeys(self._check_names, False)
-        self.display_data()
+        self._selected_checks = dict.fromkeys(self._check_names, False)
 
         self.initialize_checks()
         self.setup_connections()
         self._timer.start(100)
+
+        self.display_data()
 
     def timerEvent(self):
         checks_are_running = False
         for check_name in self._check_names:
             if self._checks_to_execute[check_name]['thread'].is_alive():
                 checks_are_running = True
-        selected_checks = any(check for check in self._check_names if self._currently_selected_check[check])
+        selected_checks = any(check for check in self._check_names if self._selected_checks[check])
         self._widget.button_start_selected.setEnabled(not checks_are_running and selected_checks)
         self._widget.button_start_all.setEnabled(not checks_are_running)
-        #self._widget.button_details_motor.setEnabled(self._widget.passed_motor.text() != "-")
-        #self._widget.button_details_position_sensor.setEnabled(self._widget.passed_position_sensor.text() != "-")
-        #self._widget.button_details_monotonicity.setEnabled(self._widget.passed_monotonicity.text() != "-")
 
     def initialize_checks(self):
+        
         for check_name in self._check_names:
             self._checks_to_execute[check_name] = {'check': 0, 'thread': 0}
 
@@ -111,26 +104,16 @@ class SrHealthCheck(Plugin):
         self._checks_to_execute['monotonicity']['check'] = MonotonicityCheck(self._side, self._fingers)
         self._checks_to_execute['tactile']['check'] = TactileCheck(self._side)
         self._checks_to_execute['backlash']['check'] = BacklashCheck(self._side, self._fingers)
+        self._checks_to_execute['overrun']['check'] = OverrunCheck(self._side, self._fingers)
 
-        self._checks_to_execute['motor']['thread'] = \
-            threading.Thread(target=self._checks_to_execute['motor']['check'].run_check)
-        self._checks_to_execute['position_sensor_noise']['thread'] = \
-            threading.Thread(target=self._checks_to_execute['position_sensor_noise']['check'].run_check)
-        self._checks_to_execute['monotonicity']['thread'] = \
-            threading.Thread(target=self._checks_to_execute['monotonicity']['check'].run_check)
-        self._checks_to_execute['tactile']['thread'] = \
-            threading.Thread(target=self._checks_to_execute['tactile']['check'].run_check)
-        self._checks_to_execute['backlash']['thread'] = \
-            threading.Thread(target=self._checks_to_execute['backlash']['check'].run_check)
+        for name in self._check_names:
+            self._checks_to_execute[name]['thread'] = \
+            threading.Thread(target=self._checks_to_execute[name]['check'].run_check)
 
     def setup_connections(self):
         #  Creates connections with buttons
         self._widget.button_start_selected.clicked.connect(self.button_start_selected_clicked)
         self._widget.button_start_all.clicked.connect(self.button_start_all_clicked)
-
-        #self._widget.button_details_motor.clicked.connect(self.button_details_clicked)
-        #self._widget.button_details_position_sensor.clicked.connect(self.button_details_clicked)
-        #self._widget.button_details_monotonicity.clicked.connect(self.button_details_clicked)
 
         #  Creates connections with checkboxes
         self._widget.checkbox_motor.clicked.connect(self.checkbox_selected)
@@ -138,10 +121,10 @@ class SrHealthCheck(Plugin):
         self._widget.checkbox_monotonicity.clicked.connect(self.checkbox_selected)
         self._widget.checkbox_tactile.clicked.connect(self.checkbox_selected)
         self._widget.checkbox_backlash.clicked.connect(self.checkbox_selected)
+        self._widget.checkbox_overrun.clicked.connect(self.checkbox_selected)
 
-        #  Creates connections with comboboxes
+        #  Creates connections with date combobox
         self._widget.combobox_date.activated.connect(self.combobox_selected)
-        self._widget.combobox_check.activated.connect(self.combobox_selected)
         #  Creates connections with tabs
         self._widget.tab_widget.currentChanged.connect(self.tab_changed)
 
@@ -152,7 +135,7 @@ class SrHealthCheck(Plugin):
         self._results[self._entry_name] = {}
         for check_name in self._check_names:
             self.update_passed_label(self._checks_to_execute[check_name]['check'], "-")
-            if self._currently_selected_check[check_name]:
+            if self._selected_checks[check_name]:
                 self._checks_to_execute[check_name]['thread'] = \
                     threading.Thread(target=self._checks_to_execute[check_name]['check'].run_check)
                 self._check_queue.put(self._checks_to_execute[check_name])
@@ -167,21 +150,22 @@ class SrHealthCheck(Plugin):
             self._check_queue.put(self._checks_to_execute[check_name])
 
     def checkbox_selected(self):
-        self._currently_selected_check['motor'] = self._widget.checkbox_motor.isChecked()
-        self._currently_selected_check['position_sensor_noise'] = self._widget.checkbox_position_sensor.isChecked()
-        self._currently_selected_check['monotonicity'] = self._widget.checkbox_monotonicity.isChecked()
-        self._currently_selected_check['tactile'] = self._widget.checkbox_tactile.isChecked()
-        self._currently_selected_check['backlash'] = self._widget.checkbox_backlash.isChecked()
+        self._selected_checks['motor'] = self._widget.checkbox_motor.isChecked()
+        self._selected_checks['position_sensor_noise'] = self._widget.checkbox_position_sensor.isChecked()
+        self._selected_checks['monotonicity'] = self._widget.checkbox_monotonicity.isChecked()
+        self._selected_checks['tactile'] = self._widget.checkbox_tactile.isChecked()
+        self._selected_checks['backlash'] = self._widget.checkbox_backlash.isChecked()
+        self._selected_checks['overrun'] = self._widget.checkbox_overrun.isChecked()
 
     def check_execution(self):
-        while True:
+        while not rospy.is_shutdown():
             check = self._check_queue.get()
             check['thread'].start()
             self.update_passed_label(check['check'], "Executing")
             check['thread'].join()
 
             self._check_queue.task_done()
-            
+
             self._results[self._entry_name].update(check['check'].get_result())
             self.update_passed_label(check['check'])
 
@@ -204,35 +188,26 @@ class SrHealthCheck(Plugin):
                 yaml.safe_dump(self._current_data, stream=yaml_file, default_flow_style=False)
 
     def update_passed_label(self, check, text=None):
-        if not text:
-            if isinstance(check, MotorCheck):
-                self._widget.passed_motor.setText(str(self._checks_to_execute['motor']
-                                                      ['check'].has_passed()))
-            elif isinstance(check, PositionSensorNoiseCheck):
-                self._widget.passed_position_sensor.setText(str(self._checks_to_execute['position_sensor_noise']
-                                                                ['check'].has_passed()))
-            elif isinstance(check, MonotonicityCheck):
-                self._widget.passed_monotonicity.setText(str(self._checks_to_execute['monotonicity']
-                                                             ['check'].has_passed()))
-            elif isinstance(check, TactileCheck):
-                self._widget.passed_tactile.setText(str(self._checks_to_execute['tactile']
+        if isinstance(check, MotorCheck):
+            self._widget.passed_motor.setText(text or str(self._checks_to_execute['motor']
+                                                    ['check'].has_passed()))
+        elif isinstance(check, PositionSensorNoiseCheck):
+            self._widget.passed_position_sensor.setText(text or str(self._checks_to_execute['position_sensor_noise']
+                                                            ['check'].has_passed()))
+        elif isinstance(check, MonotonicityCheck):
+            self._widget.passed_monotonicity.setText(text or str(self._checks_to_execute['monotonicity']
+                                                            ['check'].has_passed()))
+        elif isinstance(check, TactileCheck):
+            self._widget.passed_tactile.setText(text or str(self._checks_to_execute['tactile']
+                                                    ['check'].has_passed()))
+        elif isinstance(check, BacklashCheck):
+            self._widget.passed_backlash.setText(text or str(self._checks_to_execute['backlash']
                                                         ['check'].has_passed()))
-            elif isinstance(check, BacklashCheck):
-                self._widget.passed_backlash.setText(str(self._checks_to_execute['backlash']
-                                                         ['check'].has_passed()))
-        else:
-            if isinstance(check, MotorCheck):
-                self._widget.passed_motor.setText(text)
-            elif isinstance(check, PositionSensorNoiseCheck):
-                self._widget.passed_position_sensor.setText(text)
-            elif isinstance(check, MonotonicityCheck):
-                self._widget.passed_monotonicity.setText(text)
-            elif isinstance(check, TactileCheck):
-                self._widget.passed_tactile.setText(text)
-            elif isinstance(check, BacklashCheck):
-                self._widget.passed_backlash.setText(text)
+        elif isinstance(check, OverrunCheck):
+            self._widget.passed_overrun.setText(text or str(self._checks_to_execute['overrun']
+                                                    ['check'].has_passed()))
 
-    def tab_changed(self, index):
+    def tab_changed(self, _):
         if self._widget.tab_widget.currentWidget().accessibleName() == "tab_view":
             self.combobox_selected()
 
@@ -247,38 +222,33 @@ class SrHealthCheck(Plugin):
             if self._widget.combobox_date.findText(data_entry) == -1:  # findText returns the index of of the item or -1
                 self._widget.combobox_date.insertItem(0, data_entry)
 
-        for check_name_entry in ["all"] + self._check_names:
-            if self._widget.combobox_check.findText(check_name_entry) == -1:
-                self._widget.combobox_check.insertItem(0, check_name_entry)
-
-        selected_check = self._widget.combobox_check.currentText()
-        date = self._widget.combobox_date.currentText()
-
         self._widget.treeWidget.clear()
-        if selected_check not in self._check_names:
-            self.create_tree(self._current_data[date], None)
-        else:
-            try:
-                self.create_tree(self._current_data[date][f"{selected_check}_check"], None)
-            except KeyError:
-                rospy.logwarn(f"No entry for {selected_check}")
+        date = self._widget.combobox_date.currentText()
+        self.update_tree(self._current_data[date], None)
 
-    def create_tree(self, data, parent):
-        if self.do_once:
-            #rospy.logwarn(data)
-            #rospy.logwarn(parent)
-            self.do_once = False
+    def update_tree(self, data, parent):
         if isinstance(data, dict):
             for key in data.keys():
                 item = QTreeWidgetItem(parent, [str(key)])
                 if self._widget.treeWidget.indexOfTopLevelItem(item) == -1:
                     self._widget.treeWidget.addTopLevelItem(item)
-                item.addChild(self.create_tree(data[key], item))
-                print(data[key], item, item.parent)
+                item.addChild(self.update_tree(data[key], item))
+                if item.background(0) == SrHealthCheck.FAIL_COLOR and item.parent():
+                    item.parent().setBackground(0, SrHealthCheck.FAIL_COLOR)
         else:
-            item = QTreeWidgetItem([str(data)])
-            item.setBackground(0, Qt.red)
+            item = QTreeWidgetItem(parent, [str(data)])
+            check_name = self.get_top_parent_name(item)
+            if not self._checks_to_execute[check_name]['check'].has_single_passed(parent.text(0), data):
+                item.setBackground(0, SrHealthCheck.FAIL_COLOR)
+                item.parent().setBackground(0, SrHealthCheck.FAIL_COLOR)
             return item
+    
+    def get_top_parent_name(self, item):
+        name = None
+        while item:
+            name = item.text(0)
+            item = item.parent()
+        return name
 
     def get_widget():
         return self._widget
