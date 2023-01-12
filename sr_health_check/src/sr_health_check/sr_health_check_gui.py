@@ -1,4 +1,4 @@
-# Copyright 2011, 2022 Shadow Robot Company Ltd.
+# Copyright 2011, 2022-2023 Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -40,6 +40,7 @@ from datetime import datetime
 import yaml
 from collections import OrderedDict
 from rosgraph_msgs.msg import Log
+
 
 class SrHealthCheck(Plugin):
 
