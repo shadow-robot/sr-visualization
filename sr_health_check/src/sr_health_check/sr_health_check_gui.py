@@ -24,7 +24,7 @@ import rospkg
 from python_qt_binding import loadUi
 from python_qt_binding.QtCore import QTimer
 from python_qt_binding.QtWidgets import QWidget, QApplication, QTreeWidgetItem
-from python_qt_binding.QtGui import QColor
+from python_qt_binding.QtGui import QColor, QFont
 
 from qt_gui.plugin import Plugin
 
@@ -75,6 +75,7 @@ class SrHealthCheck(Plugin):
             context.add_widget(self._widget)
 
         self._current_data = self.get_data_from_results_file()
+        self._current_data_changed = True
         self._selected_checks = dict.fromkeys(self._check_names, False)
 
         self.initialize_checks()
@@ -85,6 +86,9 @@ class SrHealthCheck(Plugin):
 
         self._rqt_node_name = rospy.get_name()
         rospy.Subscriber("/rosout", Log, self.status_subscriber)
+
+        self._bold_font = QFont()
+        self._bold_font.setBold(True)
 
     def status_subscriber(self, msg):
         if msg.name == self._rqt_node_name:
@@ -192,6 +196,7 @@ class SrHealthCheck(Plugin):
             self._current_data.update(results)
             with open(self._results_file, 'w', encoding="ASCII") as yaml_file:
                 yaml.safe_dump(self._current_data, stream=yaml_file, default_flow_style=False)
+            self._current_data_changed = True
 
     def update_passed_label(self, check, text=None):
         if isinstance(check, MotorCheck):
@@ -218,9 +223,12 @@ class SrHealthCheck(Plugin):
             self.combobox_selected()
 
     def combobox_selected(self):
-        self.display_data()
+        if self._current_data_changed:
+            self.display_data()
+            self._current_data_changed = False
 
     def display_data(self):
+        print("X")
         if not bool(self._current_data):
             return
 
@@ -239,14 +247,23 @@ class SrHealthCheck(Plugin):
                 if self._widget.treeWidget.indexOfTopLevelItem(item) == -1:
                     self._widget.treeWidget.addTopLevelItem(item)
                 item.addChild(self.update_tree(data[key], item))
-                if item.background(0) == SrHealthCheck.FAIL_COLOR and item.parent():
-                    item.parent().setBackground(0, SrHealthCheck.FAIL_COLOR)
+                #if item.background(0) == SrHealthCheck.FAIL_COLOR and item.parent():
+                    #item.parent().setBackground(0, SrHealthCheck.FAIL_COLOR)
+                if item.foreground(0) == SrHealthCheck.FAIL_COLOR and item.parent():
+                    item.parent().setForeground(0, SrHealthCheck.FAIL_COLOR)
+                    item.parent().setFont(0, self._bold_font)
+
         else:
             item = QTreeWidgetItem(parent, [str(data)])
             check_name = SrHealthCheck.get_top_parent_name(item)
             if not self._checks_to_execute[check_name]['check'].has_single_passed(parent.text(0), data):
-                item.setBackground(0, SrHealthCheck.FAIL_COLOR)
-                item.parent().setBackground(0, SrHealthCheck.FAIL_COLOR)
+                item.setForeground(0, SrHealthCheck.FAIL_COLOR)
+                item.parent().setForeground(0, SrHealthCheck.FAIL_COLOR)
+                item.setFont(0, self._bold_font)
+                item.parent().setFont(0, self._bold_font)
+
+
+                #item.parent().setBackground(0, Q)
             return item
         return
 
