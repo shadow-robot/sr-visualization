@@ -232,7 +232,7 @@ class SrHealthCheck(Plugin):
         date = self._widget.combobox_date.currentText()
         self.update_tree(self._current_data[date], None)
 
-    def update_tree(self, data, parent):
+    def update_tree(self, data, parent):  # pylint: disable=R1710
         if isinstance(data, dict):
             for key in data.keys():
                 item = QTreeWidgetItem(parent, [str(key)])
@@ -243,7 +243,7 @@ class SrHealthCheck(Plugin):
                     item.parent().setBackground(0, SrHealthCheck.FAIL_COLOR)
         else:
             item = QTreeWidgetItem(parent, [str(data)])
-            check_name = self.get_top_parent_name(item)
+            check_name = SrHealthCheck.get_top_parent_name(item)
             if not self._checks_to_execute[check_name]['check'].has_single_passed(parent.text(0), data):
                 item.setBackground(0, SrHealthCheck.FAIL_COLOR)
                 item.parent().setBackground(0, SrHealthCheck.FAIL_COLOR)
@@ -251,7 +251,7 @@ class SrHealthCheck(Plugin):
         return
 
     @staticmethod
-    def get_top_parent_name(self, item):
+    def get_top_parent_name(item):
         name = None
         while item:
             name = item.text(0)

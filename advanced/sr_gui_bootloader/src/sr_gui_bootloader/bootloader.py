@@ -107,7 +107,7 @@ class SrGuiBootloader(Plugin):
         self._publisher = None
         self._widget = QWidget()
 
-        if self._is_plugin_launched_on_correct_machine():
+        if SrGuiBootloader._is_plugin_launched_on_correct_machine():
             ui_file = os.path.join(rospkg.RosPack().get_path(
                 'sr_gui_bootloader'), 'uis', 'SrBootloader.ui')
             loadUi(ui_file, self._widget)
@@ -159,7 +159,7 @@ class SrGuiBootloader(Plugin):
                 context.add_widget(self._widget)
 
     @staticmethod
-    def _is_plugin_launched_on_correct_machine(self):
+    def _is_plugin_launched_on_correct_machine():
         machine_list = rosnode.get_machines_by_nodes()
         if CONTROL_MACHINE_NAME in machine_list:
             return rospy.get_name() in rosnode.get_nodes_by_machine(CONTROL_MACHINE_NAME)
