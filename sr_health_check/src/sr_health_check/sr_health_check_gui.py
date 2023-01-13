@@ -14,19 +14,19 @@
 
 import sys
 import os
+import threading
+import queue
+from datetime import datetime
+from collections import OrderedDict
 import rospy
 import rospkg
-import threading
 
-from python_qt_binding.QtCore import Qt, QTimer
-from python_qt_binding.QtWidgets import (
-    QWidget,
-    QApplication,
-    QTreeWidgetItem,
-)
-from python_qt_binding.QtGui import QColor
-from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
+from python_qt_binding.QtCore import QTimer
+from python_qt_binding.QtWidgets import QWidget, QApplication, QTreeWidgetItem
+from python_qt_binding.QtGui import QColor
+
+from qt_gui.plugin import Plugin
 
 from sr_hand_health_report.monotonicity_check import MonotonicityCheck
 from sr_hand_health_report.position_sensor_noise_check import PositionSensorNoiseCheck
@@ -35,10 +35,7 @@ from sr_hand_health_report.tactile_check import TactileCheck
 from sr_hand_health_report.backlash_check import BacklashCheck
 from sr_hand_health_report.overrun_check import OverrunCheck
 
-import queue
-from datetime import datetime
 import yaml
-from collections import OrderedDict
 from rosgraph_msgs.msg import Log
 
 
@@ -94,7 +91,7 @@ class SrHealthCheck(Plugin):
             status = msg.msg
             self._widget.label_status.setText(f"Status:{status}")
 
-    def timerEvent(self):
+    def timerEvent(self):  # pylint: disable=C0103
         checks_are_running = False
         for check_name in self._check_names:
             if self._checks_to_execute[check_name]['thread'].is_alive():
@@ -104,7 +101,7 @@ class SrHealthCheck(Plugin):
         self._widget.button_start_all.setEnabled(not checks_are_running)
 
     def initialize_checks(self):
-        
+
         for check_name in self._check_names:
             self._checks_to_execute[check_name] = {'check': 0, 'thread': 0}
 
@@ -117,7 +114,7 @@ class SrHealthCheck(Plugin):
 
         for name in self._check_names:
             self._checks_to_execute[name]['thread'] = \
-            threading.Thread(target=self._checks_to_execute[name]['check'].run_check)
+                threading.Thread(target=self._checks_to_execute[name]['check'].run_check)
 
     def setup_connections(self):
         #  Creates connections with buttons
@@ -199,22 +196,22 @@ class SrHealthCheck(Plugin):
     def update_passed_label(self, check, text=None):
         if isinstance(check, MotorCheck):
             self._widget.passed_motor.setText(text or str(self._checks_to_execute['motor']
-                                                    ['check'].has_passed()))
+                                              ['check'].has_passed()))
         elif isinstance(check, PositionSensorNoiseCheck):
             self._widget.passed_position_sensor.setText(text or str(self._checks_to_execute['position_sensor_noise']
-                                                            ['check'].has_passed()))
+                                                        ['check'].has_passed()))
         elif isinstance(check, MonotonicityCheck):
             self._widget.passed_monotonicity.setText(text or str(self._checks_to_execute['monotonicity']
-                                                            ['check'].has_passed()))
+                                                     ['check'].has_passed()))
         elif isinstance(check, TactileCheck):
             self._widget.passed_tactile.setText(text or str(self._checks_to_execute['tactile']
-                                                    ['check'].has_passed()))
+                                                ['check'].has_passed()))
         elif isinstance(check, BacklashCheck):
             self._widget.passed_backlash.setText(text or str(self._checks_to_execute['backlash']
-                                                        ['check'].has_passed()))
+                                                 ['check'].has_passed()))
         elif isinstance(check, OverrunCheck):
             self._widget.passed_overrun.setText(text or str(self._checks_to_execute['overrun']
-                                                    ['check'].has_passed()))
+                                                ['check'].has_passed()))
 
     def tab_changed(self, _):
         if self._widget.tab_widget.currentWidget().accessibleName() == "tab_view":
@@ -251,7 +248,9 @@ class SrHealthCheck(Plugin):
                 item.setBackground(0, SrHealthCheck.FAIL_COLOR)
                 item.parent().setBackground(0, SrHealthCheck.FAIL_COLOR)
             return item
-    
+        return
+
+    @staticmethod
     def get_top_parent_name(self, item):
         name = None
         while item:

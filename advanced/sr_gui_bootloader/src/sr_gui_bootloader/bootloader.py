@@ -158,6 +158,7 @@ class SrGuiBootloader(Plugin):
             if context:
                 context.add_widget(self._widget)
 
+    @staticmethod
     def _is_plugin_launched_on_correct_machine(self):
         machine_list = rosnode.get_machines_by_nodes()
         if CONTROL_MACHINE_NAME in machine_list:

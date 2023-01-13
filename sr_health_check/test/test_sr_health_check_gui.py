@@ -14,13 +14,17 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import rospy
+# pylint: disable=W0212
+
+
 import sys
-import rostest
-import rospkg
+
 from unittest import TestCase
 import threading
 import yaml
+import rostest
+import rospkg
+import rospy
 from python_qt_binding.QtWidgets import QWidget, QApplication
 from sr_health_check.sr_health_check_gui import SrHealthCheck
 from sr_hand_health_report.sr_hand_health_report_check import SrHealthReportCheck
