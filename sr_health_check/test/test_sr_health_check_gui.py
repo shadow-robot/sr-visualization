@@ -14,37 +14,54 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import rospy
+import sys
+import rostest
+import rospkg
+from unittest import TestCase
+import threading
+import yaml
+from python_qt_binding.QtWidgets import QWidget, QApplication
+from sr_health_check.sr_health_check_gui import SrHealthCheck
+from sr_hand_health_report.sr_hand_health_report_check import SrHealthReportCheck
 
-from sr_health_check.sr_health_check_gui import SrGuiHealthCheck
 
-
-class TestSrHealthCheckGui(TestCase, SrHealthcheckGui):
+class TestSrHealthCheck(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        rospy.init_node("test_sr_gui")
-        super(SrHealthcheckGui, self).__init__()
+        cls.app = QApplication(sys.argv)
+        cls.sr_health_check = SrHealthCheck(None)
+        cls.sr_health_check._results_file = f"{rospkg.RosPack().get_path('sr_health_check')}/test/results.yaml"
+        with open(cls.sr_health_check._results_file, 'w', encoding="ASCII") as yaml_file:
+            yaml.safe_dump({}, stream=yaml_file, default_flow_style=False)
+        cls.sr_health_check._current_data = {}
 
     def test_initialize_checks(self):
-        self.initialize_checks()
-        for check_name in self._check_names:
-            self.assertTrue(isinstance(self._checks_to_execute[name]['thread'], threading.Thread))
-            self.assertTrue(isinstance(self._checks_to_execute[name]['check'], SrHealthReportCheck))
+        self.sr_health_check.initialize_checks()
+        for check_name in self.sr_health_check._check_names:
+            self.assertTrue(isinstance(self.sr_health_check._checks_to_execute[check_name]['thread'], threading.Thread))
+            self.assertTrue(isinstance(self.sr_health_check._checks_to_execute[check_name]['check'],
+                                       SrHealthReportCheck))
 
     def test_get_data_from_results_file(self):
-        self.assertTrue(isinstance(self.get_data_from_results_file(), dict))
+        self.assertTrue(isinstance(self.sr_health_check.get_data_from_results_file(), dict))
 
     def test_save_results_to_result_file_empty_argument(self):
-        data_before = self._current_data
-        self.save_results_to_result_file({})
-        self.assertTrue(data_before = self._current_data)
+        data_before = self.sr_health_check._current_data
+        self.sr_health_check.save_results_to_result_file({})
+        self.assertTrue(data_before == self.sr_health_check._current_data)
 
     def test_save_results_to_result_file_valid_argument(self):
-        data_before = self._current_data
-        test_argument = {"test_key": "test_value"}
-        self.save_results_to_result_file(test_argument)
-        self.assertTrue(data_before == set(data_before)^set(self.get_data_from_results_file()))
+        test_argument = {"test_key": {"test_value": "test"}}
+        self.sr_health_check.save_results_to_result_file(test_argument)
+        self.assertTrue(set(test_argument) == set(self.sr_health_check.get_data_from_results_file()))
 
     def test_get_widget(self):
-        self.assertTrue(isinstance(self.get_widget() == QWidget))
+        self.assertTrue(isinstance(self.sr_health_check.get_widget(), QWidget))
 
+
+if __name__ == "__main__":
+    PKG = "sr_health_check"
+    rospy.init_node('test_sr_health_check', anonymous=True)
+    rostest.rosrun(PKG, 'test_sr_health_check', TestSrHealthCheck)

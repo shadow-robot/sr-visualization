@@ -18,13 +18,13 @@ import rospy
 import rospkg
 import threading
 
-from QtCore import Qt, QTimer
-from QtWidgets import (
+from python_qt_binding.QtCore import Qt, QTimer
+from python_qt_binding.QtWidgets import (
     QWidget,
     QApplication,
     QTreeWidgetItem,
 )
-from QtGui import QColor
+from python_qt_binding.QtGui import QColor
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 
@@ -192,7 +192,7 @@ class SrHealthCheck(Plugin):
 
     def save_results_to_result_file(self, results):
         if results:
-            self._current_data.update(self._results)
+            self._current_data.update(results)
             with open(self._results_file, 'w', encoding="ASCII") as yaml_file:
                 yaml.safe_dump(self._current_data, stream=yaml_file, default_flow_style=False)
 
@@ -259,13 +259,13 @@ class SrHealthCheck(Plugin):
             item = item.parent()
         return name
 
-    def get_widget():
+    def get_widget(self):
         return self._widget
 
 
 if __name__ == "__main__":
     rospy.init_node("sr_health_check_gui")
     app = QApplication(sys.argv)
-    ctrl = SrHealthcheckGui(None)
+    ctrl = SrHealthCheck(None)
     ctrl.get_widget().show()  # pylint: disable=W0212
     app.exec_()
