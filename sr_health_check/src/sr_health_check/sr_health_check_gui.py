@@ -26,6 +26,7 @@ from python_qt_binding.QtCore import QTimer
 from python_qt_binding.QtWidgets import QWidget, QApplication, QTreeWidgetItem
 from python_qt_binding.QtGui import QColor, QFont
 
+
 from qt_gui.plugin import Plugin
 
 from sr_hand_health_report.monotonicity_check import MonotonicityCheck
@@ -37,6 +38,7 @@ from sr_hand_health_report.overrun_check import OverrunCheck
 
 import yaml
 from rosgraph_msgs.msg import Log
+from sensor_msgs.msg import JointState
 
 
 class SrHealthCheck(Plugin):
@@ -47,6 +49,7 @@ class SrHealthCheck(Plugin):
     """
 
     FAIL_COLOR = QColor.fromRgb(255, 100, 100)
+    _SIDE_PREFIXES = ('rh', 'lh')
 
     def __init__(self, context):
         super().__init__(context)
@@ -60,36 +63,55 @@ class SrHealthCheck(Plugin):
         self._results = OrderedDict()
 
         self._fingers = ('FF', 'MF', 'RF', 'LF', "TH", "WR")
-        self._side = "right"  # to be parametrized later
+        self._side = "left"  # to be parametrized later
         self._check_names = ['motor', 'position_sensor_noise', 'monotonicity', 'tactile', 'backlash', 'overrun']
 
         self._checks_to_execute = {}
         self._check_queue = queue.Queue()
 
         self._widget = QWidget()
+        self._bold_font = QFont()
+        self._bold_font.setBold(True)
 
         ui_file = os.path.join(rospkg.RosPack().get_path('sr_health_check'), 'uis', 'SrHealthCheck.ui')
         loadUi(ui_file, self._widget)
 
         if context:
             context.add_widget(self._widget)
+        self.set_side_selection_visibility()
 
         self._current_data = self.get_data_from_results_file()
-        self._current_data_changed = True
         self._selected_checks = dict.fromkeys(self._check_names, False)
 
         self.initialize_checks()
         self._setup_connections()
-        self._timer.start(20)
+        self._timer.start(100)
 
         self.display_data()
 
         self._rqt_node_name = rospy.get_name()
-        rospy.Subscriber("/rosout", Log, self._status_subscriber)
+        self._log_subcriber = rospy.Subscriber("/rosout", Log, self._status_subscriber)
+        self._log_publisher = rospy.Publisher("/rosout", Log, queue_size=1)
 
-        self._bold_font = QFont()
-        self._bold_font.setBold(True)
+    def set_side_selection_visibility(self):
+        checkable_side_selection_radio_buttons = []
+        joint_states_msg = rospy.wait_for_message("/joint_states", JointState, timeout=2)
+        joint_names = [joint_name.split("_")[0] for joint_name in joint_states_msg.name]
+        
+        for side_prefix in SrHealthCheck._SIDE_PREFIXES:
+            if side_prefix in joint_names:
+                checkable_side_selection_radio_buttons.append(side_prefix)
 
+        self._widget.side_right_radio_button.setEnabled('rh' in checkable_side_selection_radio_buttons)
+        self._widget.side_left_radio_button.setEnabled('lh' in checkable_side_selection_radio_buttons)
+
+        if 'rh' in checkable_side_selection_radio_buttons:
+            self._widget.side_right_radio_button.setChecked(True)
+            self._widget.side_right_radio_button.toggle()
+        else:
+            self._widget.side_left_radio_button.setChecked(True)
+            self._widget.side_left_radio_button.toggle()
+        
     """
         Callback method for /rosout subscriber.
         @param msg: Log type message
@@ -109,6 +131,8 @@ class SrHealthCheck(Plugin):
         self._widget.button_start_selected.setEnabled(not checks_are_running and selected_checks)
         self._widget.button_start_all.setEnabled(not checks_are_running)
         self._widget.button_stop.setEnabled(checks_are_running)
+        self._widget.side_right_radio_button.setCheckable(not checks_are_running)
+        self._widget.side_left_radio_button.setCheckable(not checks_are_running)
 
     """
         Initializes the dictionary containing references to check classes and threads.
@@ -146,6 +170,9 @@ class SrHealthCheck(Plugin):
         self._widget.checkbox_backlash.clicked.connect(self.checkbox_selected)
         self._widget.checkbox_overrun.clicked.connect(self.checkbox_selected)
 
+        self._widget.side_right_radio_button.clicked.connect(self.side_selected)
+        self._widget.side_left_radio_button.clicked.connect(self.side_selected)
+        
         #  Creates connections with date combobox
         self._widget.combobox_date.activated.connect(self.combobox_selected)
 
@@ -175,7 +202,6 @@ class SrHealthCheck(Plugin):
             self._checks_to_execute[check_name]['thread'] = \
                 threading.Thread(target=self._checks_to_execute[check_name]['check'].run_check)
             self._check_queue.put(self._checks_to_execute[check_name])
-        self._current_data_changed = True
 
     """
         Performs actions upon 'Stop' button click.
@@ -207,6 +233,10 @@ class SrHealthCheck(Plugin):
         self._selected_checks['backlash'] = self._widget.checkbox_backlash.isChecked()
         self._selected_checks['overrun'] = self._widget.checkbox_overrun.isChecked()
 
+    def side_selected(self):
+        self._side = "right" if self._widget.side_right_radio_button.isChecked() else "left"
+        self.initialize_checks()
+
     """
         Executes queued checks and saves result to a file.
     """
@@ -214,6 +244,7 @@ class SrHealthCheck(Plugin):
         while not rospy.is_shutdown():
             check = self._check_queue.get()
             if not check['check'].is_stopped():
+                self.send_status_message(f"Starting {check['check'].get_name()} check")
                 check['thread'].start()
                 self.update_passed_label(check['check'], "Executing")
                 check['thread'].join()
@@ -227,8 +258,17 @@ class SrHealthCheck(Plugin):
 
                 if self._check_queue.empty():
                     self.save_results_to_result_file(self._results)
-            
+                    self.display_data()
+                    self.send_status_message(f"Checks completed!")
+                    
             rospy.sleep(0.1)
+
+    def send_status_message(self, message):
+        msg = Log()
+        msg.name = self._rqt_node_name
+        msg.level = rospy.INFO
+        msg.msg = message
+        self._log_publisher.publish(msg)
 
     """
         Gets the results file content.
@@ -252,7 +292,6 @@ class SrHealthCheck(Plugin):
             self._current_data.update(results)
             with open(self._results_file, 'w', encoding="ASCII") as yaml_file:
                 yaml.safe_dump(self._current_data, stream=yaml_file, default_flow_style=False)
-            self._current_data_changed = True
 
     """
         Updates the passed label in the GUI with feedback on completion status.
@@ -343,6 +382,9 @@ class SrHealthCheck(Plugin):
     """
     def get_widget(self):
         return self._widget
+
+    def on_shutdown(self):
+        self._log_subcriber.unregister()
 
 
 if __name__ == "__main__":
