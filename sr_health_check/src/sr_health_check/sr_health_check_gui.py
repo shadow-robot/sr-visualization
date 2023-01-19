@@ -97,7 +97,7 @@ class SrHealthCheck(Plugin):
         checkable_side_selection_radio_buttons = []
         joint_states_msg = rospy.wait_for_message("/joint_states", JointState, timeout=2)
         joint_names = [joint_name.split("_")[0] for joint_name in joint_states_msg.name]
-        
+
         for side_prefix in SrHealthCheck._SIDE_PREFIXES:
             if side_prefix in joint_names:
                 checkable_side_selection_radio_buttons.append(side_prefix)
@@ -111,7 +111,7 @@ class SrHealthCheck(Plugin):
         else:
             self._widget.side_left_radio_button.setChecked(True)
             self._widget.side_left_radio_button.toggle()
-        
+
     """
         Callback method for /rosout subscriber.
         @param msg: Log type message
@@ -172,7 +172,7 @@ class SrHealthCheck(Plugin):
 
         self._widget.side_right_radio_button.clicked.connect(self.side_selected)
         self._widget.side_left_radio_button.clicked.connect(self.side_selected)
-        
+
         #  Creates connections with date combobox
         self._widget.combobox_date.activated.connect(self.combobox_selected)
 
@@ -221,9 +221,8 @@ class SrHealthCheck(Plugin):
         for check_name in self._check_names:
             self.update_passed_label(self._checks_to_execute[check_name]['check'], "-")
 
-
     """
-        Gets values from check checkboxes. 
+        Gets values from check checkboxes.
     """
     def checkbox_selected(self):
         self._selected_checks['motor'] = self._widget.checkbox_motor.isChecked()
@@ -260,7 +259,7 @@ class SrHealthCheck(Plugin):
                     self.save_results_to_result_file(self._results)
                     self.display_data()
                     self.send_status_message(f"Checks completed!")
-                    
+
             rospy.sleep(0.1)
 
     def send_status_message(self, message):
@@ -285,7 +284,7 @@ class SrHealthCheck(Plugin):
 
     """
         Saves the results to the result file.
-        @param results: results to be saved 
+        @param results: results to be saved
     """
     def save_results_to_result_file(self, results):
         if results:
