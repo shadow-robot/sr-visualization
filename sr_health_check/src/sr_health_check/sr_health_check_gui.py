@@ -258,7 +258,7 @@ class SrHealthCheck(Plugin):
                 if self._check_queue.empty():
                     self.save_results_to_result_file(self._results)
                     self.display_data()
-                    self.send_status_message(f"Checks completed!")
+                    self.send_status_message("Checks completed!")
 
             rospy.sleep(0.1)
 
