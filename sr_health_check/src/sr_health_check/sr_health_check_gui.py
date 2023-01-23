@@ -93,6 +93,9 @@ class SrHealthCheck(Plugin):
         self._log_subcriber = rospy.Subscriber("/rosout", Log, self._status_subscriber)
         self._log_publisher = rospy.Publisher("/rosout", Log, queue_size=1)
 
+    '''
+        Sets the visibility of side selection radio buttons.
+    '''
     def set_side_selection_visibility(self):
         checkable_side_selection_radio_buttons = []
         joint_states_msg = rospy.wait_for_message("/joint_states", JointState, timeout=2)
@@ -157,12 +160,12 @@ class SrHealthCheck(Plugin):
         Sets up the connections between buttons and corresponding actions.
     '''
     def _setup_connections(self):
-        #  Creates connections with buttons
+        #  Creates connections with start/stop buttons
         self._widget.button_start_selected.clicked.connect(self._button_start_selected_clicked)
         self._widget.button_start_all.clicked.connect(self._button_start_all_clicked)
         self._widget.button_stop.clicked.connect(self._button_stop_clicked)
 
-        #  Creates connections with checkboxes
+        #  Creates connections with check selection checkboxes
         self._widget.checkbox_motor.clicked.connect(self.checkbox_selected)
         self._widget.checkbox_position_sensor.clicked.connect(self.checkbox_selected)
         self._widget.checkbox_monotonicity.clicked.connect(self.checkbox_selected)
@@ -170,6 +173,7 @@ class SrHealthCheck(Plugin):
         self._widget.checkbox_backlash.clicked.connect(self.checkbox_selected)
         self._widget.checkbox_overrun.clicked.connect(self.checkbox_selected)
 
+        #  Creates connections side selection radio buttons
         self._widget.side_right_radio_button.clicked.connect(self.side_selected)
         self._widget.side_left_radio_button.clicked.connect(self.side_selected)
 
@@ -232,6 +236,9 @@ class SrHealthCheck(Plugin):
         self._selected_checks['backlash'] = self._widget.checkbox_backlash.isChecked()
         self._selected_checks['overrun'] = self._widget.checkbox_overrun.isChecked()
 
+    '''
+        Initializes checks based on selected side.
+    '''
     def side_selected(self):
         self._side = "right" if self._widget.side_right_radio_button.isChecked() else "left"
         self.initialize_checks()
@@ -262,6 +269,10 @@ class SrHealthCheck(Plugin):
 
             rospy.sleep(0.1)
 
+    '''
+        Sends a status message at rospy.INFO level
+        @param message
+    '''
     def send_status_message(self, message):
         msg = Log()
         msg.name = self._rqt_node_name
@@ -294,6 +305,8 @@ class SrHealthCheck(Plugin):
 
     '''
         Updates the passed label in the GUI with feedback on completion status.
+        @param check: Check object
+        @param text: String stating the state of the check.
     '''
     def update_passed_label(self, check, text=None):
         if isinstance(check, MotorCheck):
@@ -382,6 +395,9 @@ class SrHealthCheck(Plugin):
     def get_widget(self):
         return self._widget
 
+    '''
+        Shutdown hook called whenever the plugin exits.
+    '''
     def on_shutdown(self):
         self._log_subcriber.unregister()
 
