@@ -83,7 +83,7 @@ class SrHealthCheck(Plugin):
 
         if context:
             context.add_widget(self._widget)
-        
+
         self._current_data = self.get_data_from_results_file()
         self._selected_checks = dict.fromkeys(self._check_names, False)
 
@@ -136,14 +136,14 @@ class SrHealthCheck(Plugin):
         self._widget.button_start_all.setEnabled(not self._checks_running)
         self._widget.button_stop.setEnabled(self._checks_running)
         self._widget.side_right_radio_button.setEnabled(not self._checks_running and "rh" in self._detected_prefixes)
-        self._widget.side_left_radio_button.setEnabled(not self._checks_running  and "lh" in self._detected_prefixes)
+        self._widget.side_left_radio_button.setEnabled(not self._checks_running and "lh" in self._detected_prefixes)
 
     def are_checks_running(self):
         '''
             Gets if any checks are running (any checks left in the queue)
             @return bool
         '''
-        return self._checks_running 
+        return self._checks_running
 
     def initialize_checks(self):
         '''
@@ -163,10 +163,10 @@ class SrHealthCheck(Plugin):
             self._checks_to_execute[name]['thread'] = \
                 threading.Thread(target=self._checks_to_execute[name]['check'].run_check)
 
-    '''
-        Sets up the connections between buttons and corresponding actions.
-    '''
     def _setup_connections(self):
+        '''
+            Sets up the connections between buttons and corresponding actions.
+        '''
         #  Creates connections with start/stop buttons
         self._widget.button_start_selected.clicked.connect(self._button_start_selected_clicked)
         self._widget.button_start_all.clicked.connect(self._button_start_all_clicked)
@@ -226,19 +226,6 @@ class SrHealthCheck(Plugin):
             self._checks_to_execute[check_name]['check'].stop_test()
             self.update_passed_label(self._checks_to_execute[check_name]['check'], "-")
         self.send_status_message("Checks stopped. Results not beinng saved!")
-        '''
-        while not self._check_queue.empty():
-            rospy.sleep(0.1)
-            try:
-                self._check_queue.pop(0)
-            except Exception:
-                break
-
-        self._checks_running = False
-        for check_name in self._check_names:
-            self.update_passed_label(self._checks_to_execute[check_name]['check'], "-")
-        self.send_status_message("Check execution stopped!")
-        '''
 
     def checkbox_selected(self):
         '''
@@ -256,9 +243,9 @@ class SrHealthCheck(Plugin):
             Initializes checks based on selected side.
         '''
         if self._widget.side_right_radio_button.isChecked():
-            self._side = "right" 
+            self._side = "right"
         elif self._widget.side_left_radio_button.isChecked():
-            self._side = "left" 
+            self._side = "left"
         self.initialize_checks()
 
     def check_execution(self):
@@ -271,7 +258,7 @@ class SrHealthCheck(Plugin):
             self._checks_running = True
 
             if not check['check'].is_stopped():
-                check['thread'].start()            
+                check['thread'].start()
                 self.update_passed_label(check['check'], "Executing")
                 check['thread'].join()
                 result = check['check'].get_result()
@@ -284,28 +271,13 @@ class SrHealthCheck(Plugin):
                     del self._results[self._entry_name]
 
             self._check_queue.task_done()
-            
+
             if self._check_queue.empty():
                 if result and check['check'].is_stopped() and bool(list(result.values())[0]):
                     self.save_results_to_result_file(self._results)
                     self.send_status_message("Checks completed. Results saved!")
                     self.display_data()
                 self._checks_running = False
-
-            '''
-            if result:
-                self._results[self._entry_name].update(result)
-                print(result)
-
-                self.update_passed_label(check['check'])
-
-                if self.are_checks_running():
-                    if not check['check'].is_stopped():
-                        self.save_results_to_result_file(self._results)
-                    self.display_data()
-                    self.send_status_message("Checks completed!")
-                    self._checks_running = False
-            '''
 
     def send_status_message(self, message):
         '''
@@ -328,7 +300,6 @@ class SrHealthCheck(Plugin):
             with open(self._results_file, 'r', encoding="ASCII") as yaml_file:
                 output = yaml.safe_load(yaml_file) or {}
         except FileNotFoundError:
-            pass
             rospy.logwarn("Result file does not exists. Creating a new log file!")
         return output
 
@@ -414,7 +385,6 @@ class SrHealthCheck(Plugin):
                 item.parent().setFont(0, self._bold_font)
             return item
         return
-
 
     @staticmethod
     def get_top_parent_name(item):
