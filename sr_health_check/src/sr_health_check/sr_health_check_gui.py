@@ -26,6 +26,7 @@ from python_qt_binding.QtCore import QTimer
 from python_qt_binding.QtWidgets import QWidget, QApplication, QTreeWidgetItem
 from python_qt_binding.QtGui import QColor, QFont
 
+
 from qt_gui.plugin import Plugin
 
 from sr_hand_health_report.monotonicity_check import MonotonicityCheck
@@ -37,18 +38,23 @@ from sr_hand_health_report.overrun_check import OverrunCheck
 
 import yaml
 from rosgraph_msgs.msg import Log
+from sensor_msgs.msg import JointState
 
 
 class SrHealthCheck(Plugin):
 
-    """
+    '''
     A GUI plugin for health check execution.
 
-    """
+    '''
 
     FAIL_COLOR = QColor.fromRgb(255, 100, 100)
+    _SIDE_PREFIXES = ('rh', 'lh')
 
     def __init__(self, context):
+        '''
+            Initializes the Health Metrics plugin.
+        '''
         super().__init__(context)
 
         self.setObjectName('SrGuiHealthCheck')
@@ -61,12 +67,16 @@ class SrHealthCheck(Plugin):
 
         self._fingers = ('FF', 'MF', 'RF', 'LF', "TH", "WR")
         self._side = "right"  # to be parametrized later
+        self._detected_prefixes = []
         self._check_names = ['motor', 'position_sensor_noise', 'monotonicity', 'tactile', 'backlash', 'overrun']
 
         self._checks_to_execute = {}
         self._check_queue = queue.Queue()
+        self._checks_running = False
 
         self._widget = QWidget()
+        self._bold_font = QFont()
+        self._bold_font.setBold(True)
 
         ui_file = os.path.join(rospkg.RosPack().get_path('sr_health_check'), 'uis', 'SrHealthCheck.ui')
         loadUi(ui_file, self._widget)
@@ -75,37 +85,67 @@ class SrHealthCheck(Plugin):
             context.add_widget(self._widget)
 
         self._current_data = self.get_data_from_results_file()
-        self._current_data_changed = True
         self._selected_checks = dict.fromkeys(self._check_names, False)
 
         self.initialize_checks()
-        self.setup_connections()
+        self._setup_connections()
         self._timer.start(100)
 
         self.display_data()
+        self.set_side_selection_accesibility()
 
         self._rqt_node_name = rospy.get_name()
-        rospy.Subscriber("/rosout", Log, self.status_subscriber)
+        self._log_subcriber = rospy.Subscriber("/rosout", Log, self._status_subscriber)
+        self._log_publisher = rospy.Publisher("/rosout", Log, queue_size=1)
 
-        self._bold_font = QFont()
-        self._bold_font.setBold(True)
+    def set_side_selection_accesibility(self):
+        '''
+            Sets the visibility of side selection radio buttons.
+        '''
+        checkable_side_selection_radio_buttons = []
+        joint_states_msg = rospy.wait_for_message("/joint_states", JointState, timeout=2)
+        joint_names = [joint_name.split("_")[0] for joint_name in joint_states_msg.name]
 
-    def status_subscriber(self, msg):
+        for side_prefix in SrHealthCheck._SIDE_PREFIXES:
+            if side_prefix in joint_names:
+                checkable_side_selection_radio_buttons.append(side_prefix)
+                self._detected_prefixes.append(side_prefix)
+
+        # SrHealthCheck._SIDE_PREFIXES[1] is lh
+        if SrHealthCheck._SIDE_PREFIXES[1] in checkable_side_selection_radio_buttons:
+            self._widget.side_left_radio_button.setChecked(True)
+            self._widget.side_left_radio_button.click()
+        # SrHealthCheck._SIDE_PREFIXES[0] is rh
+        if SrHealthCheck._SIDE_PREFIXES[0] in checkable_side_selection_radio_buttons:
+            self._widget.side_right_radio_button.setChecked(True)
+            self._widget.side_right_radio_button.click()
+
+    def _status_subscriber(self, msg):
+        '''
+            Callback method for /rosout subscriber.
+            @param msg: rosgraph_msgs.msg.Log type message
+        '''
         if msg.name == self._rqt_node_name:
             status = msg.msg
             self._widget.label_status.setText(f"Status:{status}")
 
     def timerEvent(self):  # pylint: disable=C0103
-        checks_are_running = False
-        for check_name in self._check_names:
-            if self._checks_to_execute[check_name]['thread'].is_alive():
-                checks_are_running = True
+        '''
+            Timer event to enable/disable the start checks butons.
+        '''
         selected_checks = any(check for check in self._check_names if self._selected_checks[check])
-        self._widget.button_start_selected.setEnabled(not checks_are_running and selected_checks)
-        self._widget.button_start_all.setEnabled(not checks_are_running)
+        self._widget.button_start_selected.setEnabled(not self._checks_running and selected_checks)
+        self._widget.button_start_all.setEnabled(not self._checks_running)
+        self._widget.button_stop.setEnabled(self._checks_running)
+        self._widget.side_right_radio_button.setEnabled(not self._checks_running and
+                                                        SrHealthCheck._SIDE_PREFIXES[0] in self._detected_prefixes)
+        self._widget.side_left_radio_button.setEnabled(not self._checks_running and
+                                                       SrHealthCheck._SIDE_PREFIXES[1] in self._detected_prefixes)
 
     def initialize_checks(self):
-
+        '''
+            Initializes the dictionary containing references to check classes and threads.
+        '''
         for check_name in self._check_names:
             self._checks_to_execute[check_name] = {'check': 0, 'thread': 0}
 
@@ -120,12 +160,16 @@ class SrHealthCheck(Plugin):
             self._checks_to_execute[name]['thread'] = \
                 threading.Thread(target=self._checks_to_execute[name]['check'].run_check)
 
-    def setup_connections(self):
-        #  Creates connections with buttons
-        self._widget.button_start_selected.clicked.connect(self.button_start_selected_clicked)
-        self._widget.button_start_all.clicked.connect(self.button_start_all_clicked)
+    def _setup_connections(self):
+        '''
+            Sets up the connections between buttons and corresponding actions.
+        '''
+        #  Creates connections with start/stop buttons
+        self._widget.button_start_selected.clicked.connect(self._button_start_selected_clicked)
+        self._widget.button_start_all.clicked.connect(self._button_start_all_clicked)
+        self._widget.button_stop.clicked.connect(self._button_stop_clicked)
 
-        #  Creates connections with checkboxes
+        #  Creates connections with check selection checkboxes
         self._widget.checkbox_motor.clicked.connect(self.checkbox_selected)
         self._widget.checkbox_position_sensor.clicked.connect(self.checkbox_selected)
         self._widget.checkbox_monotonicity.clicked.connect(self.checkbox_selected)
@@ -133,33 +177,57 @@ class SrHealthCheck(Plugin):
         self._widget.checkbox_backlash.clicked.connect(self.checkbox_selected)
         self._widget.checkbox_overrun.clicked.connect(self.checkbox_selected)
 
+        #  Creates connections side selection radio buttons
+        self._widget.side_right_radio_button.clicked.connect(self.side_selected)
+        self._widget.side_left_radio_button.clicked.connect(self.side_selected)
+
         #  Creates connections with date combobox
         self._widget.combobox_date.activated.connect(self.combobox_selected)
-        #  Creates connections with tabs
-        self._widget.tab_widget.currentChanged.connect(self.tab_changed)
 
         threading.Thread(target=self.check_execution, daemon=True).start()
 
-    def button_start_selected_clicked(self):
+    def _button_start_selected_clicked(self):
+        '''
+            Performs actions upon 'Start' button click.
+        '''
         self._entry_name = datetime.now().strftime("%d-%m-%Y-%H-%M-%S")
         self._results[self._entry_name] = {}
+        self._checks_running = True
         for check_name in self._check_names:
             self.update_passed_label(self._checks_to_execute[check_name]['check'], "-")
+            self._checks_to_execute[check_name]['check'].set_runnable()
             if self._selected_checks[check_name]:
                 self._checks_to_execute[check_name]['thread'] = \
                     threading.Thread(target=self._checks_to_execute[check_name]['check'].run_check)
                 self._check_queue.put(self._checks_to_execute[check_name])
 
-    def button_start_all_clicked(self):
+    def _button_start_all_clicked(self):
+        '''
+            Performs actions upon 'Start all' button click.
+        '''
         self._entry_name = datetime.now().strftime("%d-%m-%Y-%H-%M-%S")
         self._results[self._entry_name] = {}
+        self._checks_running = True
         for check_name in self._check_names:
             self.update_passed_label(self._checks_to_execute[check_name]['check'], "-")
+            self._checks_to_execute[check_name]['check'].set_runnable()
             self._checks_to_execute[check_name]['thread'] = \
                 threading.Thread(target=self._checks_to_execute[check_name]['check'].run_check)
             self._check_queue.put(self._checks_to_execute[check_name])
 
+    def _button_stop_clicked(self):
+        '''
+            Performs actions upon 'Stop' button click.
+        '''
+        for check_name in self._check_names:
+            self._checks_to_execute[check_name]['check'].stop_test()
+            self.update_passed_label(self._checks_to_execute[check_name]['check'], "-")
+        self.send_status_message("Checks stopped. Results not beinng saved!")
+
     def checkbox_selected(self):
+        '''
+            Gets values from check checkboxes.
+        '''
         self._selected_checks['motor'] = self._widget.checkbox_motor.isChecked()
         self._selected_checks['position_sensor_noise'] = self._widget.checkbox_position_sensor.isChecked()
         self._selected_checks['monotonicity'] = self._widget.checkbox_monotonicity.isChecked()
@@ -167,38 +235,87 @@ class SrHealthCheck(Plugin):
         self._selected_checks['backlash'] = self._widget.checkbox_backlash.isChecked()
         self._selected_checks['overrun'] = self._widget.checkbox_overrun.isChecked()
 
+    def side_selected(self):
+        '''
+            Initializes checks based on selected side.
+        '''
+        if self._widget.side_right_radio_button.isChecked():
+            self._side = "right"
+        elif self._widget.side_left_radio_button.isChecked():
+            self._side = "left"
+        self.initialize_checks()
+
     def check_execution(self):
+        '''
+            Executes queued checks and saves result to a file.
+        '''
         while not rospy.is_shutdown():
             check = self._check_queue.get()
-            check['thread'].start()
-            self.update_passed_label(check['check'], "Executing")
-            check['thread'].join()
+            result = None
+            self._checks_running = True
+
+            if not check['check'].is_stopped():
+                check['thread'].start()
+                self.update_passed_label(check['check'], "Executing")
+                check['thread'].join()
+                result = check['check'].get_result()
+
+                if list(result.values())[0]:
+                    self.update_passed_label(check['check'])
+                    self._results[self._entry_name].update(result)
+                else:
+                    self.update_passed_label(check['check'], "-")
+                    del self._results[self._entry_name]
 
             self._check_queue.task_done()
 
-            self._results[self._entry_name].update(check['check'].get_result())
-            self.update_passed_label(check['check'])
-
             if self._check_queue.empty():
-                self.save_results_to_result_file(self._results)
+                if result and check['check'].is_stopped() and bool(list(result.values())[0]):
+                    self.save_results_to_result_file(self._results)
+                    self.send_status_message("Checks completed. Results saved!")
+                    self.display_data()
+                self._checks_running = False
+
+    def send_status_message(self, message):
+        '''
+            Sends a status message at rospy.INFO level
+            @param message: rosgraph_msgs.msg.Log type message
+        '''
+        msg = Log()
+        msg.name = self._rqt_node_name
+        msg.level = rospy.INFO
+        msg.msg = message
+        self._log_publisher.publish(msg)
 
     def get_data_from_results_file(self):
+        '''
+            Gets the results file content.
+            @return dict: The contents of the result file
+        '''
         output = {}
         try:
             with open(self._results_file, 'r', encoding="ASCII") as yaml_file:
                 output = yaml.safe_load(yaml_file) or {}
         except FileNotFoundError:
-            rospy.logwarn("Result file does not exists. Returning empty dictionary")
+            rospy.logwarn("Result file does not exists. Creating a new log file!")
         return output
 
     def save_results_to_result_file(self, results):
+        '''
+            Saves the results to the result file.
+            @param results: results to be saved
+        '''
         if results:
             self._current_data.update(results)
             with open(self._results_file, 'w', encoding="ASCII") as yaml_file:
                 yaml.safe_dump(self._current_data, stream=yaml_file, default_flow_style=False)
-            self._current_data_changed = True
 
     def update_passed_label(self, check, text=None):
+        '''
+            Updates the passed label in the GUI with feedback on completion status.
+            @param check: Check object
+            @param text: String stating the state of the check.
+        '''
         if isinstance(check, MotorCheck):
             self._widget.passed_motor.setText(text or str(self._checks_to_execute['motor']
                                               ['check'].has_passed()))
@@ -218,18 +335,17 @@ class SrHealthCheck(Plugin):
             self._widget.passed_overrun.setText(text or str(self._checks_to_execute['overrun']
                                                 ['check'].has_passed()))
 
-    def tab_changed(self, _):
-        if self._widget.tab_widget.currentWidget().accessibleName() == "tab_view":
-            self.combobox_selected()
-
     def combobox_selected(self):
-        if self._current_data_changed:
-            self.display_data()
-            self._current_data_changed = False
+        '''
+            Performs action upon date combobox selection from View tab
+        '''
+        self.display_data()
 
     def display_data(self):
-        print("X")
-        if not bool(self._current_data):
+        '''
+            Updates the results tree to be presented.
+        '''
+        if not self._current_data:
             return
 
         for data_entry in list(self._current_data.keys()):
@@ -238,21 +354,24 @@ class SrHealthCheck(Plugin):
 
         self._widget.treeWidget.clear()
         date = self._widget.combobox_date.currentText()
-        self.update_tree(self._current_data[date], None)
+        if date != '':
+            self.update_tree(self._current_data[date], None)
 
     def update_tree(self, data, parent):  # pylint: disable=R1710
+        '''
+            Creates the results tree to be presented.
+            @param data: dictionary containing the data
+            @param parent: parent for lower level elements
+        '''
         if isinstance(data, dict):
             for key in data.keys():
                 item = QTreeWidgetItem(parent, [str(key)])
                 if self._widget.treeWidget.indexOfTopLevelItem(item) == -1:
                     self._widget.treeWidget.addTopLevelItem(item)
                 item.addChild(self.update_tree(data[key], item))
-                #if item.background(0) == SrHealthCheck.FAIL_COLOR and item.parent():
-                    #item.parent().setBackground(0, SrHealthCheck.FAIL_COLOR)
                 if item.foreground(0) == SrHealthCheck.FAIL_COLOR and item.parent():
                     item.parent().setForeground(0, SrHealthCheck.FAIL_COLOR)
                     item.parent().setFont(0, self._bold_font)
-
         else:
             item = QTreeWidgetItem(parent, [str(data)])
             check_name = SrHealthCheck.get_top_parent_name(item)
@@ -261,14 +380,16 @@ class SrHealthCheck(Plugin):
                 item.parent().setForeground(0, SrHealthCheck.FAIL_COLOR)
                 item.setFont(0, self._bold_font)
                 item.parent().setFont(0, self._bold_font)
-
-
-                #item.parent().setBackground(0, Q)
             return item
         return
 
     @staticmethod
     def get_top_parent_name(item):
+        '''
+            Gets the top parent from child of a nested QTreeWidget
+            @param item: Child of the QTreeWidget
+            @return string: Name of the top level parent of the item.
+        '''
         name = None
         while item:
             name = item.text(0)
@@ -276,7 +397,17 @@ class SrHealthCheck(Plugin):
         return name
 
     def get_widget(self):
+        '''
+            Returns the widget
+            @return QWidget
+        '''
         return self._widget
+
+    def shutdown_plugin(self):
+        '''
+            Shutdown hook called whenever the plugin exits.
+        '''
+        self._log_subcriber.unregister()
 
 
 if __name__ == "__main__":
