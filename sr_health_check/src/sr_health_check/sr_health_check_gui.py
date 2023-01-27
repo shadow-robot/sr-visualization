@@ -111,10 +111,12 @@ class SrHealthCheck(Plugin):
                 checkable_side_selection_radio_buttons.append(side_prefix)
                 self._detected_prefixes.append(side_prefix)
 
-        if 'lh' in checkable_side_selection_radio_buttons:
+        # SrHealthCheck._SIDE_PREFIXES[1] is lh
+        if SrHealthCheck._SIDE_PREFIXES[1] in checkable_side_selection_radio_buttons:
             self._widget.side_left_radio_button.setChecked(True)
             self._widget.side_left_radio_button.click()
-        if 'rh' in checkable_side_selection_radio_buttons:
+        # SrHealthCheck._SIDE_PREFIXES[0] is rh
+        if SrHealthCheck._SIDE_PREFIXES[0] in checkable_side_selection_radio_buttons:
             self._widget.side_right_radio_button.setChecked(True)
             self._widget.side_right_radio_button.click()
 
@@ -135,15 +137,10 @@ class SrHealthCheck(Plugin):
         self._widget.button_start_selected.setEnabled(not self._checks_running and selected_checks)
         self._widget.button_start_all.setEnabled(not self._checks_running)
         self._widget.button_stop.setEnabled(self._checks_running)
-        self._widget.side_right_radio_button.setEnabled(not self._checks_running and "rh" in self._detected_prefixes)
-        self._widget.side_left_radio_button.setEnabled(not self._checks_running and "lh" in self._detected_prefixes)
-
-    def are_checks_running(self):
-        '''
-            Gets if any checks are running (any checks left in the queue)
-            @return bool
-        '''
-        return self._checks_running
+        self._widget.side_right_radio_button.setEnabled(not self._checks_running and
+                                                        SrHealthCheck._SIDE_PREFIXES[0] in self._detected_prefixes)
+        self._widget.side_left_radio_button.setEnabled(not self._checks_running and
+                                                       SrHealthCheck._SIDE_PREFIXES[1] in self._detected_prefixes)
 
     def initialize_checks(self):
         '''
@@ -348,7 +345,7 @@ class SrHealthCheck(Plugin):
         '''
             Updates the results tree to be presented.
         '''
-        if not bool(self._current_data):
+        if not self._current_data:
             return
 
         for data_entry in list(self._current_data.keys()):
