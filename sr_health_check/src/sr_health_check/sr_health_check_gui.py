@@ -222,7 +222,7 @@ class SrHealthCheck(Plugin):
         for check_name in self._check_names:
             self._checks_to_execute[check_name]['check'].stop_test()
             self.update_passed_label(self._checks_to_execute[check_name]['check'], "-")
-        self.send_status_message("Checks stopped. Results not beinng saved!")
+        self.send_status_message("Checks stopped. Results not being saved!")
 
     def checkbox_selected(self):
         '''

@@ -183,7 +183,7 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>Motor Check</string>
+              <string>Motor</string>
              </property>
              <property name="checked">
               <bool>false</bool>
