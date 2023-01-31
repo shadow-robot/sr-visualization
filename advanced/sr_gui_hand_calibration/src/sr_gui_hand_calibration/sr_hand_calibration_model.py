@@ -19,16 +19,16 @@ from collections import deque
 import os
 import subprocess
 import yaml
+from datetime import date
 import rospy
 import rospkg
-from datetime import date
 from sr_utilities.hand_finder import HandFinder
 from sr_robot_lib.etherCAT_hand_lib import EtherCAT_Hand_Lib
 from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtWidgets import QTreeWidgetItem, QTreeWidgetItemIterator, QMessageBox, QPushButton
 from PyQt5.QtCore import QTimer
 
-string_template=f"""# Copyright {date.today().year} Shadow Robot Company Ltd.
+string_template = f"""# Copyright {date.today().year} Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free

@@ -22,10 +22,10 @@ import sys
 import os
 import tempfile
 import unittest
+from datetime import date
 import rospy
 import rospkg
 import rostest
-from datetime import date
 from mock import patch
 from PyQt5.uic import loadUi
 from PyQt5.QtWidgets import QWidget, QApplication
@@ -35,7 +35,7 @@ from sr_gui_hand_calibration.sr_hand_calibration_model import HandCalibration
 NAME = "test_hand_calibration"
 PKG = "sr_gui_hand_calibration"
 
-string_template=f"""# Copyright {date.today().year} Shadow Robot Company Ltd.
+string_template = f"""# Copyright {date.today().year} Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
