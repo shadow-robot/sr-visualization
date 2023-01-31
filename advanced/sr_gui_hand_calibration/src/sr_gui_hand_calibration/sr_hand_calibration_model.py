@@ -16,10 +16,10 @@
 #
 
 from collections import deque
+from datetime import date
 import os
 import subprocess
 import yaml
-from datetime import date
 import rospy
 import rospkg
 from sr_utilities.hand_finder import HandFinder
