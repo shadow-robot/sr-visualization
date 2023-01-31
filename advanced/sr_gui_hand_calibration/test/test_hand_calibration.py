@@ -25,6 +25,7 @@ import unittest
 import rospy
 import rospkg
 import rostest
+from datetime import date
 from mock import patch
 from PyQt5.uic import loadUi
 from PyQt5.QtWidgets import QWidget, QApplication
@@ -33,6 +34,26 @@ from sr_gui_hand_calibration.sr_hand_calibration_model import HandCalibration
 
 NAME = "test_hand_calibration"
 PKG = "sr_gui_hand_calibration"
+
+string_template=f"""# Copyright {date.today().year} Shadow Robot Company Ltd.
+#
+# This program is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the Free
+# Software Foundation version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program. If not, see <http://www.gnu.org/licenses/>.
+
+# This file contains an alternate approach to pedal connection, that falls victim to Ubuntu suspending USB devices.
+# Try as I might, I couldn't make Ubuntu leave it alone, so switched to the input events approach seen in
+# sr_triple_pedal.py. I'll leave this here in case it might be useful later.
+
+"""
 
 
 class TestHandCalibration(unittest.TestCase):
@@ -47,7 +68,8 @@ class TestHandCalibration(unittest.TestCase):
         loadUi(ui_file, self._widget)
 
         self.mock_file = tempfile.NamedTemporaryFile(delete=False)  # pylint: disable=R1732
-        self.mock_file.write(b"""sr_calibrations: [\n""" +
+        self.mock_file.write(string_template.encode('utf-8') +
+                             b"""sr_calibrations: [\n""" +
                              b"""["mock", [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]],\n""" +
                              b"""]""")
         self.mock_file.write(b"""\n\nsr_calibrations_coupled: [\n""" +
