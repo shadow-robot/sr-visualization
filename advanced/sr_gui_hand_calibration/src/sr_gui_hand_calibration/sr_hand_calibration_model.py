@@ -45,7 +45,6 @@ string_template = f"""# Copyright {date.today().year} Shadow Robot Company Ltd.
 # This file contains an alternate approach to pedal connection, that falls victim to Ubuntu suspending USB devices.
 # Try as I might, I couldn't make Ubuntu leave it alone, so switched to the input events approach seen in
 # sr_triple_pedal.py. I'll leave this here in case it might be useful later.
-
 """
 
 green = QColor(153, 231, 96)
@@ -702,7 +701,7 @@ class HandCalibration(QTreeWidgetItem):
         # yaml_config["sr_calibrations"] = joint_configs
         # full_config_to_write = yaml.dump(yaml_config,
         # default_flow_style=False)
-        full_config_to_write = f"{string_template}sr_calibrations: [\n"
+        full_config_to_write = f"{string_template}\nsr_calibrations: [\n"
         for joint_config in joint_configs:
             if not isinstance(joint_config[0], list):
                 full_config_to_write += "[\""
