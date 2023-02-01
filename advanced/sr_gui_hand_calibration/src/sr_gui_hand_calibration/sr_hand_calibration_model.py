@@ -702,7 +702,7 @@ class HandCalibration(QTreeWidgetItem):
         # yaml_config["sr_calibrations"] = joint_configs
         # full_config_to_write = yaml.dump(yaml_config,
         # default_flow_style=False)
-        full_config_to_write = string_template + "sr_calibrations: [\n"
+        full_config_to_write = f"{string_template}sr_calibrations: [\n"
         for joint_config in joint_configs:
             if not isinstance(joint_config[0], list):
                 full_config_to_write += "[\""
