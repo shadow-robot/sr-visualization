@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2011, 2022 Shadow Robot Company Ltd.
+# Copyright 2011, 2022-2023 Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -16,6 +16,7 @@
 #
 
 from collections import deque
+from datetime import date
 import os
 import subprocess
 import yaml
@@ -27,6 +28,24 @@ from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtWidgets import QTreeWidgetItem, QTreeWidgetItemIterator, QMessageBox, QPushButton
 from PyQt5.QtCore import QTimer
 
+string_template = f"""# Copyright {date.today().year} Shadow Robot Company Ltd.
+#
+# This program is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the Free
+# Software Foundation version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program. If not, see <http://www.gnu.org/licenses/>.
+
+# This file contains an alternate approach to pedal connection, that falls victim to Ubuntu suspending USB devices.
+# Try as I might, I couldn't make Ubuntu leave it alone, so switched to the input events approach seen in
+# sr_triple_pedal.py. I'll leave this here in case it might be useful later.
+"""
 
 green = QColor(153, 231, 96)
 orange = QColor(247, 206, 134)
@@ -682,7 +701,7 @@ class HandCalibration(QTreeWidgetItem):
         # yaml_config["sr_calibrations"] = joint_configs
         # full_config_to_write = yaml.dump(yaml_config,
         # default_flow_style=False)
-        full_config_to_write = "sr_calibrations: [\n"
+        full_config_to_write = f"{string_template}\nsr_calibrations: [\n"
         for joint_config in joint_configs:
             if not isinstance(joint_config[0], list):
                 full_config_to_write += "[\""

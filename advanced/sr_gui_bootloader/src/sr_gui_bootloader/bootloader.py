@@ -1,4 +1,4 @@
-# Copyright 2011, 2022 Shadow Robot Company Ltd.
+# Copyright 2011, 2022-2023 Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -158,7 +158,8 @@ class SrGuiBootloader(Plugin):
             if context:
                 context.add_widget(self._widget)
 
-    def _is_plugin_launched_on_correct_machine(self):
+    @staticmethod
+    def _is_plugin_launched_on_correct_machine():
         machine_list = rosnode.get_machines_by_nodes()
         if CONTROL_MACHINE_NAME in machine_list:
             return rospy.get_name() in rosnode.get_nodes_by_machine(CONTROL_MACHINE_NAME)
