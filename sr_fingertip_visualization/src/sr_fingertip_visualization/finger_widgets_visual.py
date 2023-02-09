@@ -152,7 +152,7 @@ class BiotacSPPlusInfo(QGroupBox):
         self.setLayout(layout)
 
     def update_values(self, data):
-        common_keys = [set(data.keys()) & set(self._CONST_TEXT_FIELDS)]
+        common_keys = list(set(data.keys()) & set(self._CONST_TEXT_FIELDS))
         for key in common_keys:
             self._data[key] = data[key]
 
@@ -310,14 +310,14 @@ class FingerWidgetVisualBiotacSPPlus(FingerWidget):
                     elif data_field == "tdc":
                         self._data[data_field] = data.tactiles[i].tdc
                     elif data_field == "electrodes":
-                        self._data[data_field] = [data.tactiles[i].electrodes]
+                        self._data[data_field] = data.tactiles[i].electrodes
 
     def timerEvent(self):  # pylint: disable=C0103
-        for i in range(self._electrodes_to_display_count):
-            try:
+        try:
+            for i in range(self._electrodes_to_display_count):
                 self._tactile_point_widget[i].update_data(self._data[self._datatype_to_display][i])
-            except IndexError:
-                pass
+        except IndexError:
+            pass
         self._data_bar.update_values(self._data)
         self._data_bar.refresh()
 
