@@ -66,7 +66,7 @@ class SrHealthCheck(Plugin):
         self._results = OrderedDict()
 
         self._fingers = ('FF', 'MF', 'RF', 'LF', "TH", "WR")
-        self._side = "right"  # to be parametrized later
+        self._side = "right"
         self._detected_prefixes = []
         self._check_names = ['motor', 'position_sensor_noise', 'monotonicity', 'tactile', 'backlash', 'overrun']
 
