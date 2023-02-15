@@ -355,9 +355,9 @@ class SrHealthCheck(Plugin):
         self._widget.treeWidget.clear()
         date = self._widget.combobox_date.currentText()
         if date != '':
-            self.update_tree(self._current_data[date], None)
+            self._update_tree(self._current_data[date], None)
 
-    def update_tree(self, data, parent):  # pylint: disable=R1710
+    def _update_tree(self, data, parent):
         '''
             Creates the results tree to be presented.
             @param data: dictionary containing the data
@@ -368,7 +368,7 @@ class SrHealthCheck(Plugin):
                 item = QTreeWidgetItem(parent, [str(key)])
                 if self._widget.treeWidget.indexOfTopLevelItem(item) == -1:
                     self._widget.treeWidget.addTopLevelItem(item)
-                item.addChild(self.update_tree(data[key], item))
+                item.addChild(self._update_tree(data[key], item))
                 if item.foreground(0) == SrHealthCheck.FAIL_COLOR and item.parent():
                     item.parent().setForeground(0, SrHealthCheck.FAIL_COLOR)
                     item.parent().setFont(0, self._bold_font)
@@ -381,7 +381,7 @@ class SrHealthCheck(Plugin):
                 item.setFont(0, self._bold_font)
                 item.parent().setFont(0, self._bold_font)
             return item
-        return
+        return None
 
     @staticmethod
     def get_top_parent_name(item):
