@@ -107,7 +107,7 @@ class SrGuiBootloader(Plugin):
         self._publisher = None
         self._widget = QWidget()
 
-        if self._is_plugin_launched_on_correct_machine():
+        if SrGuiBootloader._is_plugin_launched_on_correct_machine():
             ui_file = os.path.join(rospkg.RosPack().get_path(
                 'sr_gui_bootloader'), 'uis', 'SrBootloader.ui')
             loadUi(ui_file, self._widget)

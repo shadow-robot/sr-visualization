@@ -1,0 +1,3 @@
+<launch>
+  <test test-name="test_sr_health_check" pkg="sr_health_check" type="test_sr_health_check_gui.py" time-limit="10.0"/>
+</launch>
