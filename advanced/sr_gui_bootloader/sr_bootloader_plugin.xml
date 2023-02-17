@@ -22,7 +22,7 @@
       <group>
         <label>Advanced</label>
       </group>
-      <icon type="file">resource/hand.png</icon>
+      <icon type="file">../../sr_visualization_icons/icons/hand.ico</icon>
       <label>Motor Bootloader</label>
       <statustip>A plugin for bootloading the motors on the etherCAT shadow hand.</statustip>
     </qtgui>

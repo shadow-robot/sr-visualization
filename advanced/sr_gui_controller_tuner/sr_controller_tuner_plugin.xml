@@ -25,7 +25,7 @@
         <label>Advanced</label>
       </group>
       <label>Hand Tuning</label>
-      <icon type="file">resource/hand.png</icon>
+      <icon type="file">../../sr_visualization_icons/icons/hand.ico</icon>
       <statustip>A plugin for tuning the sr_mechanism_controllers.</statustip>
     </qtgui>
   </class>

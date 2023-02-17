@@ -21,7 +21,7 @@
       <group>
         <label>Shadow Robot</label>
       </group>
-      <icon type="file">resource/hand.png</icon>
+      <icon type="file">../sr_visualization_icons/icons/hand.ico</icon>
       <label>Health Check</label>
       <statustip>A plugin for checking the health state of the Shadow Hand.</statustip>
     </qtgui>

@@ -24,7 +24,7 @@
       <group>
         <label>Advanced</label>
       </group>
-      <icon type="file">resource/hand.png</icon>
+      <icon type="file">../../sr_visualization_icons/icons/hand.ico</icon>
       <label>Hand Calibration</label>
       <statustip>A plugin for calibrating the Shadow EtherCAT Hand.</statustip>
     </qtgui>

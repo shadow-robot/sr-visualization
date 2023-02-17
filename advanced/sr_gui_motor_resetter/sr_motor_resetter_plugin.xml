@@ -24,7 +24,7 @@
       <group>
         <label>Advanced</label>
       </group>
-      <icon type="file">resource/hand.png</icon>
+      <icon type="file">../../sr_visualization_icons/icons/hand.ico</icon>
       <label>Motor Resetter</label>
       <statustip>A plugin for resetting shadow hand motors.</statustip>
     </qtgui>
