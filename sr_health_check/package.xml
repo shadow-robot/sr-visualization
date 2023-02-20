@@ -29,8 +29,9 @@
   <run_depend>rospy</run_depend>
   <run_depend>rqt_gui</run_depend>
   <run_depend>rqt_gui_py</run_depend>
-<export>
+
+<!-- <export>
     <rqt_gui plugin="${prefix}/sr_health_check_plugin.xml" />
-</export>
+</export> -->
 
 </package>
