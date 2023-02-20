@@ -1,5 +1,5 @@
 <!--
- Copyright 2022 Shadow Robot Company Ltd.
+ Copyright 2022-2023 Shadow Robot Company Ltd.
  This program is free software: you can redistribute it and/or modify it
  under the terms of the GNU General Public License as published by the Free
  Software Foundation version 2 of the License.
@@ -25,7 +25,7 @@
         <label>Advanced</label>
       </group>
       <label>Hand Tuning</label>
-      <icon type="file">resource/hand.png</icon>
+      <icon type="file">../../sr_visualization_icons/icons/hand.ico</icon>
       <statustip>A plugin for tuning the sr_mechanism_controllers.</statustip>
     </qtgui>
   </class>
