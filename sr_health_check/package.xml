@@ -30,6 +30,8 @@
   <run_depend>rqt_gui</run_depend>
   <run_depend>rqt_gui_py</run_depend>
 
+<!-- export to rqt commented out as there is a bug when stopping tests
+and also within the monotonicity test. -->
 <!-- <export>
     <rqt_gui plugin="${prefix}/sr_health_check_plugin.xml" />
 </export> -->
