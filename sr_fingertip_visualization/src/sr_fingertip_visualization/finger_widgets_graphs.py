@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2022 Shadow Robot Company Ltd.
+# Copyright 2022-2023 Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -133,9 +133,16 @@ class FingerWidgetGraphPST(FingerWidgetGraphGeneric):
                         self._data[data_field].append(data.temperature[i])
 
     def timerEvent(self):  # pylint: disable=C0103
+        checked_data_fields = []
         for data_field in self._CONST_DATA_FIELDS:
             if self._data_checkboxes[data_field].isChecked():
+                checked_data_fields.append(data_field)
                 self._plot.update_plot(self._data)
+        # Decide on the scaling depending if more than one checkbox is checked
+        if len(checked_data_fields) > 1:
+            self._plot.set_auto_scale()
+        elif len(checked_data_fields) == 1:
+            self._plot.set_trace_scale(checked_data_fields[0])
 
 
 class FingerWidgetGraphBiotac(FingerWidgetGraphGeneric):
@@ -207,9 +214,16 @@ class FingerWidgetGraphBiotac(FingerWidgetGraphGeneric):
             self._timer.start(10)
 
     def timerEvent(self):  # pylint: disable=C0103
+        checked_data_fields = []
         for data_field in self._CONST_DATA_FIELDS:
             if self._data_checkboxes[data_field].isChecked():
+                checked_data_fields.append(data_field)
                 self._plot.update_plot(self._data)
+        # Decide on the scaling depending if more than one checkbox is checked
+        if len(checked_data_fields) > 1:
+            self._plot.set_auto_scale()
+        elif len(checked_data_fields) == 1:
+            self._plot.set_trace_scale(checked_data_fields[0])
 
 
 class FingerWidgetGraphBiotacBlank(FingerWidgetGraphGeneric):
