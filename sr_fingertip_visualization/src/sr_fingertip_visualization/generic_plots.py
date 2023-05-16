@@ -40,8 +40,9 @@ class Trace():
 
     def update_trace_data(self, data: np.ndarray) -> None:
         '''
-            Update the data of the trace. If the new data is shorter than the old data, the old data is shifted to the right
-            and the new data is added to the left. If the new data is longer than the old data, the old data is replaced
+            Update the data of the trace. If the new data is shorter than the old data,
+            the old data is shifted to the right and the new data is added to the left.
+            If the new data is longer than the old data, the old data is replaced
             with the new data.
             @param data: The new data to be added to the trace
         '''
@@ -51,15 +52,14 @@ class Trace():
             self._y_data = data[-len(self._y_data):]
         self._plot.setData(self._x_data, self._y_data)
 
-    def get_min_max_for_axis(self) -> Tuple[float, float]:
+    def get_min_max_for_axis(self, margin: float = 0.01) -> Tuple[float, float]:
         '''
-            Get the minimum and maximum values for the y axis of the plot. If the minimum and maximum values are the same,
-            the minimum value is decreased by 0.1 and the maximum value is increased by 0.1.
-            @return: The minimum and maximum values for the y axis of the plot
+            Get the minimum and maximum values for the y axis of the plot and add a small margin
+            to the values to make sure the plot is not at the edge of the plot.
+            @param margin: The margin to be added to the minimum and maximum values, default is 0.01
+            @return: The minimum and maximum values for the y axis of the plot with a small margin
         '''
-        if np.min(self._y_data) == np.max(self._y_data):
-            return np.min(self._y_data) - 0.1, np.max(self._y_data) + 0.1
-        return np.min(self._y_data), np.max(self._y_data)
+        return np.min(self._y_data) - margin, np.max(self._y_data) + margin
 
     def get_plot(self) -> QwtPlotCurve:
         return self._plot
@@ -121,7 +121,7 @@ class GenericDataPlot(QwtPlot):
             Set the y axis to auto scale.
         '''
         self.setAxisAutoScale(QwtPlot.yLeft)
-    
+
     def set_trace_scale(self, data_field: str) -> None:
         '''
             Set the y axis to the minimum and maximum values of the trace.
