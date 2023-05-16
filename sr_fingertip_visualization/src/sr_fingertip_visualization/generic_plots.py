@@ -94,7 +94,7 @@ class GenericDataPlot(QwtPlot):
         for i, data_field in enumerate(self._data_fields):
             self._traces[data_field] = Trace(data_field, QColor(self._colors[i]))
 
-    def show_trace(self, data_field: str, show: bool=True) -> None:
+    def show_trace(self, data_field: str, show: bool = True) -> None:
         '''
             Show or hide a trace.
             @param data_field: The data field of the trace

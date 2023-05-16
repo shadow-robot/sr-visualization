@@ -76,7 +76,6 @@ class FingerWidgetGraphGeneric(QGroupBox):
         return self._data_checkboxes
 
 
-
 class FingerWidgetGraphPST(FingerWidgetGraphGeneric):
 
     _CONST_DATA_FIELDS = ['pressure', 'temperature']
