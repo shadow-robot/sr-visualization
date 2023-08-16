@@ -4,7 +4,7 @@
 # inheriting from QObject
 #
 
-# Copyright 2011, 2022 Shadow Robot Company Ltd.
+# Copyright 2011-2023 Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
