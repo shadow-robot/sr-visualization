@@ -4,7 +4,7 @@
 # inheriting from QObject
 #
 
-# Copyright 2011, 2022 Shadow Robot Company Ltd.
+# Copyright 2011-2023 Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -41,24 +41,24 @@ class MotorFlasher(QThread):
     motor_finished = QtCore.pyqtSignal('QPoint')
     failed = QtCore.pyqtSignal('QString')
 
-    def __init__(self, parent, nb_motors_to_program, prefix):
+    def __init__(self, parent, nb_motors_to_program, prefix, system_prefix="sr_hand_robot"):
         QThread.__init__(self, None)
         self.parent = parent
         self.nb_motors_to_program = nb_motors_to_program
         self.prefix = prefix
+        self.system_prefix = system_prefix
         self.flasher_service = None
 
     def run(self):
         programmed_motors = 0
         for motor in self.parent.motors:
             if motor.checkbox.checkState() == Qt.Checked:
+
+                service_name = f"{self.system_prefix}/{self.prefix}reset_motor_{motor.motor_name}"
                 try:
-                    print((
-                        "resetting: sr_hand_robot/" + self.prefix +
-                        "reset_motor_" + motor.motor_name))
+                    print(f"resetting: {service_name}")
                     self.flasher_service = rospy.ServiceProxy(
-                        'sr_hand_robot/' + self.prefix + 'reset_motor_' +
-                        motor.motor_name, Empty)
+                        service_name, Empty)
                     self.flasher_service()
                 except rospy.ServiceException as exception:
                     self.failed['QString'].emit(f"Service did not process request: {exception}")
@@ -125,6 +125,15 @@ class SrGuiMotorResetter(Plugin):
         else:
             self._widget.select_prefix.setCurrentIndex(0)
             self._prefix = list(hand_parameters.mapping.values())[0] + "/"
+
+        self._hand_robot_prefix = ""
+        hand_quantity = len(self._hand_finder.get_hand_parameters().joint_prefix)
+        if hand_quantity == 2:
+            self._hand_robot_prefix = 'sr_bimanual_hands_robot'
+        elif hand_quantity == 1:
+            self._hand_robot_prefix = 'sr_hand_robot'
+        else:
+            raise ValueError('Hand Finder did not find a correct number of hands')
 
         self._widget.select_prefix.currentIndexChanged['QString'].connect(
             self.prefix_selected)
@@ -247,7 +256,7 @@ class SrGuiMotorResetter(Plugin):
         self.progress_bar.setMaximum(nb_motors_to_program)
 
         self.motor_flasher = MotorFlasher(self, nb_motors_to_program,
-                                          self._prefix)
+                                          self._prefix, self._hand_robot_prefix)
 
         self.motor_flasher.finished.connect(self.finished_programming_motors)
         self.motor_flasher.motor_finished['QPoint'].connect(self.one_motor_finished)
