@@ -380,6 +380,7 @@ class FingerWidgetVisualMSTBlank(QGroupBox):
         command = f"roslaunch sr_mst sr_mst_hand_rviz_visualiser.launch hand_id:={self._side} publishing_frequency:=30"
         rospy.loginfo(f"Launching RViz for MST hand visualization: {command}")
         subprocess.Popen(command, shell=True)
+        self.setChecked(False)
 
     def start_timer_and_subscriber(self):
         pass
