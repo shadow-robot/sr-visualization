@@ -17,9 +17,11 @@
 import os
 import rospy
 import rospkg
+import subprocess
 from python_qt_binding.QtGui import QIcon
 from python_qt_binding.QtCore import Qt, QTimer
 from python_qt_binding.QtWidgets import (
+    QPushButton,
     QGridLayout,
     QHBoxLayout,
     QVBoxLayout,
@@ -246,6 +248,40 @@ class FingerWidgetGraphPSTBlank(FingerWidgetGraphGeneric):
         layout = QHBoxLayout()
         layout.addWidget(QLabel("No tactile sensor"))
         self.setLayout(layout)
+
+    def start_timer_and_subscriber(self):
+        pass
+
+    def stop_timer_and_subscriber(self):
+        pass
+
+class FingerWidgetGraphMSTBlank(QGroupBox):
+    def __init__(self, side, parent):
+        super().__init__(parent=parent)
+        self._side = side
+
+        self.setTitle("---")
+        self.setCheckable(True)
+        self.setChecked(True)
+        self.setSizePolicy(1, 1)
+
+        layout = QVBoxLayout()
+
+        layout.setAlignment(Qt.AlignVCenter)
+        no_tactile_label = QLabel("\tSTF sensors not supported yet. \nAlternatively, you can launch the RViz visualization tool:")
+        layout.addWidget(no_tactile_label, alignment=Qt.AlignCenter)
+
+        self.launch_viz_button = QPushButton("Launch RViz")
+        self.launch_viz_button.clicked.connect(self._button_action_launch_viz)
+
+        layout.addWidget(self.launch_viz_button, alignment=Qt.AlignCenter)
+        self.setLayout(layout)
+
+
+    def _button_action_launch_viz(self):
+        command = f"roslaunch sr_mst sr_mst_hand_rviz_visualiser.launch hand_id:={self._side} publishing_frequency:=30"
+        rospy.loginfo(f"Launching RViz for MST hand visualization: {command}")
+        subprocess.Popen(command, shell=True)
 
     def start_timer_and_subscriber(self):
         pass

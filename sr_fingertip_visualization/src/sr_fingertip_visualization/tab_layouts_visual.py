@@ -33,7 +33,8 @@ from sr_fingertip_visualization.finger_widgets_visual import (
     FingerWidgetVisualBiotacSPMinus,
     FingerWidgetVisualBiotacSPPlus,
     FingerWidgetVisualBiotacBlank,
-    FingerWidgetVisualPST
+    FingerWidgetVisualPST,
+    FingerWidgetVisualMSTBlank
 )
 
 
@@ -55,6 +56,9 @@ class VisualizationTab(QWidget):
                 self.tactile_widgets[side] = PSTVisualizationTab(side, parent=self)
             elif tactile_topic == "BiotacAll":
                 self.tactile_widgets[side] = BiotacVisualizationTab(side, parent=self)
+            elif tactile_topic == "MSTAll":
+                rospy.logwarn(f"Found STF sensors on {side} hand, but no visualization is available yet.")
+                self.tactile_widgets[side] = MSTVisualizationTab(side, parent=self)
             self.stacked_layout.addWidget(self.tactile_widgets[side])
         self._option_bar = VisualOptionBar(list(self._tactile_topics.keys()), childs=self.stacked_layout)
 
@@ -189,6 +193,24 @@ class BiotacVisualizationTab(GenericTabLayout):
         elif detected_fingertip_type == BiotacType.BLANK:
             self._finger_widgets[finger] = FingerWidgetVisualBiotacBlank(finger, self)
         return self._finger_widgets[finger]
+
+class MSTVisualizationTab(GenericTabLayout):  # pylint: disable=W0223
+
+    def __init__(self, side, parent):
+        super().__init__(parent=parent)
+        self._side = side
+        self._init_tactile_layout()
+
+    def _init_tactile_layout(self):
+        fingers_layout = QHBoxLayout()
+        fingers_layout.setContentsMargins(0, 0, 0, 0)
+        fingers_layout.addWidget(self._init_finger_widget())
+        self.setLayout(fingers_layout)
+
+    def _init_finger_widget(self):
+        self._finger_widget = FingerWidgetVisualMSTBlank(self._side, self)
+        return self._finger_widget
+
 
 
 class VisualOptionBar(GenericOptionBar):
