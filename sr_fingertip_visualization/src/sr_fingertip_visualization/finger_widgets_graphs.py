@@ -269,19 +269,32 @@ class FingerWidgetGraphMSTBlank(QGroupBox):
         layout = QVBoxLayout()
 
         layout.setAlignment(Qt.AlignVCenter)
-        no_tactile_label = QLabel("\tSTF sensors not supported yet. \nAlternatively, you can launch the RViz visualization tool:")
+        no_tactile_label = QLabel("\t\tSTF sensors not supported yet. \nAlternatively, you can launch the RViz or PlotJuggler visualization tools:")
         layout.addWidget(no_tactile_label, alignment=Qt.AlignCenter)
 
         self.launch_viz_button = QPushButton("Launch RViz")
         self.launch_viz_button.clicked.connect(self._button_action_launch_viz)
-
         layout.addWidget(self.launch_viz_button, alignment=Qt.AlignCenter)
+
+        self.launch_plotjuggler_button = QPushButton("Launch PlotJuggler*")
+        self.launch_plotjuggler_button.clicked.connect(self._button_action_launch_plotjuggler)
+        layout.addWidget(self.launch_plotjuggler_button, alignment=Qt.AlignCenter)
+
+        note_label = QLabel(f"*Note: You'll need to click 'Yes' to Start the Streaming and select /{self._side}/tactile data topic.")
+        layout.addWidget(note_label, alignment=Qt.AlignCenter)
+
         self.setLayout(layout)
 
 
     def _button_action_launch_viz(self):
         command = f"roslaunch sr_mst sr_mst_hand_rviz_visualiser.launch hand_id:={self._side} publishing_frequency:=30"
-        rospy.loginfo(f"Launching RViz for MST hand visualization: {command}")
+        rospy.loginfo(f"Launching RViz for visualization of STF fingertips: {command}")
+        subprocess.Popen(command, shell=True)
+        self.setChecked(False)
+
+    def _button_action_launch_plotjuggler(self):
+        command = f"roslaunch sr_mst sr_mst_hand_plotjuggler_visualiser.launch hand_id:={self._side}"
+        rospy.loginfo(f"Launching PlotJuggler for visualization of STF fingertips data: {command}")
         subprocess.Popen(command, shell=True)
         self.setChecked(False)
 
