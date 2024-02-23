@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2022 Shadow Robot Company Ltd.
+# Copyright 2022, 2024 Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -86,6 +86,7 @@ class BiotacGraphTab(GenericGraphTab):  # pylint: disable=W0223
         else:
             self._finger_widgets[finger] = FingerWidgetGraphBiotac(self._side, finger, self)
         return self._finger_widgets[finger]
+
 
 class MSTGraphTab(GenericGraphTab):  # pylint: disable=W0223
 

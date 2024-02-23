@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2022-2023 Shadow Robot Company Ltd.
+# Copyright 2022-2024 Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -353,6 +353,7 @@ class FingerWidgetVisualBiotacBlank(FingerWidget):
 
     def stop_timer_and_subscriber(self):
         pass
+
 
 class FingerWidgetVisualMSTBlank(QGroupBox):
     def __init__(self, side, parent):
