@@ -94,6 +94,7 @@ class MSTGraphTab(GenericGraphTab):  # pylint: disable=W0223
         super().__init__(side, parent)
         self._side = side
         self._init_tactile_layout()
+        self._finger_widget = None
 
     def _initialize_data_structure(self):
         pass

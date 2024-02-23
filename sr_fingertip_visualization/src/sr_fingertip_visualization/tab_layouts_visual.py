@@ -201,6 +201,7 @@ class MSTVisualizationTab(GenericTabLayout):  # pylint: disable=W0223
         super().__init__(parent=parent)
         self._side = side
         self._init_tactile_layout()
+        self._finger_widget = None
 
     def _init_tactile_layout(self):
         fingers_layout = QHBoxLayout()
@@ -211,7 +212,6 @@ class MSTVisualizationTab(GenericTabLayout):  # pylint: disable=W0223
     def _init_finger_widget(self):
         self._finger_widget = FingerWidgetVisualMSTBlank(self._side, self)
         return self._finger_widget
-
 
 
 class VisualOptionBar(GenericOptionBar):
