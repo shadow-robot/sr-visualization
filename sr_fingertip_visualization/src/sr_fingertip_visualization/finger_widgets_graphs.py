@@ -15,9 +15,9 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import subprocess
 import rospy
 import rospkg
-import subprocess
 from python_qt_binding.QtGui import QIcon
 from python_qt_binding.QtCore import Qt, QTimer
 from python_qt_binding.QtWidgets import (
@@ -287,16 +287,16 @@ class FingerWidgetGraphMSTBlank(QGroupBox):
 
         self.setLayout(layout)
 
-    def _button_action_launch_viz(self):  # pylint: disable=R1732
+    def _button_action_launch_viz(self):
         command = f"roslaunch sr_mst sr_mst_hand_rviz_visualiser.launch hand_id:={self._side} publishing_frequency:=30"
         rospy.loginfo(f"Launching RViz for visualization of STF fingertips: {command}")
-        subprocess.Popen(command, shell=True)
+        subprocess.Popen(command, shell=True)  # pylint: disable=R1732
         self.setChecked(False)
 
-    def _button_action_launch_plotjuggler(self):  # pylint: disable=R1732
+    def _button_action_launch_plotjuggler(self):
         command = f"roslaunch sr_mst sr_mst_hand_plotjuggler_visualiser.launch hand_id:={self._side}"
         rospy.loginfo(f"Launching PlotJuggler for visualization of STF fingertips data: {command}")
-        subprocess.Popen(command, shell=True)
+        subprocess.Popen(command, shell=True)  # pylint: disable=R1732
         self.setChecked(False)
 
     def start_timer_and_subscriber(self):
