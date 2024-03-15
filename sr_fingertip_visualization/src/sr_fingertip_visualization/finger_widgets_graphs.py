@@ -16,6 +16,7 @@
 
 import os
 import subprocess
+import roslaunch
 import rospy
 import rospkg
 from python_qt_binding.QtGui import QIcon
@@ -266,6 +267,9 @@ class FingerWidgetGraphMSTBlank(QGroupBox):
         self.setChecked(True)
         self.setSizePolicy(1, 1)
 
+        self.package = 'sr_mst'
+        self.launch_file = 'sr_mst_hand_rviz_visualiser.launch'
+
         layout = QVBoxLayout()
 
         layout.setAlignment(Qt.AlignVCenter)
@@ -288,9 +292,36 @@ class FingerWidgetGraphMSTBlank(QGroupBox):
         self.setLayout(layout)
 
     def _button_action_launch_viz(self):
-        command = f"roslaunch sr_mst sr_mst_hand_rviz_visualiser.launch hand_id:={self._side} publishing_frequency:=30"
-        rospy.loginfo(f"Launching RViz for visualization of STF fingertips: {command}")
-        subprocess.Popen(command, shell=True)  # pylint: disable=R1732
+        launch = roslaunch.scriptapi.ROSLaunch()
+        launch.start()
+
+        # rospack = rospkg.RosPack()
+        # # Specify launch file
+        # path_to_launch_file = f"{rospack.get_path(self.package)}/launch/{self.executable}"
+
+        uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
+        roslaunch.configure_logging(uuid)
+
+        # Define launch arguments as a list of strings
+        args = [self.package, self.launch_file, f'hand_id:={self._side}', 'publishing_frequency:=30']
+
+        roslaunch_file = roslaunch.rlutil.resolve_launch_arguments(args)[0]
+        roslaunch_args = args[2:]
+        
+        launch_file = [(roslaunch_file, roslaunch_args)]
+
+        # Launch file with arguments
+        parent = roslaunch.parent.ROSLaunchParent(uuid, launch_file)
+
+        parent.start()
+            
+
+        # print process.is_alive()
+        # process.stop()
+        
+        # command = f"roslaunch sr_mst sr_mst_hand_rviz_visualiser.launch hand_id:={self._side} publishing_frequency:=30"
+        # rospy.loginfo(f"Launching RViz for visualization of STF fingertips: {command}")
+        # subprocess.Popen(command, shell=True)  # pylint: disable=R1732
         self.setChecked(False)
 
     def _button_action_launch_plotjuggler(self):
