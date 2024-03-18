@@ -15,7 +15,7 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import subprocess
+import roslaunch
 import rospy
 import rospkg
 import yaml
@@ -360,43 +360,52 @@ class FingerWidgetVisualMSTBlank(QGroupBox):
         super().__init__(parent=parent)
         self._side = side
 
+        self._rviz_parent_process_manager = None
+        self._plotjuggler_parent_process_manager = None
+
         self.setTitle("---")
         self.setCheckable(True)
         self.setChecked(True)
         self.setSizePolicy(1, 1)
 
+        self.package = 'sr_mst'
+        self.rviz_launch_file = 'sr_mst_hand_rviz_visualiser.launch'
+        self.plotjuggler_launch_file = 'sr_mst_hand_plotjuggler_visualiser.launch'
+
         layout = QVBoxLayout()
 
         layout.setAlignment(Qt.AlignVCenter)
-        no_tactile_label = QLabel("\t\tSTF sensors not supported yet."
-                                  " \nAlternatively, you can launch the RViz or PlotJuggler visualization tools:")
+        no_tactile_label = QLabel("\t     STF sensors not supported yet."
+                                  " \nAlternatively, you can launch the RViz visualization tool:")
         layout.addWidget(no_tactile_label, alignment=Qt.AlignCenter)
 
         self.launch_viz_button = QPushButton("Launch RViz")
         self.launch_viz_button.clicked.connect(self._button_action_launch_viz)
         layout.addWidget(self.launch_viz_button, alignment=Qt.AlignCenter)
 
-        self.launch_plotjuggler_button = QPushButton("Launch PlotJuggler*")
-        self.launch_plotjuggler_button.clicked.connect(self._button_action_launch_plotjuggler)
-        layout.addWidget(self.launch_plotjuggler_button, alignment=Qt.AlignCenter)
-
-        note_label = QLabel("*Note: You'll need to click 'Yes' to Start the Streaming and select"
-                            f" /{self._side}/tactile data topic.")
-        layout.addWidget(note_label, alignment=Qt.AlignCenter)
-
         self.setLayout(layout)
 
-    def _button_action_launch_viz(self):
-        command = f"roslaunch sr_mst sr_mst_hand_rviz_visualiser.launch hand_id:={self._side} publishing_frequency:=30"
-        rospy.loginfo(f"Launching RViz for visualization of STF fingertips: {command}")
-        subprocess.Popen(command, shell=True)  # pylint: disable=R1732
-        self.setChecked(False)
+    def _button_action_launch_viz(self): 
+        # Close any previous RViz instance
+        if self._rviz_parent_process_manager is not None:
+            self._rviz_parent_process_manager.shutdown()
 
-    def _button_action_launch_plotjuggler(self):
-        command = f"roslaunch sr_mst sr_mst_hand_plotjuggler_visualiser.launch hand_id:={self._side}"
-        rospy.loginfo(f"Launching PlotJuggler for visualization of STF fingertips data: {command}")
-        subprocess.Popen(command, shell=True)  # pylint: disable=R1732
-        self.setChecked(False)
+        rospy.loginfo(f"Launching RViz for visualization of STF fingertips operation on {self._side} hand.")
+
+        # Define launch arguments as a list of strings
+        args = [self.package, self.rviz_launch_file, f'hand_id:={self._side}', 'publishing_frequency:=30']
+
+        roslaunch_file = roslaunch.rlutil.resolve_launch_arguments(args)[0]
+        roslaunch_args = args[2:]
+
+        # List of tupples containing any number of launch files and respective arguments
+        launch_files_list = [(roslaunch_file, roslaunch_args)]
+
+        # Generate a unique ID for the launch process
+        unique_id = roslaunch.rlutil.get_or_generate_uuid(None, False)
+        roslaunch.configure_logging(unique_id)
+        self._rviz_parent_process_manager = roslaunch.parent.ROSLaunchParent(unique_id, launch_files_list)
+        self._rviz_parent_process_manager.start()
 
     def start_timer_and_subscriber(self):
         pass

@@ -15,7 +15,6 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import subprocess
 import roslaunch
 import rospy
 import rospkg
@@ -261,6 +260,8 @@ class FingerWidgetGraphMSTBlank(QGroupBox):
     def __init__(self, side, parent):
         super().__init__(parent=parent)
         self._side = side
+        self._rviz_parent_process_manager = None
+        self._plotjuggler_parent_process_manager = None
 
         self.setTitle("---")
         self.setCheckable(True)
@@ -268,18 +269,15 @@ class FingerWidgetGraphMSTBlank(QGroupBox):
         self.setSizePolicy(1, 1)
 
         self.package = 'sr_mst'
-        self.launch_file = 'sr_mst_hand_rviz_visualiser.launch'
+        self.rviz_launch_file = 'sr_mst_hand_rviz_visualiser.launch'
+        self.plotjuggler_launch_file = 'sr_mst_hand_plotjuggler_visualiser.launch'
 
         layout = QVBoxLayout()
 
         layout.setAlignment(Qt.AlignVCenter)
         no_tactile_label = QLabel("\t\tSTF sensors not supported yet."
-                                  " \nAlternatively, you can launch the RViz or PlotJuggler visualization tools:")
+                                  " \nAlternatively, you can launch the PlotJuggler data inspection tool:")
         layout.addWidget(no_tactile_label, alignment=Qt.AlignCenter)
-
-        self.launch_viz_button = QPushButton("Launch RViz")
-        self.launch_viz_button.clicked.connect(self._button_action_launch_viz)
-        layout.addWidget(self.launch_viz_button, alignment=Qt.AlignCenter)
 
         self.launch_plotjuggler_button = QPushButton("Launch PlotJuggler*")
         self.launch_plotjuggler_button.clicked.connect(self._button_action_launch_plotjuggler)
@@ -291,44 +289,27 @@ class FingerWidgetGraphMSTBlank(QGroupBox):
 
         self.setLayout(layout)
 
-    def _button_action_launch_viz(self):
-        launch = roslaunch.scriptapi.ROSLaunch()
-        launch.start()
+    def _button_action_launch_plotjuggler(self):
+        # Close any previous PlotJuggler instance
+        if self._plotjuggler_parent_process_manager is not None:
+            self._plotjuggler_parent_process_manager.shutdown()
 
-        # rospack = rospkg.RosPack()
-        # # Specify launch file
-        # path_to_launch_file = f"{rospack.get_path(self.package)}/launch/{self.executable}"
-
-        uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
-        roslaunch.configure_logging(uuid)
+        rospy.loginfo(f"Launching PlotJuggler for visualization of STF fingertips operation on {self._side} hand.")
 
         # Define launch arguments as a list of strings
-        args = [self.package, self.launch_file, f'hand_id:={self._side}', 'publishing_frequency:=30']
+        args = [self.package, self.plotjuggler_launch_file, f'hand_id:={self._side}']
 
         roslaunch_file = roslaunch.rlutil.resolve_launch_arguments(args)[0]
         roslaunch_args = args[2:]
-        
-        launch_file = [(roslaunch_file, roslaunch_args)]
 
-        # Launch file with arguments
-        parent = roslaunch.parent.ROSLaunchParent(uuid, launch_file)
+        # List of tupples containing any number of launch files and respective arguments
+        launch_files_list = [(roslaunch_file, roslaunch_args)]
 
-        parent.start()
-            
-
-        # print process.is_alive()
-        # process.stop()
-        
-        # command = f"roslaunch sr_mst sr_mst_hand_rviz_visualiser.launch hand_id:={self._side} publishing_frequency:=30"
-        # rospy.loginfo(f"Launching RViz for visualization of STF fingertips: {command}")
-        # subprocess.Popen(command, shell=True)  # pylint: disable=R1732
-        self.setChecked(False)
-
-    def _button_action_launch_plotjuggler(self):
-        command = f"roslaunch sr_mst sr_mst_hand_plotjuggler_visualiser.launch hand_id:={self._side}"
-        rospy.loginfo(f"Launching PlotJuggler for visualization of STF fingertips data: {command}")
-        subprocess.Popen(command, shell=True)  # pylint: disable=R1732
-        self.setChecked(False)
+        # Generate a unique ID for the launch process
+        unique_id = roslaunch.rlutil.get_or_generate_uuid(None, False)
+        roslaunch.configure_logging(unique_id)
+        self._plotjuggler_parent_process_manager = roslaunch.parent.ROSLaunchParent(unique_id, launch_files_list)
+        self._plotjuggler_parent_process_manager.start()
 
     def start_timer_and_subscriber(self):
         pass

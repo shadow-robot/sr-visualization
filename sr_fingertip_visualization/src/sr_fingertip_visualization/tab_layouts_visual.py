@@ -57,7 +57,7 @@ class VisualizationTab(QWidget):
             elif tactile_topic == "BiotacAll":
                 self.tactile_widgets[side] = BiotacVisualizationTab(side, parent=self)
             elif tactile_topic == "MSTAll":
-                rospy.logwarn(f"Found STF sensors on {side} hand, but no visualization is available yet.")
+                rospy.logwarn(f"Found STF sensors on {side} hand, but no visualization is officially supported yet.")
                 self.tactile_widgets[side] = MSTVisualizationTab(side, parent=self)
             self.stacked_layout.addWidget(self.tactile_widgets[side])
         self._option_bar = VisualOptionBar(list(self._tactile_topics.keys()), childs=self.stacked_layout)
