@@ -260,7 +260,6 @@ class FingerWidgetGraphMSTBlank(QGroupBox):
     def __init__(self, side, parent):
         super().__init__(parent=parent)
         self._side = side
-        self._rviz_parent_process_manager = None
         self._plotjuggler_parent_process_manager = None
 
         self.setTitle("---")
@@ -269,7 +268,6 @@ class FingerWidgetGraphMSTBlank(QGroupBox):
         self.setSizePolicy(1, 1)
 
         self.package = 'sr_mst'
-        self.rviz_launch_file = 'sr_mst_hand_rviz_visualiser.launch'
         self.plotjuggler_launch_file = 'sr_mst_hand_plotjuggler_visualiser.launch'
 
         layout = QVBoxLayout()
