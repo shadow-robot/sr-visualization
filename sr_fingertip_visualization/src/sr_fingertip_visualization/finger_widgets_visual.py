@@ -385,7 +385,7 @@ class FingerWidgetVisualMSTBlank(QGroupBox):
 
         self.setLayout(layout)
 
-    def _button_action_launch_viz(self): 
+    def _button_action_launch_viz(self):
         # Close any previous RViz instance
         if self._rviz_parent_process_manager is not None:
             self._rviz_parent_process_manager.shutdown()
