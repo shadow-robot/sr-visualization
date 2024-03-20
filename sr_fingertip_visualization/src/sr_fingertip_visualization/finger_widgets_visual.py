@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2022-2023 Shadow Robot Company Ltd.
+# Copyright 2022-2024 Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -15,12 +15,14 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import roslaunch
 import rospy
 import rospkg
 import yaml
 
 from python_qt_binding.QtCore import Qt, QTimer
 from python_qt_binding.QtWidgets import (
+    QPushButton,
     QWidget,
     QGridLayout,
     QHBoxLayout,
@@ -345,6 +347,62 @@ class FingerWidgetVisualBiotacBlank(FingerWidget):
         no_tactile_label.setText("No tactile sensor")
         layout.addWidget(no_tactile_label, alignment=Qt.AlignCenter)
         self.setLayout(layout)
+
+    def start_timer_and_subscriber(self):
+        pass
+
+    def stop_timer_and_subscriber(self):
+        pass
+
+
+class FingerWidgetVisualMSTBlank(QGroupBox):
+    def __init__(self, side, parent):
+        super().__init__(parent=parent)
+        self._side = side
+        self._rviz_parent_process_manager = None
+
+        self.setTitle("---")
+        self.setCheckable(True)
+        self.setChecked(True)
+        self.setSizePolicy(1, 1)
+
+        self.package = 'sr_mst'
+        self.rviz_launch_file = 'sr_mst_hand_rviz_visualiser.launch'
+
+        layout = QVBoxLayout()
+
+        layout.setAlignment(Qt.AlignVCenter)
+        no_tactile_label = QLabel("\t     STF sensors not supported yet."
+                                  " \nAlternatively, you can launch the RViz visualization tool:")
+        layout.addWidget(no_tactile_label, alignment=Qt.AlignCenter)
+
+        self.launch_viz_button = QPushButton("Launch RViz")
+        self.launch_viz_button.clicked.connect(self._button_action_launch_viz)
+        layout.addWidget(self.launch_viz_button, alignment=Qt.AlignCenter)
+
+        self.setLayout(layout)
+
+    def _button_action_launch_viz(self):
+        # Close any previous RViz instance
+        if self._rviz_parent_process_manager is not None:
+            self._rviz_parent_process_manager.shutdown()
+
+        rospy.loginfo(f"Launching RViz for visualization of STF fingertips operation on {self._side} hand.")
+
+        # Define launch arguments as a list of strings
+        args = [self.package, self.rviz_launch_file, f'hand_id:={self._side}', 'publishing_frequency:=30']
+
+        roslaunch_file = roslaunch.rlutil.resolve_launch_arguments(args)[0]
+        roslaunch_args = args[2:]
+
+        # List of tupples containing any number of launch files and respective arguments
+        launch_files_list = [(roslaunch_file, roslaunch_args)]
+
+        # Generate a unique ID for the launch process
+        unique_id = roslaunch.rlutil.get_or_generate_uuid(None, False)
+        roslaunch.configure_logging(unique_id)
+        self._rviz_parent_process_manager = roslaunch.parent.ROSLaunchParent(unique_id, launch_files_list)
+        self._rviz_parent_process_manager.start()
 
     def start_timer_and_subscriber(self):
         pass

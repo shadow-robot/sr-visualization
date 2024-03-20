@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2022 Shadow Robot Company Ltd.
+# Copyright 2022, 2024 Shadow Robot Company Ltd.
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -28,7 +28,8 @@ from sr_fingertip_visualization.tab_layouts_generic import (
 from sr_fingertip_visualization.finger_widgets_graphs import (
     FingerWidgetGraphPST,
     FingerWidgetGraphBiotac,
-    FingerWidgetGraphBiotacBlank
+    FingerWidgetGraphBiotacBlank,
+    FingerWidgetGraphMSTBlank
 )
 
 
@@ -87,6 +88,28 @@ class BiotacGraphTab(GenericGraphTab):  # pylint: disable=W0223
         return self._finger_widgets[finger]
 
 
+class MSTGraphTab(GenericGraphTab):  # pylint: disable=W0223
+
+    def __init__(self, side, parent):
+        super().__init__(side, parent)
+        self._side = side
+        self._init_tactile_layout()
+        self._finger_widget = None
+
+    def _initialize_data_structure(self):
+        pass
+
+    def _init_tactile_layout(self):
+        fingers_layout = QHBoxLayout()
+        fingers_layout.setContentsMargins(0, 0, 0, 0)
+        fingers_layout.addWidget(self._init_finger_widget())
+        self.setLayout(fingers_layout)
+
+    def _init_finger_widget(self):
+        self._finger_widget = FingerWidgetGraphMSTBlank(self._side, self)
+        return self._finger_widget
+
+
 class GraphTab(QWidget):
     def __init__(self, tactile_topics):
         super().__init__()
@@ -103,6 +126,8 @@ class GraphTab(QWidget):
                 self.tactile_widgets[side] = PSTGraphTab(side, self)
             elif tactile_topic == "BiotacAll":
                 self.tactile_widgets[side] = BiotacGraphTab(side, self)
+            elif tactile_topic == "MSTAll":
+                self.tactile_widgets[side] = MSTGraphTab(side, self)
             self.stacked_layout.addWidget(self.tactile_widgets[side])
 
         self._option_bar = GraphOptionBar(list(self._tactile_topics.keys()), childs=self.stacked_layout)
