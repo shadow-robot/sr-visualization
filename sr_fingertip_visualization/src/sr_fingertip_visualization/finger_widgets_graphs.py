@@ -283,7 +283,7 @@ class FingerWidgetGraphMSTBlank(QGroupBox):
 
         note_label_1 = QLabel(" *You'll need to click 'Yes' to Start the Streaming and select"
                               f" /{self._side}/tactile data topic.")
-        note_label_2 = QLabel("Please note that the Plotjuggler tools has been known to crash."
+        note_label_2 = QLabel("Please note that the Plotjuggler tool has been known to crash."
                               " If this happens try relaunching Plotjuggler.")
         layout.addWidget(note_label_1, alignment=Qt.AlignCenter)
         layout.addWidget(note_label_2, alignment=Qt.AlignCenter)
