@@ -372,8 +372,8 @@ class FingerWidgetVisualMSTBlank(QGroupBox):
         layout = QVBoxLayout()
 
         layout.setAlignment(Qt.AlignVCenter)
-        no_tactile_label = QLabel("\t     STF sensors not supported yet."
-                                  " \nAlternatively, you can launch the RViz visualization tool:")
+        no_tactile_label = QLabel("\tSTF sensors are not supported yet."
+                                  " \nInstead, you can launch the RViz visualization tool:")
         layout.addWidget(no_tactile_label, alignment=Qt.AlignCenter)
 
         self.launch_viz_button = QPushButton("Launch RViz")
