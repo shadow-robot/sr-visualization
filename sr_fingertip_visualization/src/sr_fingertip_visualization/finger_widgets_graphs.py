@@ -273,19 +273,20 @@ class FingerWidgetGraphMSTBlank(QGroupBox):
         layout = QVBoxLayout()
 
         layout.setAlignment(Qt.AlignVCenter)
-        no_tactile_label = QLabel("\t\tSTF sensors are not supported yet."
-                                  " \Instead, you can launch the PlotJuggler data inspection tool:")
+        no_tactile_label = QLabel("\t      STF sensors are not supported yet."
+                                  " \nInstead, you can launch the PlotJuggler data inspection tool:")
         layout.addWidget(no_tactile_label, alignment=Qt.AlignCenter)
 
         self.launch_plotjuggler_button = QPushButton("Launch PlotJuggler*")
         self.launch_plotjuggler_button.clicked.connect(self._button_action_launch_plotjuggler)
         layout.addWidget(self.launch_plotjuggler_button, alignment=Qt.AlignCenter)
 
-        note_label = QLabel(" *You'll need to click 'Yes' to Start the Streaming and select"
+        note_label_1 = QLabel(" *You'll need to click 'Yes' to Start the Streaming and select"
                             f" /{self._side}/tactile data topic.")
-        note_label = QLabel("**Please note that the Plotjuggler tools has been known to crash."
-                            " \If this happens try relaunching plotjuggler.")
-        layout.addWidget(note_label, alignment=Qt.AlignCenter)
+        note_label_2 = QLabel("Please note that the Plotjuggler tools has been known to crash."
+                            " If this happens try relaunching Plotjuggler.")
+        layout.addWidget(note_label_1, alignment=Qt.AlignCenter)
+        layout.addWidget(note_label_2, alignment=Qt.AlignCenter)
 
         self.setLayout(layout)
 
