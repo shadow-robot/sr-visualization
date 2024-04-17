@@ -273,7 +273,7 @@ class FingerWidgetGraphMSTBlank(QGroupBox):
         layout = QVBoxLayout()
 
         layout.setAlignment(Qt.AlignVCenter)
-        no_tactile_label = QLabel("\t      STF sensors are not supported yet."
+        no_tactile_label = QLabel("\t STF sensors are not supported yet."
                                   " \nInstead, you can launch the PlotJuggler data inspection tool:")
         layout.addWidget(no_tactile_label, alignment=Qt.AlignCenter)
 
