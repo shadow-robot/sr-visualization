@@ -267,7 +267,7 @@ class FingerWidgetGraphMSTBlank(QGroupBox):
         self.setChecked(True)
         self.setSizePolicy(1, 1)
 
-        self.package = 'sr_mst'
+        self.package = 'sr_tactile_sensors'
         self.plotjuggler_launch_file = 'sr_mst_hand_plotjuggler_visualiser.launch'
 
         layout = QVBoxLayout()
