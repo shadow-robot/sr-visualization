@@ -366,7 +366,7 @@ class FingerWidgetVisualMSTBlank(QGroupBox):
         self.setChecked(True)
         self.setSizePolicy(1, 1)
 
-        self.package = 'sr_mst'
+        self.package = 'sr_tactile_sensors'
         self.rviz_launch_file = 'sr_mst_hand_rviz_visualiser.launch'
 
         layout = QVBoxLayout()
