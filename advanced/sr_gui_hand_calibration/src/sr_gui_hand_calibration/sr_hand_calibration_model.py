@@ -217,41 +217,102 @@ class JointCalibration(QTreeWidgetItem):
         tree_widget.addTopLevelItem(self)
         self.timer.timeout.connect(self.update_joint_pos)
 
+    def ssh_command(self, ip, username, container_name, command)
+        client = paramiko.SSHClient()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        try:
+            client.connect(ip, username=username, imeout=5.0)
+            _, stdout, _ = client.exec_command(command)
+            arm_serial_number = stdout.readline()
+            client.close()
+        except NoValidConnectionsError as exception:
+            ssh_exception_message = f"Failed to SSH into arm - {exception}"
+        except (BadHostKeyException, AuthenticationException, SSHException, socket.error) as exception:
+            ssh_exception_message = f"Failed to SSH into arm - {exception}"
+    
+    def get_server_info(self):
+        with open('/tmp/server_username', 'r') as f:
+            server_username = f.readline().strip('\n')
+            server_containername = f.readline().strip('\n')
+        return server_username, server_containername
+
+    def _start_remote_plotjuggler(self, username, container_name, command):
+        docker_command = f"docker exec -it {container_name} bash -c '{command}'"
+        make_script_command = "echo \"{docker_command}\" > /tmp/ssh_start_plotjuggler.sh"
+        copy_script_command = f"docker cp /tmp/ssh_start_plotjuggler.sh ${container_name}:/tmp/ssh_start_plotjuggler.sh"
+        enable_script_command = f"docker exec -it {container_name} bash -c 'sudo chmod +x /tmp/ssh_start_plotjuggler.sh'"
+        run_script_command = f"source /home/user/projects/shadow_robot/base/devel/setup.bash\n"
+        for command in [make_script_command, copy_script_command, enable_script_command]:
+            self.ssh_command("server", username, container_name, command)
+
+    def hand_is_local(self):
+        if self.get_hand_serial:
+            return True
+        return False
+
+    def get_this_containers_name(self):
+        with open("/proc/self/cgroup", "r") as f:
+            container_id = f.readline().strip('\n').split('/')[-1][:12]
+        ros_master = os.environ['ROS_MASTER_URI'].strip('http://').split(':')[0]
+        
+        hand_is_local = False
+        if 'localhost' in ros_master:
+            hand_is_local = True
+        with open('/etc/hosts', 'r') as f:
+            hosts = f.readlines()
+        # for host in hosts:
+
+        with open('/tmp/server_username', 'r') as f:
+            server_username = f.readline().strip('\n')
+            server_containername = f.readline().strip('\n')
+        subprocess.run(['ls', '-l'], stdout=subprocess.PIPE).stdout.decode('utf-8')
+        return container_id
+
     def plot_raw_button_clicked(self):
         temporary_file_name = "{}/resource/tmp_plot.xml".format(self.package_path)
-        if not isinstance(self.joint_name, list):
-            if not isinstance(self.raw_value_index, list):
-                # Single joint, single sensor
-                template_filename = "{}/resource/plotjuggler_1_sensor.xml".format(self.package_path)
-                replace_list = [['sensor_id_0', str(self.raw_value_index)],
-                                ['sensor_name_0', self.joint_name]]
-                process = ["rosrun", "plotjuggler", "plotjuggler", "-n", "-l", temporary_file_name]
-            else:
-                # Single joint, two sensors
-                template_filename = "{}/resource/plotjuggler_2_sensors.xml".format(self.package_path)
-                sensor_names = self.robot_lib.get_compound_names(self.joint_name)
-                replace_list = []
-                for i, sensor_index in enumerate(self.raw_value_index):
-                    replace_list.append(["sensor_id_{}".format(i), str(sensor_index)])
-                    replace_list.append(["sensor_name_{}".format(i), sensor_names[i]])
-                process = ["rosrun", "plotjuggler", "plotjuggler", "-n", "-l", temporary_file_name]
+        if self.hand_is_local():
+            server_username, server_containername = self.get_server_info()
+            command = "rosrun plotjuggler plotjuggler"
+            self._start_remote_plotjuggler(server_username, server_containername, command)
         else:
-            # Two coupled joints, each with a single sensor
-            template_filename = "{}/resource/plotjuggler_2_sensors.xml".format(self.package_path)
-            replace_list = []
-            for i, joint_name in enumerate(self.joint_name):
-                replace_list.append(["sensor_id_{}".format(i), str(self.raw_value_index[i])])
-                replace_list.append(["sensor_name_{}".format(i), joint_name])
-                process = ["rosrun", "plotjuggler", "plotjuggler", "-n", "-l", temporary_file_name]
+            if not isinstance(self.joint_name, list):
+                if not isinstance(self.raw_value_index, list):
+                    # Single joint, single sensor
+                    template_filename = "{}/resource/plotjuggler_1_sensor.xml".format(self.package_path)
+                    replace_list = [['sensor_id_0', str(self.raw_value_index)],
+                                    ['sensor_name_0', self.joint_name]]
+                    process = ["rosrun", "plotjuggler", "plotjuggler", "-n", "-l", temporary_file_name]
+                else:
+                    # Single joint, two sensors
+                    template_filename = "{}/resource/plotjuggler_2_sensors.xml".format(self.package_path)
+                    sensor_names = self.robot_lib.get_compound_names(self.joint_name)
+                    replace_list = []
+                    for i, sensor_index in enumerate(self.raw_value_index):
+                        replace_list.append(["sensor_id_{}".format(i), str(sensor_index)])
+                        replace_list.append(["sensor_name_{}".format(i), sensor_names[i]])
+                    process = ["rosrun", "plotjuggler", "plotjuggler", "-n", "-l", temporary_file_name]
+            else:
+                # Two coupled joints, each with a single sensor
+                template_filename = "{}/resource/plotjuggler_2_sensors.xml".format(self.package_path)
+                replace_list = []
+                for i, joint_name in enumerate(self.joint_name):
+                    replace_list.append(["sensor_id_{}".format(i), str(self.raw_value_index[i])])
+                    replace_list.append(["sensor_name_{}".format(i), joint_name])
+                    process = ["rosrun", "plotjuggler", "plotjuggler", "-n", "-l", temporary_file_name]
         try:
             with open(template_filename, "r", encoding="ASCII") as template_file:
                 template = template_file.read()
         except Exception:
             rospy.logerr("Failed to open multiplot template file: {}".format(template_filename))
             return
-
-        hand_finder = HandFinder()
-        prefix = hand_finder.get_available_prefix()
+        
+        hand_serial_side_dict = rosparam.get_param('/hand/mapping')
+        if len(hand_serial_side_dict) > 1:
+            rospy.logerr("More than one hand detected, please only connect one hand.")
+            return
+        # hand_finder = HandFinder()
+        # prefix = hand_finder.get_available_prefix()
+        prefix = f"{list(hand_serial_side_dict.values())[0]}_"
         if prefix == 'lh_':
             replace_list.append(['/rh/', '/lh/'])
         for replacement in replace_list:

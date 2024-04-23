@@ -60,6 +60,8 @@ class SrHandCalibration(Plugin):
         self._widget.information_btn.clicked.connect(self.display_information)
 
     def get_hand_serial(self):
+        list(rosparam.get_param('/hand/mapping').keys())
+
         os.system('sr_hand_detector_node')
 
         with open('/tmp/sr_hand_detector.yaml', encoding="ASCII") as hand_file:
