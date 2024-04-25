@@ -188,6 +188,19 @@ class JointCalibration(QTreeWidgetItem):
         self.plot_button.clicked.connect(self.plot_raw_button_clicked)
         self.package_path = package_path
         self.multiplot_processes = []
+        REMOTE_PLOTJUGGLER_VARIABLES = ['SERVER_IP', 'SERVER_USERNAME', 'CONTAINER_NAME']
+        self.local_plotjuggler = True
+        self._server_ip = None
+        self._server_username = None
+        self._container_name = None
+        if all(var in os.environ for var in REMOTE_PLOTJUGGLER_VARIABLES):
+            if any(var in os.environ for var in REMOTE_PLOTJUGGLER_VARIABLES):
+                rospy.logwarn("Some but not all remote plotjuggler variables are set. This means there has been a "\
+                              "deployment error. Please contact shadow")
+            self.local_plotjuggler = False
+            self._server_ip = os.environ.get('SERVER_IP')
+            self._server_username = os.environ.get('SERVER_USERNAME')
+            self._container_name = os.environ.get('CONTAINER_NAME')
 
         if not isinstance(self.joint_name, list):
             QTreeWidgetItem.__init__(
@@ -236,14 +249,16 @@ class JointCalibration(QTreeWidgetItem):
             server_containername = f.readline().strip('\n')
         return server_username, server_containername
 
-    def _start_remote_plotjuggler(self, username, container_name, command):
-        docker_command = f"docker exec -it {container_name} bash -c '{command}'"
-        make_script_command = "echo \"{docker_command}\" > /tmp/ssh_start_plotjuggler.sh"
-        copy_script_command = f"docker cp /tmp/ssh_start_plotjuggler.sh ${container_name}:/tmp/ssh_start_plotjuggler.sh"
-        enable_script_command = f"docker exec -it {container_name} bash -c 'sudo chmod +x /tmp/ssh_start_plotjuggler.sh'"
+    def _start_remote_plotjuggler(self):
+        command = "rosrun plotjuggler plotjuggler"
+        docker_command = f"docker exec -it {self._container_name} bash -c '{command}'"
+        make_script_command = f"echo \"{docker_command}\" > /tmp/ssh_start_plotjuggler.sh"
+        copy_script_command = f"docker cp /tmp/ssh_start_plotjuggler.sh ${self._container_name}:/tmp/ssh_start_plotjuggler.sh"
+        enable_script_command = f"docker exec -it {self._container_name} bash -c 'sudo chmod +x /tmp/ssh_start_plotjuggler.sh'"
         run_script_command = f"source /home/user/projects/shadow_robot/base/devel/setup.bash\n"
+        run_script_command = f"{run_script_command}cd /tmp && ./ssh_start_plotjuggler.sh\n"
         for command in [make_script_command, copy_script_command, enable_script_command]:
-            self.ssh_command("server", username, container_name, command)
+            self.ssh_command(self._server_ip, self._server_username, self._container_name, command)
 
     def hand_is_local(self):
         if self.get_hand_serial:
@@ -270,10 +285,8 @@ class JointCalibration(QTreeWidgetItem):
 
     def plot_raw_button_clicked(self):
         temporary_file_name = "{}/resource/tmp_plot.xml".format(self.package_path)
-        if self.hand_is_local():
-            server_username, server_containername = self.get_server_info()
-            command = "rosrun plotjuggler plotjuggler"
-            self._start_remote_plotjuggler(server_username, server_containername, command)
+        if not self.local_plotjuggler:
+            self._start_remote_plotjuggler()
         else:
             if not isinstance(self.joint_name, list):
                 if not isinstance(self.raw_value_index, list):
