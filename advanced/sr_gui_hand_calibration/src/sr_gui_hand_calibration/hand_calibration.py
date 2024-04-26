@@ -32,6 +32,8 @@ class SrHandCalibration(Plugin):
     """
 
     def __init__(self, context):
+        rospy.logerr("###############################x1")
+
         super().__init__(context)
         self.setObjectName('SrHandCalibration')
 

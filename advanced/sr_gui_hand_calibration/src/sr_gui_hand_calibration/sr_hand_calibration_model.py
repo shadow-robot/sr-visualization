@@ -27,6 +27,9 @@ from sr_robot_lib.etherCAT_hand_lib import EtherCAT_Hand_Lib
 from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtWidgets import QTreeWidgetItem, QTreeWidgetItemIterator, QMessageBox, QPushButton
 from PyQt5.QtCore import QTimer
+import paramiko
+import socket
+from paramiko.ssh_exception import BadHostKeyException, AuthenticationException, SSHException, NoValidConnectionsError
 
 string_template = f"""# Copyright {date.today().year} Shadow Robot Company Ltd.
 #
@@ -193,6 +196,7 @@ class JointCalibration(QTreeWidgetItem):
         self._server_ip = None
         self._server_username = None
         self._container_name = None
+        rospy.loginfo("###############################")
         if all(var in os.environ for var in REMOTE_PLOTJUGGLER_VARIABLES):
             if any(var in os.environ for var in REMOTE_PLOTJUGGLER_VARIABLES):
                 rospy.logwarn("Some but not all remote plotjuggler variables are set. This means there has been a "\
@@ -230,11 +234,11 @@ class JointCalibration(QTreeWidgetItem):
         tree_widget.addTopLevelItem(self)
         self.timer.timeout.connect(self.update_joint_pos)
 
-    def ssh_command(self, ip, username, container_name, command)
+    def ssh_command(self, ip, username, container_name, command):
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         try:
-            client.connect(ip, username=username, imeout=5.0)
+            client.connect(ip, username=username, timeout=5.0)
             _, stdout, _ = client.exec_command(command)
             arm_serial_number = stdout.readline()
             client.close()
