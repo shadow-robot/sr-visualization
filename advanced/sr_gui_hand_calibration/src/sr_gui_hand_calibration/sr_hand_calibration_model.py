@@ -239,17 +239,19 @@ class JointCalibration(QTreeWidgetItem):
         self.timer.timeout.connect(self.update_joint_pos)
 
     def _create_ssh_client(self, server, port, user):
+        k = paramiko.RSAKey.from_private_key_file("/home/user/.ssh/reverse_ssh_id_rsa")
         client = paramiko.SSHClient()
         client.load_system_host_keys()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(server, port, user, "password")
+        client.connect(server, port=port, username=user, pkey=k)
         return client
 
     def ssh_command(self, ip, username, container_name, command):
+        k = paramiko.RSAKey.from_private_key_file("/home/user/.ssh/reverse_ssh_id_rsa")
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         try:
-            client.connect(self._server_ip, 22, self._server_username, "password")
+            client.connect(self._server_ip, 22, self._server_username, pkey=k)
             _, stdout, stderr = client.exec_command(command)
             rospy.logwarn(f"cmdwas: {command}")
             std_out = stdout.read()
