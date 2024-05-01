@@ -46,6 +46,9 @@
   <run_depend>sr_robot_lib</run_depend>
 
 
+  <run_depend>python3-scp</run_depend>
+  <run_depend>python3-paramiko</run_depend>
+
   <test_depend>python3-mock</test_depend>
   <test_depend>python-pyvirtualdisplay-pip</test_depend>
   <test_depend>xvfb</test_depend>
