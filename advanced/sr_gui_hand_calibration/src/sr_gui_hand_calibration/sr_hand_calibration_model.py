@@ -266,14 +266,16 @@ class JointCalibration(QTreeWidgetItem):
             ssh_exception_message = f"Failed to SSH into arm - {exception}"
         except (BadHostKeyException, AuthenticationException, SSHException, socket.error) as exception:
             ssh_exception_message = f"Failed to SSH into arm - {exception}"
-    
+
     def get_server_info(self):
         with open('/tmp/server_username', 'r') as f:
             server_username = f.readline().strip('\n')
             server_containername = f.readline().strip('\n')
         return server_username, server_containername
-    
-    def _wrap_in_docker_exec(self, command):
+
+    def _wrap_in_docker_exec(self, command, detach=False):
+        if detach:
+            return f"docker exec -d {self._container_name} bash -c '{command}'"
         return f"docker exec {self._container_name} bash -c '{command}'"
 
     def _start_remote_plotjuggler(self, command):
@@ -292,7 +294,7 @@ class JointCalibration(QTreeWidgetItem):
         self._send_file(tmp_nuc_script_path, tmp_nuc_script_path)
         copy_script_command = f"docker cp /tmp/ssh_start_plotjuggler.sh {self._container_name}:/tmp/ssh_start_plotjuggler.sh"
         enable_script_command = self._wrap_in_docker_exec("sudo chmod +x /tmp/ssh_start_plotjuggler.sh")
-        run_script_command = self._wrap_in_docker_exec("cd /tmp && ./ssh_start_plotjuggler.sh")
+        run_script_command = self._wrap_in_docker_exec("cd /tmp && ./ssh_start_plotjuggler.sh", detach=True)
         for command in [copy_script_command, enable_script_command, run_script_command]:
             self.ssh_command(self._server_ip, self._server_username, self._container_name, command)
 
