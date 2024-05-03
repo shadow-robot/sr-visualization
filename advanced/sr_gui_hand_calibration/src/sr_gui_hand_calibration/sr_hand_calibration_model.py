@@ -19,16 +19,15 @@ from collections import deque
 from datetime import date
 import os
 import subprocess
+import socket
 import yaml
 import rospy
 import rospkg
-from sr_utilities.hand_finder import HandFinder
 from sr_robot_lib.etherCAT_hand_lib import EtherCAT_Hand_Lib
 from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtWidgets import QTreeWidgetItem, QTreeWidgetItemIterator, QMessageBox, QPushButton
 from PyQt5.QtCore import QTimer
 import paramiko
-import socket
 from paramiko.ssh_exception import BadHostKeyException, AuthenticationException, SSHException, NoValidConnectionsError
 import rosparam
 from scp import SCPClient
@@ -194,14 +193,14 @@ class JointCalibration(QTreeWidgetItem):
         self.plot_button.clicked.connect(self.plot_raw_button_clicked)
         self.package_path = package_path
         self.multiplot_processes = []
-        REMOTE_PLOTJUGGLER_VARIABLES = ['SERVER_IP', 'SERVER_USERNAME', 'CONTAINER_NAME']
+        remote_plotjuggler_variables = ['SERVER_IP', 'SERVER_USERNAME', 'CONTAINER_NAME']
         self._nuc_ssh_key_path = "/home/user/.ssh/reverse_ssh_id_rsa"
         self._local_plotjuggler = True
         self._server_ip = None
         self._server_username = None
         self._container_name = None
-        if any(var in os.environ for var in REMOTE_PLOTJUGGLER_VARIABLES):
-            if all(var in os.environ for var in REMOTE_PLOTJUGGLER_VARIABLES):
+        if any(var in os.environ for var in remote_plotjuggler_variables):
+            if all(var in os.environ for var in remote_plotjuggler_variables):
                 self._local_plotjuggler = False
                 self._server_ip = os.environ.get('SERVER_IP')
                 self._server_username = os.environ.get('SERVER_USERNAME')
@@ -245,7 +244,6 @@ class JointCalibration(QTreeWidgetItem):
             key = paramiko.RSAKey.from_private_key_file(self._nuc_ssh_key_path)
         except FileNotFoundError as exception:
             rospy.logerr(f"Failed to load SSH key - {exception}")
-            return
         client = paramiko.SSHClient()
         client.load_system_host_keys()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -341,7 +339,7 @@ class JointCalibration(QTreeWidgetItem):
         except Exception:
             rospy.logerr("Failed to open multiplot template file: {}".format(template_filename))
             return
-        
+
         hand_serial_side_dict = rosparam.get_param('/hand/mapping')
         if len(hand_serial_side_dict) > 1:
             rospy.logerr("More than one hand detected, please only connect one hand.")
