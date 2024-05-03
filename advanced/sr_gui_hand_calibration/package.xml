@@ -45,7 +45,6 @@
   <run_depend>sr_robot_msgs</run_depend>
   <run_depend>sr_robot_lib</run_depend>
 
-
   <run_depend>python3-scp</run_depend>
   <run_depend>python3-paramiko</run_depend>
 
