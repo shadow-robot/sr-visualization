@@ -206,8 +206,8 @@ class JointCalibration(QTreeWidgetItem):
                 self._server_username = os.environ.get('SERVER_USERNAME')
                 self._container_name = os.environ.get('CONTAINER_NAME')
             else:
-                rospy.logerr("Some but not all remote plotjuggler variables are set. "\
-                             "This means there has been a deployment error. Please contact "\
+                rospy.logerr("Some but not all remote plotjuggler variables are set. "
+                             "This means there has been a deployment error. Please contact "
                              "software@shadowrobot.com")
                 rospy.logwarn("Defaulting to using plotjuggler locally")
 
