@@ -278,8 +278,6 @@ class JointCalibration(QTreeWidgetItem):
         return f"source /home/user/projects/shadow_robot/base/devel/setup.bash && {command}"
 
     def _start_remote_plotjuggler(self, rosrun_command):
-        # Escape quotes
-        # rosrun_command = [x.replace("'", "\'") for x in rosrun_command]
         tmp_script_path = "/tmp/ssh_start_plotjuggler.sh"
         rosrun_command_str = self._prepend_source_ros(" ".join(rosrun_command))
         try:
