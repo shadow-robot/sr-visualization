@@ -404,11 +404,22 @@ class SrGuiControllerTuner(Plugin):
         self._widget.btn_save_all.setEnabled(True)
         self._widget.btn_save_selected.setEnabled(True)
 
-    def get_hand_serial(self):
-        os.system('sr_hand_detector_node')
+    @staticmethod
+    def _get_serials_from_param_server():
+        hand_serials_dict = {}
+        for side in ['lh', 'rh']:
+            try:
+                hand_serials_dict[side] = rospy.get_param(f"/sr_hand_robot/{side}/hand_serial")
+            except KeyError as _:
+                pass
+        return hand_serials_dict
 
-        with open('/tmp/sr_hand_detector.yaml', encoding="ASCII") as hand_detector:
-            detected_hands = yaml.safe_load(hand_detector)
+    def get_hand_serial(self):
+        # os.system('sr_hand_detector_node')
+
+        # with open('/tmp/sr_hand_detector.yaml', encoding="ASCII") as hand_detector:
+        #     detected_hands = yaml.safe_load(hand_detector)
+        detected_hands = self._get_serials_from_param_server()
 
         if not detected_hands:
             QMessageBox.warning(
