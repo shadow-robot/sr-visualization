@@ -415,10 +415,6 @@ class SrGuiControllerTuner(Plugin):
         return hand_serials_dict
 
     def get_hand_serial(self):
-        # os.system('sr_hand_detector_node')
-
-        # with open('/tmp/sr_hand_detector.yaml', encoding="ASCII") as hand_detector:
-        #     detected_hands = yaml.safe_load(hand_detector)
         detected_hands = self._get_serials_from_param_server()
 
         if not detected_hands:
